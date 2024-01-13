@@ -12,25 +12,25 @@ package org.robotalons.crescendo;
  * <p>Utility class which defines all modes of robot's event-cycle throughout it's lifetime.
  */
 public final class RobotContainer {
-    // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-    private static RobotContainer INSTANCE = (null);
+  // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
+  private static RobotContainer INSTANCE = (null);
 
-    // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
-    private RobotContainer() {}
+  // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
+  private RobotContainer() {}
 
-    // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
+  // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
 
-    // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
+  // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
 
-    // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
-    /**
-     * Retrieves the existing instance of this static utility class
-     * @return Utility class's instance
-     */
-    public static synchronized RobotContainer getInstance() {
-        if (java.util.Objects.isNull(INSTANCE)) {
-            INSTANCE = new RobotContainer();
-        }
-        return INSTANCE;
-    }
+  // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
+  /**
+   * Retrieves the existing instance of this static utility class
+   * @return Utility class's instance
+   */
+  public static synchronized RobotContainer getInstance() {
+      if (java.util.Objects.isNull(INSTANCE)) {
+          INSTANCE = new RobotContainer();
+      }
+      return INSTANCE;
+  }
 }
