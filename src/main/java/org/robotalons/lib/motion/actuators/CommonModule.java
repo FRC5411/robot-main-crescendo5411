@@ -1,13 +1,13 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.lib.motion.actuators;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.Num;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -20,6 +20,7 @@ import java.util.Objects;
  * <p>Singular unit which assists in the control of motion throughout the competition field, which provides implementation for control of both
  * an azimuth (Rotation) motor, which controls the angle or direction of the module, and an linear (translation) motor which controls the velocity
  * or magnitude of the module.
+ * 
  */
 public abstract class CommonModule implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
@@ -107,6 +108,14 @@ public abstract class CommonModule implements Closeable {
    */
   public abstract SwerveModuleState set(final SwerveModuleState Reference);
 
+  /**
+   * Mutates the module controller's current 'set-point' or reference {@link SwerveModuleState state}
+   * @param Reference Module's new Goal or 'set-point' reference
+   * @param Rotation  Module's turning speed 'set-point'
+   * @return An optimized version of the reference
+   */
+  public abstract SwerveModuleState set(final SwerveModuleState Reference, final Double Rotation);
+
 
   /**
    * Mutates the module controller's current mode of operation and how it should identify and calculate reference 'set-points'
@@ -143,7 +152,15 @@ public abstract class CommonModule implements Closeable {
   }
 
   /**
-   * Provides the most-recent reference, or 'set-point' for this module's controller
+   * Provides the optimized most-recent reference, or 'set-point' for this module's controller
+   * @return Reference module state
+   */
+  public SwerveModuleState getOptimized() {
+    return SwerveModuleState.optimize(Reference, LoggedData.Azimuth_Relative_Position);
+  }
+
+  /**
+   * Provides the un-optimized most-recent reference, or 'set-point' for this module's controller
    * @return Reference module state
    */
   public SwerveModuleState getReference() {

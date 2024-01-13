@@ -21,12 +21,14 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Devices;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Objects;
 import org.robotalons.lib.motion.actuators.CommonModule;
-import org.robotalons.lib.motion.kinematics.LocalADStarAK;
+import org.robotalons.lib.motion.kinematics.SwerveDrivebaseSecondOrderKinematics;
+import org.robotalons.lib.motion.pathfinding.LocalADStarAK;
 import org.robotalons.lib.motion.sensors.CommonGyroscope;
 
 import java.util.List;
@@ -46,13 +48,14 @@ import java.util.stream.IntStream;
  */
 public class DrivebaseSubsystem extends SubsystemBase {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
+  private static final SwerveDrivebaseSecondOrderKinematics SECOND_KINEMATICS;  
   private static final SwerveDrivePoseEstimator POSE_ESTIMATOR;
   private static final SwerveDriveKinematics KINEMATICS;
   private static final CommonGyroscope GYROSCOPE;
   private final static List<CommonModule> MODULES;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  private static DrivebaseSubsystem Instance;
   private static Rotation2d Odometry_Rotation;
+  private static DrivebaseSubsystem Instance;
   private static Pose2d Odometry_Pose;  
   private static Boolean Module_Locking;      
   private static Boolean Path_Flipped;  
@@ -81,6 +84,15 @@ public class DrivebaseSubsystem extends SubsystemBase {
                          (Constants.Measurements.ROBOT_LENGTH_METERS) / (2)),
       new Translation2d(-(Constants.Measurements.ROBOT_WIDTH_METERS)  / (2),
                         -(Constants.Measurements.ROBOT_LENGTH_METERS) / (2)));
+    SECOND_KINEMATICS = new SwerveDrivebaseSecondOrderKinematics(
+      new Translation2d( (Constants.Measurements.ROBOT_WIDTH_METERS)  / (2), 
+                         (Constants.Measurements.ROBOT_LENGTH_METERS) / (2)),
+      new Translation2d( (Constants.Measurements.ROBOT_WIDTH_METERS)  / (2),
+                        -(Constants.Measurements.ROBOT_LENGTH_METERS) / (2)),
+      new Translation2d(-(Constants.Measurements.ROBOT_WIDTH_METERS)  / (2),
+                         (Constants.Measurements.ROBOT_LENGTH_METERS) / (2)),
+      new Translation2d(-(Constants.Measurements.ROBOT_WIDTH_METERS)  / (2),
+                        -(Constants.Measurements.ROBOT_LENGTH_METERS) / (2)));
     POSE_ESTIMATOR = new SwerveDrivePoseEstimator(
       KINEMATICS, 
       GYROSCOPE.getYawRotation(),
@@ -88,8 +100,8 @@ public class DrivebaseSubsystem extends SubsystemBase {
       Odometry_Pose
     );
     AutoBuilder.configureHolonomic(
-      DrivebaseSubsystem::getDrivebasePose,
-      DrivebaseSubsystem::setDrivebasePose, 
+      DrivebaseSubsystem::getPose,
+      DrivebaseSubsystem::set, 
       () -> KINEMATICS.toChassisSpeeds(getModuleMeasurements()), 
       DrivebaseSubsystem::set, 
       new HolonomicPathFollowerConfig(
@@ -169,6 +181,7 @@ public class DrivebaseSubsystem extends SubsystemBase {
    * Calculates the discretization timestep, {@code dt}, at this current time based on the FPGA clock.
    * @return Double representation of the time passed between now and the last timestep.
    */
+  @AutoLogOutput(key = "Drivebase/DiscretizationTimestamp")
   private static synchronized Double discretize() {
     var DiscretizationTimestep = (0.0);
     if (Current_Time.equals((0.0))) {
@@ -204,19 +217,23 @@ public class DrivebaseSubsystem extends SubsystemBase {
    * @param Demand Chassis speeds object which represents the demand speeds of the drivebase
    */
   public static synchronized void set(final ChassisSpeeds Demand) {
-    var ReferenceSpeeds = ChassisSpeeds.discretize(Demand, discretize());
-    var ReferenceStates = KINEMATICS.toSwerveModuleStates(ReferenceSpeeds);
+    var DiscretizedChassisSpeeds = ChassisSpeeds.discretize(Demand, discretize());
+    var ReferenceSecondOrderStates = SECOND_KINEMATICS.toSwerveModuleStates(DiscretizedChassisSpeeds, GYROSCOPE.getYawRotation());
+    var ReferenceStates = ReferenceSecondOrderStates.getSwerveModuleStates();
+    var ReferenceSpeeds = ReferenceSecondOrderStates.getModuleTurnSpeeds();
     SwerveDriveKinematics.desaturateWheelSpeeds(
       ReferenceStates, 
-      ReferenceSpeeds, 
+      DiscretizedChassisSpeeds, 
       Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
       Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
       Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY);
-    ReferenceStates = MODULES
-    .stream()
-    .map(
-      (Module) -> Module.set(new SwerveModuleState())
-    ).toArray(SwerveModuleState[]::new);
+    Logger.recordOutput(("Drivebase/Reference"), ReferenceStates);
+    Logger.recordOutput(
+      ("Drivebase/Optimized"),
+      IntStream.range((0), MODULES.size()).boxed().map(
+        (Index) -> 
+          MODULES.get(Index).set(ReferenceStates[Index],ReferenceSpeeds[Index]))
+        .toArray(SwerveModuleState[]::new));
   }
 
   /**
@@ -264,7 +281,7 @@ public class DrivebaseSubsystem extends SubsystemBase {
    * Mutates the current estimated pose of the robot
    * @param Pose Robot Pose in Meters
    */
-  public static synchronized void setDrivebasePose(final Pose2d Pose) {
+  public static synchronized void set(final Pose2d Pose) {
     Odometry_Pose = Pose;
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
@@ -272,14 +289,24 @@ public class DrivebaseSubsystem extends SubsystemBase {
    * Provides the current position of the drivebase in space
    * @return Pose2d of Robot drivebase
    */
-  public static Pose2d getDrivebasePose() {
+  @AutoLogOutput(key = "Drivebase/Pose")
+  public static Pose2d getPose() {
     return POSE_ESTIMATOR.getEstimatedPosition();
+  }
+
+  /**
+   * Provides the current chassis speeds
+   * @return Chassis speeds of Robot drivebase
+   */
+  public static ChassisSpeeds getChassisSpeeds() {
+    return KINEMATICS.toChassisSpeeds(getModuleMeasurements());
   }
 
   /**
    * Provides the current un-optimized reference ,'set-point' state of all modules on the drivebase
    * @return Array of module states
    */
+  @AutoLogOutput(key = "Drivebase/Reference")
   public static SwerveModuleState[] getModuleReferences() {
     return MODULES.stream().sequential().map(
         (Module) ->  Module.getReference()
@@ -291,6 +318,7 @@ public class DrivebaseSubsystem extends SubsystemBase {
    * Provides the current controller output state of all modules on the drivebase
    * @return Array of module states
    */
+  @AutoLogOutput(key = "Drivebase/Measurements")
   public static SwerveModuleState[] getModuleMeasurements() {
     return MODULES.stream().sequential().map(
         (Module) ->  Module.getObserved()
@@ -301,6 +329,7 @@ public class DrivebaseSubsystem extends SubsystemBase {
    * Provides the current controller output positions of all modules on the drivebase
    * @return Array of module positions
    */
+  @AutoLogOutput(key = "Drivebase/Positions")
   public static SwerveModulePosition[] getModulePositions() {
     return MODULES.stream().map(
         (Module) ->  Module.getPosition()
