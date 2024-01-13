@@ -20,7 +20,7 @@ import edu.wpi.first.math.Nat;
  */
 public class SwerveDrivebaseSecondOrderKinematics {
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  private Translation2d[] ModuleLocations = new Translation2d[4];
+  private final Translation2d[] ModuleLocations = new Translation2d[4];
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Swerve Drivebase Second Order Kinematics Constructor.

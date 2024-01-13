@@ -44,8 +44,9 @@ import java.util.stream.IntStream;
  * efficiency and providing an API for querying new goal states.<p>
  * 
  * @see SubsystemBase
- * @see {@link org.robotalons.crescendo.RobotContainer RobotContainer} 
+ * @see org.robotalons.crescendo.RobotContainer RobotContainer
  */
+@SuppressWarnings("unused")
 public class DrivebaseSubsystem extends SubsystemBase {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private static final SwerveDrivebaseSecondOrderKinematics SECOND_KINEMATICS;  
@@ -64,8 +65,8 @@ public class DrivebaseSubsystem extends SubsystemBase {
   private DrivebaseSubsystem() {} static {
     Instance = new DrivebaseSubsystem();
     Odometry_Pose = new Pose2d();
-    GYROSCOPE = Devices.GYROSCOPE;    
-    Odometry_Rotation = GYROSCOPE.getYawRotation();   
+    GYROSCOPE = Devices.GYROSCOPE;
+    Odometry_Rotation = GYROSCOPE.getYawRotation();
     Module_Locking = (false);
     Path_Flipped = (false); 
     Current_Time = Timer.getFPGATimestamp();
@@ -123,13 +124,9 @@ public class DrivebaseSubsystem extends SubsystemBase {
       Instance);
       Pathfinding.setPathfinder(new LocalADStarAK());
       PathPlannerLogging.setLogActivePathCallback(
-        (ActivePath) -> {
-          Logger.recordOutput(("Drivebase/Trajectory"), ActivePath.toArray(new Pose2d[ActivePath.size()]));
-      });
+        (ActivePath) -> Logger.recordOutput(("Drivebase/Trajectory"), ActivePath.toArray(new Pose2d[0])));
       PathPlannerLogging.setLogTargetPoseCallback(
-        (TargetPose) -> {
-          Logger.recordOutput(("Drivebase/Reference"), TargetPose);
-      });
+        (TargetPose) -> Logger.recordOutput(("Drivebase/Reference"), TargetPose));
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   public void periodic() {
@@ -241,7 +238,6 @@ public class DrivebaseSubsystem extends SubsystemBase {
    * @param Translation Demand translation in two-dimensional space
    * @param Rotation    Demand rotation in two-dimensional space
    * @param Mode        Type of demand being made
-   * @param OpenLoop    Whether or not the demands 
    */
   public static synchronized void set(final Translation2d Translation, final Rotation2d Rotation, final OrientationMode Mode) {
     switch(Mode) {
@@ -308,8 +304,8 @@ public class DrivebaseSubsystem extends SubsystemBase {
    */
   @AutoLogOutput(key = "Drivebase/Reference")
   public static SwerveModuleState[] getModuleReferences() {
-    return MODULES.stream().sequential().map(
-        (Module) ->  Module.getReference()
+    return MODULES.stream().map(
+      CommonModule::getReference
       ).toArray(SwerveModuleState[]::new);
   }
 
@@ -320,8 +316,8 @@ public class DrivebaseSubsystem extends SubsystemBase {
    */
   @AutoLogOutput(key = "Drivebase/Measurements")
   public static SwerveModuleState[] getModuleMeasurements() {
-    return MODULES.stream().sequential().map(
-        (Module) ->  Module.getObserved()
+    return MODULES.stream().map(
+      CommonModule::getObserved
       ).toArray(SwerveModuleState[]::new);
   }
 
@@ -332,7 +328,7 @@ public class DrivebaseSubsystem extends SubsystemBase {
   @AutoLogOutput(key = "Drivebase/Positions")
   public static SwerveModulePosition[] getModulePositions() {
     return MODULES.stream().map(
-        (Module) ->  Module.getPosition()
+      CommonModule::getPosition
       ).toArray(SwerveModulePosition[]::new);
   }
 

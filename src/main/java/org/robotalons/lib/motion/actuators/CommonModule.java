@@ -18,7 +18,7 @@ import java.util.Objects;
  *
  *
  * <p>Singular unit which assists in the control of motion throughout the competition field, which provides implementation for control of both
- * an azimuth (Rotation) motor, which controls the angle or direction of the module, and an linear (translation) motor which controls the velocity
+ * an azimuth (Rotation) motor, which controls the angle or direction of the module, and a linear (translation) motor which controls the velocity
  * or magnitude of the module.
  * 
  */
@@ -52,7 +52,7 @@ public abstract class CommonModule implements Closeable {
 
   /**
    * Updates this module to cease all motion and stop actuator outputs immediately regardless of
-   * references; but still allows this module to be queried again through it's reference mutators.
+   * references; but still allows this module to be queried again through its reference mutators.
    */
   public abstract void cease();
 
@@ -71,7 +71,7 @@ public abstract class CommonModule implements Closeable {
   public abstract void periodic();
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
   /**
-   * <p>Describes a given {@link CommonModule}'s measured constants that cannot otherwise be derived through it's sensors and hardware.
+   * <p>Describes a given {@link CommonModule}'s measured constants that cannot otherwise be derived through its sensors and hardware.
    */
   public static class Constants {
     public Double POSITION_METERS;    
@@ -124,7 +124,7 @@ public abstract class CommonModule implements Closeable {
   public abstract void set(final ReferenceType Mode);
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
-   * Provides the internal denotation of this module, i.e Front Left = Nat.N1(), Front Right = Nat.N2()
+   * Provides the internal denotation of this module, i.e. Front Left = Nat.N1(), Front Right = Nat.N2()
    * @return Natural number representation of this module
    */
   public Nat<Num> getDenotation() {
