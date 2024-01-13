@@ -12,11 +12,11 @@ import org.littletonrobotics.junction.AutoLog;
  * <p>Loggable input reference to a specific singular unit which assists in the control of motion throughout the competition field.</p>
  */
 @AutoLog
-public class CommonGyroscopeData {
+public class GyroscopeStatusContainer {
 
   public boolean Connected = (false);
   public Rotation2d YawRotation = new Rotation2d();
   public Rotation2d[] PositionDeltas = new Rotation2d[] {};
-  public double Yaw_Velocity_Radians_Second = (0.0);
+  public double YawVelocityRadiansSecond = (0.0);
   
 }

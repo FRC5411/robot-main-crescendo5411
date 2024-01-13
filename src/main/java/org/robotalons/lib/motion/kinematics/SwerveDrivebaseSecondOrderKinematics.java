@@ -3,6 +3,7 @@ package org.robotalons.lib.motion.kinematics;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -11,13 +12,13 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.numbers.N4;
-import edu.wpi.first.math.Nat;
 // ------------------------------------------------[Swerve Drivebase Second Order Kinematics]-----------------------------------------------//
 /**
  * 
  * @author FRC TEAM 4481
  * 
  */
+@Deprecated(forRemoval = true)
 public class SwerveDrivebaseSecondOrderKinematics {
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private final Translation2d[] ModuleLocations = new Translation2d[4];

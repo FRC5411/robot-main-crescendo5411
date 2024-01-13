@@ -1,16 +1,19 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo;
 
-import java.util.List;
-import java.util.Set;
-
-import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
-import org.robotalons.lib.utilities.PilotProfile;
-
-// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+
+import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
+import org.robotalons.lib.utilities.CTREOdometryThread;
+import org.robotalons.lib.utilities.PilotProfile;
+import org.robotalons.lib.utilities.REVOdometryThread;
+
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 // ---------------------------------------------------------------[Constants]---------------------------------------------------------------//
 /**
  *
@@ -37,6 +40,12 @@ public final class Constants {
     public static final Boolean LOGGING_TURBO_MODE = (false);
     public static final Boolean LOGGING_ENABLED = (false);
     public static final Boolean REPLAY_FROM_LOG = (false);
+  }
+
+  public static final class Odometry {
+    public static final Lock ODOMETRY_LOCK = new ReentrantLock();
+    public static final CTREOdometryThread CTRE_ODOMETRY_THREAD = CTREOdometryThread.create(ODOMETRY_LOCK);
+    public static final REVOdometryThread REV_ODOMETRY_THREAD = REVOdometryThread.create(ODOMETRY_LOCK);
   }
 
   public static final class Ports {
@@ -66,8 +75,8 @@ public final class Constants {
       public static final Integer CONTROLLER_PORT = (0);
       public static final CommandXboxController CONTROLLER = new CommandXboxController(CONTROLLER_PORT);
       public static final PilotProfile PROFILE = new PilotProfile(("John Doe"))
-        .addPreference(PreferenceNames.TRANSLATIONAL_X_INPUT, () -> CONTROLLER.getRawAxis((0)))
-        .addPreference(PreferenceNames.TRANSLATIONAL_Y_INPUT, () -> CONTROLLER.getRawAxis((1)))
+        .addPreference(PreferenceNames.TRANSLATIONAL_X_INPUT, () -> CONTROLLER.getRawAxis((1)))
+        .addPreference(PreferenceNames.TRANSLATIONAL_Y_INPUT, () -> -CONTROLLER.getRawAxis((0)))
         .addPreference(PreferenceNames.ORIENTATION_INPUT, () -> CONTROLLER.getRawAxis((4)))
         .addPreference(PreferenceNames.TRANSLATIONAL_X_DEADZONE, () -> (0.1))
         .addPreference(PreferenceNames.TRANSLATIONAL_Y_DEADZONE, () -> (0.1))

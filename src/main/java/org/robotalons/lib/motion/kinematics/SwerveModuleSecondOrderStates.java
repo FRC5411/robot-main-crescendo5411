@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
  * @author FRC TEAM 4481
  * 
  */
+@Deprecated(forRemoval = true)
 public class SwerveModuleSecondOrderStates {
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private SwerveModuleState[] ModuleStates;

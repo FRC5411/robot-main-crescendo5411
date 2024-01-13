@@ -20,7 +20,7 @@ public abstract class OdometryThread<SignalType extends Object> extends Thread i
   protected static final List<Queue<Double>> QUEUES = new ArrayList<>();
   protected final Lock ODOMETRY_LOCK;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  protected static Double OdometryFrequency = (250d);
+  public static Double OdometryFrequency = (250d);
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Odometry Thread Constructor.

@@ -10,7 +10,6 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 
 // ----------------------------------------------------------[CTRE Odometry Thread]----------------------------------------------------------//
@@ -115,11 +114,10 @@ public final class CTREOdometryThread extends OdometryThread<StatusSignal<Double
   /**
    * Creates a new instance of the existing utility class
    * @return Utility class's instance
-   * @throws InstanceAlreadyExistsException When the {@linkplain #create(Lock)} method has already been called prior to most-recent call
    */
-  public static synchronized CTREOdometryThread create(Lock OdometryLock) throws InstanceAlreadyExistsException {
+  public static synchronized CTREOdometryThread create(Lock OdometryLock) {
     if (!java.util.Objects.isNull(Instance)) {
-      throw new InstanceAlreadyExistsException();
+      return Instance;
     }
     Instance = new CTREOdometryThread(OdometryLock);
     return Instance;

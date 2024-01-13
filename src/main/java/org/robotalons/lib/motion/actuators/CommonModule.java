@@ -1,16 +1,13 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.lib.motion.actuators;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.Num;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import java.io.Closeable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 // -------------------------------------------------------------[Common Module]-------------------------------------------------------------//
@@ -21,26 +18,23 @@ import java.util.Objects;
  * an azimuth (Rotation) motor, which controls the angle or direction of the module, and a linear (translation) motor which controls the velocity
  * or magnitude of the module.
  * 
+ * @see CommonModuleDataAutoLogged
+ * 
  */
 public abstract class CommonModule implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  public static final Double ODOMETRY_FREQUENCY = (250d);
-  private final Constants CONSTANTS;  
-  private final Nat<Num> NUMBER;  
+  protected final Constants CONSTANTS;  
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  protected CommonModuleDataAutoLogged LoggedData = new CommonModuleDataAutoLogged();  
-  private List<SwerveModulePosition> PositionDeltas = new ArrayList<>();
-  private SwerveModuleState Reference = null;
-  private Rotation2d Azimuth_Offset = null;
+  protected ModuleStatusContainerAutoLogged Status = new ModuleStatusContainerAutoLogged();  
+  protected SwerveModuleState Reference = null;
+  protected Rotation2d Azimuth_Offset = null;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Common Module Constructor.
    * @param Constants Constants to derive measurements from, which contains 
-   * @param Number   Relative number of module, i.e. Nat.N1() would be equivalent to Front Left, and Nat.N2() to Front Right
    */
-  protected CommonModule(final Constants Constants, final Nat<Num> Number) {
+  protected CommonModule(final Constants Constants) {
     CONSTANTS = Objects.requireNonNull(Constants);
-    NUMBER = Objects.requireNonNull(Number);
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
 
@@ -74,9 +68,12 @@ public abstract class CommonModule implements Closeable {
    * <p>Describes a given {@link CommonModule}'s measured constants that cannot otherwise be derived through its sensors and hardware.
    */
   public static class Constants {
-    public Double POSITION_METERS;    
-    public Double WHEEL_RADIUS_METERS;
-    public Double AZIMUTH_ENCODER_OFFSET;
+    public Double LINEAR_GEAR_RATIO = (1d);
+    public Double ROTATION_GEAR_RATIO = (1d);
+    public Double POSITION_METERS = (0d);
+    public Double WHEEL_RADIUS_METERS = (1d);
+    public Double AZIMUTH_ENCODER_OFFSET = (0d);
+    public Integer NUMBER;
     
   }    
 
@@ -109,34 +106,23 @@ public abstract class CommonModule implements Closeable {
   public abstract SwerveModuleState set(final SwerveModuleState Reference);
 
   /**
-   * Mutates the module controller's current 'set-point' or reference {@link SwerveModuleState state}
-   * @param Reference Module's new Goal or 'set-point' reference
-   * @param Rotation  Module's turning speed 'set-point'
-   * @return An optimized version of the reference
-   */
-  public abstract SwerveModuleState set(final SwerveModuleState Reference, final Double Rotation);
-
-
-  /**
    * Mutates the module controller's current mode of operation and how it should identify and calculate reference 'set-points'
    * @param Mode Mode of Module control
    */
   public abstract void set(final ReferenceType Mode);
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
-   * Provides the internal denotation of this module, i.e. Front Left = Nat.N1(), Front Right = Nat.N2()
+   * Provides the internal denotation of this module, i.e. Front Left = 0, Front Right = 1
    * @return Natural number representation of this module
    */
-  public Nat<Num> getDenotation() {
-    return NUMBER;
+  public Integer getDenotation() {
+    return CONSTANTS.NUMBER;
   }
   /**
    * Provides the deltas, or captured data points from odometry from the most recent {@link #periodic()} cycle.
    * @return List of measured module positions
    */
-  public List<SwerveModulePosition> getPositionDeltas() {
-    return PositionDeltas;
-  }
+  public abstract List<SwerveModulePosition> getPositionDeltas();
 
   /**
    * Provides the most-recent cycle observed (measured) position of this module
@@ -144,10 +130,10 @@ public abstract class CommonModule implements Closeable {
    */
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(
-      LoggedData.Linear_Position_Radians * CONSTANTS.WHEEL_RADIUS_METERS,
+      Status.LinearPositionRadians * CONSTANTS.WHEEL_RADIUS_METERS,
       (Objects.isNull(Azimuth_Offset))? 
         (new Rotation2d()):
-        (LoggedData.Azimuth_Relative_Position.plus(Azimuth_Offset))
+        (Status.RotationalRelativePosition.plus(Azimuth_Offset))
       );
   }
 
@@ -156,7 +142,7 @@ public abstract class CommonModule implements Closeable {
    * @return Reference module state
    */
   public SwerveModuleState getOptimized() {
-    return SwerveModuleState.optimize(Reference, LoggedData.Azimuth_Relative_Position);
+    return SwerveModuleState.optimize(Reference, Status.RotationalRelativePosition);
   }
 
   /**
@@ -173,9 +159,9 @@ public abstract class CommonModule implements Closeable {
    */
   public SwerveModuleState getObserved() {
     return new SwerveModuleState(
-    LoggedData.Linear_Velocity_Radians_Second * CONSTANTS.WHEEL_RADIUS_METERS, 
+      Status.LinearVelocityRadiansSecond * CONSTANTS.WHEEL_RADIUS_METERS, 
     (Objects.isNull(Azimuth_Offset))? 
         (new Rotation2d()):
-        (LoggedData.Azimuth_Relative_Position.plus(Azimuth_Offset)));
+        (Status.RotationalRelativePosition.plus(Azimuth_Offset)));
   }
 }

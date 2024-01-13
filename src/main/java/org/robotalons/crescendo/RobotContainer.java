@@ -1,16 +1,16 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+
 import org.robotalons.crescendo.Constants.Profiles;
 import org.robotalons.crescendo.Constants.Profiles.PreferenceNames;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem.OrientationMode;
 import org.robotalons.lib.utilities.PilotProfile;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 
@@ -31,11 +31,13 @@ public final class RobotContainer {
         Constants.Subsystems.DRIVEBASE_SUBSYSTEM.setDefaultCommand(
       new InstantCommand(() ->
         DrivebaseSubsystem.set(
-          new Translation2d(applyInputSquare(MathUtil.applyDeadband(-(Double) DRIVEBASE_PILOT.getPreference(PreferenceNames.TRANSLATIONAL_X_INPUT),
+          new Translation2d(
+                applyInputSquare(MathUtil.applyDeadband(-(Double) DRIVEBASE_PILOT.getPreference(PreferenceNames.TRANSLATIONAL_X_INPUT),
               (Double) DRIVEBASE_PILOT.getPreference(PreferenceNames.TRANSLATIONAL_X_DEADZONE))),
-                          applyInputSquare(MathUtil.applyDeadband(-(Double) DRIVEBASE_PILOT.getPreference(PreferenceNames.TRANSLATIONAL_Y_INPUT),
+                applyInputSquare(MathUtil.applyDeadband(-(Double) DRIVEBASE_PILOT.getPreference(PreferenceNames.TRANSLATIONAL_Y_INPUT),
               (Double) DRIVEBASE_PILOT.getPreference(PreferenceNames.TRANSLATIONAL_Y_DEADZONE)))),
-          new Rotation2d(applyInputSquare(MathUtil.applyDeadband(-(Double) DRIVEBASE_PILOT.getPreference(PreferenceNames.ORIENTATION_INPUT),
+          new Rotation2d(
+                applyInputSquare(MathUtil.applyDeadband(-(Double) DRIVEBASE_PILOT.getPreference(PreferenceNames.ORIENTATION_INPUT),
               (Double) DRIVEBASE_PILOT.getPreference(PreferenceNames.ORIENTATION_DEADZONE)))),
           OrientationMode.ROBOT_ORIENTED), 
           DrivebaseSubsystem.getInstance()

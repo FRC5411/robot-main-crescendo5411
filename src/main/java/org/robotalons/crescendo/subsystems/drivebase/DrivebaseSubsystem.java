@@ -1,6 +1,8 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.drivebase;
-
+import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Nat;
+// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -27,10 +29,10 @@ import org.robotalons.crescendo.subsystems.drivebase.Constants.Devices;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Objects;
 import org.robotalons.lib.motion.actuators.CommonModule;
-import org.robotalons.lib.motion.kinematics.SwerveDrivebaseSecondOrderKinematics;
 import org.robotalons.lib.motion.pathfinding.LocalADStarAK;
 import org.robotalons.lib.motion.sensors.CommonGyroscope;
 
+import java.io.Closeable;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
@@ -46,10 +48,8 @@ import java.util.stream.IntStream;
  * @see SubsystemBase
  * @see org.robotalons.crescendo.RobotContainer RobotContainer
  */
-@SuppressWarnings("unused")
-public class DrivebaseSubsystem extends SubsystemBase {
+public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  private static final SwerveDrivebaseSecondOrderKinematics SECOND_KINEMATICS;  
   private static final SwerveDrivePoseEstimator POSE_ESTIMATOR;
   private static final SwerveDriveKinematics KINEMATICS;
   private static final CommonGyroscope GYROSCOPE;
@@ -65,7 +65,7 @@ public class DrivebaseSubsystem extends SubsystemBase {
   private DrivebaseSubsystem() {} static {
     Instance = new DrivebaseSubsystem();
     Odometry_Pose = new Pose2d();
-    GYROSCOPE = Devices.GYROSCOPE;
+    GYROSCOPE = new CTREGyroscope(Constants.Measurements.PHOENIX_DRIVE);
     Odometry_Rotation = GYROSCOPE.getYawRotation();
     Module_Locking = (false);
     Path_Flipped = (false); 
@@ -77,15 +77,6 @@ public class DrivebaseSubsystem extends SubsystemBase {
       Devices.REAR_RIGHT_MODULE
     );    
     KINEMATICS = new SwerveDriveKinematics(
-      new Translation2d( (Constants.Measurements.ROBOT_WIDTH_METERS)  / (2), 
-                         (Constants.Measurements.ROBOT_LENGTH_METERS) / (2)),
-      new Translation2d( (Constants.Measurements.ROBOT_WIDTH_METERS)  / (2),
-                        -(Constants.Measurements.ROBOT_LENGTH_METERS) / (2)),
-      new Translation2d(-(Constants.Measurements.ROBOT_WIDTH_METERS)  / (2),
-                         (Constants.Measurements.ROBOT_LENGTH_METERS) / (2)),
-      new Translation2d(-(Constants.Measurements.ROBOT_WIDTH_METERS)  / (2),
-                        -(Constants.Measurements.ROBOT_LENGTH_METERS) / (2)));
-    SECOND_KINEMATICS = new SwerveDrivebaseSecondOrderKinematics(
       new Translation2d( (Constants.Measurements.ROBOT_WIDTH_METERS)  / (2), 
                          (Constants.Measurements.ROBOT_LENGTH_METERS) / (2)),
       new Translation2d( (Constants.Measurements.ROBOT_WIDTH_METERS)  / (2),
@@ -129,7 +120,8 @@ public class DrivebaseSubsystem extends SubsystemBase {
         (TargetPose) -> Logger.recordOutput(("Drivebase/Reference"), TargetPose));
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
-  public void periodic() {
+  public synchronized void periodic() {
+    Logger.recordOutput(("Drivebase/Pose"), getPose());
     Objects.ODOMETRY_LOCKER.lock();
     MODULES.forEach(CommonModule::update);
     GYROSCOPE.update();    
@@ -164,13 +156,17 @@ public class DrivebaseSubsystem extends SubsystemBase {
       POSE_ESTIMATOR.addVisionMeasurement(
         Odometry_Pose,
         LocalizedTime,
-        (null)         //TODO: AUTOMATION TEAM
+        MatBuilder.fill(
+          Nat.N3(),
+          Nat.N1(),
+          0,0,0 //TODO: AUTOMATION TEAM
+        ) 
       );
-      POSE_ESTIMATOR.addVisionMeasurement(
-        (null),        //TODO: AUTOMATION TEAM
-        Timer.getFPGATimestamp(), 
-        (null)         //TODO: AUTOMATION TEAM
-      );
+      // POSE_ESTIMATOR.addVisionMeasurement(
+      //   (null),         //TODO: AUTOMATION TEAM
+      //   Timer.getFPGATimestamp(), 
+      //   (null)          //TODO: AUTOMATION TEAM
+      // );
     });
   }
   
@@ -195,6 +191,7 @@ public class DrivebaseSubsystem extends SubsystemBase {
    * Closes this instance and all held resources immediately.
    */
   public synchronized void close() {
+    MODULES.forEach(CommonModule::close);
     POSE_ESTIMATOR.resetPosition(
       GYROSCOPE.getYawRotation(),
       getModulePositions(),
@@ -215,9 +212,7 @@ public class DrivebaseSubsystem extends SubsystemBase {
    */
   public static synchronized void set(final ChassisSpeeds Demand) {
     var DiscretizedChassisSpeeds = ChassisSpeeds.discretize(Demand, discretize());
-    var ReferenceSecondOrderStates = SECOND_KINEMATICS.toSwerveModuleStates(DiscretizedChassisSpeeds, GYROSCOPE.getYawRotation());
-    var ReferenceStates = ReferenceSecondOrderStates.getSwerveModuleStates();
-    var ReferenceSpeeds = ReferenceSecondOrderStates.getModuleTurnSpeeds();
+    var ReferenceStates = KINEMATICS.toSwerveModuleStates(DiscretizedChassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
       ReferenceStates, 
       DiscretizedChassisSpeeds, 
@@ -229,7 +224,7 @@ public class DrivebaseSubsystem extends SubsystemBase {
       ("Drivebase/Optimized"),
       IntStream.range((0), MODULES.size()).boxed().map(
         (Index) -> 
-          MODULES.get(Index).set(ReferenceStates[Index],ReferenceSpeeds[Index]))
+          MODULES.get(Index).set(ReferenceStates[Index]))
         .toArray(SwerveModuleState[]::new));
   }
 

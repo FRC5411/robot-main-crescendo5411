@@ -14,18 +14,18 @@ import org.littletonrobotics.junction.AutoLog;
  * @see CommonModule
  */
 @AutoLog
-public class CommonModuleData {
-  public double Linear_Position_Radians = 0d;
-  public double Linear_Velocity_Radians_Second = 0d;
-  public double Linear_Applied_Voltage = 0d;
-  public double[] Linear_Current_Amperage = new double[] {};
+public class ModuleStatusContainer {
+  public double LinearPositionRadians = 0d;
+  public double LinearVelocityRadiansSecond = 0d;
+  public double LinearAppliedVoltage = 0d;
+  public double[] LinearCurrentAmperage = new double[] {};
 
-  public Rotation2d Azimuth_Absolute_Position = new Rotation2d();
-  public Rotation2d Azimuth_Relative_Position = new Rotation2d();
-  public double Azimuth_Velocity_Radians_Second = 0d;
-  public double Azimuth_Applied_Voltage = 0d;
-  public double[] Azimuth_Applied_Amperage = new double[] {};
+  public Rotation2d RotationalAbsolutePosition = new Rotation2d();
+  public Rotation2d RotationalRelativePosition = new Rotation2d();
+  public double RotationalVelocityRadiansSecond = 0d;
+  public double RotationalAppliedVoltage = 0d;
+  public double[] RotationalAppliedAmperage = new double[] {};
 
-  public double[] Odometry_Linear_Positions_Radians = new double[] {};
-  public Rotation2d[] Odometry_Azimuth_Positions = new Rotation2d[] {};
+  public double[] OdometryLinearPositionsRadians = new double[] {};
+  public Rotation2d[] OdometryAzimuthPositions = new Rotation2d[] {};
 }
