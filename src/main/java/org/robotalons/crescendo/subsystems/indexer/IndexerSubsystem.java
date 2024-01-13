@@ -21,6 +21,7 @@ public class IndexerSubsystem extends SubsystemBase {
   //private static final InfraredReceiver ReceiverLeft;  //<---- This class does not exist, is it a placeholder? @SpiderFace
   //private static final InfraredReceiver ReceiverRight;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
+  private static IndexerSubsystem Instance;
   private static Boolean ContainsNote;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private IndexerSubsystem() {} static {
@@ -44,5 +45,16 @@ public class IndexerSubsystem extends SubsystemBase {
    */
   public Boolean getHoldingNote() {
     return ContainsNote;
+  }
+
+  /**
+   * Retrieves the existing instance of this static utility class
+   * @return Utility class's instance
+   */
+  public static synchronized IndexerSubsystem getInstance() {
+      if (java.util.Objects.isNull(Instance)) {
+        Instance = new IndexerSubsystem();
+      }
+      return Instance;
   }
 }
