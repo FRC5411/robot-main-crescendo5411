@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
-package org.robotalons.lib.motion.utilities;
+package org.robotalons.lib.utilities;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;

@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
-package org.robotalons.lib.motion.utilities;
+package org.robotalons.lib.utilities;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import java.io.Closeable;
 import java.util.ArrayList;

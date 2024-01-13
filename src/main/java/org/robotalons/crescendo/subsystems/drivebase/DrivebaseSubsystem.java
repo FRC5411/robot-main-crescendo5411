@@ -243,7 +243,7 @@ public class DrivebaseSubsystem extends SubsystemBase {
    * @param Mode        Type of demand being made
    * @param OpenLoop    Whether or not the demands 
    */
-  public static synchronized void set(final Translation2d Translation, final Rotation2d Rotation, final OrientationMode Mode, final Boolean OpenLoop) {
+  public static synchronized void set(final Translation2d Translation, final Rotation2d Rotation, final OrientationMode Mode) {
     switch(Mode) {
       case OBJECT_ORIENTED:
         //TODO: AUTOMATION TEAM
