@@ -58,6 +58,7 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
   private static Rotation2d Odometry_Rotation;
   private static DrivebaseSubsystem Instance;
   private static Pose2d Odometry_Pose;  
+  private static OrientationMode Control_Mode;
   private static Boolean Module_Locking;      
   private static Boolean Path_Flipped;  
   private static Double Current_Time;
@@ -159,7 +160,7 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
         MatBuilder.fill(
           Nat.N3(),
           Nat.N1(),
-          0,0,0 //TODO: AUTOMATION TEAM
+          0,0,0    //TODO: AUTOMATION TEAM
         ) 
       );
       // POSE_ESTIMATOR.addVisionMeasurement(
@@ -197,6 +198,25 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
       getModulePositions(),
       new Pose2d()
     );
+  }
+
+  public static synchronized void toggleOrientationType() {
+    switch (Control_Mode) {
+      case ROBOT_ORIENTED:
+        Control_Mode = OrientationMode.FIELD_ORIENTED;
+      case FIELD_ORIENTED:
+        Control_Mode = OrientationMode.OBJECT_ORIENTED;
+      case OBJECT_ORIENTED:
+        Control_Mode = OrientationMode.ROBOT_ORIENTED;
+    }
+  }
+
+  public static synchronized void toggleModuleLocking() {
+    Module_Locking = !Module_Locking;
+  }
+
+  public static synchronized void togglePathFlipped() {
+    Path_Flipped = !Path_Flipped;
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
 
@@ -283,6 +303,15 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
   @AutoLogOutput(key = "Drivebase/Pose")
   public static Pose2d getPose() {
     return POSE_ESTIMATOR.getEstimatedPosition();
+  }
+
+  /**
+   * Provides the current position of the drivebase in space
+   * @return Pose2d of Robot drivebase
+   */
+  @AutoLogOutput(key = "Drivebase/Rotation")
+  public static Rotation2d getRotation() {
+    return getPose().getRotation();
   }
 
   /**

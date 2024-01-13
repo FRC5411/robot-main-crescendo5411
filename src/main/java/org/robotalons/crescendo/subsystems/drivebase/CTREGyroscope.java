@@ -40,12 +40,11 @@ public class CTREGyroscope extends CommonGyroscope {
     YAW_ROTATION.setUpdateFrequency(OdometryThread.OdometryFrequency);
     YAW_VELOCITY.setUpdateFrequency((100.0));
     if (PhoenixDrive) {
-      YAW_ROTATION_QUEUE =
-      org.robotalons.crescendo.Constants.Odometry.CTRE_ODOMETRY_THREAD.register(GYROSCOPE.getYaw());
+      YAW_ROTATION_QUEUE = org.robotalons.crescendo.Constants.Odometry.CTRE_ODOMETRY_THREAD
+        .register(GYROSCOPE.getYaw());
     } else {
-      YAW_ROTATION_QUEUE =
-          org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD
-              .register(() -> GYROSCOPE.getYaw().getValue());
+      YAW_ROTATION_QUEUE = org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD
+        .register(() -> GYROSCOPE.getYaw().getValue());
     }
 
   }

@@ -67,8 +67,9 @@ public final class Constants {
     }
 
     public static final class KeybindingNames {
-      public static final String LOCKING_TOGGLE_TRIGGER = ("LOCKING_ENABLED_TRIGGER");
-      public static final String FIELD_ORIENTED_TOGGLE = ("FIELD_ORIENTED_TOGGLE");
+      public static final String MODULE_LOCKING_TOGGLE = ("LOCKING_ENABLED_TRIGGER");
+      public static final String ORIENTATION_TOGGLE = ("ORIENTATION_TOGGLE");
+      public static final String PATHFINDING_FLIP_TOGGLE = ("PATHFINDING_FLIP_TOGGLE");
     }
 
     public static final class John {
@@ -81,8 +82,9 @@ public final class Constants {
         .addPreference(PreferenceNames.TRANSLATIONAL_X_DEADZONE, () -> (0.1))
         .addPreference(PreferenceNames.TRANSLATIONAL_Y_DEADZONE, () -> (0.1))
         .addPreference(PreferenceNames.ORIENTATION_DEADZONE, () -> (0.1))
-        .addKeybinding(KeybindingNames.LOCKING_TOGGLE_TRIGGER, CONTROLLER.a())
-        .addKeybinding(KeybindingNames.FIELD_ORIENTED_TOGGLE, CONTROLLER.b());
+        .addKeybinding(KeybindingNames.MODULE_LOCKING_TOGGLE, CONTROLLER.a())
+        .addKeybinding(KeybindingNames.ORIENTATION_TOGGLE, CONTROLLER.b())
+        .addKeybinding(KeybindingNames.PATHFINDING_FLIP_TOGGLE, CONTROLLER.x());
     }
   }
 }
