@@ -50,12 +50,13 @@ public final class Constants {
 
   public static final class Ports {
     public static final Integer POWER_DISTRIBUTION_HUB = (0);
-    public static final Integer PATHPLANNER_SERVER = (6969);
   }
 
   public static final class Profiles { 
 
-    public static final List<PilotProfile> PILOT_PROFILES = List.of(John.PROFILE);
+    public static final List<PilotProfile> PILOT_PROFILES = List.of(
+      Example.PROFILE
+    );
 
     public static final class PreferenceNames {
       public static final String TRANSLATIONAL_X_INPUT = ("TRANSLATION_X_INPUT");
@@ -72,12 +73,12 @@ public final class Constants {
       public static final String PATHFINDING_FLIP_TOGGLE = ("PATHFINDING_FLIP_TOGGLE");
     }
 
-    public static final class John {
+    public static final class Example {
       public static final Integer CONTROLLER_PORT = (0);
       public static final CommandXboxController CONTROLLER = new CommandXboxController(CONTROLLER_PORT);
       public static final PilotProfile PROFILE = new PilotProfile(("John Doe"))
         .addPreference(PreferenceNames.TRANSLATIONAL_X_INPUT, () -> CONTROLLER.getRawAxis((1)))
-        .addPreference(PreferenceNames.TRANSLATIONAL_Y_INPUT, () -> -CONTROLLER.getRawAxis((0)))
+        .addPreference(PreferenceNames.TRANSLATIONAL_Y_INPUT, () -> CONTROLLER.getRawAxis((0)))
         .addPreference(PreferenceNames.ORIENTATION_INPUT, () -> CONTROLLER.getRawAxis((4)))
         .addPreference(PreferenceNames.TRANSLATIONAL_X_DEADZONE, () -> (0.1))
         .addPreference(PreferenceNames.TRANSLATIONAL_Y_DEADZONE, () -> (0.1))

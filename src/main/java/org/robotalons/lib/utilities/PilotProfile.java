@@ -1,5 +1,7 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.lib.utilities;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -16,7 +18,7 @@ import java.util.function.Supplier;
  * 
  * @author Cody Washington (@Jelatinone) 
  */
-public final class PilotProfile {
+public final class PilotProfile implements Sendable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private final Map<String,Supplier<Object>> PREFERENCES = new HashMap<>();  
   private final Map<String,Trigger> KEYBINDINGS = new HashMap<>();
@@ -29,6 +31,17 @@ public final class PilotProfile {
   public PilotProfile(final String Name) {
     PILOT_NAME = Name;
   }  
+  // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
+
+  @Override
+  public void initSendable(final SendableBuilder Builder) {
+    PREFERENCES.forEach((Attribute,Value) -> {
+      Builder.addStringProperty(Attribute, () -> Value.toString(), (null));
+    });
+    KEYBINDINGS.forEach((Attribute,Value) -> {
+      Builder.addStringProperty(Attribute, () -> Value.toString(), (null));
+    });
+  }
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
   /**
    * Adds a new keybinding to the pilot's keybinding mapping

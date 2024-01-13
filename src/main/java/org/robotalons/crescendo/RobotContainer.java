@@ -4,6 +4,7 @@ package org.robotalons.crescendo;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
@@ -30,15 +31,20 @@ import com.pathplanner.lib.auto.AutoBuilder;
 public final class RobotContainer {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   public static final LoggedDashboardChooser<Command> CommandSelector;
+  public static final SendableChooser<PilotProfile> DrivebasePilot;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static RobotContainer Instance = (null);
-  private static PilotProfile DrivebasePilot = Profiles.John.PROFILE;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private RobotContainer() {} static {
     CommandSelector = new LoggedDashboardChooser<>(("Autonomous Command Selector"), AutoBuilder.buildAutoChooser());
-    configure();
+    DrivebasePilot = new SendableChooser<PilotProfile>();
+    Profiles.PILOT_PROFILES.forEach((Profile) -> {
+      DrivebasePilot.addOption(Profile.getName(), Profile);
+    });
+    DrivebasePilot.setDefaultOption(Profiles.PILOT_PROFILES.get((0)).getName(), Profiles.PILOT_PROFILES.get((0)));
+    configureDefaultCommands();
+    configurePilotKeybinds();
   }
-
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   /**
    * Applies squared inputs to a given input, while retaining the sign
@@ -49,27 +55,36 @@ public final class RobotContainer {
     return Math.copySign(Input * Input, Input);
   }
 
-  private static void configure() {
+  /**
+   * Configures subsystem default commands
+   */
+  public static void configureDefaultCommands() {
     Constants.Subsystems.DRIVEBASE_SUBSYSTEM.setDefaultCommand(
       new InstantCommand(() ->
       DrivebaseSubsystem.set(
         new Translation2d(
-          applyInputSquare(MathUtil.applyDeadband(-(Double) DrivebasePilot.getPreference(PreferenceNames.TRANSLATIONAL_X_INPUT),
-        (Double) DrivebasePilot.getPreference(PreferenceNames.TRANSLATIONAL_X_DEADZONE))),
-          applyInputSquare(MathUtil.applyDeadband(-(Double) DrivebasePilot.getPreference(PreferenceNames.TRANSLATIONAL_Y_INPUT),
-        (Double) DrivebasePilot.getPreference(PreferenceNames.TRANSLATIONAL_Y_DEADZONE)))),
+          applyInputSquare(MathUtil.applyDeadband(-(Double) DrivebasePilot.getSelected().getPreference(PreferenceNames.TRANSLATIONAL_X_INPUT),
+        (Double) DrivebasePilot.getSelected().getPreference(PreferenceNames.TRANSLATIONAL_X_DEADZONE))),
+          applyInputSquare(MathUtil.applyDeadband(-(Double) DrivebasePilot.getSelected().getPreference(PreferenceNames.TRANSLATIONAL_Y_INPUT),
+        (Double) DrivebasePilot.getSelected().getPreference(PreferenceNames.TRANSLATIONAL_Y_DEADZONE)))),
         new Rotation2d(
-          applyInputSquare(MathUtil.applyDeadband(-(Double) DrivebasePilot.getPreference(PreferenceNames.ORIENTATION_INPUT),
-        (Double) DrivebasePilot.getPreference(PreferenceNames.ORIENTATION_DEADZONE)))),
+          applyInputSquare(MathUtil.applyDeadband(-(Double) DrivebasePilot.getSelected().getPreference(PreferenceNames.ORIENTATION_INPUT),
+        (Double) DrivebasePilot.getSelected().getPreference(PreferenceNames.ORIENTATION_DEADZONE)))),
         OrientationMode.ROBOT_ORIENTED), 
         DrivebaseSubsystem.getInstance()
     ));
-    DrivebasePilot.getKeybinding(KeybindingNames.ORIENTATION_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleOrientationType, DrivebaseSubsystem.getInstance()));
-    DrivebasePilot.getKeybinding(KeybindingNames.MODULE_LOCKING_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleModuleLocking, DrivebaseSubsystem.getInstance()));
-    DrivebasePilot.getKeybinding(KeybindingNames.PATHFINDING_FLIP_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::togglePathFlipped, DrivebaseSubsystem.getInstance()));
-  }  
-  // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
+  }
 
+  /**
+   * Configures the bindings, and preferences for each subsystem driver
+   */
+  private static void configurePilotKeybinds() {
+    synchronized (DrivebasePilot) {
+      DrivebasePilot.getSelected().getKeybinding(KeybindingNames.ORIENTATION_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleOrientationType, DrivebaseSubsystem.getInstance()));
+      DrivebasePilot.getSelected().getKeybinding(KeybindingNames.MODULE_LOCKING_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleModuleLocking, DrivebaseSubsystem.getInstance()));
+      DrivebasePilot.getSelected().getKeybinding(KeybindingNames.PATHFINDING_FLIP_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::togglePathFlipped, DrivebaseSubsystem.getInstance()));
+    }
+  }  
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Retrieves the existing instance of this static utility class
