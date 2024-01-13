@@ -1,7 +1,6 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
-import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.Threads;
@@ -19,6 +18,7 @@ import org.littletonrobotics.junction.inputs.LoggedPowerDistribution;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import org.littletonrobotics.urcl.URCL;
 import org.robotalons.crescendo.Constants.Logging;
 import org.robotalons.crescendo.Constants.Ports;
 import org.robotalons.crescendo.Constants.Subsystems;
@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
-
 // -----------------------------------------------------------------[Robot]----------------------------------------------------------------//
 /**
  *
@@ -41,26 +40,25 @@ import java.util.stream.Stream;
  */
 public final class Robot extends LoggedRobot {
     // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-    private static final RepeatCommand COMMAND_LOGGER = new RepeatCommand(new InstantCommand(() -> {
-      if(Logging.LOGGING_ENABLED) {
-        Threads.setCurrentThreadPriority((true), (99));
-        List<String> ClientNames, ClientAddresses;
-        ClientNames = new ArrayList<>(); ClientAddresses = new ArrayList<>();
-        Stream.of(NetworkTableInstance.getDefault().getConnections()).forEach((Connection) -> {
-          ClientNames.add(Connection.remote_id);
-          ClientAddresses.add(Connection.remote_ip);
-        });
-        Logger.recordOutput(("NTClient/Names"), ClientNames.toArray(String[]::new));
-        Logger.recordOutput(("NTClient/Addresses"), ClientAddresses.toArray(String[]::new));
-        Threads.setCurrentThreadPriority((true), (20));      
-      }
-    }));
+    private static final RepeatCommand COMMAND_LOGGER;
     // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
     private static Robot INSTANCE = (null);
-
     // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
     private Robot() {} static {
-      
+      COMMAND_LOGGER = new RepeatCommand(new InstantCommand(() -> {
+        if(Logging.LOGGING_ENABLED) {
+          Threads.setCurrentThreadPriority((true), (99));
+          List<String> ClientNames, ClientAddresses;
+          ClientNames = new ArrayList<>(); ClientAddresses = new ArrayList<>();
+          Stream.of(NetworkTableInstance.getDefault().getConnections()).forEach((Connection) -> {
+            ClientNames.add(Connection.remote_id);
+            ClientAddresses.add(Connection.remote_ip);
+          });
+          Logger.recordOutput(("NTClient/Names"), ClientNames.toArray(String[]::new));
+          Logger.recordOutput(("NTClient/Addresses"), ClientAddresses.toArray(String[]::new));
+          Threads.setCurrentThreadPriority((true), (20));      
+        }
+      }));
     }
     // ---------------------------------------------------------------[Robot]-----------------------------------------------------------------//
     @Override
@@ -91,10 +89,10 @@ public final class Robot extends LoggedRobot {
       } else {
         if(Logging.REPLAY_FROM_LOG) {
           setUseTiming(Logging.LOGGING_TURBO_MODE);
-          String logPath = LogFileUtil.findReplayLog();
-          Logger.setReplaySource(new WPILOGReader(logPath));
+          String LogPath = LogFileUtil.findReplayLog();
+          Logger.setReplaySource(new WPILOGReader(LogPath));
           if(Logging.LOGGING_ENABLED) {
-            Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, ("_sim"))));
+            Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(LogPath, ("_sim"))));
           }
           } else {
             if(Logging.LOGGING_ENABLED) {
@@ -103,28 +101,27 @@ public final class Robot extends LoggedRobot {
             Logger.addDataReceiver(new NT4Publisher());        
           }
       }
-      HashMap<String,Integer> CommandInstanceCount = new HashMap<>();
-      BiConsumer<Command, Boolean> CommandFunctionLogger = 
+      HashMap<String,Integer> CommandInstances = new HashMap<>();
+      BiConsumer<Command, Boolean> CommandLogger = 
         (Command Operation, Boolean Active) -> new Thread(() -> {
           String OperationName = Operation.getName();
-          int Count = CommandInstanceCount.getOrDefault(OperationName, (0)) + ((Active)? (1): (-1));
-          CommandInstanceCount.put(OperationName,Count);
+          int Count = CommandInstances.getOrDefault(OperationName, (0)) + ((Active)? (1): (-1));
+          CommandInstances.put(OperationName,Count);
           Logger.recordOutput("UniqueOperations/" + OperationName + "_" + Integer.toHexString(Operation.hashCode()), Active);
           Logger.recordOutput("Operations/" + OperationName, Count > (0));
         });
       CommandScheduler.getInstance().onCommandInitialize(
-        (Command Command) -> CommandFunctionLogger.accept(Command, (true)));
+        (Command Command) -> CommandLogger.accept(Command, (true)));
       CommandScheduler.getInstance().onCommandInterrupt(
-        (Command Command) -> CommandFunctionLogger.accept(Command, (false)));
+        (Command Command) -> CommandLogger.accept(Command, (false)));
       CommandScheduler.getInstance().onCommandFinish(
-        (Command Command) -> CommandFunctionLogger.accept(Command, (false)));    
+        (Command Command) -> CommandLogger.accept(Command, (false)));    
+      Logger.registerURCL(URCL.startExternal());
       Logger.start();
-      for (int ForwardingPort = (5800); ForwardingPort <= (5805); ForwardingPort++) {
-        PortForwarder.add(ForwardingPort, ("limelight.local"), ForwardingPort);
-      }
       RobotContainer.getInstance();
       COMMAND_LOGGER.schedule();    
       Shuffleboard.startRecording();
+
     }
 
     @Override
