@@ -31,17 +31,25 @@ import com.pathplanner.lib.auto.AutoBuilder;
 public final class RobotContainer {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   public static final LoggedDashboardChooser<Command> CommandSelector;
-  public static final SendableChooser<PilotProfile> DrivebasePilot;
+  public static final LoggedDashboardChooser<PilotProfile> DrivebasePilotSelector;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static RobotContainer Instance = (null);
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private RobotContainer() {} static {
     CommandSelector = new LoggedDashboardChooser<>(("Autonomous Command Selector"), AutoBuilder.buildAutoChooser());
-    DrivebasePilot = new SendableChooser<PilotProfile>();
+    final var SendableDrivebasePilotChooser = new SendableChooser<PilotProfile>();
     Profiles.PILOT_PROFILES.forEach((Profile) -> {
-      DrivebasePilot.addOption(Profile.getName(), Profile);
+      SendableDrivebasePilotChooser.addOption(Profile.getName(), Profile);
     });
-    DrivebasePilot.setDefaultOption(Profiles.PILOT_PROFILES.get((0)).getName(), Profiles.PILOT_PROFILES.get((0)));
+    SendableDrivebasePilotChooser.setDefaultOption(Profiles.PILOT_PROFILES.get((0)).getName(), Profiles.PILOT_PROFILES.get((0)));
+    DrivebasePilotSelector = new LoggedDashboardChooser<>(("Drivebase Pilot Selector"), SendableDrivebasePilotChooser);
+    try {
+      var Field = DrivebasePilotSelector.getClass().getDeclaredField(("selectedValue"));
+      Field.setAccessible((true));
+      try {
+        Field.set(DrivebasePilotSelector,Profiles.PILOT_PROFILES.get((0)).getName());
+      } catch (final IllegalAccessException Exception) {}
+    } catch (final NoSuchFieldException Exception) {}
     configureDefaultCommands();
     configurePilotKeybinds();
   }
@@ -63,13 +71,13 @@ public final class RobotContainer {
       new InstantCommand(() ->
       DrivebaseSubsystem.set(
         new Translation2d(
-          applyInputSquare(MathUtil.applyDeadband(-(Double) DrivebasePilot.getSelected().getPreference(PreferenceNames.TRANSLATIONAL_X_INPUT),
-        (Double) DrivebasePilot.getSelected().getPreference(PreferenceNames.TRANSLATIONAL_X_DEADZONE))),
-          applyInputSquare(MathUtil.applyDeadband(-(Double) DrivebasePilot.getSelected().getPreference(PreferenceNames.TRANSLATIONAL_Y_INPUT),
-        (Double) DrivebasePilot.getSelected().getPreference(PreferenceNames.TRANSLATIONAL_Y_DEADZONE)))),
+          applyInputSquare(MathUtil.applyDeadband(-(Double) DrivebasePilotSelector.get().getPreference(PreferenceNames.TRANSLATIONAL_X_INPUT),
+        (Double) DrivebasePilotSelector.get().getPreference(PreferenceNames.TRANSLATIONAL_X_DEADZONE))),
+          applyInputSquare(MathUtil.applyDeadband(-(Double) DrivebasePilotSelector.get().getPreference(PreferenceNames.TRANSLATIONAL_Y_INPUT),
+        (Double) DrivebasePilotSelector.get().getPreference(PreferenceNames.TRANSLATIONAL_Y_DEADZONE)))),
         new Rotation2d(
-          applyInputSquare(MathUtil.applyDeadband(-(Double) DrivebasePilot.getSelected().getPreference(PreferenceNames.ORIENTATION_INPUT),
-        (Double) DrivebasePilot.getSelected().getPreference(PreferenceNames.ORIENTATION_DEADZONE)))),
+          applyInputSquare(MathUtil.applyDeadband(-(Double) DrivebasePilotSelector.get().getPreference(PreferenceNames.ORIENTATION_INPUT),
+        (Double) DrivebasePilotSelector.get().getPreference(PreferenceNames.ORIENTATION_DEADZONE)))),
         OrientationMode.ROBOT_ORIENTED), 
         DrivebaseSubsystem.getInstance()
     ));
@@ -79,10 +87,10 @@ public final class RobotContainer {
    * Configures the bindings, and preferences for each subsystem driver
    */
   private static void configurePilotKeybinds() {
-    synchronized (DrivebasePilot) {
-      DrivebasePilot.getSelected().getKeybinding(KeybindingNames.ORIENTATION_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleOrientationType, DrivebaseSubsystem.getInstance()));
-      DrivebasePilot.getSelected().getKeybinding(KeybindingNames.MODULE_LOCKING_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleModuleLocking, DrivebaseSubsystem.getInstance()));
-      DrivebasePilot.getSelected().getKeybinding(KeybindingNames.PATHFINDING_FLIP_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::togglePathFlipped, DrivebaseSubsystem.getInstance()));
+    synchronized (DrivebasePilotSelector) {
+      DrivebasePilotSelector.get().getKeybinding(KeybindingNames.ORIENTATION_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleOrientationType, DrivebaseSubsystem.getInstance()));
+      DrivebasePilotSelector.get().getKeybinding(KeybindingNames.MODULE_LOCKING_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleModuleLocking, DrivebaseSubsystem.getInstance()));
+      DrivebasePilotSelector.get().getKeybinding(KeybindingNames.PATHFINDING_FLIP_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::togglePathFlipped, DrivebaseSubsystem.getInstance()));
     }
   }  
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
