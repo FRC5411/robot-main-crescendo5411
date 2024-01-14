@@ -14,7 +14,7 @@ import java.io.IOException;
  * and direction of a given drivebase.
  * 
  */
-public abstract class CommonGyroscope implements Closeable {
+public abstract class Gyroscope implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   protected final GyroscopeStatusContainerAutoLogged Status = new GyroscopeStatusContainerAutoLogged();
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//

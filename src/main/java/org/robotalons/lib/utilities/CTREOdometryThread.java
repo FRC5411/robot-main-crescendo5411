@@ -27,26 +27,31 @@ import javax.management.InstanceNotFoundException;
  */
 public final class CTREOdometryThread extends OdometryThread<StatusSignal<Double>> {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  private static final Lock SIGNALS_LOCK = new ReentrantLock(); 
+  private static final List<Queue<Double>> QUEUES;
+  private static final Lock SIGNALS_LOCK;
+  private final Lock ODOMETRY_LOCK;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  private static List<StatusSignal<Double>> Signals = new ArrayList<>();  
-  private static CTREOdometryThread Instance = (null);    
-  private static Boolean Is_Can_Flexible = (false);  
+  private static List<StatusSignal<Double>> Signals;
+  private static CTREOdometryThread Instance;  
+  private static Boolean FlexibleCAN = (false);  
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Phoenix Odometry Thread Constructor.
    * @param OdometryLocker Appropriate Reentrance Locker for Odometry
    */
   private CTREOdometryThread(Lock OdometryLocker) {
-    super(OdometryLocker);
+    ODOMETRY_LOCK = OdometryLocker;
     setName(("CTREOdometryThread"));
     setDaemon((true));
     start();
+  } static {
+    QUEUES = new ArrayList<>();
+    SIGNALS_LOCK = new ReentrantLock();
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
   public synchronized Queue<Double> register(final StatusSignal<Double> Signal) {
-    Queue<Double> Queue = new ArrayBlockingQueue<>(100);
+    Queue<Double> Queue = new ArrayBlockingQueue<>((100));
     SIGNALS_LOCK.lock();
     ODOMETRY_LOCK.lock();
     try {
@@ -75,7 +80,7 @@ public final class CTREOdometryThread extends OdometryThread<StatusSignal<Double
     while (this.isAlive()) {
       SIGNALS_LOCK.lock();
       try {
-        if (Is_Can_Flexible) {
+        if (FlexibleCAN) {
           BaseStatusSignal.waitForAll((2.0) / OdometryFrequency, Signals.toArray(StatusSignal[]::new));
         } else {
           Thread.sleep((long) ((1000.0)/ OdometryFrequency));
@@ -98,17 +103,12 @@ public final class CTREOdometryThread extends OdometryThread<StatusSignal<Double
     }
   }
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
-  @Override
-  public synchronized void setFrequency(final Double Frequency) {
-    OdometryFrequency = Frequency;
-  }
-
   /**
    * Mutates the current status of the can bus to determine if it supports flexible data rates.
    * @param IsFlexible If the CAN bus of devices is flexible
    */
   public synchronized void setCANFlexibleDataRate(final Boolean IsFlexible) {
-    Is_Can_Flexible = IsFlexible;
+    FlexibleCAN = IsFlexible;
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**

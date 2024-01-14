@@ -11,7 +11,7 @@ import org.littletonrobotics.junction.AutoLog;
  *
  * <p>Loggable input reference to a specific singular unit which assists in the control of motion throughout the competition field.
  * 
- * @see CommonModule
+ * @see Module
  */
 @AutoLog
 public class ModuleStatusContainer {

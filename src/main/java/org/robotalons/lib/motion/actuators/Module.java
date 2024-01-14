@@ -21,7 +21,7 @@ import java.util.Objects;
  * @see CommonModuleDataAutoLogged
  * 
  */
-public abstract class CommonModule implements Closeable {
+public abstract class Module implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   protected final Constants CONSTANTS;  
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
@@ -33,7 +33,7 @@ public abstract class CommonModule implements Closeable {
    * Common Module Constructor.
    * @param Constants Constants to derive measurements from, which contains 
    */
-  protected CommonModule(final Constants Constants) {
+  protected Module(final Constants Constants) {
     CONSTANTS = Objects.requireNonNull(Constants);
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
@@ -65,7 +65,7 @@ public abstract class CommonModule implements Closeable {
   public abstract void periodic();
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
   /**
-   * <p>Describes a given {@link CommonModule}'s measured constants that cannot otherwise be derived through its sensors and hardware.
+   * <p>Describes a given {@link Module}'s measured constants that cannot otherwise be derived through its sensors and hardware.
    */
   public static class Constants {
     public Double LINEAR_GEAR_RATIO = (1d);
@@ -78,7 +78,7 @@ public abstract class CommonModule implements Closeable {
   }    
 
   /**
-   * <p>Describes a given {@link CommonModule}'s current state of control, and how it should operate given the mode.
+   * <p>Describes a given {@link Module}'s current state of control, and how it should operate given the mode.
    */
   public enum ReferenceType {        
     STATE_CONTROL,
@@ -112,17 +112,30 @@ public abstract class CommonModule implements Closeable {
   public abstract void set(final ReferenceType Mode);
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
-   * Provides the internal denotation of this module, i.e. Front Left = 0, Front Right = 1
-   * @return Natural number representation of this module
-   */
-  public Integer getDenotation() {
-    return CONSTANTS.NUMBER;
-  }
-  /**
    * Provides the deltas, or captured data points from odometry from the most recent {@link #periodic()} cycle.
    * @return List of measured module positions
    */
   public abstract List<SwerveModulePosition> getPositionDeltas();
+
+  /**
+   * Provides the current relative rotation of the module rotational axis
+   * @return Rotational axis heading as a relative {@link Rotation2d} object
+   */
+  public abstract Rotation2d getRelativeRotation();
+
+  /**
+   * Provides the current absolute rotation of the module rotational axis
+   * @return Rotational axis heading as a absolute {@link Rotation2d} object
+   */
+  public abstract Rotation2d getAbsoluteRotation();
+
+  /**
+   * Provides the internal denotation of this module, i.e. Front Left = 0, Front Right = 1
+   * @return Natural number representation of this module
+   */
+  public Integer getNumber() {
+    return CONSTANTS.NUMBER;
+  }
 
   /**
    * Provides the most-recent cycle observed (measured) position of this module

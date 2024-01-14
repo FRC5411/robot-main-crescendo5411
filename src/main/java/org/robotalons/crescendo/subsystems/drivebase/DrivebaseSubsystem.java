@@ -28,9 +28,9 @@ import org.littletonrobotics.junction.Logger;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Devices;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Objects;
-import org.robotalons.lib.motion.actuators.CommonModule;
+import org.robotalons.lib.motion.actuators.Module;
 import org.robotalons.lib.motion.pathfinding.LocalADStarAK;
-import org.robotalons.lib.motion.sensors.CommonGyroscope;
+import org.robotalons.lib.motion.sensors.Gyroscope;
 
 import java.io.Closeable;
 import java.util.List;
@@ -52,8 +52,8 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private static final SwerveDrivePoseEstimator POSE_ESTIMATOR;
   private static final SwerveDriveKinematics KINEMATICS;
-  private static final CommonGyroscope GYROSCOPE;
-  private final static List<CommonModule> MODULES;
+  private static final Gyroscope GYROSCOPE;
+  private final static List<Module> MODULES;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static Rotation2d Odometry_Rotation;
   private static DrivebaseSubsystem Instance;
@@ -63,10 +63,13 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
   private static Boolean Path_Flipped;  
   private static Double Current_Time;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
+  /**
+   * Drivebase Subsystem Constructor.
+   */
   private DrivebaseSubsystem() {} static {
     Instance = new DrivebaseSubsystem();
     Odometry_Pose = new Pose2d();
-    GYROSCOPE = new CTREGyroscope(Constants.Measurements.PHOENIX_DRIVE);
+    GYROSCOPE = new PigeonGyroscope(Constants.Measurements.PHOENIX_DRIVE);
     Odometry_Rotation = GYROSCOPE.getYawRotation();
     Module_Locking = (false);
     Path_Flipped = (false); 
@@ -122,12 +125,12 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   public synchronized void periodic() {
-    Logger.recordOutput(("Drivebase/Pose"), getPose());
     Objects.ODOMETRY_LOCKER.lock();
-    MODULES.forEach(CommonModule::update);
+    getPose();
+    MODULES.forEach(Module::update);
     GYROSCOPE.update();    
     if (DriverStation.isDisabled()) {
-      MODULES.forEach(CommonModule::cease);
+      MODULES.forEach(Module::cease);
     }
     Objects.ODOMETRY_LOCKER.unlock();
     AtomicInteger DeltaCount = new AtomicInteger(
@@ -160,17 +163,17 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
         MatBuilder.fill(
           Nat.N3(),
           Nat.N1(),
-          0,0,0    //TODO: AUTOMATION TEAM
+          0,0,0    //TODO: AUTOMATION TEAM: Find Standard Deviations
         ) 
       );
       // POSE_ESTIMATOR.addVisionMeasurement(
-      //   (null),         //TODO: AUTOMATION TEAM
+      //   (null),         //TODO: AUTOMATION TEAM: Pose Finding
       //   Timer.getFPGATimestamp(), 
-      //   (null)          //TODO: AUTOMATION TEAM
+      //   (null)          //TODO: AUTOMATION TEAM: Find Standard Deviations
       // );
     });
   }
-  
+
   /**
    * Calculates the discretization timestep, {@code dt}, at this current time based on the FPGA clock.
    * @return Double representation of the time passed between now and the last timestep.
@@ -192,7 +195,7 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
    * Closes this instance and all held resources immediately.
    */
   public synchronized void close() {
-    MODULES.forEach(CommonModule::close);
+    MODULES.forEach(Module::close);
     POSE_ESTIMATOR.resetPosition(
       GYROSCOPE.getYawRotation(),
       getModulePositions(),
@@ -200,6 +203,9 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
     );
   }
 
+  /**
+   * Toggles between the possible states of orientation types
+   */
   public static synchronized void toggleOrientationType() {
     switch (Control_Mode) {
       case ROBOT_ORIENTED:
@@ -211,10 +217,16 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
     }
   }
 
+  /**
+   * Toggles between the if modules she go into a locking format when idle or not
+   */
   public static synchronized void toggleModuleLocking() {
     Module_Locking = !Module_Locking;
   }
 
+  /**
+   * Toggles between is pathfinding should be flipped or not.
+   */
   public static synchronized void togglePathFlipped() {
     Path_Flipped = !Path_Flipped;
   }
@@ -231,21 +243,24 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
    * @param Demand Chassis speeds object which represents the demand speeds of the drivebase
    */
   public static synchronized void set(final ChassisSpeeds Demand) {
-    var DiscretizedChassisSpeeds = ChassisSpeeds.discretize(Demand, discretize());
-    var ReferenceStates = KINEMATICS.toSwerveModuleStates(DiscretizedChassisSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(
-      ReferenceStates, 
-      DiscretizedChassisSpeeds, 
-      Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
-      Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
-      Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY);
-    Logger.recordOutput(("Drivebase/Reference"), ReferenceStates);
-    Logger.recordOutput(
-      ("Drivebase/Optimized"),
-      IntStream.range((0), MODULES.size()).boxed().map(
-        (Index) -> 
-          MODULES.get(Index).set(ReferenceStates[Index]))
-        .toArray(SwerveModuleState[]::new));
+    if (Demand.omegaRadiansPerSecond > 1e-6 && Demand.vxMetersPerSecond > 1e-6 && Demand.vyMetersPerSecond > 1e-6) {
+      set();
+    } else {
+      var DiscretizedChassisSpeeds = ChassisSpeeds.discretize(Demand, discretize());
+      var ReferenceStates = KINEMATICS.toSwerveModuleStates(DiscretizedChassisSpeeds);
+      SwerveDriveKinematics.desaturateWheelSpeeds(
+        ReferenceStates, 
+        DiscretizedChassisSpeeds, 
+        Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
+        Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
+        Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY);
+      Logger.recordOutput(("Drivebase/Reference"), ReferenceStates);
+      Logger.recordOutput(("Drivebase/Optimized"),
+        IntStream.range((0), MODULES.size()).boxed().map(
+          (Index) -> 
+            MODULES.get(Index).set(ReferenceStates[Index]))
+          .toArray(SwerveModuleState[]::new));
+    }
   }
 
   /**
@@ -329,7 +344,7 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
   @AutoLogOutput(key = "Drivebase/Reference")
   public static SwerveModuleState[] getModuleReferences() {
     return MODULES.stream().map(
-      CommonModule::getReference
+      Module::getReference
       ).toArray(SwerveModuleState[]::new);
   }
 
@@ -341,7 +356,7 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
   @AutoLogOutput(key = "Drivebase/Measurements")
   public static SwerveModuleState[] getModuleMeasurements() {
     return MODULES.stream().map(
-      CommonModule::getObserved
+      Module::getObserved
       ).toArray(SwerveModuleState[]::new);
   }
 
@@ -352,7 +367,7 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
   @AutoLogOutput(key = "Drivebase/Positions")
   public static SwerveModulePosition[] getModulePositions() {
     return MODULES.stream().map(
-      CommonModule::getPosition
+      Module::getPosition
       ).toArray(SwerveModulePosition[]::new);
   }
 

@@ -1,7 +1,6 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.drivebase;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 
@@ -10,31 +9,33 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
-import org.robotalons.lib.motion.sensors.CommonGyroscope;
+import org.robotalons.lib.motion.sensors.Gyroscope;
 import org.robotalons.lib.utilities.OdometryThread;
 
 import java.util.Queue;
-// -------------------------------------------------------------[CTRE Gyroscope]------------------------------------------------------------//
+// ------------------------------------------------------------[Pigeon Gyroscope]-----------------------------------------------------------//
 /**
  *
  *
- * <h1>CTREGyroscope</h1>
+ * <h1>PigeonGyroscope</h1>
  *
- * <p><p>
+ * <p>Implementation of an auto-logged Gyroscope using a Pigeon as hardware.<p>
  * 
- * @see CommonGyroscope
+ * @see Gyroscope
  * @see DrivebaseSubsystem
  */
-public class CTREGyroscope extends CommonGyroscope {
+public class PigeonGyroscope extends Gyroscope {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private final Pigeon2 GYROSCOPE = new Pigeon2(Constants.Ports.GYROSCOPE_ID);
   private final StatusSignal<Double> YAW_ROTATION = GYROSCOPE.getYaw();
   private final StatusSignal<Double> YAW_VELOCITY = GYROSCOPE.getAngularVelocityZ();
   private final Queue<Double> YAW_ROTATION_QUEUE;
-  // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
-  public CTREGyroscope(final Boolean PhoenixDrive) {
+  /**
+   * Pigeon Gyroscope Constructor.
+   * @param PhoenixDrive Whether or not this gyroscope is based on a CTRE or REV drivebase
+   */
+  public PigeonGyroscope(final Boolean PhoenixDrive) {
     GYROSCOPE.getConfigurator().apply(new Pigeon2Configuration());
     GYROSCOPE.getConfigurator().setYaw((0.0));
     YAW_ROTATION.setUpdateFrequency(OdometryThread.OdometryFrequency);
