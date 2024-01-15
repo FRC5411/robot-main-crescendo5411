@@ -1,9 +1,10 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
-package org.robotalons.lib.utilities;
+package org.robotalons.lib.motion.utilities;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -25,7 +26,7 @@ import javax.management.InstanceNotFoundException;
  * @see OdometryThread
  * 
  */
-public final class CTREOdometryThread extends OdometryThread<StatusSignal<Double>> {
+public final class CTREOdometryThread extends Thread implements OdometryThread<StatusSignal<Double>> {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private static final List<Queue<Double>> QUEUES;
   private static final Lock SIGNALS_LOCK;
@@ -33,7 +34,8 @@ public final class CTREOdometryThread extends OdometryThread<StatusSignal<Double
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static List<StatusSignal<Double>> Signals;
   private static CTREOdometryThread Instance;  
-  private static Boolean FlexibleCAN = (false);  
+  private static Boolean FlexibleCAN;
+  private static Double Frequency;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Phoenix Odometry Thread Constructor.
@@ -47,6 +49,9 @@ public final class CTREOdometryThread extends OdometryThread<StatusSignal<Double
   } static {
     QUEUES = new ArrayList<>();
     SIGNALS_LOCK = new ReentrantLock();
+    Instance = (null);
+    Frequency = (250d);
+    FlexibleCAN = (false);
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
@@ -67,10 +72,15 @@ public final class CTREOdometryThread extends OdometryThread<StatusSignal<Double
     return Queue;
   }
 
-  public synchronized void close() {
+  public synchronized void close() throws IOException {
     QUEUES.clear();
     Signals.clear();    
-    OdometryFrequency = (250d);    
+    FlexibleCAN = (false);
+    try {
+      super.join();
+    } catch (final InterruptedException Exception) {
+      Exception.printStackTrace();
+    }     
     Instance = (null);
   }
 
@@ -81,9 +91,9 @@ public final class CTREOdometryThread extends OdometryThread<StatusSignal<Double
       SIGNALS_LOCK.lock();
       try {
         if (FlexibleCAN) {
-          BaseStatusSignal.waitForAll((2.0) / OdometryFrequency, Signals.toArray(StatusSignal[]::new));
+          BaseStatusSignal.waitForAll((2.0) / Frequency, Signals.toArray(StatusSignal[]::new));
         } else {
-          Thread.sleep((long) ((1000.0)/ OdometryFrequency));
+          Thread.sleep((long) ((1000.0)/ Frequency));
           Signals.forEach(StatusSignal::refresh);
         }
       } catch (InterruptedException Exception) {
@@ -107,8 +117,12 @@ public final class CTREOdometryThread extends OdometryThread<StatusSignal<Double
    * Mutates the current status of the can bus to determine if it supports flexible data rates.
    * @param IsFlexible If the CAN bus of devices is flexible
    */
-  public synchronized void setCANFlexibleDataRate(final Boolean IsFlexible) {
+  public synchronized void set(final Boolean IsFlexible) {
     FlexibleCAN = IsFlexible;
+  }
+
+  public synchronized void set(final Double Frequency) {
+    CTREOdometryThread.Frequency = Frequency;
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
