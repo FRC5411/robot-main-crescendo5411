@@ -4,24 +4,21 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase
 {
-    private InfraredEmitter emitterOne;
-    private InfraredEmitter emitterTwo;
     private InfraredReceiver receiverOne;
     private InfraredReceiver receiverTwo;
     public bool hasNote; //hasNote is THE bool value that the indexer keeps track of; everything else is secondary to making this accurate 100% of the time
 
     public Indexer()
     {
-        emitterOne = new InfraredEmitter(0); //emitters each emit an IR light beam (if you can believe it)
-        emitterTwo = new InfraredEmitter(1); //I think 2 IR beams will be more reliable than 1; no evidence except the obvious so I am going to research/test further
-
-        receiverOne = new InfraredReceiver(2); //receivers return a 0 if the robot has a Note and a 1 if not
-        receiverTwo = new InfraredReceiver(3); //Note will interrupt IR beam
+        receiverOne = new InfraredReceiver(port: 0); //receivers return a 0 if the robot has a Note and a 1 if not
+        receiverTwo = new InfraredReceiver(port: 1); //I think 2 IR beams will be better than 1; no empirical evidence for now, I will be getting that and reexamining
     }
     
     @Override
     public void periodic()
     {
-        hasNote = !(receiverOne.status() || receiverTwo.status()); //status() should return true for an unbroken beam
+        hasNote = !(receiverOne.status || receiverTwo.status);
+        //hasNote will be true if the singulator is holding a Note
+        //for now I am using the OR operator for the two beam sensors, but that might turn into an AND depending on what is more reliable
     }
 }
