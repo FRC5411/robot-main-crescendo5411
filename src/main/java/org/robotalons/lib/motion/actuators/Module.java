@@ -18,7 +18,7 @@ import java.util.Objects;
  * an azimuth (Rotation) motor, which controls the angle or direction of the module, and a linear (translation) motor which controls the velocity
  * or magnitude of the module.
  * 
- * @see CommonModuleDataAutoLogged
+ * @see ModuleStatusContainer
  * 
  */
 public abstract class Module implements Closeable {

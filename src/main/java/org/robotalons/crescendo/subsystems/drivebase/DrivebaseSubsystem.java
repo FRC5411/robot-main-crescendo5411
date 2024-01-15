@@ -126,13 +126,13 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   public synchronized void periodic() {
-    Objects.ODOMETRY_LOCKER.lock();
+    Objects.ODOMETRY_LOCK.lock();
     MODULES.forEach(Module::update);
     GYROSCOPE.update();    
     if (DriverStation.isDisabled()) {
       MODULES.forEach(Module::cease);
     }
-    Objects.ODOMETRY_LOCKER.unlock();
+    Objects.ODOMETRY_LOCK.unlock();
     AtomicInteger DeltaCount = new AtomicInteger(
       GYROSCOPE.getConnected()? 
         GYROSCOPE.getOdometryYawRotations().length: 

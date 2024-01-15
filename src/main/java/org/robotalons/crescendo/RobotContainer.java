@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.robotalons.crescendo.Constants.Profiles;
 import org.robotalons.crescendo.Constants.Profiles.KeybindingNames;
@@ -15,8 +17,6 @@ import org.robotalons.crescendo.Constants.Profiles.PreferenceNames;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem.OrientationMode;
 import org.robotalons.lib.utilities.PilotProfile;
-
-import com.pathplanner.lib.auto.AutoBuilder;
 
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 

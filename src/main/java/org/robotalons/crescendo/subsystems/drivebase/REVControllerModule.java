@@ -15,7 +15,6 @@ import com.revrobotics.RelativeEncoder;
 
 import org.robotalons.lib.motion.actuators.Module;
 import org.robotalons.lib.utilities.OdometryThread;
-import org.robotalons.lib.utilities.REVOdometryThread;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +57,7 @@ public final class REVControllerModule extends Module {
     ReferenceMode = ReferenceType.STATE_CONTROL;
     CurrentPosition = (0.0);
     CONSTANTS = Constants;
-    REVOdometryThread.create(org.robotalons.crescendo.subsystems.drivebase.Constants.Objects.ODOMETRY_LOCKER); 
+    
     CONSTANTS.LINEAR_CONTROLLER.restoreFactoryDefaults();
     CONSTANTS.ROTATIONAL_CONTROLLER.restoreFactoryDefaults();
     LINEAR_ENCODER = CONSTANTS.LINEAR_CONTROLLER.getEncoder();
