@@ -22,8 +22,6 @@ import org.littletonrobotics.urcl.URCL;
 import org.robotalons.crescendo.Constants.Logging;
 import org.robotalons.crescendo.Constants.Ports;
 import org.robotalons.crescendo.Constants.Subsystems;
-import org.robotalons.lib.utilities.CTREOdometryThread;
-import org.robotalons.lib.utilities.REVOdometryThread;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -120,8 +118,6 @@ public final class Robot extends LoggedRobot {
         (Command Command) -> CommandLogger.accept(Command, (false)));
       CommandScheduler.getInstance().onCommandFinish(
         (Command Command) -> CommandLogger.accept(Command, (false)));    
-      REVOdometryThread.create(Constants.Odometry.ODOMETRY_LOCK); 
-      CTREOdometryThread.create(Constants.Odometry.ODOMETRY_LOCK);
       Logger.registerURCL(URCL.startExternal());
       Logger.start();
       RobotContainer.getInstance();

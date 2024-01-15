@@ -6,9 +6,9 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
-import org.robotalons.lib.utilities.CTREOdometryThread;
+import org.robotalons.lib.motion.utilities.CTREOdometryThread;
+import org.robotalons.lib.motion.utilities.REVOdometryThread;
 import org.robotalons.lib.utilities.PilotProfile;
-import org.robotalons.lib.utilities.REVOdometryThread;
 
 import java.util.List;
 import java.util.Set;

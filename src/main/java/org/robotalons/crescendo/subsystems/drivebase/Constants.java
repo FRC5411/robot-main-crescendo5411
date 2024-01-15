@@ -49,6 +49,8 @@ public final class Constants {
 
         public static final Boolean PHOENIX_DRIVE = (false);
 
+        public static final Double ODOMETRY_FREQUENCY = (250d);
+
         public static final class Modules {
           public static final class FL {
             public static final Integer LINEAR_CONTROLLER_ID = (0);

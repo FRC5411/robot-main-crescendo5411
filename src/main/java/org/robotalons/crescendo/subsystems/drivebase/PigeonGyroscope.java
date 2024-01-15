@@ -10,7 +10,6 @@ import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import org.robotalons.lib.motion.sensors.Gyroscope;
-import org.robotalons.lib.utilities.OdometryThread;
 
 import java.util.Queue;
 // ------------------------------------------------------------[Pigeon Gyroscope]-----------------------------------------------------------//
@@ -38,7 +37,7 @@ public class PigeonGyroscope extends Gyroscope {
   public PigeonGyroscope(final Boolean PhoenixDrive) {
     GYROSCOPE.getConfigurator().apply(new Pigeon2Configuration());
     GYROSCOPE.getConfigurator().setYaw((0.0));
-    YAW_ROTATION.setUpdateFrequency(OdometryThread.OdometryFrequency);
+    YAW_ROTATION.setUpdateFrequency(Constants.Measurements.ODOMETRY_FREQUENCY);
     YAW_VELOCITY.setUpdateFrequency((100.0));
     if (PhoenixDrive) {
       YAW_ROTATION_QUEUE = org.robotalons.crescendo.Constants.Odometry.CTRE_ODOMETRY_THREAD

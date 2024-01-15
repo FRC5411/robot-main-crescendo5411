@@ -14,7 +14,6 @@ import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.RelativeEncoder;
 
 import org.robotalons.lib.motion.actuators.Module;
-import org.robotalons.lib.utilities.OdometryThread;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,9 +81,9 @@ public final class REVControllerModule extends Module {
     CONSTANTS.ROTATIONAL_CONTROLLER.setCANTimeout((0));
 
     CONSTANTS.LINEAR_CONTROLLER.setPeriodicFramePeriod(
-        PeriodicFrame.kStatus2, (int) (1000.0 / OdometryThread.OdometryFrequency));
+        PeriodicFrame.kStatus2, (int) (1000.0 / org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements.ODOMETRY_FREQUENCY));
     CONSTANTS.ROTATIONAL_CONTROLLER.setPeriodicFramePeriod(
-        PeriodicFrame.kStatus2, (int) (1000.0 / OdometryThread.OdometryFrequency));
+        PeriodicFrame.kStatus2, (int) (1000.0 / org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements.ODOMETRY_FREQUENCY));
     ODOMETRY_LOCK = new ReentrantLock();    
     LINEAR_QUEUE = org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD.register(LINEAR_ENCODER::getPosition);
     ROTATIONAL_QUEUE = org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD.register(ROTATIONAL_ENCODER::getPosition); 
