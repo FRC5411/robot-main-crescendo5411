@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 import org.littletonrobotics.junction.AutoLog;
 
-// ---------------------------------------------------------[Common Gyroscope Data]----------------------------------------------------------//
+// -------------------------------------------------------[Gyroscope Status Container]-------------------------------------------------------//
 /**
  *
  *
@@ -17,6 +17,6 @@ public class GyroscopeStatusContainer {
   public boolean Connected = (false);
   public Rotation2d YawRotation = new Rotation2d();
   public Rotation2d[] PositionDeltas = new Rotation2d[] {};
-  public double YawVelocityRadiansSecond = (0.0);
+  public double YawVelocityRadiansSecond = (0d);
   
 }
