@@ -55,6 +55,8 @@ public final class REVControllerModule extends Module {
    */
   public REVControllerModule(final ModuleConstants Constants) {
     super(Constants);
+    ReferenceMode = ReferenceType.STATE_CONTROL;
+    CurrentPosition = (0.0);
     CONSTANTS = Constants;
     REVOdometryThread.create(org.robotalons.crescendo.subsystems.drivebase.Constants.Objects.ODOMETRY_LOCKER); 
     CONSTANTS.LINEAR_CONTROLLER.restoreFactoryDefaults();

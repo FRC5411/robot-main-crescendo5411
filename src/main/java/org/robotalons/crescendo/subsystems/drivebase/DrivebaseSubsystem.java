@@ -1,8 +1,8 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.drivebase;
+// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Nat;
-// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -52,13 +52,13 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private static final SwerveDrivePoseEstimator POSE_ESTIMATOR;
   private static final SwerveDriveKinematics KINEMATICS;
-  private static final Gyroscope GYROSCOPE;
   private final static List<Module> MODULES;
+  private static final Gyroscope GYROSCOPE;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static Rotation2d Odometry_Rotation;
+  private static OrientationMode Control_Mode;
   private static DrivebaseSubsystem Instance;
   private static Pose2d Odometry_Pose;  
-  private static OrientationMode Control_Mode;
   private static Boolean Module_Locking;      
   private static Boolean Path_Flipped;  
   private static Double Current_Time;
@@ -70,6 +70,7 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
     Instance = new DrivebaseSubsystem();
     Odometry_Pose = new Pose2d();
     GYROSCOPE = new PigeonGyroscope(Constants.Measurements.PHOENIX_DRIVE);
+    Control_Mode = OrientationMode.ROBOT_ORIENTED;
     Odometry_Rotation = GYROSCOPE.getYawRotation();
     Module_Locking = (false);
     Path_Flipped = (false); 
@@ -126,7 +127,6 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   public synchronized void periodic() {
     Objects.ODOMETRY_LOCKER.lock();
-    getPose();
     MODULES.forEach(Module::update);
     GYROSCOPE.update();    
     if (DriverStation.isDisabled()) {
@@ -171,6 +171,7 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
       //   Timer.getFPGATimestamp(), 
       //   (null)          //TODO: AUTOMATION TEAM: Find Standard Deviations
       // );
+      getPose();
     });
   }
 
