@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
-package org.robotalons.lib.motion.utilities;
+package org.robotalons.lib.utilities;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj.Notifier;
 
@@ -9,9 +9,7 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.function.DoubleSupplier;
-import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
-
 // ----------------------------------------------------------[REV Odometry Thread]----------------------------------------------------------//
 /**
  *
@@ -25,8 +23,10 @@ import javax.management.InstanceNotFoundException;
  */
 public final class REVOdometryThread extends OdometryThread<DoubleSupplier> {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
+  private static final List<Queue<Double>> QUEUES = new ArrayList<>();
   private static final List<DoubleSupplier> SIGNALS = new ArrayList<>();
   private final Notifier NOTIFIER;
+  private final Lock ODOMETRY_LOCK;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static REVOdometryThread Instance = (null);  
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
@@ -35,7 +35,7 @@ public final class REVOdometryThread extends OdometryThread<DoubleSupplier> {
    * @param OdometryLocker Appropriate Reentrance Locker for Odometry
    */
   private REVOdometryThread(Lock OdometryLocker) {
-    super(OdometryLocker);
+    ODOMETRY_LOCK = OdometryLocker;
     NOTIFIER = new Notifier(this::run);
     NOTIFIER.setName(("REVOdometryThread"));
     NOTIFIER.startPeriodic((1.0) / OdometryFrequency);
@@ -43,7 +43,7 @@ public final class REVOdometryThread extends OdometryThread<DoubleSupplier> {
 
   @Override
   public synchronized Queue<Double> register(final DoubleSupplier Signal) {
-    Queue<Double> Queue = new ArrayBlockingQueue<>(100);
+    Queue<Double> Queue = new ArrayBlockingQueue<>((100));
     ODOMETRY_LOCK.lock();
     try {
       SIGNALS.add(Signal);
@@ -79,11 +79,10 @@ public final class REVOdometryThread extends OdometryThread<DoubleSupplier> {
   /**
    * Creates a new instance of the existing utility class
    * @return Utility class's instance
-   * @throws InstanceAlreadyExistsException When the {@linkplain #create(Lock)} method has already been called prior to most-recent call
    */
-  public static synchronized REVOdometryThread create(Lock OdometryLock) throws InstanceAlreadyExistsException {
+  public static synchronized REVOdometryThread create(Lock OdometryLock) {
     if (!java.util.Objects.isNull(Instance)) {
-      throw new InstanceAlreadyExistsException();
+      return Instance;
     }
     Instance = new REVOdometryThread(OdometryLock);
     return Instance;
