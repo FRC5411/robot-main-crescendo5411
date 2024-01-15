@@ -22,6 +22,8 @@ import org.littletonrobotics.urcl.URCL;
 import org.robotalons.crescendo.Constants.Logging;
 import org.robotalons.crescendo.Constants.Ports;
 import org.robotalons.crescendo.Constants.Subsystems;
+import org.robotalons.lib.utilities.CTREOdometryThread;
+import org.robotalons.lib.utilities.REVOdometryThread;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,9 +44,11 @@ public final class Robot extends LoggedRobot {
     // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
     private static final RepeatCommand COMMAND_LOGGER;
     // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-    private static Robot INSTANCE = (null);
+    private static Robot Instance;
+    private static Command AutonomousCommand;
     // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
     private Robot() {} static {
+      AutonomousCommand = null;
       COMMAND_LOGGER = new RepeatCommand(new InstantCommand(() -> {
         if(Logging.LOGGING_ENABLED) {
           Threads.setCurrentThreadPriority((true), (99));
@@ -116,6 +120,8 @@ public final class Robot extends LoggedRobot {
         (Command Command) -> CommandLogger.accept(Command, (false)));
       CommandScheduler.getInstance().onCommandFinish(
         (Command Command) -> CommandLogger.accept(Command, (false)));    
+      REVOdometryThread.create(Constants.Odometry.ODOMETRY_LOCK); 
+      CTREOdometryThread.create(Constants.Odometry.ODOMETRY_LOCK);
       Logger.registerURCL(URCL.startExternal());
       Logger.start();
       RobotContainer.getInstance();
@@ -140,7 +146,7 @@ public final class Robot extends LoggedRobot {
     // -------------------------------------------------------------[Disabled]----------------------------------------------------------------//
     @Override
     public void disabledInit() {
-        CommandScheduler.getInstance().cancelAll();
+      CommandScheduler.getInstance().cancelAll();
     }
 
     @Override
@@ -153,13 +159,22 @@ public final class Robot extends LoggedRobot {
 
     // ------------------------------------------------------------[Autonomous]---------------------------------------------------------------//
     @Override
-    public void autonomousInit() {}
+    public void autonomousInit() {
+      AutonomousCommand = RobotContainer.CommandSelector.get();
+      if(!java.util.Objects.isNull(AutonomousCommand)) {
+        AutonomousCommand.schedule();
+      }
+    }
 
     @Override
     public void autonomousPeriodic() {}
 
     @Override
-    public void autonomousExit() {}
+    public void autonomousExit() {
+      if(!java.util.Objects.isNull(AutonomousCommand)) {
+        AutonomousCommand.cancel();
+      }
+    }
 
     // -----------------------------------------------------------[Teleoperated]--------------------------------------------------------------//
     @Override
@@ -191,9 +206,9 @@ public final class Robot extends LoggedRobot {
      * @return Utility class's instance
      */
     public static synchronized Robot getInstance() {
-        if (java.util.Objects.isNull(INSTANCE)) {
-            INSTANCE = new Robot();
+        if (java.util.Objects.isNull(Instance)) {
+            Instance = new Robot();
         }
-        return INSTANCE;
+        return Instance;
     }
 }
