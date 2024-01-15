@@ -2,6 +2,7 @@
 package org.robotalons.crescendo.subsystems.indexer;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.io.Closeable;
 
 // ------------------------------------------------------------[Indexer Subsystem]----------------------------------------------------------//
 /**
@@ -14,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  * @see SubsystemBase
  * @see {@link org.robotalons.crescendo.RobotContainer RobotContainer} 
  */
-public class IndexerSubsystem extends SubsystemBase {
+public class IndexerSubsystem extends SubsystemBase implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   //private static final InfraredEmitter EmitterLeft;    //<---- This class does not exist, is it a placeholder? @SpiderFace
   //private static final InfraredEmitter EmitterRight; 
@@ -24,15 +25,26 @@ public class IndexerSubsystem extends SubsystemBase {
   private static IndexerSubsystem Instance;
   private static Boolean ContainsNote;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
+  /**
+   * Indexer Subsystem Constructor.
+   */
   private IndexerSubsystem() {} static {
     ContainsNote = (false);
   }
   
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
-  public synchronized void periodic()
-  {
+  public synchronized void periodic() {
+    Constants.Objects.ODOMETRY_LOCKER.lock();
     //ContainsNote = !(ReceiverLeft.status() || ReceiverRight.status()); //status() should return true for an unbroken beam
+    Constants.Objects.ODOMETRY_LOCKER.lock();
+  }
+
+   /**
+   * Closes this instance and all held resources immediately.
+   */
+  public synchronized void close() {
+
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
 
