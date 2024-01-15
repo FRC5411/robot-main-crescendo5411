@@ -4,9 +4,9 @@ package org.robotalons.crescendo;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
-import org.robotalons.lib.utilities.CTREOdometryThread;
+import org.robotalons.lib.motion.utilities.CTREOdometryThread;
+import org.robotalons.lib.motion.utilities.REVOdometryThread;
 import org.robotalons.lib.utilities.PilotProfile;
-import org.robotalons.lib.utilities.REVOdometryThread;
 
 import java.util.List;
 import java.util.Set;

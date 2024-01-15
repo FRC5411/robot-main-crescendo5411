@@ -22,8 +22,8 @@ import org.littletonrobotics.urcl.URCL;
 import org.robotalons.crescendo.Constants.Logging;
 import org.robotalons.crescendo.Constants.Ports;
 import org.robotalons.crescendo.Constants.Subsystems;
-import org.robotalons.lib.utilities.CTREOdometryThread;
-import org.robotalons.lib.utilities.REVOdometryThread;
+import org.robotalons.lib.motion.utilities.CTREOdometryThread;
+import org.robotalons.lib.motion.utilities.REVOdometryThread;
 
 import java.util.ArrayList;
 import java.util.HashMap;
