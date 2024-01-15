@@ -1,8 +1,9 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
-package org.robotalons.lib.utilities;
+package org.robotalons.lib.motion.utilities;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj.Notifier;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -14,21 +15,21 @@ import javax.management.InstanceNotFoundException;
 /**
  *
  *
- * <p>Provides an interface for asynchronously reading high-frequency measurements to a set of queues.
- * This version is intended for devices like the SparkMax that require polling rather than a
- * blocking thread. A Notifier thread is used to gather samples with consistent timing.
+ * <p>Provides an interface for asynchronously reading high-frequency measurements to a set of queues. This version is intended for devices
+ * like the SparkMax that require polling rather than a blocking thread. A Notifier thread is used to gather samples with consistent timing.
  * 
  * @see OdometryThread
  * 
  */
-public final class REVOdometryThread extends OdometryThread<DoubleSupplier> {
+public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  private static final List<Queue<Double>> QUEUES = new ArrayList<>();
-  private static final List<DoubleSupplier> SIGNALS = new ArrayList<>();
-  private final Notifier NOTIFIER;
+  private static final List<DoubleSupplier> SIGNALS;
+  private static final List<Queue<Double>> QUEUES;
   private final Lock ODOMETRY_LOCK;
+  private final Notifier NOTIFIER;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  private static REVOdometryThread Instance = (null);  
+  private static REVOdometryThread Instance;
+  private static Double Frequency;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * REV Odometry Thread Constructor.
@@ -38,8 +39,13 @@ public final class REVOdometryThread extends OdometryThread<DoubleSupplier> {
     ODOMETRY_LOCK = OdometryLocker;
     NOTIFIER = new Notifier(this::run);
     NOTIFIER.setName(("REVOdometryThread"));
-    NOTIFIER.startPeriodic((1.0) / OdometryFrequency);
-  } 
+    NOTIFIER.startPeriodic((1.0) / Frequency);
+  } static {
+    QUEUES = new ArrayList<>();
+    SIGNALS = new ArrayList<>();
+    Instance = (null);
+    Frequency = (250d);
+  }
 
   @Override
   public synchronized Queue<Double> register(final DoubleSupplier Signal) {
@@ -55,10 +61,10 @@ public final class REVOdometryThread extends OdometryThread<DoubleSupplier> {
   }
 
   @Override
-  public synchronized void close() {
+  public synchronized void close() throws IOException {
     QUEUES.clear();
-    SIGNALS.clear();    
-    OdometryFrequency = (250d);    
+    SIGNALS.clear();
+    NOTIFIER.stop();  
     Instance = (null);
   }
 
@@ -74,7 +80,10 @@ public final class REVOdometryThread extends OdometryThread<DoubleSupplier> {
       ODOMETRY_LOCK.unlock();
     }
   }
-  
+  // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
+  public synchronized void set(final Double Frequency) {
+    REVOdometryThread.Frequency = Frequency;
+  }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Creates a new instance of the existing utility class
