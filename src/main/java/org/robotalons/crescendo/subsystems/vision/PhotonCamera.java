@@ -2,10 +2,9 @@
 package org.robotalons.crescendo.subsystems.vision;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 
-import java.io.IOException;
-
 import org.robotalons.lib.vision.Camera;
 
+import java.io.IOException;
 // ---------------------------------------------------------[Photon Vision Module]--------------------------------------------------------//
 /**
  *

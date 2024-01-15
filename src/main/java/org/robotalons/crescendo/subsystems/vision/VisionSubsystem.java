@@ -1,13 +1,12 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.vision;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
-import java.util.List;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.robotalons.lib.vision.Camera;
 
 import java.io.Closeable;
-
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.List;
 // ------------------------------------------------------------[Vision Subsystem]----------------------------------------------------------//
 /**
  *
