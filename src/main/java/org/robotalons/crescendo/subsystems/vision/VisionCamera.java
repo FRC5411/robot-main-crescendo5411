@@ -16,7 +16,7 @@ import java.io.IOException;
  * @see Module
  * @see DrivebaseSubsystem
  */
-public class PhotonCamera extends Camera {
+public class VisionCamera extends Camera {
 
   @Override
   public void update() {
