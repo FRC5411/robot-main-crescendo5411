@@ -1,8 +1,8 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.indexer;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 // ---------------------------------------------------------------[Constants]---------------------------------------------------------------//
 /**
  *
@@ -11,7 +11,7 @@ import java.util.concurrent.locks.Lock;
  *
  * <p>Contains all indexer-wide constants, does not contain robot-wide constants.
  *
- * @see DrivebaseSubsystem
+ * @see IndexerSubsystem
  */
 public class Constants {
   // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
