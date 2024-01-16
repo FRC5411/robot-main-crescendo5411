@@ -2,6 +2,7 @@
 package org.robotalons.crescendo;
 
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
@@ -28,6 +29,7 @@ public final class Constants {
   // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
 
   public static final class Subsystems {
+    public static final Field2d ROBOT_FIELD = new Field2d();
     public static final Boolean IS_REAL_ROBOT = RobotBase.isReal();
     public static final DrivebaseSubsystem DRIVEBASE_SUBSYSTEM = DrivebaseSubsystem.getInstance();
     public static final Set<Subsystem> SUBSYSTEMS = Set.of(

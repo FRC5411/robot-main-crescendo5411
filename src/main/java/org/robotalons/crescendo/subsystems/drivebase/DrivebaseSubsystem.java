@@ -52,7 +52,7 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private static final SwerveDrivePoseEstimator POSE_ESTIMATOR;
   private static final SwerveDriveKinematics KINEMATICS;
-  private final static List<Module> MODULES;
+  private static final List<Module> MODULES;
   private static final Gyroscope GYROSCOPE;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static Rotation2d Odometry_Rotation;
@@ -132,6 +132,7 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
     if (DriverStation.isDisabled()) {
       MODULES.forEach(Module::cease);
     }
+    org.robotalons.crescendo.Constants.Subsystems.ROBOT_FIELD.setRobotPose(getPose());
     Objects.ODOMETRY_LOCK.unlock();
     AtomicInteger DeltaCount = new AtomicInteger(
       GYROSCOPE.getConnected()? 
