@@ -1,8 +1,6 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.drivebase;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
-import edu.wpi.first.math.MatBuilder;
-import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -158,21 +156,6 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
         Odometry_Rotation,
         WheelDeltas
       );
-      POSE_ESTIMATOR.addVisionMeasurement(
-        Odometry_Pose,
-        LocalizedTime,
-        MatBuilder.fill(
-          Nat.N3(),
-          Nat.N1(),
-          0,0,0    //TODO: AUTOMATION TEAM: Find Standard Deviations
-        ) 
-      );
-      // POSE_ESTIMATOR.addVisionMeasurement(
-      //   (null),         //TODO: AUTOMATION TEAM: Pose Finding
-      //   Timer.getFPGATimestamp(), 
-      //   (null)          //TODO: AUTOMATION TEAM: Find Standard Deviations
-      // );
-      getPose();
     });
   }
 
