@@ -17,39 +17,44 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class CannonSubsystem extends SubsystemBase {
   // --------------------------------------------------------------[Constants]-------------------------------------------------------------- //
 
-    // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
-    private static CannonSubsystem Instance;
-    
-    // ------------------------------------------------------------[Constructors]------------------------------------------------------------- //
-    /* Indexer Subsystem Constructor */
-    private CannonSubsystem() {} static {
+  // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
+  private static CannonSubsystem Instance;
+  
+  // ------------------------------------------------------------[Constructors]------------------------------------------------------------- //
+  /** 
+   * Cannon Subsystem Constructor 
+   */
+  private CannonSubsystem() {} static {
 
-    }
+  }
+  
+  // ---------------------------------------------------------------[Methods]--------------------------------------------------------------- //
+  @Override
+  public synchronized void periodic() {
+    Constants.Objects.ODOMETRY_LOCKER.lock();
+
+    Constants.Objects.ODOMETRY_LOCKER.lock();
+  }
+  
+  /** 
+   * Closes this instance and all held resources immediately 
+   */
+  public synchronized void close() {
     
-    // ---------------------------------------------------------------[Methods]--------------------------------------------------------------- //
-    @Override
-    public synchronized void periodic() {
-      Constants.Objects.ODOMETRY_LOCKER.lock();
-      Constants.Objects.ODOMETRY_LOCKER.lock();
-    }
-    
-    /* Closes this instance and all held resources immediately */
-    public synchronized void close() {
-      
-    }
-    
-    // --------------------------------------------------------------[Internal]--------------------------------------------------------------- //
-    
-    // --------------------------------------------------------------[Mutators]--------------------------------------------------------------- //
-    
-    // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
-    /**
-     * Retrieves the existing instance of this static utility class
-     * @return Utility class's instance
-     */
-    public static synchronized CannonSubsystem getInstance() {
-        if (java.util.Objects.isNull(Instance))
-            Instance = new CannonSubsystem();
-        return Instance;
-    }
+  }
+  
+  // --------------------------------------------------------------[Internal]--------------------------------------------------------------- //
+  
+  // --------------------------------------------------------------[Mutators]--------------------------------------------------------------- //
+  
+  // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
+  /**
+   * Retrieves the existing instance of this static utility class
+   * @return Utility class's instance
+   */
+  public static synchronized CannonSubsystem getInstance() {
+      if (java.util.Objects.isNull(Instance))
+          Instance = new CannonSubsystem();
+      return Instance;
+  }
 }
