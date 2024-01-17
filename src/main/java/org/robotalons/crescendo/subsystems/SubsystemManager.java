@@ -1,52 +1,38 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
-package org.robotalons.crescendo;
+package org.robotalons.crescendo.subsystems;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-// -------------------------------------------------------------[Robot Container]-----------------------------------------------------------//
+// -----------------------------------------------------------[Subsystem Manager]---------------------------------------------------------------//
 /**
  *
  *
- * <h1>RobotContainer</h1>
+ * <h1>Constants</h1>
  *
- * <p>Utility class which defines all modes of robot's event-cycle throughout it's lifetime.
+ * <p>Contains implementation for subsystems interfacing between each other to receive serialized information./p>
+ *
+ * @see SubsystemBase
+ * @see org.robotalons.crescendo.RobotContainer RobotContainer
  */
-public final class RobotContainer {
+public final class SubsystemManager {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  public static final LoggedDashboardChooser<Command> CommandSelector;
+  
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  private static RobotContainer Instance = (null);
+  private static SubsystemManager Instance;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
-  private RobotContainer() {} static {
-    CommandSelector = new LoggedDashboardChooser<>(("Autonomous Command Selector"), AutoBuilder.buildAutoChooser());
-    configureDefaultCommands();
-    configurePilotKeybinds();
+  private SubsystemManager() {} static {
+    
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
-  /**
-   * Configures subsystem default commands
-   */
-  public static void configureDefaultCommands() {
 
-  }
-
-  /**
-   * Configures the bindings, and preferences for each subsystem driver
-   */
-  private static void configurePilotKeybinds() {
-
-  }  
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Retrieves the existing instance of this static utility class
    * @return Utility class's instance
    */
-  public static synchronized RobotContainer getInstance() {
+  public static synchronized SubsystemManager getInstance() {
       if (java.util.Objects.isNull(Instance)) {
-          Instance = new RobotContainer();
+          Instance = new SubsystemManager();
       }
       return Instance;
   }
