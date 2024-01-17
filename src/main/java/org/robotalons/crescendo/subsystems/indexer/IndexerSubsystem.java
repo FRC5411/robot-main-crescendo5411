@@ -2,9 +2,18 @@
 package org.robotalons.crescendo.subsystems.indexer;
 
 // ---------------------------------------------------------------[Libraries]--------------------------------------------------------------- //
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants;
+import org.robotalons.crescendo.subsystems.indexer.Constants.Measurements;
+import org.robotalons.crescendo.subsystems.indexer.Constants.Ports;
+
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import java.io.Closeable;
+import java.util.List;
 
 // ------------------------------------------------------------[Indexer Subsystem]---------------------------------------------------------- //
 /**
@@ -19,36 +28,44 @@ import java.io.Closeable;
 
 public class IndexerSubsystem extends SubsystemBase implements Closeable {
     // --------------------------------------------------------------[Constants]-------------------------------------------------------------- //
-    //private static final InfraredReceiver ReceiverOne; //placeholder class
-    //private static final InfraredReceiver ReceiverTwo; //placeholder class
-
+    private static CANSparkMax m_IntakeIndexer;     //pulls Note from intake
+    private static CANSparkMax m_ShooterIndexer;    //pushes Note to shooter
+    
     // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
     private static IndexerSubsystem Instance;
-    private static Boolean ContainsNote;
+    private static Boolean HasNote;
+    
+    private static InfraredReceiver IntakeIndexer;  //intake-side IR sensor (placeholder class)
+    private static InfraredReceiver ShooterIndexer; //shooter-side IR sensor (placeholder class)
     
     // ------------------------------------------------------------[Constructors]------------------------------------------------------------- //
-    /* Indexer Subsystem Constructor */
+    /**
+     * Indexer Subsystem Constructor
+     */
     private IndexerSubsystem() {} static {
-        ContainsNote = (false);
-        //ReceiverOne = new InfraredReceiver(port: 0) //placeholder object declaration and port location
-        //ReceiverTwo = new InfraredReceiver(port: 1) //placeholder object declaration and port location
+        Instance = new IndexerSubsystem();
+        HasNote = (false);
+
+        ReceiverOne = new InfraredReceiver(port: 0) //placeholder declaration and port location
+        ReceiverTwo = new InfraredReceiver(port: 1) //placeholder declaration and port location
+
+        m_IntakeIndexer = new CANSparkMax(Constants.INTAKE_INDEXER_MOTOR_ID, MotorType.kBrushless);
+        m_ShooterIndexer = new CANSparkMax(Constants.Ports.SHOOTER_INDEXER_MOTOR_ID, MotorType.kBrushless);
     }
     
     // ---------------------------------------------------------------[Methods]--------------------------------------------------------------- //
     @Override
     public synchronized void periodic() {
-      Constants.Objects.ODOMETRY_LOCKER.lock();
-      //ContainsNote = !(ReceiverOne.status || ReceiverTwo.status); //ContainsNote will be set to true if BOTH beams are broken; OR operator may become an AND operator depending on what is more/less reliable
-      Constants.Objects.ODOMETRY_LOCKER.lock();
+        Constants.Objects.ODOMETRY_LOCKER.lock();
+        HasNote = !(ReceiverOne.status || ReceiverTwo.status); //set to true if BOTH beams are broken (OR may become an AND)
+        Constants.Objects.ODOMETRY_LOCKER.lock();
     }
     
     /* Closes this instance and all held resources immediately */
-    public synchronized void close() {
-      
-    }
+    public synchronized void close() { }
     
     // --------------------------------------------------------------[Internal]--------------------------------------------------------------- //
-    
+
     // --------------------------------------------------------------[Mutators]--------------------------------------------------------------- //
     
     // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
@@ -57,7 +74,7 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
      * @return Boolean of if a note is being held
      */
     public Boolean getHoldingNote() {
-        return ContainsNote;
+        return HasNote;
     }
     
     /**
