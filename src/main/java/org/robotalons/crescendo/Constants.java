@@ -55,4 +55,7 @@ public final class Constants {
     
     );
   }
+  public static final double highAngle = 0;
+  public static final double idleAngle = 0;
+  public static final double lowAngle = 0;
 }
