@@ -16,11 +16,10 @@ public class ClimbArmSubsystem extends SubsystemBase{
     private RelativeEncoder rightEncoder;
 
     public ClimbArmSubsystem(int id1, int id2){
-
-
+        leftEncoder = leftArm.getEncoder();
+        rightEncoder = rightArm.getEncoder();
         leftArm = configure(new CANSparkMax(id1, MotorType.kBrushed));
         rightArm = configure(new CANSparkMax(id1, MotorType.kBrushed));
-
         rightArm.follow(leftArm);
     }
 
