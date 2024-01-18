@@ -231,19 +231,19 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
     if (Demand.omegaRadiansPerSecond > 1e-6 && Demand.vxMetersPerSecond > 1e-6 && Demand.vyMetersPerSecond > 1e-6) {
       set();
     } else {
-      var DiscretizedChassisSpeeds = ChassisSpeeds.discretize(Demand, discretize());
-      var ReferenceStates = KINEMATICS.toSwerveModuleStates(DiscretizedChassisSpeeds);
+      var Discretized = ChassisSpeeds.discretize(Demand, discretize());
+      var Reference = KINEMATICS.toSwerveModuleStates(Discretized);
       SwerveDriveKinematics.desaturateWheelSpeeds(
-        ReferenceStates, 
-        DiscretizedChassisSpeeds, 
+        Reference, 
+        Discretized, 
         Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
         Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
         Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY);
-      Logger.recordOutput(("Drivebase/Reference"), ReferenceStates);
+      Logger.recordOutput(("Drivebase/Reference"), Reference);
       Logger.recordOutput(("Drivebase/Optimized"),
         IntStream.range((0), MODULES.size()).boxed().map(
           (Index) -> 
-            MODULES.get(Index).set(ReferenceStates[Index]))
+            MODULES.get(Index).set(Reference[Index]))
           .toArray(SwerveModuleState[]::new));
     }
   }
