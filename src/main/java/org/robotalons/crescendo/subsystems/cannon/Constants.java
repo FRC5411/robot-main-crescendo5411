@@ -20,7 +20,8 @@ public class Constants {
   }
 
   public static final class Ports {
-
+    public static final Integer LAUNCH_CONTROLLER_ID = (0);
+    public static final Integer DIRECTIONAL_CONTROLLER_ID = (0);
   }
 
   public static final class Objects {

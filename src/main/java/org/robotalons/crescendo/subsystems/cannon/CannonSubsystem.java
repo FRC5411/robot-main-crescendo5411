@@ -1,5 +1,9 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.cannon;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // ------------------------------------------------------------[Cannon Subsystem]-----------------------------------------------------------//
@@ -16,7 +20,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  */
 public class CannonSubsystem extends SubsystemBase {
   // --------------------------------------------------------------[Constants]-------------------------------------------------------------- //
-
+  private static final CANSparkMax DIRECTIONAL_CONTROLLER;
+  private static final CANSparkMax LAUNCH_CONTROLLER;
+  private static final RelativeEncoder DIRECTIONAL_ENCODER;
+  private static final RelativeEncoder LAUNCH_ENCODER;
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
   private static CannonSubsystem Instance;
   
@@ -25,7 +32,10 @@ public class CannonSubsystem extends SubsystemBase {
    * Cannon Subsystem Constructor 
    */
   private CannonSubsystem() {} static {
-
+    DIRECTIONAL_CONTROLLER = new CANSparkMax(Constants.Ports.DIRECTIONAL_CONTROLLER_ID, MotorType.kBrushless);
+    LAUNCH_CONTROLLER = new CANSparkMax(Constants.Ports.LAUNCH_CONTROLLER_ID, MotorType.kBrushless);
+    DIRECTIONAL_ENCODER = DIRECTIONAL_CONTROLLER.getEncoder();
+    LAUNCH_ENCODER = LAUNCH_CONTROLLER.getEncoder();
   }
   
   // ---------------------------------------------------------------[Methods]--------------------------------------------------------------- //
