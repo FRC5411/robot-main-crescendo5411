@@ -40,8 +40,8 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
         INDEXER_INTAKE_RECEIVER = new DigitalInput(Constants.Ports.INDEXER_INTAKE_RECEIVER_ID);
         INDEXER_CANNON_RECEIVER = new DigitalInput(Constants.Ports.INDEXER_CANNON_RECEIVER_ID);
 
-        INDEXER_INTAKE = new CANSparkMax(Constants.Ports.INDEXER_INTAKE_MOTOR_ID, MotorType.kBrushless);
-        INDEXER_CANNON = new CANSparkMax(Constants.Ports.INDEXER_CANNON_MOTOR_ID, MotorType.kBrushless);
+        INDEXER_INTAKE_MOTOR = new CANSparkMax(Constants.Ports.INDEXER_INTAKE_MOTOR_ID, MotorType.kBrushless);
+        INDEXER_CANNON_MOTOR = new CANSparkMax(Constants.Ports.INDEXER_CANNON_MOTOR_ID, MotorType.kBrushless);
     }
     
     // ---------------------------------------------------------------[Methods]--------------------------------------------------------------- //
@@ -56,8 +56,8 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
      * Closes this instance and all held resources immediately 
      */
     public synchronized void close() {
-      INDEXER_INTAKE.close();
-      INDEXER_CANNON.close();
+      INDEXER_INTAKE_MOTOR.close();
+      INDEXER_CANNON_MOTOR.close();
     }
     
     // --------------------------------------------------------------[Internal]--------------------------------------------------------------- //
