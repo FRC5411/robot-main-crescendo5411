@@ -37,7 +37,7 @@ public class PigeonGyroscope extends Gyroscope {
   public PigeonGyroscope(final Boolean PhoenixDrive) {
     GYROSCOPE = new Pigeon2(Constants.Ports.GYROSCOPE_ID);
     YAW_ROTATION = GYROSCOPE.getYaw();
-    YAW_VELOCITY = GYROSCOPE.getAngularVelocityZ();
+    YAW_VELOCITY = GYROSCOPE.getAngularVelocityZWorld();
     GYROSCOPE.getConfigurator().apply(new Pigeon2Configuration());
     GYROSCOPE.getConfigurator().setYaw((0.0));
     YAW_ROTATION.setUpdateFrequency(Constants.Measurements.ODOMETRY_FREQUENCY);
@@ -58,7 +58,7 @@ public class PigeonGyroscope extends Gyroscope {
 
   @Override
   public synchronized void update() {
-    Status.Connected = YAW_VELOCITY.refresh().getError() == StatusCode.OK;
+    Status.Connected = YAW_VELOCITY.refresh().getStatus() == StatusCode.OK;
     Status.YawRotation = Rotation2d.fromDegrees(YAW_ROTATION.getValue());
     Status.YawVelocityRadiansSecond = Units.degreesToRadians(YAW_VELOCITY.getValue());
     Status.PositionDeltas =
