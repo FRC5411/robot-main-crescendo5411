@@ -46,7 +46,7 @@ public final class Robot extends LoggedRobot {
     private static Command AutonomousCommand;
     // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
     private Robot() {} static {
-      AutonomousCommand = null;
+      AutonomousCommand = (null);
       COMMAND_LOGGER = new RepeatCommand(new InstantCommand(() -> {
         if(Logging.LOGGING_ENABLED) {
           Threads.setCurrentThreadPriority((true), (99));

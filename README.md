@@ -1,4 +1,4 @@
-# ![Prosper-Engineering-Team](/Banner.png)
+# ![Prosper-Engineering-Team](resources/Banner.png)
 # Robot-Main-Crescendo: Robotalons Crescendo Season Code
 
 [![Build Status](https://github.com/FRC5411/robot-main-crescendo5411/actions/workflows/Build-Push.yml/badge.svg?branch=Production)](https://github.com/FRC5411/robot-main-crescendo5411/actions/workflows/Build-Push.yml)
