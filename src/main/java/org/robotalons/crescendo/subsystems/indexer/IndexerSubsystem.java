@@ -72,23 +72,39 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
     }
     // --------------------------------------------------------------[Mutators]--------------------------------------------------------------- //
     /**
-     * Indexer moves a game pice a given direction through the indexer subsystem given a direction, e.g. Backward Indexer would mean pulling a 
-     * held game piece from the indexing chamber back out to the indexer.
+     * Indexer moves a game piece a given direction through the indexer subsystem given a direction, e.g. Backward Indexer would mean pulling 
+     * a held game piece from the indexing chamber back out to the intake.
      * @param Demand Directional Demand, which way for a game piece to be moved.
      */
     public synchronized void set(final Direction Demand) {
-      switch(Demand) {
-        case BACKWARD_INDEXER:
-          break;
-        case BACKWARD_CANNON:
-          break;
-        case FORWARD_INDEXER:
-          break;
-        case FORWARD_CANNON:
-          break;
-        default:
-          break;
-      }
+        switch(Demand) {
+            case FORWARD_INDEXER:
+            //^ will be called by the intake subsystem after completing a pickup.
+                if (!(getHoldingNote())) {
+                    //(INDEXER_INTAKE_MOTOR) spin at (INDEXER_INTAKE_MOTOR_SPEED) for (INDEXER_INTAKE_MOTOR_DURATION);\
+                }
+                break;
+            case FORWARD_CANNON:
+            //^ will be called by the cannon subsystem in order to put a Note in firing position.
+                if (getHoldingNote()) {
+                    //(INDEXER_CANNON_MOTOR) spin at (INDEXER_CANNON_MOTOR_SPEED) for (INDEXER_CANNON_MOTOR_DURATION);
+                    //[Tell cannon subsystem to continue with fire sequence];
+                }
+                else {
+                    //[Tell cannon subsystem to abort fire sequence]
+                }
+                break;
+            case BACKWARD_INDEXER:
+            //^ will be called by the operator/copilot if a Note needs to be put back on the ground (e.g. Note jammed in singulator).
+                if (getHoldingNote())
+                {
+                    //(INDEXER_INTAKE_MOTOR) spins at negative (INDEXER_INTAKE_MOTOR_SPEED) for (INDEXER_INTAKE_MOTOR_DURATION);
+                    //[Tell intake motors to go through intake sequence backwards (negative speed, same time, etc etc)];
+                }
+                break;
+            default:
+                break;
+        }
     }
     // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
     /**
