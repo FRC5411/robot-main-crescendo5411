@@ -25,9 +25,9 @@ import java.util.Queue;
  */
 public class PigeonGyroscope extends Gyroscope {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  private final Pigeon2 GYROSCOPE = new Pigeon2(Constants.Ports.GYROSCOPE_ID);
-  private final StatusSignal<Double> YAW_ROTATION = GYROSCOPE.getYaw();
-  private final StatusSignal<Double> YAW_VELOCITY = GYROSCOPE.getAngularVelocityZ();
+  private final Pigeon2 GYROSCOPE;
+  private final StatusSignal<Double> YAW_ROTATION;
+  private final StatusSignal<Double> YAW_VELOCITY;
   private final Queue<Double> YAW_ROTATION_QUEUE;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
@@ -35,6 +35,9 @@ public class PigeonGyroscope extends Gyroscope {
    * @param PhoenixDrive Whether or not this gyroscope is based on a CTRE or REV drivebase
    */
   public PigeonGyroscope(final Boolean PhoenixDrive) {
+    GYROSCOPE = new Pigeon2(Constants.Ports.GYROSCOPE_ID);
+    YAW_ROTATION = GYROSCOPE.getYaw();
+    YAW_VELOCITY = GYROSCOPE.getAngularVelocityZ();
     GYROSCOPE.getConfigurator().apply(new Pigeon2Configuration());
     GYROSCOPE.getConfigurator().setYaw((0.0));
     YAW_ROTATION.setUpdateFrequency(Constants.Measurements.ODOMETRY_FREQUENCY);

@@ -31,10 +31,6 @@ public final class Constants {
   public static final class Subsystems {
     public static final Field2d ROBOT_FIELD = new Field2d();
     public static final Boolean IS_REAL_ROBOT = RobotBase.isReal();
-    public static final DrivebaseSubsystem DRIVEBASE_SUBSYSTEM = DrivebaseSubsystem.getInstance();
-    public static final Set<Subsystem> SUBSYSTEMS = Set.of(
-      DrivebaseSubsystem.getInstance()
-    );
   }
 
   public static final class Logging {

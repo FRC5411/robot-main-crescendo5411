@@ -5,7 +5,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 
-import com.ctre.phoenix.sensors.WPI_CANCoder;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -69,7 +69,7 @@ public static final class Measurements {
         static {
           CONSTANTS.LINEAR_CONTROLLER = new CANSparkMax(LINEAR_CONTROLLER_ID, MotorType.kBrushless);
           CONSTANTS.ROTATIONAL_CONTROLLER = new CANSparkMax(ROTATIONAL_CONTROLLER_ID, MotorType.kBrushless);
-          CONSTANTS.ABSOLUTE_ENCODER = new WPI_CANCoder(ABSOLUTE_ENCODER_ID);
+          CONSTANTS.ABSOLUTE_ENCODER = new CANcoder(ABSOLUTE_ENCODER_ID);
           CONSTANTS.LINEAR_CONTROLLER_PID = new PIDController(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
           CONSTANTS.ROTATIONAL_CONTROLLER_PID = new PIDController(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
           CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD = new SimpleMotorFeedforward(LINEAR_KS_GAIN, LINEAR_KV_GAIN, LINEAR_KA_GAIN);
@@ -96,7 +96,7 @@ public static final class Measurements {
         static {
           CONSTANTS.LINEAR_CONTROLLER = new CANSparkMax(LINEAR_CONTROLLER_ID, MotorType.kBrushless);
           CONSTANTS.ROTATIONAL_CONTROLLER = new CANSparkMax(ROTATIONAL_CONTROLLER_ID, MotorType.kBrushless);
-          CONSTANTS.ABSOLUTE_ENCODER = new WPI_CANCoder(ABSOLUTE_ENCODER_ID);
+          CONSTANTS.ABSOLUTE_ENCODER = new CANcoder(ABSOLUTE_ENCODER_ID);
           CONSTANTS.LINEAR_CONTROLLER_PID = new PIDController(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
           CONSTANTS.ROTATIONAL_CONTROLLER_PID = new PIDController(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
           CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD = new SimpleMotorFeedforward(LINEAR_KS_GAIN, LINEAR_KV_GAIN, LINEAR_KA_GAIN);
@@ -123,7 +123,7 @@ public static final class Measurements {
         static {
           CONSTANTS.LINEAR_CONTROLLER = new CANSparkMax(LINEAR_CONTROLLER_ID, MotorType.kBrushless);
           CONSTANTS.ROTATIONAL_CONTROLLER = new CANSparkMax(ROTATIONAL_CONTROLLER_ID, MotorType.kBrushless);
-          CONSTANTS.ABSOLUTE_ENCODER = new WPI_CANCoder(ABSOLUTE_ENCODER_ID);
+          CONSTANTS.ABSOLUTE_ENCODER = new CANcoder(ABSOLUTE_ENCODER_ID);
           CONSTANTS.LINEAR_CONTROLLER_PID = new PIDController(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
           CONSTANTS.ROTATIONAL_CONTROLLER_PID = new PIDController(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
           CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD = new SimpleMotorFeedforward(LINEAR_KS_GAIN, LINEAR_KV_GAIN, LINEAR_KA_GAIN);
@@ -150,7 +150,7 @@ public static final class Measurements {
         static {
           CONSTANTS.LINEAR_CONTROLLER = new CANSparkMax(LINEAR_CONTROLLER_ID, MotorType.kBrushless);
           CONSTANTS.ROTATIONAL_CONTROLLER = new CANSparkMax(ROTATIONAL_CONTROLLER_ID, MotorType.kBrushless);
-          CONSTANTS.ABSOLUTE_ENCODER = new WPI_CANCoder(ABSOLUTE_ENCODER_ID);
+          CONSTANTS.ABSOLUTE_ENCODER = new CANcoder(ABSOLUTE_ENCODER_ID);
           CONSTANTS.LINEAR_CONTROLLER_PID = new PIDController(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
           CONSTANTS.ROTATIONAL_CONTROLLER_PID = new PIDController(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
           CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD = new SimpleMotorFeedforward(LINEAR_KS_GAIN, LINEAR_KV_GAIN, LINEAR_KA_GAIN);
