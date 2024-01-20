@@ -1,16 +1,13 @@
 name: Gradle Build
 
 on:
-  [push, fork, pull_request]
+  [push, pull_request, fork]
 
 jobs:
   build:
-
+    name: Build Project
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: read
-
+    container: wpilib/roborio-cross-ubuntu:2024-22.04
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
@@ -18,15 +15,9 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        server-id: github
-        settings-path: ${{ github.workspace }} 
     - name: Grant execute permission
       run: chmod +x gradlew
     - name: Build with Gradle
       uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25
       with:
-        arguments: build
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-      env:
-        GITHUB_USERNAME: ${{ github.actor }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        arguments: build --scan
