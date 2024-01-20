@@ -16,17 +16,17 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Constants {
   // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
   public static final class Measurements {
-    public static final Double INTAKE_INDEXER_MOTOR_SPEED = (1d);    
-    public static final Double CANNON_INDEXER_MOTOR_SPEED = (1d);     
-    public static final Double INTAKE_INDEXER_MOTOR_DURATION = (1d);   
-    public static final Double CANNON_INDEXER_MOTOR_DURATION = (1d); 
+    public static final Double INDEXER_INTAKE_MOTOR_SPEED = (1d);
+    public static final Double INDEXER_CANNON_MOTOR_SPEED = (1d);
+    public static final Double INDEXER_INTAKE_MOTOR_DURATION = (1d);
+    public static final Double INDEXER_CANNON_MOTOR_DURATION = (1d);
   }
 
   public static final class Ports {
-    public static final Integer INTAKE_INDEXER_MOTOR_ID = (0); 
-    public static final Integer CANNON_INDEXER_MOTOR_ID = (1); 
-    public static final Integer INTAKE_INDEXER_RECEIVER_ID = (0); 
-    public static final Integer CANNON_INDEXER_RECEIVER_ID = (1); 
+    public static final Integer INDEXER_INTAKE_MOTOR_ID = (0);
+    public static final Integer INDEXER_CANNON_MOTOR_ID = (1);
+    public static final Integer INDEXER_INTAKE_RECEIVER_ID = (0);
+    public static final Integer INDEXER_CANNON_RECEIVER_ID = (1);
   }
 
   public static final class Objects {

@@ -2,7 +2,7 @@
 package org.robotalons.crescendo.subsystems.indexer;
 // ---------------------------------------------------------------[Libraries]--------------------------------------------------------------- //
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.AnalogTrigger;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -22,10 +22,10 @@ import java.io.Closeable;
 
 public class IndexerSubsystem extends SubsystemBase implements Closeable {
     // --------------------------------------------------------------[Constants]-------------------------------------------------------------- //
-    private static final CANSparkMax INTAKE_INDEXER;  
-    private static final CANSparkMax CANNON_INDEXER;
-    private static final AnalogTrigger INTAKE_RECEIVER;
-    private static final AnalogTrigger CANNON_RECEIVER;
+    private static final CANSparkMax INDEXER_INTAKE_MOTOR;  
+    private static final CANSparkMax INDEXER_CANNON_MOTOR;
+    private static final DigitalInput INDEXER_INTAKE_RECEIVER;
+    private static final DigitalInput INDEXER_CANNON_RECEIVER;
     // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
     private static IndexerSubsystem Instance;
     private static Boolean HasNote;
@@ -37,18 +37,18 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
         Instance = new IndexerSubsystem();
         HasNote = (false);
 
-        INTAKE_RECEIVER = new AnalogTrigger(Constants.Ports.INTAKE_INDEXER_RECEIVER_ID);
-        CANNON_RECEIVER = new AnalogTrigger(Constants.Ports.CANNON_INDEXER_RECEIVER_ID);
+        INDEXER_INTAKE_RECEIVER = new DigitalInput(Constants.Ports.INDEXER_INTAKE_RECEIVER_ID);
+        INDEXER_CANNON_RECEIVER = new DigitalInput(Constants.Ports.INDEXER_CANNON_RECEIVER_ID);
 
-        INTAKE_INDEXER = new CANSparkMax(Constants.Ports.INTAKE_INDEXER_MOTOR_ID, MotorType.kBrushless);
-        CANNON_INDEXER = new CANSparkMax(Constants.Ports.CANNON_INDEXER_MOTOR_ID, MotorType.kBrushless);
+        INDEXER_INTAKE = new CANSparkMax(Constants.Ports.INDEXER_INTAKE_MOTOR_ID, MotorType.kBrushless);
+        INDEXER_CANNON = new CANSparkMax(Constants.Ports.INDEXER_CANNON_MOTOR_ID, MotorType.kBrushless);
     }
     
     // ---------------------------------------------------------------[Methods]--------------------------------------------------------------- //
     @Override
     public synchronized void periodic() {
       Constants.Objects.ODOMETRY_LOCKER.lock();
-      HasNote = !(INTAKE_RECEIVER.getInWindow()|| CANNON_RECEIVER.getInWindow());
+      HasNote = !(INDEXER_INTAKE_RECEIVER.get()|| INDEXER_CANNON_RECEIVER.get());
       Constants.Objects.ODOMETRY_LOCKER.lock();
     }
     
@@ -56,8 +56,8 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
      * Closes this instance and all held resources immediately 
      */
     public synchronized void close() {
-      INTAKE_INDEXER.close();
-      CANNON_INDEXER.close();
+      INDEXER_INTAKE.close();
+      INDEXER_CANNON.close();
     }
     
     // --------------------------------------------------------------[Internal]--------------------------------------------------------------- //
