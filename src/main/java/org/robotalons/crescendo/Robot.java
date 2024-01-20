@@ -156,10 +156,10 @@ public final class Robot extends LoggedRobot {
     // ------------------------------------------------------------[Autonomous]---------------------------------------------------------------//
     @Override
     public void autonomousInit() {
-      // AutonomousCommand = RobotContainer.CommandSelector.get();
-      // if(!java.util.Objects.isNull(AutonomousCommand)) {
-      //   AutonomousCommand.schedule();
-      // }
+      AutonomousCommand = RobotContainer.CommandSelector.get();
+      if(!java.util.Objects.isNull(AutonomousCommand)) {
+        AutonomousCommand.schedule();
+      }
     }
 
     @Override
