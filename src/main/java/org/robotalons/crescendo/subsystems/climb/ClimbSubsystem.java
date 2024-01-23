@@ -4,13 +4,13 @@ package org.robotalons.crescendo.subsystems.climb;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import org.littletonrobotics.junction.Logger;
-
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMax.ControlType;
+
+import org.littletonrobotics.junction.Logger;
 
 // ---------------------------------------------------------------[Libraries]--------------------------------------------------------------- //
 
@@ -41,7 +41,7 @@ public class ClimbSubsystem extends SubsystemBase {
   /**
    * Indexer Subsystem Constructor
    */
-  private ClimbSubsystem() {} static {
+  public ClimbSubsystem() {} static {
     LEFT_CONTROLLER = new CANSparkMax(Constants.Ports.LEFT_ARM_CONTROLLER_ID, MotorType.kBrushless);
     RIGHT_CONTROLLER = new CANSparkMax(Constants.Ports.RIGHT_ARM_CONTROLLER_ID, MotorType.kBrushless);
     LEFT_ENCODER = LEFT_CONTROLLER.getEncoder();

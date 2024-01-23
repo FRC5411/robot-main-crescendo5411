@@ -22,20 +22,20 @@ public class Constants {
     public static final Double MID_PRESET = (0d);
     public static final Double LOW_PRESET = (0d);
 
-    public static final Double LEFT_ARM_P = (0d);
+    public static final Double LEFT_ARM_P = (0.001d);
     public static final Double LEFT_ARM_I = (0d);
     public static final Double LEFT_ARM_D = (0d);
 
-    public static final Double LEFT_ARM_KS = (0d);
+    public static final Double LEFT_ARM_KS = (0.001d);
     public static final Double LEFT_ARM_KV = (0d);
     public static final Double LEFT_ARM_KA = (0d);
     public static final Double LEFT_ARM_KG = (0d);
 
-    public static final Double RIGHT_ARM_P = (0d);
+    public static final Double RIGHT_ARM_P = (0.001d);
     public static final Double RIGHT_ARM_I = (0d);
     public static final Double RIGHT_ARM_D = (0d);
 
-    public static final Double RIGHT_ARM_KS = (0d);
+    public static final Double RIGHT_ARM_KS = (0.001d);
     public static final Double RIGHT_ARM_KV = (0d);
     public static final Double RIGHT_ARM_KA = (0d);
     public static final Double RIGHT_ARM_KG = (0d);
