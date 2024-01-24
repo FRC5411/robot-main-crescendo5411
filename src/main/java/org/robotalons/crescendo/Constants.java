@@ -45,13 +45,14 @@ public final class Constants {
   }
 
   public static final class Odometry {
-    public static final Lock ODOMETRY_LOCK = new ReentrantLock();
-    public static final CTREOdometryThread CTRE_ODOMETRY_THREAD = CTREOdometryThread.create(ODOMETRY_LOCK);
-    public static final REVOdometryThread REV_ODOMETRY_THREAD = REVOdometryThread.create(ODOMETRY_LOCK);
+    public static final Lock CTRE_ODOMETRY_LOCK = new ReentrantLock();
+    public static final Lock REV_ODOMETRY_LOCK = new ReentrantLock();
+    public static final CTREOdometryThread CTRE_ODOMETRY_THREAD = CTREOdometryThread.create(CTRE_ODOMETRY_LOCK);
+    public static final REVOdometryThread REV_ODOMETRY_THREAD = REVOdometryThread.create(REV_ODOMETRY_LOCK);
   }
 
   public static final class Ports {
-    public static final Integer POWER_DISTRIBUTION_HUB = (0);
+    public static final Integer POWER_DISTRIBUTION_HUB = (1);
   }
 
   public static final class Profiles { 

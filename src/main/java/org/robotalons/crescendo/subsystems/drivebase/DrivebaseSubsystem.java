@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.drivebase;
-// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -23,12 +24,16 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.robotalons.crescendo.Constants.Profiles.KeybindingNames;
+import org.robotalons.crescendo.Constants.Profiles.PreferenceNames;
+import org.robotalons.crescendo.RobotContainer;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Devices;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Objects;
 import org.robotalons.lib.motion.actuators.Module;
 import org.robotalons.lib.motion.pathfinding.LocalADStarAK;
 import org.robotalons.lib.motion.sensors.Gyroscope;
+import org.robotalons.lib.utilities.PilotProfile;
 
 import java.io.Closeable;
 import java.util.List;
@@ -60,6 +65,7 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
   private static Boolean Module_Locking;      
   private static Boolean Path_Flipped;  
   private static Double Current_Time;
+  private static PilotProfile Current_Pilot;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Drivebase Subsystem Constructor.
@@ -121,12 +127,15 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
         (ActivePath) -> Logger.recordOutput(("Drivebase/Trajectory"), ActivePath.toArray(new Pose2d[0])));
       PathPlannerLogging.setLogTargetPoseCallback(
         (TargetPose) -> Logger.recordOutput(("Drivebase/Reference"), TargetPose));
+      MODULES.forEach((Module) -> 
+        Module.set(org.robotalons.lib.motion.actuators.Module.ReferenceType.STATE_CONTROL));
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   public synchronized void periodic() {
     Objects.ODOMETRY_LOCK.lock();
-    MODULES.forEach(Module::update);
+    MODULES.forEach(Module::periodic);
     GYROSCOPE.update();    
+    Logger.recordOutput(("Drivebase/Measurements"),getModuleMeasurements());
     if (DriverStation.isDisabled()) {
       MODULES.forEach(Module::cease);
     }
@@ -150,9 +159,7 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
         Odometry_Rotation = GyroRotationDelta;
       }
       Odometry_Pose = Odometry_Pose.exp(TwistDelta);    
-      var LocalizedTime = Timer.getFPGATimestamp();  
-      POSE_ESTIMATOR.updateWithTime(
-        LocalizedTime,
+      POSE_ESTIMATOR.update(
         Odometry_Rotation,
         WheelDeltas
       );
@@ -203,6 +210,29 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
   }
 
   /**
+   * Configures a pilot to operate this given subsystem.
+   */
+  public static final void configure(final PilotProfile Pilot) {
+    Current_Pilot = Pilot;
+    DrivebaseSubsystem.getInstance().setDefaultCommand(
+      new InstantCommand(() ->
+      DrivebaseSubsystem.set(
+        new Translation2d(
+          RobotContainer.applyInputSquare(MathUtil.applyDeadband(-(Double) Current_Pilot.getPreference(PreferenceNames.TRANSLATIONAL_X_INPUT),
+        (Double) Current_Pilot.getPreference(PreferenceNames.TRANSLATIONAL_X_DEADZONE))),
+          RobotContainer.applyInputSquare(MathUtil.applyDeadband(-(Double) Current_Pilot.getPreference(PreferenceNames.TRANSLATIONAL_Y_INPUT),
+        (Double) Current_Pilot.getPreference(PreferenceNames.TRANSLATIONAL_Y_DEADZONE)))),
+        new Rotation2d(
+          RobotContainer.applyInputSquare(MathUtil.applyDeadband(-(Double) Current_Pilot.getPreference(PreferenceNames.ORIENTATION_INPUT),
+        (Double) Current_Pilot.getPreference(PreferenceNames.ORIENTATION_DEADZONE))))), 
+        DrivebaseSubsystem.getInstance()
+    ));
+    Current_Pilot.getKeybinding(KeybindingNames.ORIENTATION_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleOrientationType, DrivebaseSubsystem.getInstance()));
+    Current_Pilot.getKeybinding(KeybindingNames.MODULE_LOCKING_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleModuleLocking, DrivebaseSubsystem.getInstance()));
+    Current_Pilot.getKeybinding(KeybindingNames.PATHFINDING_FLIP_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::togglePathFlipped, DrivebaseSubsystem.getInstance()));
+  }
+
+  /**
    * Toggles between the if modules she go into a locking format when idle or not
    */
   public static synchronized void toggleModuleLocking() {
@@ -228,7 +258,7 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
    * @param Demand Chassis speeds object which represents the demand speeds of the drivebase
    */
   public static synchronized void set(final ChassisSpeeds Demand) {
-    if (Demand.omegaRadiansPerSecond > 1e-6 && Demand.vxMetersPerSecond > 1e-6 && Demand.vyMetersPerSecond > 1e-6) {
+    if (Demand.omegaRadiansPerSecond > (1e-6) && Demand.vxMetersPerSecond > (1e-6) && Demand.vyMetersPerSecond > (1e-6)) {
       set();
     } else {
       var Discretized = ChassisSpeeds.discretize(Demand, discretize());
@@ -254,8 +284,8 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
    * @param Rotation    Demand rotation in two-dimensional space
    * @param Mode        Type of demand being made
    */
-  public static synchronized void set(final Translation2d Translation, final Rotation2d Rotation, final OrientationMode Mode) {
-    switch(Mode) {
+  public static synchronized void set(final Translation2d Translation, final Rotation2d Rotation) {
+    switch(Control_Mode) {
       case OBJECT_ORIENTED:
         //TODO: AUTOMATION TEAM
         break;      
@@ -296,6 +326,13 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
     Odometry_Pose = Pose;
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
+  /**
+   * Provides the current pilot of the drivebase
+   * @return Pilot of this subsystem
+   */
+  public static PilotProfile getPilot() {
+    return Current_Pilot;
+  }
   /**
    * Provides the current position of the drivebase in space
    * @return Pose2d of Robot drivebase
