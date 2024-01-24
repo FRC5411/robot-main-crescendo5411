@@ -33,9 +33,7 @@ public final class RobotContainer {
     final var DrivebasePilotChooser = new SendableChooser<PilotProfile>();
     final var PilotIterator = Profiles.PILOT_PROFILES.iterator();
     final var PilotInitial = PilotIterator.next();
-    PilotIterator.forEachRemaining((Profile) -> {
-      DrivebasePilotChooser.addOption(Profile.getName(), Profile);
-    });
+    PilotIterator.forEachRemaining((Profile) -> DrivebasePilotChooser.addOption(Profile.getName(), Profile));
     DrivebasePilotChooser.setDefaultOption(PilotInitial.getName(), PilotInitial);
     DrivebasePilotChooser.onChange(DrivebaseSubsystem::configure);
     DrivebaseSubsystem.configure(PilotInitial);

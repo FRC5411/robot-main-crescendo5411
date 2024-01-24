@@ -36,11 +36,11 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * REV Odometry Thread Constructor.
-   * @param OdometryLocker Appropriate Reentrance Locker for Odometry
+   * @param OdometryLocker Appropriate Reentrancy Locker for Odometry
    */
   private REVOdometryThread(Lock OdometryLocker) {
     ODOMETRY_LOCK = OdometryLocker;
-    NOTIFIER = new Notifier(this::run);
+    NOTIFIER = new Notifier(this);
     NOTIFIER.setName(("REVOdometryThread"));
     start();
   } static {
@@ -77,7 +77,7 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   }
 
   public synchronized void start() {
-    if (TIMESTAMPS.size() > (0)) {
+    if (!TIMESTAMPS.isEmpty()) {
       NOTIFIER.startPeriodic((1d)/ Frequency);
     }
   }
@@ -96,12 +96,8 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
     try {
       var SignalIterator = SIGNALS.iterator();
       final var RealTimestamp = Logger.getRealTimestamp() / (1e6);
-      QUEUES.forEach((Queue) -> {
-        Queue.offer(SignalIterator.next().getAsDouble());
-      });
-      TIMESTAMPS.forEach((Timestamp) -> {
-        Timestamp.offer(RealTimestamp);
-      });
+      QUEUES.forEach((Queue) -> Queue.offer(SignalIterator.next().getAsDouble()));
+      TIMESTAMPS.forEach((Timestamp) -> Timestamp.offer(RealTimestamp));
     } finally {
       ODOMETRY_LOCK.unlock();
     }

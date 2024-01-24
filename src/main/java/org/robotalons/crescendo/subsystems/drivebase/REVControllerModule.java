@@ -48,7 +48,6 @@ public final class REVControllerModule extends Module {
   private final Lock ODOMETRY_LOCK;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private ReferenceType ReferenceMode;
-  private Double CurrentPosition;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * REV Controller Module Constructor
@@ -57,7 +56,6 @@ public final class REVControllerModule extends Module {
   public REVControllerModule(final ModuleConstants Constants) {
     super(Constants);
     ReferenceMode = ReferenceType.STATE_CONTROL;
-    CurrentPosition = (0.0);
     CONSTANTS = Constants;
     
     CONSTANTS.LINEAR_CONTROLLER.restoreFactoryDefaults();
@@ -67,7 +65,7 @@ public final class REVControllerModule extends Module {
 
     try {
       Thread.sleep((1000));
-    } catch (final InterruptedException Exception) {}
+    } catch (final InterruptedException Ignored) {}
 
     CONSTANTS.LINEAR_CONTROLLER.setCANTimeout((250));
     CONSTANTS.ROTATIONAL_CONTROLLER.setCANTimeout((250));
@@ -119,7 +117,6 @@ public final class REVControllerModule extends Module {
     public PIDController LINEAR_CONTROLLER_PID;
     public CANSparkMax ROTATIONAL_CONTROLLER; 
     public CANSparkMax LINEAR_CONTROLLER;
-    public Rotation2d ROTATIONAL_OFFSET;
     public CANcoder ABSOLUTE_ENCODER;
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
@@ -198,7 +195,7 @@ public final class REVControllerModule extends Module {
     DELTAS.clear();
     TIMESTAMPS.clear();
     IntStream.range((0), Math.min(Status.OdometryLinearPositionsRadians.length, Status.OdometryAzimuthPositions.length)).forEach((Index) -> {
-      DELTAS.add(new SwerveModulePosition((getLinearPosition() - CurrentPosition), getRelativeRotation()));
+      DELTAS.add(new SwerveModulePosition(getLinearPosition(), getRelativeRotation()));
       TIMESTAMPS.add(Status.OdometryTimestamps[Index]);
     });
 

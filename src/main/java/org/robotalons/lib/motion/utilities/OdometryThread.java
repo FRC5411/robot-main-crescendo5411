@@ -13,7 +13,7 @@ import java.util.Queue;
  * @author Cody Washington
  * 
  */
-public interface OdometryThread<SignalType extends Object> extends Runnable, Closeable {
+public interface OdometryThread<SignalType> extends Runnable, Closeable {
   // ---------------------------------------------------------------[Abstract]--------------------------------------------------------------//
   /**
    * Registers a new signal updated at a frequency with the frequency manager.

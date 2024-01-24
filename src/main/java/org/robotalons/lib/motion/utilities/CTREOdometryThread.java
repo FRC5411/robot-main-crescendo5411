@@ -42,7 +42,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Phoenix Odometry Thread Constructor.
-   * @param OdometryLocker Appropriate Reentrance Locker for Odometry
+   * @param OdometryLocker Appropriate Reentrancy Locker for Odometry
    */
   private CTREOdometryThread(Lock OdometryLocker) {
     ODOMETRY_LOCK = OdometryLocker;
@@ -61,7 +61,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
   public synchronized void start() {
-    if (TIMESTAMPS.size() > (0)) {
+    if (!TIMESTAMPS.isEmpty()) {
       super.start();
     }
   }
@@ -72,7 +72,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
     ODOMETRY_LOCK.lock();
     try {
       List<StatusSignal<Double>> UniqueSignals = new ArrayList<>();
-      System.arraycopy(Signals, (0), UniqueSignals, (0), Signals.size());
+      System.arraycopy(Signals.toArray(StatusSignal[]::new), (0), UniqueSignals.toArray(StatusSignal[]::new), (0), Signals.size());
       UniqueSignals.add(Signal);
       Signals = UniqueSignals;
       QUEUES.add(Queue);
@@ -125,20 +125,14 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
       ODOMETRY_LOCK.lock();
       try {
         final var SignalIterator = Signals.iterator();
-        var RealTimestamp = new AtomicReference<Double>(Logger.getRealTimestamp() / 1e6);
-        var SummativeLatency = new AtomicReference<Double>((0d));
-        Signals.forEach((Signal) -> {
-          SummativeLatency.set(SummativeLatency.get() + Signal.getTimestamp().getLatency());
-        });
-        if (Signals.size() > (0)) {
+        var RealTimestamp = new AtomicReference<>(Logger.getRealTimestamp() / 1e6);
+        var SummativeLatency = new AtomicReference<>((0d));
+        Signals.forEach((Signal) -> SummativeLatency.set(SummativeLatency.get() + Signal.getTimestamp().getLatency()));
+        if (!Signals.isEmpty()) {
           RealTimestamp.set(RealTimestamp.get() - SummativeLatency.get() / Signals.size());
         }
-        QUEUES.forEach((Queue) -> {
-          Queue.offer(SignalIterator.next().getValue());
-        });       
-        TIMESTAMPS.forEach((Timestamp) -> {
-          Timestamp.offer(RealTimestamp.get());
-        });
+        QUEUES.forEach((Queue) -> Queue.offer(SignalIterator.next().getValue()));
+        TIMESTAMPS.forEach((Timestamp) -> Timestamp.offer(RealTimestamp.get()));
       } finally {
         ODOMETRY_LOCK.unlock();
       }

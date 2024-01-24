@@ -210,7 +210,7 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
   /**
    * Configures a pilot to operate this given subsystem.
    */
-  public static final void configure(final PilotProfile Pilot) {
+  public static void configure(final PilotProfile Pilot) {
     Current_Pilot = Pilot;
     DrivebaseSubsystem.getInstance().setDefaultCommand(
       new InstantCommand(() ->
@@ -231,7 +231,7 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
   }
 
   /**
-   * Toggles between the if modules she go into a locking format when idle or not
+   * Toggles between the modules should go into a locking format when idle or not
    */
   public static synchronized void toggleModuleLocking() {
     Module_Locking = !Module_Locking;
@@ -259,11 +259,11 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
     if (Demand.omegaRadiansPerSecond > (1e-6) && Demand.vxMetersPerSecond > (1e-6) && Demand.vyMetersPerSecond > (1e-6)) {
       set();
     } else {
-      var Discretized = ChassisSpeeds.discretize(Demand, discretize());
-      var Reference = KINEMATICS.toSwerveModuleStates(Discretized);
+      var Discrete = ChassisSpeeds.discretize(Demand, discretize());
+      var Reference = KINEMATICS.toSwerveModuleStates(Discrete);
       SwerveDriveKinematics.desaturateWheelSpeeds(
         Reference, 
-        Discretized, 
+        Discrete,
         Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
         Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
         Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY);
@@ -280,7 +280,6 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
    * Drives the robot provided translation and rotational demands
    * @param Translation Demand translation in two-dimensional space
    * @param Rotation    Demand rotation in two-dimensional space
-   * @param Mode        Type of demand being made
    */
   public static synchronized void set(final Translation2d Translation, final Rotation2d Rotation) {
     switch(Control_Mode) {

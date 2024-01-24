@@ -132,7 +132,7 @@ public abstract class Module implements Closeable {
 
   /**
    * Provides the current absolute rotation of the module rotational axis
-   * @return Rotational axis heading as a absolute {@link Rotation2d} object
+   * @return Rotational axis heading as an absolute {@link Rotation2d} object
    */
   public abstract Rotation2d getAbsoluteRotation();
 

@@ -39,8 +39,8 @@ public static final class Measurements {
     public static final Double ROBOT_MAXIMUM_LINEAR_VELOCITY = Units.feetToMeters((15.4));
     public static final Double ROBOT_MAXIMUM_ANGULAR_VELOCITY = ROBOT_MAXIMUM_LINEAR_VELOCITY / ROBOT_RADIUS_METERS;
 
-    public static final Double ROBOT_LINEAR_GEAR_RATIO = ((6.75) / 1.0);
-    public static final Double ROBOT_ROTATION_GEAR_RATIO = (((150.0)/(7.0)) / 1.0);
+    public static final Double ROBOT_LINEAR_GEAR_RATIO = ((6.75));
+    public static final Double ROBOT_ROTATION_GEAR_RATIO = (((150.0) / (7.0)));
 
     public static final Double ROBOT_TRANSLATION_KP = (1d);
     public static final Double ROBOT_TRANSLATION_KI = (1d);
