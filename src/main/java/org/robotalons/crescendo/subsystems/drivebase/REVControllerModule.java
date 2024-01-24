@@ -148,7 +148,7 @@ public final class REVControllerModule extends Module {
     Status.LinearCurrentAmperage = 
       new double[] {CONSTANTS.LINEAR_CONTROLLER.getOutputCurrent()};
     Status.RotationalAbsolutePosition = 
-      Rotation2d.fromRadians(CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValue() * (2 * Math.PI));
+      Rotation2d.fromRotations(CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValue());
     Status.RotationalRelativePosition =
         Rotation2d.fromRotations(ROTATIONAL_ENCODER.getPosition() / CONSTANTS.ROTATION_GEAR_RATIO);
     Status.RotationalVelocityRadiansSecond =
@@ -188,6 +188,7 @@ public final class REVControllerModule extends Module {
         break;
       case DISABLED:
         cease();
+        break;
       case CLOSED:
         close();
         break;
@@ -208,13 +209,13 @@ public final class REVControllerModule extends Module {
   }
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
   @Override
-  public SwerveModuleState set(SwerveModuleState Reference) {
+  public SwerveModuleState set(final SwerveModuleState Reference) {
     this.Reference = SwerveModuleState.optimize(Reference, getAbsoluteRotation());
     return this.Reference;
   }
 
   @Override
-  public void set(ReferenceType Mode) {
+  public void set(final ReferenceType Mode) {
     ReferenceMode = Mode;
   }
 
