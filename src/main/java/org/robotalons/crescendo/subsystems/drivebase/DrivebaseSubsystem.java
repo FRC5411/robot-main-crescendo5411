@@ -160,6 +160,7 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
       }
       POSE_ESTIMATOR.updateWithTime(Timestamps.get(DeltaIndex), Gyroscope_Rotation_Delta, WheelDeltas);
     });
+    //TODO: AUTOMATION TEAM (VISION MEASUREMENTS)
     org.robotalons.crescendo.Constants.Subsystems.ROBOT_FIELD.setRobotPose(getPose());
   }
 
@@ -284,7 +285,7 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
   public static synchronized void set(final Translation2d Translation, final Rotation2d Rotation) {
     switch(Control_Mode) {
       case OBJECT_ORIENTED:
-        //TODO: AUTOMATION TEAM
+        //TODO: AUTOMATION TEAM (OBJECT ORIENTATION DRIVEBASE)
         break;      
       case ROBOT_ORIENTED:
         set(new ChassisSpeeds(
