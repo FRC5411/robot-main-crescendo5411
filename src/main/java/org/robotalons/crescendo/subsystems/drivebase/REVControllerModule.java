@@ -8,9 +8,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
@@ -40,11 +38,13 @@ import java.util.stream.IntStream;
 public final class REVControllerModule extends Module {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private final List<SwerveModulePosition> DELTAS;
+  private final List<Double> TIMESTAMPS;
   private final ModuleConstants CONSTANTS;
   private final RelativeEncoder LINEAR_ENCODER;
   private final RelativeEncoder ROTATIONAL_ENCODER;
   private final Queue<Double> LINEAR_QUEUE;
   private final Queue<Double> ROTATIONAL_QUEUE;    
+  private final Queue<Double> TIMESTAMP_QUEUE;
   private final Lock ODOMETRY_LOCK;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private ReferenceType ReferenceMode;
@@ -93,8 +93,6 @@ public final class REVControllerModule extends Module {
     ROTATIONAL_ENCODER.setMeasurementPeriod((10));
     ROTATIONAL_ENCODER.setAverageDepth((2));
 
-    CONSTANTS.ABSOLUTE_ENCODER.getConfigurator().apply(new MagnetSensorConfigs().withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1));
-
     CONSTANTS.LINEAR_CONTROLLER.setCANTimeout((250));
     CONSTANTS.ROTATIONAL_CONTROLLER.setCANTimeout((250));
 
@@ -107,9 +105,11 @@ public final class REVControllerModule extends Module {
     ODOMETRY_LOCK = new ReentrantLock();    
     LINEAR_QUEUE = org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD.register(LINEAR_ENCODER::getPosition);
     ROTATIONAL_QUEUE = org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD.register(ROTATIONAL_ENCODER::getPosition); 
+    TIMESTAMP_QUEUE = org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD.timestamp();
     CONSTANTS.LINEAR_CONTROLLER.burnFlash();
     CONSTANTS.ROTATIONAL_CONTROLLER.burnFlash();
     DELTAS = new ArrayList<>();
+    TIMESTAMPS = new ArrayList<>();
     reset();
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//  
@@ -157,6 +157,7 @@ public final class REVControllerModule extends Module {
       CONSTANTS.ROTATIONAL_CONTROLLER.getAppliedOutput() * CONSTANTS.ROTATIONAL_CONTROLLER.getBusVoltage();
     Status.RotationalAppliedAmperage = 
       new double[] {CONSTANTS.ROTATIONAL_CONTROLLER.getOutputCurrent()};
+    Status.OdometryTimestamps = TIMESTAMP_QUEUE.stream().mapToDouble(Double::valueOf).toArray();
     Status.OdometryLinearPositionsRadians =
       LINEAR_QUEUE.stream()
         .mapToDouble((Double value) -> Units.rotationsToRadians(value) / CONSTANTS.ROTATION_GEAR_RATIO)
@@ -167,6 +168,7 @@ public final class REVControllerModule extends Module {
         .toArray(Rotation2d[]::new);
     LINEAR_QUEUE.clear();
     ROTATIONAL_QUEUE.clear();
+    TIMESTAMP_QUEUE.clear();
   }
 
   @Override
@@ -194,9 +196,12 @@ public final class REVControllerModule extends Module {
         break;
     }
     DELTAS.clear();
+    TIMESTAMPS.clear();
     IntStream.range((0), Math.min(Status.OdometryLinearPositionsRadians.length, Status.OdometryAzimuthPositions.length)).forEach((Index) -> {
       DELTAS.add(new SwerveModulePosition((getLinearPosition() - CurrentPosition), getRelativeRotation()));
+      TIMESTAMPS.add(Status.OdometryTimestamps[Index]);
     });
+
     ODOMETRY_LOCK.unlock();    
   }
 
@@ -238,6 +243,10 @@ public final class REVControllerModule extends Module {
   @Override
   public List<SwerveModulePosition> getPositionDeltas() {
     return DELTAS;
+  }
+
+  public List<Double> getPositionTimestamps() {
+    return TIMESTAMPS;
   }
 
   public Rotation2d getRelativeRotation() {

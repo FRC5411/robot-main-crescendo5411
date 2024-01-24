@@ -120,6 +120,11 @@ public abstract class Module implements Closeable {
   public abstract List<SwerveModulePosition> getPositionDeltas();
 
   /**
+   * Provides the corresponding timestamps of the deltas from odometry from the most recent {@link #periodic()} cycle.
+   * @return List of measured module position timestamps
+   */
+  public abstract List<Double> getPositionTimestamps();
+  /**
    * Provides the current relative rotation of the module rotational axis
    * @return Rotational axis heading as a relative {@link Rotation2d} object
    */

@@ -37,7 +37,6 @@ import org.robotalons.lib.utilities.PilotProfile;
 
 import java.io.Closeable;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 // ----------------------------------------------------------[Drivebase Subsystem]----------------------------------------------------------//
 /**
@@ -58,7 +57,8 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
   private static final List<Module> MODULES;
   private static final Gyroscope GYROSCOPE;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  private static Rotation2d Odometry_Rotation;
+  private static List<SwerveModulePosition> Current_Position;
+  private static Rotation2d Gyroscope_Rotation_Delta;
   private static OrientationMode Control_Mode;
   private static DrivebaseSubsystem Instance;
   private static Pose2d Odometry_Pose;  
@@ -75,9 +75,9 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
     Odometry_Pose = new Pose2d();
     GYROSCOPE = new PigeonGyroscope(Constants.Measurements.PHOENIX_DRIVE);
     Control_Mode = OrientationMode.ROBOT_ORIENTED;
-    Odometry_Rotation = GYROSCOPE.getYawRotation();
     Module_Locking = (false);
     Path_Flipped = (false); 
+    Gyroscope_Rotation_Delta = new Rotation2d();
     Current_Time = Timer.getFPGATimestamp();
     MODULES = List.of(
       Devices.FRONT_LEFT_MODULE,
@@ -139,31 +139,28 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
     if (DriverStation.isDisabled()) {
       MODULES.forEach(Module::cease);
     }
-    org.robotalons.crescendo.Constants.Subsystems.ROBOT_FIELD.setRobotPose(getPose());
     Objects.ODOMETRY_LOCK.unlock();
-    AtomicInteger DeltaCount = new AtomicInteger(
-      GYROSCOPE.getConnected()? 
-        GYROSCOPE.getOdometryYawRotations().length: 
-        Integer.MAX_VALUE
-    );
-    MODULES.forEach((Module) -> 
-      DeltaCount.set(Math.min(DeltaCount.get(), Module.getPositionDeltas().size())
-    ));
-    IntStream.range((0), DeltaCount.get()).forEachOrdered((DeltaIndex) -> {
+    final var Timestamps = MODULES.get((0)).getPositionTimestamps();
+    IntStream.range((0), Timestamps.size()).forEachOrdered((DeltaIndex) -> {
       SwerveModulePosition[] WheelDeltas = MODULES.stream().map(
-        (Module) -> Module.getPositionDeltas().get(DeltaIndex)).toArray(SwerveModulePosition[]::new);
-      var TwistDelta = KINEMATICS.toTwist2d(WheelDeltas);
+        (Module) -> {
+          final var Angle = Module.getPositionDeltas().get(DeltaIndex).angle;
+          return new SwerveModulePosition(
+              Module.getPositionDeltas().get(DeltaIndex).distanceMeters
+                                          - 
+                  Current_Position.get(DeltaIndex).distanceMeters,
+            Angle);
+        }).toArray(SwerveModulePosition[]::new);
+      Current_Position = List.of(WheelDeltas);  
       if(GYROSCOPE.getConnected()) {
-        Rotation2d GyroRotationDelta = GYROSCOPE.getOdometryYawRotations()[DeltaIndex];
-        TwistDelta = new Twist2d(TwistDelta.dx, TwistDelta.dy, GyroRotationDelta.minus(Odometry_Rotation).getRadians());
-        Odometry_Rotation = GyroRotationDelta;
+        Gyroscope_Rotation_Delta = GYROSCOPE.getOdometryYawRotations()[DeltaIndex];
+      } else {
+        Twist2d TwistDelta = KINEMATICS.toTwist2d(WheelDeltas);
+        Gyroscope_Rotation_Delta = Gyroscope_Rotation_Delta.plus(new Rotation2d(TwistDelta.dtheta));
       }
-      Odometry_Pose = Odometry_Pose.exp(TwistDelta);    
-      POSE_ESTIMATOR.update(
-        Odometry_Rotation,
-        WheelDeltas
-      );
+      POSE_ESTIMATOR.updateWithTime(Timestamps.get(DeltaIndex), Gyroscope_Rotation_Delta, WheelDeltas);
     });
+    org.robotalons.crescendo.Constants.Subsystems.ROBOT_FIELD.setRobotPose(getPose());
   }
 
   /**

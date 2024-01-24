@@ -8,10 +8,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.ArrayDeque;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.management.InstanceNotFoundException;
+import java.util.concurrent.atomic.AtomicReference;
+import org.littletonrobotics.junction.Logger;
 
 // ----------------------------------------------------------[CTRE Odometry Thread]----------------------------------------------------------//
 /**
@@ -28,6 +30,7 @@ import javax.management.InstanceNotFoundException;
  */
 public final class CTREOdometryThread extends Thread implements OdometryThread<StatusSignal<Double>> {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
+  private static final List<Queue<Double>> TIMESTAMPS;  
   private static final List<Queue<Double>> QUEUES;
   private static final Lock SIGNALS_LOCK;
   private final Lock ODOMETRY_LOCK;
@@ -49,6 +52,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
   } static {
     Signals = new ArrayList<>();
     QUEUES = new ArrayList<>();
+    TIMESTAMPS = new ArrayList<>();
     SIGNALS_LOCK = new ReentrantLock();
     Instance = (null);
     Frequency = (500d);
@@ -56,8 +60,14 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
+  public synchronized void start() {
+    if (TIMESTAMPS.size() > (0)) {
+      super.start();
+    }
+  }
+  @Override
   public synchronized Queue<Double> register(final StatusSignal<Double> Signal) {
-    Queue<Double> Queue = new ArrayBlockingQueue<>((100));
+    Queue<Double> Queue = new ArrayDeque<>((100));
     SIGNALS_LOCK.lock();
     ODOMETRY_LOCK.lock();
     try {
@@ -85,6 +95,16 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
     Instance = (null);
   }
 
+  public synchronized Queue<Double> timestamp() {
+    Queue<Double> Queue = new ArrayDeque<>((100));
+    ODOMETRY_LOCK.lock();
+    try {
+      TIMESTAMPS.add(Queue);
+    } finally {
+      ODOMETRY_LOCK.unlock();
+    }
+    return Queue;
+  }
 
   @Override
   public void run() {
@@ -104,9 +124,20 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
       }
       ODOMETRY_LOCK.lock();
       try {
-        var SignalIterator = Signals.iterator();
+        final var SignalIterator = Signals.iterator();
+        var RealTimestamp = new AtomicReference<Double>(Logger.getRealTimestamp() / 1e6);
+        var SummativeLatency = new AtomicReference<Double>((0d));
+        Signals.forEach((Signal) -> {
+          SummativeLatency.set(SummativeLatency.get() + Signal.getTimestamp().getLatency());
+        });
+        if (Signals.size() > (0)) {
+          RealTimestamp.set(RealTimestamp.get() - SummativeLatency.get() / Signals.size());
+        }
         QUEUES.forEach((Queue) -> {
           Queue.offer(SignalIterator.next().getValue());
+        });       
+        TIMESTAMPS.forEach((Timestamp) -> {
+          Timestamp.offer(RealTimestamp.get());
         });
       } finally {
         ODOMETRY_LOCK.unlock();

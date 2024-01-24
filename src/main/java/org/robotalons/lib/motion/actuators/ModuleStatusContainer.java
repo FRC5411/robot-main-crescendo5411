@@ -26,6 +26,7 @@ public class ModuleStatusContainer {
   public double RotationalAppliedVoltage = (0d);
   public double[] RotationalAppliedAmperage = new double[] {};
 
+  public double[] OdometryTimestamps = new double[] {};
   public double[] OdometryLinearPositionsRadians = new double[] {};
   public Rotation2d[] OdometryAzimuthPositions = new Rotation2d[] {};
 }
