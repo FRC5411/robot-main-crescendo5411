@@ -78,14 +78,12 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
      */
     public synchronized void set(final Direction Demand) {
         switch(Demand) {
-            case FORWARD_INDEXER:
-            //^ will be called by the intake subsystem after completing a pickup.
+            case FORWARD_INDEXER:   //will be called by the intake subsystem after completing a pickup.
                 if (!(getHoldingNote())) {
                     //(INDEXER_INTAKE_MOTOR) spin at (INDEXER_INTAKE_MOTOR_SPEED) for (INDEXER_INTAKE_MOTOR_DURATION);\
                 }
                 break;
-            case FORWARD_CANNON:
-            //^ will be called by the cannon subsystem in order to put a Note in firing position.
+            case FORWARD_CANNON:    //will be called by the cannon subsystem in order to put a Note in firing position.
                 if (getHoldingNote()) {
                     //(INDEXER_CANNON_MOTOR) spin at (INDEXER_CANNON_MOTOR_SPEED) for (INDEXER_CANNON_MOTOR_DURATION);
                     //[Tell cannon subsystem to continue with fire sequence];
@@ -94,8 +92,7 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
                     //[Tell cannon subsystem to abort fire sequence]
                 }
                 break;
-            case BACKWARD_INDEXER:
-            //^ will be called by the operator/copilot if a Note needs to be put back on the ground (e.g. Note jammed in singulator).
+            case BACKWARD_INDEXER:  //will be called by the operator/copilot if a Note needs to be put back on the ground (e.g. Note jammed in singulator).
                 if (getHoldingNote())
                 {
                     //(INDEXER_INTAKE_MOTOR) spins at negative (INDEXER_INTAKE_MOTOR_SPEED) for (INDEXER_INTAKE_MOTOR_DURATION);
