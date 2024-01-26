@@ -3,16 +3,16 @@ package org.robotalons.lib.motion.utilities;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj.Notifier;
 
+import org.littletonrobotics.junction.Logger;
+
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
-import java.util.ArrayDeque;
 import java.util.concurrent.locks.Lock;
 import java.util.function.DoubleSupplier;
 import javax.management.InstanceNotFoundException;
-
-import org.littletonrobotics.junction.Logger;
 // ----------------------------------------------------------[REV Odometry Thread]----------------------------------------------------------//
 /**
  *
