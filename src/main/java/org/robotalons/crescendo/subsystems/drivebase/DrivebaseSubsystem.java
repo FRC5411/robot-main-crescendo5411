@@ -1,5 +1,6 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.drivebase;
+// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -13,7 +14,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -24,9 +24,9 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import org.robotalons.crescendo.Constants.Profiles.KeybindingNames;
-import org.robotalons.crescendo.Constants.Profiles.PreferenceNames;
-import org.robotalons.crescendo.RobotContainer;
+import org.robotalons.crescendo.Constants.Profiles.Keybindings;
+import org.robotalons.crescendo.Constants.Profiles.Preferences;
+import org.robotalons.crescendo.subsystems.TalonSubsystemBase;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Devices;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Objects;
@@ -35,7 +35,6 @@ import org.robotalons.lib.motion.pathfinding.LocalADStarAK;
 import org.robotalons.lib.motion.sensors.Gyroscope;
 import org.robotalons.lib.utilities.PilotProfile;
 
-import java.io.Closeable;
 import java.util.List;
 import java.util.stream.IntStream;
 // ----------------------------------------------------------[Drivebase Subsystem]----------------------------------------------------------//
@@ -47,10 +46,10 @@ import java.util.stream.IntStream;
  * <p>Utility class which controls the modules to achieve individual goal set points within an acceptable target range of accuracy and time 
  * efficiency and providing an API for querying new goal states.<p>
  * 
- * @see SubsystemBase
+ * @see TalonSubsystemBase
  * @see org.robotalons.crescendo.RobotContainer RobotContainer
  */
-public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
+public class DrivebaseSubsystem extends TalonSubsystemBase {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private static final SwerveDrivePoseEstimator POSE_ESTIMATOR;
   private static final SwerveDriveKinematics KINEMATICS;
@@ -70,7 +69,9 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
   /**
    * Drivebase Subsystem Constructor.
    */
-  private DrivebaseSubsystem() {} static {
+  private DrivebaseSubsystem() {
+    super("Drivebase Subsystem");
+  } static {
     Instance = new DrivebaseSubsystem();
     Odometry_Pose = new Pose2d();
     GYROSCOPE = new PigeonGyroscope(Constants.Measurements.PHOENIX_DRIVE);
@@ -210,24 +211,33 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
   /**
    * Configures a pilot to operate this given subsystem.
    */
-  public static void configure(final PilotProfile Pilot) {
+  public void configure(final PilotProfile Pilot) {
     Current_Pilot = Pilot;
     DrivebaseSubsystem.getInstance().setDefaultCommand(
       new InstantCommand(() ->
       DrivebaseSubsystem.set(
         new Translation2d(
-          RobotContainer.applyInputSquare(MathUtil.applyDeadband(-(Double) Current_Pilot.getPreference(PreferenceNames.TRANSLATIONAL_X_INPUT),
-        (Double) Current_Pilot.getPreference(PreferenceNames.TRANSLATIONAL_X_DEADZONE))),
-          RobotContainer.applyInputSquare(MathUtil.applyDeadband(-(Double) Current_Pilot.getPreference(PreferenceNames.TRANSLATIONAL_Y_INPUT),
-        (Double) Current_Pilot.getPreference(PreferenceNames.TRANSLATIONAL_Y_DEADZONE)))),
+          applySquared(MathUtil.applyDeadband(-(Double) Current_Pilot.getPreference(Preferences.TRANSLATIONAL_X_INPUT),
+        (Double) Current_Pilot.getPreference(Preferences.TRANSLATIONAL_X_DEADZONE))),
+          applySquared(MathUtil.applyDeadband(-(Double) Current_Pilot.getPreference(Preferences.TRANSLATIONAL_Y_INPUT),
+        (Double) Current_Pilot.getPreference(Preferences.TRANSLATIONAL_Y_DEADZONE)))),
         new Rotation2d(
-          RobotContainer.applyInputSquare(MathUtil.applyDeadband(-(Double) Current_Pilot.getPreference(PreferenceNames.ORIENTATION_INPUT),
-        (Double) Current_Pilot.getPreference(PreferenceNames.ORIENTATION_DEADZONE))))), 
+          applySquared(MathUtil.applyDeadband(-(Double) Current_Pilot.getPreference(Preferences.ORIENTATION_INPUT),
+        (Double) Current_Pilot.getPreference(Preferences.ORIENTATION_DEADZONE))))), 
         DrivebaseSubsystem.getInstance()
     ));
-    Current_Pilot.getKeybinding(KeybindingNames.ORIENTATION_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleOrientationType, DrivebaseSubsystem.getInstance()));
-    Current_Pilot.getKeybinding(KeybindingNames.MODULE_LOCKING_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleModuleLocking, DrivebaseSubsystem.getInstance()));
-    Current_Pilot.getKeybinding(KeybindingNames.PATHFINDING_FLIP_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::togglePathFlipped, DrivebaseSubsystem.getInstance()));
+    Current_Pilot.getKeybinding(Keybindings.ORIENTATION_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleOrientationType, DrivebaseSubsystem.getInstance()));
+    Current_Pilot.getKeybinding(Keybindings.MODULE_LOCKING_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleModuleLocking, DrivebaseSubsystem.getInstance()));
+    Current_Pilot.getKeybinding(Keybindings.PATHFINDING_FLIP_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::togglePathFlipped, DrivebaseSubsystem.getInstance()));
+  }
+
+  /**
+   * Applies squared inputs to a given input, while retaining the sign
+   * @param Input Any Real Number
+   * @return Input Squared, with the same sign of the original
+   */
+  private static Double applySquared(final Double Input) {
+    return Math.copySign(Input * Input, Input);
   }
 
   /**
@@ -327,7 +337,7 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
    * Provides the current pilot of the drivebase
    * @return Pilot of this subsystem
    */
-  public static PilotProfile getPilot() {
+  public PilotProfile getPilot() {
     return Current_Pilot;
   }
   /**

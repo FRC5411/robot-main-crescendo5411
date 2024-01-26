@@ -42,11 +42,11 @@ public final class Robot extends LoggedRobot {
     // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
     private static final RepeatCommand COMMAND_LOGGER;
     // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
+    private static Command Autonomous;
     private static Robot Instance;
-    private static Command AutonomousCommand;
     // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
     private Robot() {} static {
-      AutonomousCommand = (null);
+      Autonomous = (null);
       COMMAND_LOGGER = new RepeatCommand(new InstantCommand(() -> {
         if(Logging.LOGGING_ENABLED) {
           Threads.setCurrentThreadPriority((true), (99));
@@ -156,9 +156,9 @@ public final class Robot extends LoggedRobot {
     // ------------------------------------------------------------[Autonomous]---------------------------------------------------------------//
     @Override
     public void autonomousInit() {
-      AutonomousCommand = RobotContainer.CommandSelector.get();
-      if(!java.util.Objects.isNull(AutonomousCommand)) {
-        AutonomousCommand.schedule();
+      Autonomous = RobotContainer.AutonomousSelector.get();
+      if(!java.util.Objects.isNull(Autonomous)) {
+        Autonomous.schedule();
       }
     }
 
@@ -167,8 +167,8 @@ public final class Robot extends LoggedRobot {
 
     @Override
     public void autonomousExit() {
-      if(!java.util.Objects.isNull(AutonomousCommand)) {
-        AutonomousCommand.cancel();
+      if(!java.util.Objects.isNull(Autonomous)) {
+        Autonomous.cancel();
       }
     }
 

@@ -1,18 +1,19 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo;
-
+// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.robotalons.crescendo.Constants.Pathplanner;
 import org.robotalons.crescendo.Constants.Profiles;
-import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
+import org.robotalons.crescendo.Constants.Subsystems;
 import org.robotalons.lib.utilities.PilotProfile;
-
-// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
-
 // -------------------------------------------------------------[Robot Container]-----------------------------------------------------------//
 /**
  *
@@ -23,30 +24,25 @@ import org.robotalons.lib.utilities.PilotProfile;
  */
 public final class RobotContainer {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  public static final LoggedDashboardChooser<Command> CommandSelector;
-  public static final LoggedDashboardChooser<PilotProfile> DrivebasePilotSelector;
+  public static final List<LoggedDashboardChooser<PilotProfile>> PilotSelector;
+  public static final LoggedDashboardChooser<Command> AutonomousSelector;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static RobotContainer Instance = (null);
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private RobotContainer() {} static {
-    CommandSelector = new LoggedDashboardChooser<>(("Autonomous Command Selector"), AutoBuilder.buildAutoChooser());
-    final var DrivebasePilotChooser = new SendableChooser<PilotProfile>();
-    final var PilotIterator = Profiles.PILOT_PROFILES.iterator();
-    final var PilotInitial = PilotIterator.next();
-    PilotIterator.forEachRemaining((Profile) -> DrivebasePilotChooser.addOption(Profile.getName(), Profile));
-    DrivebasePilotChooser.setDefaultOption(PilotInitial.getName(), PilotInitial);
-    DrivebasePilotChooser.onChange(DrivebaseSubsystem::configure);
-    DrivebaseSubsystem.configure(PilotInitial);
-    DrivebasePilotSelector = new LoggedDashboardChooser<>(("Drivebase Pilot Selector"), DrivebasePilotChooser);
-  }
-  // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
-  /**
-   * Applies squared inputs to a given input, while retaining the sign
-   * @param Input Any Real Number
-   * @return Input Squared, with the same sign of the original
-   */
-  public static Double applyInputSquare(final Double Input) {
-    return Math.copySign(Input * Input, Input);
+    PilotSelector = new ArrayList<>();
+    AutonomousSelector = new LoggedDashboardChooser<>(("Autonomous Selector"), AutoBuilder.buildAutoChooser());
+    Pathplanner.ROUTINES.forEach((Name, Routine) -> AutonomousSelector.addOption(Name, Routine));
+    Subsystems.SUBSYSTEMS.forEach((Subsystem) -> {
+      final var Selector = new SendableChooser<PilotProfile>();
+      final var Iterator = Profiles.PILOT_PROFILES.iterator();
+      final var Initial = Iterator.next();
+      Iterator.forEachRemaining((Profile) -> Selector.addOption(Profile.getName(), Profile));
+      Selector.setDefaultOption(Initial.getName(), Initial);
+      Selector.onChange(Subsystem::configure);
+      Subsystem.configure(Initial);
+      PilotSelector.add(new LoggedDashboardChooser<PilotProfile>(Subsystem.getName() + " Pilot", Selector));
+    });
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
