@@ -2,9 +2,6 @@
 package org.robotalons.crescendo.subsystems.vision;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 
-import org.robotalons.lib.vision.Camera;
-
-import java.io.IOException;
 // ---------------------------------------------------------[Photon Vision Module]--------------------------------------------------------//
 /**
  *
@@ -14,20 +11,20 @@ import java.io.IOException;
  * <p>Implementation of a single Photon Vision Camera Module, which gathers information on it's position and reports back to the subsystem.</p>
  * 
  * @see Module
- * @see DrivebaseSubsystem
+ * @see VisionSubsystem
  */
-public class VisionCamera extends Camera {
+// public final class VisionCamera extends Camera {
+//   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
 
-  @Override
-  public void update() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'update'");
-  }
+//   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
 
-  @Override
-  public void close() throws IOException {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'close'");
-  }
+//   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   
-}
+//   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
+
+//   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
+
+//   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
+  
+//   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
+// }
