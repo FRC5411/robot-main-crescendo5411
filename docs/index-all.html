@@ -49,7 +49,7 @@ loadScripts(document, 'script');</script>
 <div class="header">
 <h1>Index</h1>
 </div>
-<a href="#I:A">A</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:U">U</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes&nbsp;and&nbsp;Interfaces</a><span class="vertical-separator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a>
+<a href="#I:A">A</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:H">H</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:U">U</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes&nbsp;and&nbsp;Interfaces</a><span class="vertical-separator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a>
 <h2 class="title" id="I:A">A</h2>
 <dl class="index">
 <dt><a href="org/robotalons/lib/utilities/PilotProfile.html#addKeybinding(java.lang.String,edu.wpi.first.wpilibj2.command.button.Trigger)" class="member-name-link">addKeybinding(String, Trigger)</a> - Method in class org.robotalons.lib.utilities.<a href="org/robotalons/lib/utilities/PilotProfile.html" title="class in org.robotalons.lib.utilities">PilotProfile</a></dt>
@@ -67,8 +67,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Singular unit which assists in the odometry and kinematics of a given robot.</div>
 </dd>
-<dt><a href="org/robotalons/lib/vision/Camera.html#%3Cinit%3E()" class="member-name-link">Camera()</a> - Constructor for class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/Camera.html" title="class in org.robotalons.lib.vision">Camera</a></dt>
-<dd>&nbsp;</dd>
+<dt><a href="org/robotalons/lib/vision/Camera.html#%3Cinit%3E(java.lang.String)" class="member-name-link">Camera(String)</a> - Constructor for class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/Camera.html" title="class in org.robotalons.lib.vision">Camera</a></dt>
+<dd>
+<div class="block">Updates the underlying signals within this module.</div>
+</dd>
 <dt><a href="org/robotalons/lib/vision/CameraStatusContainer.html" class="type-name-link" title="class in org.robotalons.lib.vision">CameraStatusContainer</a> - Class in <a href="org/robotalons/lib/vision/package-summary.html">org.robotalons.lib.vision</a></dt>
 <dd>
 <div class="block">Loggable input reference to a specific singular unit which assists in the odometry and kinematics of a given robot.</div>
@@ -104,6 +106,10 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:G">G</h2>
 <dl class="index">
+<dt><a href="org/robotalons/lib/vision/Camera.html#getAprilTagPose(int)" class="member-name-link">getAprilTagPose(int)</a> - Method in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/Camera.html" title="class in org.robotalons.lib.vision">Camera</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/robotalons/lib/vision/Camera.html#getBestTarget()" class="member-name-link">getBestTarget()</a> - Method in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/Camera.html" title="class in org.robotalons.lib.vision">Camera</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/robotalons/lib/vision/Camera.html#getConnected()" class="member-name-link">getConnected()</a> - Method in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/Camera.html" title="class in org.robotalons.lib.vision">Camera</a></dt>
 <dd>
 <div class="block">Provides a boolean representation of if the module is still connected to the system and all signals are okay.</div>
@@ -124,14 +130,33 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Retrieves a keybinding from the pilot's keybinding mapping</div>
 </dd>
+<dt><a href="org/robotalons/lib/vision/Camera.html#getLatency()" class="member-name-link">getLatency()</a> - Method in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/Camera.html" title="class in org.robotalons.lib.vision">Camera</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/robotalons/lib/utilities/PilotProfile.html#getName()" class="member-name-link">getName()</a> - Method in class org.robotalons.lib.utilities.<a href="org/robotalons/lib/utilities/PilotProfile.html" title="class in org.robotalons.lib.utilities">PilotProfile</a></dt>
 <dd>
 <div class="block">Retrieves the pilot's name</div>
 </dd>
+<dt><a href="org/robotalons/lib/vision/Camera.html#getObjectFieldPose()" class="member-name-link">getObjectFieldPose()</a> - Method in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/Camera.html" title="class in org.robotalons.lib.vision">Camera</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/robotalons/lib/vision/Camera.html#getObjectFieldPose(org.photonvision.targeting.PhotonTrackedTarget)" class="member-name-link">getObjectFieldPose(PhotonTrackedTarget)</a> - Method in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/Camera.html" title="class in org.robotalons.lib.vision">Camera</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/robotalons/lib/utilities/PilotProfile.html#getPreference(java.lang.String)" class="member-name-link">getPreference(String)</a> - Method in class org.robotalons.lib.utilities.<a href="org/robotalons/lib/utilities/PilotProfile.html" title="class in org.robotalons.lib.utilities">PilotProfile</a></dt>
 <dd>
 <div class="block">Retrieves a preference from the pilot's preference mapping</div>
 </dd>
+<dt><a href="org/robotalons/lib/vision/Camera.html#getRobotPose()" class="member-name-link">getRobotPose()</a> - Method in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/Camera.html" title="class in org.robotalons.lib.vision">Camera</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/robotalons/lib/vision/Camera.html#getTargets()" class="member-name-link">getTargets()</a> - Method in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/Camera.html" title="class in org.robotalons.lib.vision">Camera</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/robotalons/lib/vision/Camera.html#getTransformationToObject()" class="member-name-link">getTransformationToObject()</a> - Method in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/Camera.html" title="class in org.robotalons.lib.vision">Camera</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/robotalons/lib/vision/Camera.html#getTransformationToObject(org.photonvision.targeting.PhotonTrackedTarget)" class="member-name-link">getTransformationToObject(PhotonTrackedTarget)</a> - Method in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/Camera.html" title="class in org.robotalons.lib.vision">Camera</a></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 class="title" id="I:H">H</h2>
+<dl class="index">
+<dt><a href="org/robotalons/lib/vision/Camera.html#hasTarget(int)" class="member-name-link">hasTarget(int)</a> - Method in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/Camera.html" title="class in org.robotalons.lib.vision">Camera</a></dt>
+<dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:I">I</h2>
 <dl class="index">
@@ -230,11 +255,9 @@ loadScripts(document, 'script');</script>
 <h2 class="title" id="I:U">U</h2>
 <dl class="index">
 <dt><a href="org/robotalons/lib/vision/Camera.html#update()" class="member-name-link">update()</a> - Method in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/Camera.html" title="class in org.robotalons.lib.vision">Camera</a></dt>
-<dd>
-<div class="block">Updates the underlying signals within this module.</div>
-</dd>
+<dd>&nbsp;</dd>
 </dl>
-<a href="#I:A">A</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:U">U</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes&nbsp;and&nbsp;Interfaces</a><span class="vertical-separator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a></main>
+<a href="#I:A">A</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:H">H</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:U">U</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes&nbsp;and&nbsp;Interfaces</a><span class="vertical-separator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a></main>
 </div>
 </div>
 </body>

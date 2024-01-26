@@ -109,8 +109,10 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E()" class="member-name-link">Camera</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String)" class="member-name-link">Camera</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;CameraName)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Updates the underlying signals within this module.</div>
+</div>
 </div>
 </section>
 </li>
@@ -130,16 +132,44 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Closes this instance and all held resources immediately, but does not render the class unusable hence forth and can be re-instantiated.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.geometry.Pose3d</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAprilTagPose(int)" class="member-name-link">getAprilTagPose</a><wbr>(int&nbsp;fiducialID)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>org.photonvision.targeting.PhotonTrackedTarget</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBestTarget()" class="member-name-link">getBestTarget</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getConnected()" class="member-name-link">getConnected</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Provides a boolean representation of if the module is still connected to the system and all signals are okay.</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>double</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLatency()" class="member-name-link">getLatency</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.geometry.Pose3d</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getObjectFieldPose()" class="member-name-link">getObjectFieldPose</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.geometry.Pose3d</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getObjectFieldPose(org.photonvision.targeting.PhotonTrackedTarget)" class="member-name-link">getObjectFieldPose</a><wbr>(org.photonvision.targeting.PhotonTrackedTarget&nbsp;target)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.geometry.Pose3d</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRobotPose()" class="member-name-link">getRobotPose</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;org.photonvision.targeting.PhotonTrackedTarget&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTargets()" class="member-name-link">getTargets</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.geometry.Transform3d</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTransformationToObject()" class="member-name-link">getTransformationToObject</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.geometry.Transform3d</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTransformationToObject(org.photonvision.targeting.PhotonTrackedTarget)" class="member-name-link">getTransformationToObject</a><wbr>(org.photonvision.targeting.PhotonTrackedTarget&nbsp;target)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasTarget(int)" class="member-name-link">hasTarget</a><wbr>(int&nbsp;ID)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Updates the underlying signals within this module.</div>
-</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -172,9 +202,10 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;()">
+<section class="detail" id="&lt;init&gt;(java.lang.String)">
 <h3>Camera</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Camera</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Camera</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;CameraName)</span></div>
+<div class="block">Updates the underlying signals within this module.</div>
 </section>
 </li>
 </ul>
@@ -189,7 +220,6 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <section class="detail" id="update()">
 <h3>update</h3>
 <div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span>()</div>
-<div class="block">Updates the underlying signals within this module.</div>
 </section>
 </li>
 <li>
@@ -206,6 +236,66 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getLatency()">
+<h3>getLatency</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">getLatency</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getBestTarget()">
+<h3>getBestTarget</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">org.photonvision.targeting.PhotonTrackedTarget</span>&nbsp;<span class="element-name">getBestTarget</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="hasTarget(int)">
+<h3>hasTarget</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hasTarget</span><wbr><span class="parameters">(int&nbsp;ID)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="getTargets()">
+<h3>getTargets</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;org.photonvision.targeting.PhotonTrackedTarget&gt;</span>&nbsp;<span class="element-name">getTargets</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getAprilTagPose(int)">
+<h3>getAprilTagPose</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Pose3d</span>&nbsp;<span class="element-name">getAprilTagPose</span><wbr><span class="parameters">(int&nbsp;fiducialID)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="getRobotPose()">
+<h3>getRobotPose</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Pose3d</span>&nbsp;<span class="element-name">getRobotPose</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getTransformationToObject()">
+<h3>getTransformationToObject</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Transform3d</span>&nbsp;<span class="element-name">getTransformationToObject</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getTransformationToObject(org.photonvision.targeting.PhotonTrackedTarget)">
+<h3>getTransformationToObject</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Transform3d</span>&nbsp;<span class="element-name">getTransformationToObject</span><wbr><span class="parameters">(org.photonvision.targeting.PhotonTrackedTarget&nbsp;target)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="getObjectFieldPose()">
+<h3>getObjectFieldPose</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Pose3d</span>&nbsp;<span class="element-name">getObjectFieldPose</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getObjectFieldPose(org.photonvision.targeting.PhotonTrackedTarget)">
+<h3>getObjectFieldPose</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Pose3d</span>&nbsp;<span class="element-name">getObjectFieldPose</span><wbr><span class="parameters">(org.photonvision.targeting.PhotonTrackedTarget&nbsp;target)</span></div>
 </section>
 </li>
 <li>

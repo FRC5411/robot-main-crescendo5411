@@ -18,6 +18,11 @@ import java.io.IOException;
  */
 public class VisionCamera extends Camera {
 
+  public VisionCamera(String CameraName) {
+    super(CameraName);
+    //TODO Auto-generated constructor stub to stop error of no constructor 
+  }
+
   @Override
   public void update() {
     // TODO Auto-generated method stub
