@@ -8,6 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.robotalons.lib.vision.Camera;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 // ---------------------------------------------------------------[Constants]---------------------------------------------------------------//
 /**
  *
@@ -21,7 +22,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 public class Constants {
   // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
   public static final class Measurements {
-    public static final AprilTagFieldLayout FIELD_LAYOUT = (null);
+    public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
   }
 
   public static final class Ports {

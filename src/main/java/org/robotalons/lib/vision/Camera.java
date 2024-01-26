@@ -4,10 +4,20 @@ package org.robotalons.lib.vision;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
+import org.photonvision.common.hardware.VisionLEDMode;
+
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Num;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.numbers.N5;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 // -----------------------------------------------------------------[Camera]----------------------------------------------------------------//
@@ -20,7 +30,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public abstract class Camera implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   protected final CameraStatusContainer STATUS = new CameraStatusContainer();
-  protected final NetworkTableInstance INSTANCE;
+  protected final NetworkTable INSTANCE;
   protected final Transform3d OFFSET;
   protected final String IDENTITY;
   // -------------------------------------------------------------[Constructors]------------------------------------------------------------//
@@ -30,35 +40,10 @@ public abstract class Camera implements Closeable {
    * @param Relative   Robot relative offset of the camera from the center of the robot's base
    * @param Identifier Name of this camera, not bound by the type of camera it implements upon
    */
-  protected Camera(final NetworkTableInstance Instance, final Transform3d Relative, final String Identifier) {
+  protected Camera(final NetworkTable Instance, final Transform3d Relative, final String Identifier) {
     INSTANCE = Instance;
     OFFSET = Relative;
     IDENTITY = Identifier;
-  }
-  // ---------------------------------------------------------------[Internal]--------------------------------------------------------------//
-  /**
-   * Describes the mode of the camera's LEDs, which may affect the picture quality of the camera
-   */
-  public enum VisionMode {
-    BLINK,
-    ON,
-    OFF,
-    DEFAULT,
-  }
-
-  /**
-   * Describes the mode of the camera's pipelines, which affect how object data is captured and processed by the camera
-   */
-  public enum PipelineMode {
-    ONE,
-    TWO,
-    THREE,
-    FOUR,
-    FIVE,
-    SIX,
-    SEVEN,
-    EIGHT,
-    NINE
   }
   // ---------------------------------------------------------------[Abstract]--------------------------------------------------------------//
   /**
@@ -68,8 +53,9 @@ public abstract class Camera implements Closeable {
    * Commands, and which will be handled here.
    */
   public abstract void periodic();
+
   /**
-   * Updates the underlying signals within this module.
+   * Updates the underlying signals within this module
    */
   public abstract void update();
 
@@ -99,25 +85,79 @@ public abstract class Camera implements Closeable {
    * Mutates the underlying VisionMode state of the relevant camera
    * @param Mode New vision mode of camera
    */
-  public abstract void set(final VisionMode Mode);
+  public abstract void set(final VisionLEDMode Mode);
 
   /**
    * Mutates the underlying PipelineMode state of the relevant camera
    * @param Mode New pipeline mode of camera
    */
-  public abstract void set(final PipelineMode Mode);
+  public abstract void set(final Integer Mode);
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
+  /**
+   * Provides the robot relative position to a given object based on the estimated position of this camera and a transformation to a known object
+   * @param Target Transformation to a given target anywhere on the field
+   * @return Position of the object relative to the field
+   */
+  public Pose3d getObjectFieldPose(final Transform3d Target) {
+    final var Robot = getRobotPosition();
+    return new Pose3d(
+      (Target.getX() + Robot.getX()),
+      (Target.getY() + Robot.getY()),
+      Target.getZ(),
+      new Rotation3d()
+    );
+  }
+
+  /**
+   * Provides the robot relative position to a given object based on the estimated position of this camera and a transformation assuming that
+   * the desired object is the optimal target of this camera.
+   * @return Position of the object relative to the field
+   */
+  public Pose3d getObjectFieldPose() {
+    final var Robot = getRobotPosition();
+    final var Target = getOptimalTarget();
+    return new Pose3d(
+      (Target.getX() + Robot.getX()),
+      (Target.getY() + Robot.getY()),
+      Target.getZ(),
+      new Rotation3d()
+    );
+  }
+
+  /**
+   * Provides the confidence or standard deviation of the cameras evaluations of estimations
+   * @return Matrix of standard deviations of estimation
+   */
+  public abstract Matrix<Num,N1> getStandardDeviations();
+
+  /**
+   * Provides the matrix of this camera's hardware data, distortion, etc.
+   * @return Optional value that may exist of the camera's hardware data
+   */
+  public abstract Optional<Matrix<N3, N3>> getCameraMatrix();
+
+  /**
+   * Provides the coefficient matrix of the distance camera relative to the current target
+   * @return Optional value that may exist of the camera's distance coefficients
+   */
+  public abstract Optional<Matrix<N5, N1>> getCoefficientMatrix();
+
+  /**
+   * Returns the resolution of the camera as a pair of integers representing with width, and length
+   * @return Pair of integers representing video resolution
+   */
+  public abstract Pair<Integer,Integer> getImageResolution();
+  /**
+   * Provides the robot relative position timestamps of each delta from the last update control cycle up to the current query.
+   * @return List of robot relative snapshot time deltas
+   */
+  public abstract List<Double> getRobotPositionTimestamps();  
+
   /**
    * Provides the robot relative (minus offset) position deltas from last update control cycle up to the current query.
    * @return List of Poses of the robot since the last control cycle
    */
   public abstract List<Pose3d> getRobotPositionDeltas();
-
-  /**
-   * Provides the robot relative position timestamps of each delta from the last update control cycle up to the current query.
-   * @return List of robot relative snapshot time deltas
-   */
-  public abstract List<Double> getRobotPositionTimestamps();
 
   /**
    * Provides the robot relative (minus offset) position immediately.
@@ -134,11 +174,32 @@ public abstract class Camera implements Closeable {
   }
 
   /**
+   * Provides a list of robot-relative transformations to the best target within view of the camera
+   * @return List of robot-relative target transformations
+   */
+  public abstract List<Transform3d> getTargets();
+
+
+  /**
+   * Provides the robot-relative transformation to the best target within view of the camera
+   * @return Robot-relative best target transformation
+   */
+  public abstract Transform3d getOptimalTarget();
+
+  /**
    * Provides the identifier name of this camera, which is separate from the actual name on network tables
    * @return String representation of the camera's name
    */
   public String getName() {
     return IDENTITY;
+  }
+
+  /**
+   * Provides the latency or 'lag' of the camera to retrieve information, should always be greater than 0d.
+   * @return Double representation of the latency to retrieve information
+   */
+  public Double getLatency() {
+    return STATUS.Latency;
   }
 
   /**
