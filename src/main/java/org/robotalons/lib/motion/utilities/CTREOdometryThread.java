@@ -20,13 +20,12 @@ import javax.management.InstanceNotFoundException;
 /**
  *
  *
- * <p>Provides an interface for asynchronously reading high-frequency measurements to a set of queues.
- * This version is intended for Phoenix 6 devices on both the RIO and CANivore buses. When using
- * a CANivore, the thread uses the "waitForAll" blocking method to enable more consistent sampling.
- * This also allows Phoenix Pro users to benefit from lower latency between devices using CANivore
- * time synchronization.
+ * <p>Provides an interface for asynchronously reading high-frequency measurements to a set of queues. This version is intended for Phoenix
+ * 6 devices on both the RIO and CANivore buses. When using a CANivore, the thread uses the "waitForAll" blocking method to enable more
+ * consistent sampling. This also allows Phoenix Pro users to benefit from lower latency between devices using CANivore time synchronization.
  * 
  * @see OdometryThread
+ * @see Thread
  * 
  */
 public final class CTREOdometryThread extends Thread implements OdometryThread<StatusSignal<Double>> {
@@ -43,7 +42,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Phoenix Odometry Thread Constructor.
-   * @param OdometryLocker Appropriate Reentrancy Locker for Odometry
+   * @param OdometryLocker Appropriate Reentrance Locker for Odometry
    */
   private CTREOdometryThread(Lock OdometryLocker) {
     ODOMETRY_LOCK = OdometryLocker;

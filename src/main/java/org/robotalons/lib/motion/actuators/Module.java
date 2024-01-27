@@ -182,6 +182,6 @@ public abstract class Module implements Closeable {
       Status.LinearVelocityRadiansSecond * CONSTANTS.WHEEL_RADIUS_METERS, 
     (Objects.isNull(Azimuth_Offset))? 
         (new Rotation2d()):
-        (Status.RotationalRelativePosition.plus(Azimuth_Offset)));
+        (Status.RotationalAbsolutePosition));
   }
 }

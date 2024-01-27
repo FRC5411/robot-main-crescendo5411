@@ -41,7 +41,7 @@ public final class RobotContainer {
       Selector.setDefaultOption(Initial.getName(), Initial);
       Selector.onChange(Subsystem::configure);
       Subsystem.configure(Initial);
-      PilotSelector.add(new LoggedDashboardChooser<PilotProfile>(Subsystem.getName() + " Pilot", Selector));
+      PilotSelector.add(new LoggedDashboardChooser<PilotProfile>(Subsystem.getName() + " Pilot Selector", Selector));
     });
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//

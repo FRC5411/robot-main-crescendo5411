@@ -79,7 +79,7 @@ public static final class Measurements {
           CONSTANTS.LINEAR_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
           CONSTANTS.ROTATION_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
-          CONSTANTS.ROTATION_ENCODER_OFFSET = Rotation2d.fromRotations(0.108643).getRadians();
+          CONSTANTS.ROTATION_ENCODER_OFFSET = Rotation2d.fromRotations(0.607422d).getRadians();
           CONSTANTS.NUMBER = NUMBER;
         }
       }
@@ -109,7 +109,7 @@ public static final class Measurements {
           CONSTANTS.LINEAR_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
           CONSTANTS.ROTATION_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
-          CONSTANTS.ROTATION_ENCODER_OFFSET = Rotation2d.fromRotations(0.321533).getRadians();
+          CONSTANTS.ROTATION_ENCODER_OFFSET = Rotation2d.fromRotations((0.821045d)).getRadians();
           CONSTANTS.NUMBER = NUMBER;
         }
       }
@@ -139,7 +139,7 @@ public static final class Measurements {
           CONSTANTS.LINEAR_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
           CONSTANTS.ROTATION_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
-          CONSTANTS.ROTATION_ENCODER_OFFSET = Rotation2d.fromRotations(-0.149658).getRadians();
+          CONSTANTS.ROTATION_ENCODER_OFFSET = Rotation2d.fromRotations((0.353027)).getRadians();
           CONSTANTS.NUMBER = NUMBER;
         }
       }
@@ -171,7 +171,7 @@ public static final class Measurements {
           CONSTANTS.LINEAR_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
           CONSTANTS.ROTATION_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
-          CONSTANTS.ROTATION_ENCODER_OFFSET = Rotation2d.fromRotations(-0.005859).getRadians();
+          CONSTANTS.ROTATION_ENCODER_OFFSET = Rotation2d.fromRotations((0.483643d)).getRadians();
           CONSTANTS.NUMBER = NUMBER;
         }
       }

@@ -8,7 +8,11 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
@@ -64,11 +68,17 @@ public final class REVControllerModule extends Module {
     ROTATIONAL_ENCODER = CONSTANTS.ROTATIONAL_CONTROLLER.getEncoder();
 
     try {
-      Thread.sleep((1000));
+      Thread.sleep((2500));
     } catch (final InterruptedException Ignored) {}
 
     CONSTANTS.LINEAR_CONTROLLER.setCANTimeout((250));
     CONSTANTS.ROTATIONAL_CONTROLLER.setCANTimeout((250));
+
+    CONSTANTS.ABSOLUTE_ENCODER.getConfigurator().apply(
+      new CANcoderConfiguration().MagnetSensor.withSensorDirection(SensorDirectionValue.CounterClockwise_Positive));
+      CONSTANTS.ABSOLUTE_ENCODER.getConfigurator().apply(
+        new CANcoderConfiguration().withMagnetSensor(new MagnetSensorConfigs().withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)));
+    CONSTANTS.ROTATIONAL_CONTROLLER.setInverted((true));
 
     CONSTANTS.LINEAR_CONTROLLER.setPeriodicFramePeriod(
       PeriodicFrame.kStatus2, (int) (1000.0 / org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements.ODOMETRY_FREQUENCY));
@@ -87,7 +97,7 @@ public final class REVControllerModule extends Module {
     CONSTANTS.LINEAR_CONTROLLER.setIdleMode(IdleMode.kBrake);
     CONSTANTS.ROTATIONAL_CONTROLLER.setIdleMode(IdleMode.kCoast);
 
-    ROTATIONAL_ENCODER.setPosition((0.0));
+    ROTATIONAL_ENCODER.setPosition((CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValue()));
     ROTATIONAL_ENCODER.setMeasurementPeriod((10));
     ROTATIONAL_ENCODER.setAverageDepth((2));
 
@@ -145,7 +155,7 @@ public final class REVControllerModule extends Module {
     Status.LinearCurrentAmperage = 
       new double[] {CONSTANTS.LINEAR_CONTROLLER.getOutputCurrent()};
     Status.RotationalAbsolutePosition = 
-      Rotation2d.fromRotations(CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValue());
+      Rotation2d.fromDegrees(CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValue() * (360));
     Status.RotationalRelativePosition =
         Rotation2d.fromRotations(ROTATIONAL_ENCODER.getPosition() / CONSTANTS.ROTATION_GEAR_RATIO);
     Status.RotationalVelocityRadiansSecond =
@@ -247,7 +257,7 @@ public final class REVControllerModule extends Module {
   }
 
   public Rotation2d getRelativeRotation() {
-    return (Objects.isNull(Azimuth_Offset))? (new Rotation2d()): (Status.RotationalRelativePosition.plus(Azimuth_Offset));
+    return (Objects.isNull(Azimuth_Offset))? (new Rotation2d()): (Status.RotationalRelativePosition);
   }
 
   public Rotation2d getAbsoluteRotation() {

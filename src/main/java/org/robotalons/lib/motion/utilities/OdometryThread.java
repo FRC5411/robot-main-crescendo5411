@@ -12,6 +12,9 @@ import java.util.Queue;
  * 
  * @author Cody Washington
  * 
+ * @see Runnable
+ * @see Closeable
+ * 
  */
 public interface OdometryThread<SignalType> extends Runnable, Closeable {
   // ---------------------------------------------------------------[Abstract]--------------------------------------------------------------//
@@ -22,6 +25,10 @@ public interface OdometryThread<SignalType> extends Runnable, Closeable {
    */
   Queue<Double> register(final SignalType Signal);
 
+  /**
+   * Provides the timestamps for the available odometry queues
+   * @return The {@link Queue} of timestamp values
+   */
   Queue<Double> timestamp(); 
 
   /**

@@ -36,7 +36,7 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * REV Odometry Thread Constructor.
-   * @param OdometryLocker Appropriate Reentrancy Locker for Odometry
+   * @param OdometryLocker Appropriate Reentrance Locker for Odometry
    */
   private REVOdometryThread(Lock OdometryLocker) {
     ODOMETRY_LOCK = OdometryLocker;
