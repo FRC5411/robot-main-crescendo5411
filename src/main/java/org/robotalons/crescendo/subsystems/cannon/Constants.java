@@ -4,6 +4,7 @@ package org.robotalons.crescendo.subsystems.cannon;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.robotalons.crescendo.subsystems.cannon.REVRollerModule.RollerConstants;
 import org.robotalons.lib.roller.Roller;
 // ---------------------------------------------------------------[Constants]---------------------------------------------------------------//
 /**
@@ -18,6 +19,19 @@ import org.robotalons.lib.roller.Roller;
 public class Constants {
   // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
   public static final class Measurements {
+    public static final class Rollers{
+      public static final class Directional{
+        public static final RollerConstants CONSTANTS = new RollerConstants();
+      }
+      public static final class Launch{
+        public static final RollerConstants CONSTANTS = new RollerConstants();
+        static{
+          CONSTANTS.GEAR_RATIO = (5d);
+        }
+      }
+    }
+
+    public static final Double ODOMETRY_FREQUENCY = (250d);
 
   }
 
@@ -33,9 +47,9 @@ public class Constants {
   public static final class Devices {
 
     public static final Roller DIRECTIONAL_CONTROLLER = 
-      new REVRollerModule(null);
+      new REVRollerModule(Measurements.Rollers.Directional.CONSTANTS);
     public static final Roller LAUNCH_CONTROLLER = 
-      new REVRollerModule(null);
+      new REVRollerModule(Measurements.Rollers.Launch.CONSTANTS);
 
   }
   
