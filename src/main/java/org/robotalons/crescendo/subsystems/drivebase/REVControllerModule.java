@@ -18,11 +18,11 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.RelativeEncoder;
 
+import org.littletonrobotics.junction.Logger;
 import org.robotalons.lib.motion.actuators.Module;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -73,11 +73,10 @@ public final class REVControllerModule extends Module {
 
     CONSTANTS.LINEAR_CONTROLLER.setCANTimeout((250));
     CONSTANTS.ROTATIONAL_CONTROLLER.setCANTimeout((250));
-
-    CONSTANTS.ABSOLUTE_ENCODER.getConfigurator().apply(
-      new CANcoderConfiguration().MagnetSensor.withSensorDirection(SensorDirectionValue.CounterClockwise_Positive));
-      CONSTANTS.ABSOLUTE_ENCODER.getConfigurator().apply(
-        new CANcoderConfiguration().withMagnetSensor(new MagnetSensorConfigs().withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)));
+    final var Configurator =  new CANcoderConfiguration();
+    Configurator.MagnetSensor.withSensorDirection(SensorDirectionValue.CounterClockwise_Positive);
+    Configurator.withMagnetSensor(new MagnetSensorConfigs().withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1));
+    CONSTANTS.ABSOLUTE_ENCODER.getConfigurator().apply(Configurator);
     CONSTANTS.ROTATIONAL_CONTROLLER.setInverted((true));
 
     CONSTANTS.LINEAR_CONTROLLER.setPeriodicFramePeriod(
@@ -97,7 +96,7 @@ public final class REVControllerModule extends Module {
     CONSTANTS.LINEAR_CONTROLLER.setIdleMode(IdleMode.kBrake);
     CONSTANTS.ROTATIONAL_CONTROLLER.setIdleMode(IdleMode.kCoast);
 
-    ROTATIONAL_ENCODER.setPosition((CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValue()));
+    ROTATIONAL_ENCODER.setPosition((CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValue() + CONSTANTS.ROTATION_ENCODER_OFFSET));
     ROTATIONAL_ENCODER.setMeasurementPeriod((10));
     ROTATIONAL_ENCODER.setAverageDepth((2));
 
@@ -155,9 +154,9 @@ public final class REVControllerModule extends Module {
     Status.LinearCurrentAmperage = 
       new double[] {CONSTANTS.LINEAR_CONTROLLER.getOutputCurrent()};
     Status.RotationalAbsolutePosition = 
-      Rotation2d.fromDegrees(CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValue() * (360));
+      Rotation2d.fromRotations(CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValue() / 2 + CONSTANTS.ROTATION_ENCODER_OFFSET);
     Status.RotationalRelativePosition =
-        Rotation2d.fromRotations(ROTATIONAL_ENCODER.getPosition() / CONSTANTS.ROTATION_GEAR_RATIO);
+        Rotation2d.fromRotations((ROTATIONAL_ENCODER.getPosition() / CONSTANTS.ROTATION_GEAR_RATIO) / 2).plus(Status.RotationalAbsolutePosition);
     Status.RotationalVelocityRadiansSecond =
         Units.rotationsPerMinuteToRadiansPerSecond(ROTATIONAL_ENCODER.getVelocity()) / CONSTANTS.ROTATION_GEAR_RATIO;
     Status.RotationalAppliedVoltage = 
@@ -182,6 +181,7 @@ public final class REVControllerModule extends Module {
   public synchronized void periodic() {
     ODOMETRY_LOCK.lock();
     update();
+    Logger.processInputs("RealInputs/" + Integer.toString(CONSTANTS.NUMBER), Status);
     switch(ReferenceMode) {
       case STATE_CONTROL:
         if(Reference != null) {
@@ -257,11 +257,11 @@ public final class REVControllerModule extends Module {
   }
 
   public Rotation2d getRelativeRotation() {
-    return (Objects.isNull(Azimuth_Offset))? (new Rotation2d()): (Status.RotationalRelativePosition);
+    return Status.RotationalRelativePosition;
   }
 
   public Rotation2d getAbsoluteRotation() {
-    return Rotation2d.fromDegrees(CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValue());
+    return Status.RotationalAbsolutePosition;
   }
 
   public Double getLinearPosition() {

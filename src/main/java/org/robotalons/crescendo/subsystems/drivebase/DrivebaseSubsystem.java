@@ -266,7 +266,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
    * @param Demand Chassis speeds object which represents the demand speeds of the drivebase
    */
   public static synchronized void set(final ChassisSpeeds Demand) {
-    if (Demand.omegaRadiansPerSecond > (1e-6) && Demand.vxMetersPerSecond > (1e-6) && Demand.vyMetersPerSecond > (1e-6)) {
+    if (Demand.omegaRadiansPerSecond > (1e-6) && Demand.vxMetersPerSecond > (1e-6) && Demand.vyMetersPerSecond > (1e-6) && Module_Locking) {
       set();
     } else {
       var Discrete = ChassisSpeeds.discretize(Demand, discretize());

@@ -151,10 +151,7 @@ public abstract class Module implements Closeable {
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(
       Status.LinearPositionRadians * CONSTANTS.WHEEL_RADIUS_METERS,
-      (Objects.isNull(Azimuth_Offset))? 
-        (new Rotation2d()):
-        (Status.RotationalRelativePosition.plus(Azimuth_Offset))
-      );
+      Status.RotationalRelativePosition);
   }
 
   /**
@@ -180,8 +177,6 @@ public abstract class Module implements Closeable {
   public SwerveModuleState getObserved() {
     return new SwerveModuleState(
       Status.LinearVelocityRadiansSecond * CONSTANTS.WHEEL_RADIUS_METERS, 
-    (Objects.isNull(Azimuth_Offset))? 
-        (new Rotation2d()):
-        (Status.RotationalAbsolutePosition));
+      Status.RotationalAbsolutePosition);
   }
 }
