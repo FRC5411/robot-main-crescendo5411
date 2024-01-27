@@ -6,8 +6,6 @@ package org.robotalons.crescendo.subsystems.cannon;
 
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 
 import com.revrobotics.CANSparkMax;
@@ -15,14 +13,12 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.RelativeEncoder;
 
+import org.robotalons.lib.roller.Roller;
+
 import java.util.Queue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.DoubleSupplier;
-import java.util.stream.IntStream;
-
-import org.robotalons.crescendo.subsystems.cannon.Constants.Measurements;
-import org.robotalons.lib.roller.Roller;
 
 // ----------------------------------------------------------[REV Controller Module]--------------------------------------------------------//
 /**
@@ -144,12 +140,16 @@ public class REVRollerModule extends Roller{
   }
 
   // @Override
+  // public void set(Double Demand){
+
+  // }
+  // @Override
   // public SwerveModuleState set(final SwerveModuleState Reference) {
   //   this.Reference = SwerveModuleState.optimize(Reference, getAbsoluteRotation());
   //   return this.Reference;
   // }
-
-  public void setVoltage(final Double Demand) {
+  @Override
+  public void setVoltage(final double Demand) {
     CONSTANTS.ROLLER_CONTROLLER.setVoltage(Demand);
   }
 
@@ -169,7 +169,8 @@ public class REVRollerModule extends Roller{
   public Double getLinearPositionRads() {
     return null;
   }
+
+  public Double test(){
+    return CONSTANTS.ROLLER_CONTROLLER.getAppliedOutput();
+  }
 }
-
-
-

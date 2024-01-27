@@ -1,22 +1,11 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.cannon;
-import java.util.stream.IntStream;
+
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.robotalons.crescendo.subsystems.cannon.Constants.Devices;
-import org.robotalons.crescendo.subsystems.cannon.Constants.Measurements;
 import org.robotalons.lib.roller.Roller;
-
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // ------------------------------------------------------------[Cannon Subsystem]-----------------------------------------------------------//
 /**
  *
@@ -55,7 +44,9 @@ public class CannonSubsystem extends SubsystemBase {
   public synchronized void periodic() {
     Constants.Objects.ODOMETRY_LOCKER.lock();
     DIRECTIONAL_CONTROLLER.periodic();
+    System.out.println(DIRECTIONAL_CONTROLLER);
     LAUNCH_CONTROLLER.periodic();
+    set(null);
     Constants.Objects.ODOMETRY_LOCKER.lock();
   }
   
@@ -74,46 +65,47 @@ public class CannonSubsystem extends SubsystemBase {
   }
   // --------------------------------------------------------------[Mutators]--------------------------------------------------------------- //
    public static synchronized void set(Double DirectionalDemand, Double LaunchDemand) {
-    switch(Control_Mode) {
-      case OBJECT_ORIENTED:
-        //TODO: AUTOMATION TEAM (OBJECT ORIENTATION DRIVEBASE)
-        break;      
-      case ROBOT_ORIENTED:
-        set(new ChassisSpeeds(
-          Translation.getX(), 
-          Translation.getY(), 
-          Rotation.getRadians()));      
-        break;
-      case FIELD_ORIENTED:
-        set(ChassisSpeeds.fromFieldRelativeSpeeds(
-          Translation.getX(), 
-          Translation.getY(), 
-          Rotation.getRadians(), 
-          GYROSCOPE.getYawRotation()));      
-        break;
-    }
+    // switch(Control_Mode) {
+    //   case OBJECT_ORIENTED:
+    //     //TODO: AUTOMATION TEAM (OBJECT ORIENTATION DRIVEBASE)
+    //     break;      
+    //   case ROBOT_ORIENTED:
+    //     set(new ChassisSpeeds(
+    //       Translation.getX(), 
+    //       Translation.getY(), 
+    //       Rotation.getRadians()));      
+    //     break;
+    //   case FIELD_ORIENTED:
+    //     set(ChassisSpeeds.fromFieldRelativeSpeeds(
+    //       Translation.getX(), 
+    //       Translation.getY(), 
+    //       Rotation.getRadians(), 
+    //       GYROSCOPE.getYawRotation()));      
+    //     break;
+    // }
+    DIRECTIONAL_CONTROLLER.setVoltage(15);
   }
 
     public static synchronized void set(final ChassisSpeeds Demand) {
-      if (Demand.omegaRadiansPerSecond > (1e-6) && Demand.vxMetersPerSecond > (1e-6) && Demand.vyMetersPerSecond > (1e-6)) {
-        set();
-      } else {
-          IntStream.range((0), MODULES.size()).boxed().map(
-            (Index) -> 
-              MODULES.get(Index).set(Reference[Index]))
-            .toArray(SwerveModuleState[]::new));
-      }
+      // if (Demand.omegaRadiansPerSecond > (1e-6) && Demand.vxMetersPerSecond > (1e-6) && Demand.vyMetersPerSecond > (1e-6)) {
+      //   set();
+      // } else {
+      //     IntStream.range((0), MODULES.size()).boxed().map(
+      //       (Index) -> 
+      //         MODULES.get(Index).set(Reference[Index]))
+      //       .toArray(SwerveModuleState[]::new));
+      // }
     }
   
 
-  public static synchronized void set() {
-    if(Module_Locking) {
-      KINEMATICS.resetHeadings(MODULES.stream().map((Module) -> 
-        Module.getObserved().angle
-      ).toArray(Rotation2d[]::new));  
-    }
-    set(new ChassisSpeeds());
-  }
+  // public static synchronized void set() {
+  //   if(Module_Locking) {
+  //     KINEMATICS.resetHeadings(MODULES.stream().map((Module) -> 
+  //       Module.getObserved().angle
+  //     ).toArray(Rotation2d[]::new));  
+  //   }
+  //   set(new ChassisSpeeds());
+  // }
   // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
   /**
    * Retrieves the existing instance of this static utility class

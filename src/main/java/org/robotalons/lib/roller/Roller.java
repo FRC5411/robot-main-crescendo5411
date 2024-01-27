@@ -5,17 +5,13 @@
 package org.robotalons.lib.roller;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.io.Closeable;
-import java.util.List;
 import java.util.Objects;
 
-import org.robotalons.lib.roller.RollerStatusContainerAutoLogged;
 // ----------------------------------------------------------------[Module]---------------------------------------------------------------//
 /**
  *
@@ -90,6 +86,11 @@ public abstract class Roller extends SubsystemBase implements Closeable {
    * @param Mode Mode of Module control
    */
   public abstract void set(final ReferenceType Mode);
+
+  /*
+   * Mutates a roller's current voltage and applies it
+   */
+  public abstract void setVoltage(final double Demand);
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
 
   /**

@@ -1,11 +1,11 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.cannon;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 import org.robotalons.crescendo.subsystems.cannon.REVRollerModule.RollerConstants;
 import org.robotalons.lib.roller.Roller;
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 // ---------------------------------------------------------------[Constants]---------------------------------------------------------------//
 /**
  *
