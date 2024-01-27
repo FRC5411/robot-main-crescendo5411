@@ -16,7 +16,6 @@ import org.robotalons.lib.motion.sensors.Gyroscope;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
 // ---------------------------------------------------------------[Constants]---------------------------------------------------------------//
 /**
  *
