@@ -72,7 +72,9 @@ public abstract class Module implements Closeable {
     public Double ROTATION_GEAR_RATIO = (1d);
     public Double POSITION_METERS = (0d);
     public Double WHEEL_RADIUS_METERS = (1d);
-    public Double AZIMUTH_ENCODER_OFFSET = (0d);
+    public Double ROTATION_ENCODER_OFFSET = (0d);
+    public Boolean ROTATION_INVERTED = (false);
+    public Boolean LINEAR_INVERTED = (false);
     public Integer NUMBER;
     
   }    
@@ -118,6 +120,11 @@ public abstract class Module implements Closeable {
   public abstract List<SwerveModulePosition> getPositionDeltas();
 
   /**
+   * Provides the corresponding timestamps of the deltas from odometry from the most recent {@link #periodic()} cycle.
+   * @return List of measured module position timestamps
+   */
+  public abstract List<Double> getPositionTimestamps();
+  /**
    * Provides the current relative rotation of the module rotational axis
    * @return Rotational axis heading as a relative {@link Rotation2d} object
    */
@@ -125,7 +132,7 @@ public abstract class Module implements Closeable {
 
   /**
    * Provides the current absolute rotation of the module rotational axis
-   * @return Rotational axis heading as a absolute {@link Rotation2d} object
+   * @return Rotational axis heading as an absolute {@link Rotation2d} object
    */
   public abstract Rotation2d getAbsoluteRotation();
 

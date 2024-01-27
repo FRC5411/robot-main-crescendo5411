@@ -3,6 +3,7 @@ package org.robotalons.crescendo.subsystems.drivebase;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -38,6 +39,9 @@ public static final class Measurements {
     public static final Double ROBOT_MAXIMUM_LINEAR_VELOCITY = Units.feetToMeters((15.4));
     public static final Double ROBOT_MAXIMUM_ANGULAR_VELOCITY = ROBOT_MAXIMUM_LINEAR_VELOCITY / ROBOT_RADIUS_METERS;
 
+    public static final Double ROBOT_LINEAR_GEAR_RATIO = ((6.75));
+    public static final Double ROBOT_ROTATION_GEAR_RATIO = (((150.0) / (7.0)));
+
     public static final Double ROBOT_TRANSLATION_KP = (1d);
     public static final Double ROBOT_TRANSLATION_KI = (1d);
     public static final Double ROBOT_TRANSLATION_KD = (1d);    
@@ -55,16 +59,16 @@ public static final class Measurements {
         public static final Integer LINEAR_CONTROLLER_ID = (11);
         public static final Integer ROTATIONAL_CONTROLLER_ID = (21);
         public static final Integer ABSOLUTE_ENCODER_ID = (31);
-        public static final Double ROTATIONAL_P_GAIN = (1d);
-        public static final Double ROTATIONAL_I_GAIN = (1d);
-        public static final Double ROTATIONAL_D_GAIN = (1d);
-        public static final Double LINEAR_P_GAIN = (1d);
-        public static final Double LINEAR_I_GAIN = (1d);
-        public static final Double LINEAR_D_GAIN = (1d);
-        public static final Double LINEAR_KS_GAIN = (1d);
-        public static final Double LINEAR_KV_GAIN = (1d);
-        public static final Double LINEAR_KA_GAIN = (1d);
-        public static final Integer NUMBER = 0;
+        public static final Double ROTATIONAL_P_GAIN = (2.8d);
+        public static final Double ROTATIONAL_I_GAIN = (0d);
+        public static final Double ROTATIONAL_D_GAIN = (0.00001d);
+        public static final Double LINEAR_P_GAIN = (0.02d);
+        public static final Double LINEAR_I_GAIN = (0d);
+        public static final Double LINEAR_D_GAIN = (0d);
+        public static final Double LINEAR_KS_GAIN = (0d);
+        public static final Double LINEAR_KV_GAIN = (0.021d);
+        public static final Double LINEAR_KA_GAIN = (0d);
+        public static final Integer NUMBER = (0);
         public static final ModuleConstants CONSTANTS = new ModuleConstants();
         static {
           CONSTANTS.LINEAR_CONTROLLER = new CANSparkMax(LINEAR_CONTROLLER_ID, MotorType.kBrushless);
@@ -73,7 +77,10 @@ public static final class Measurements {
           CONSTANTS.LINEAR_CONTROLLER_PID = new PIDController(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
           CONSTANTS.ROTATIONAL_CONTROLLER_PID = new PIDController(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
           CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD = new SimpleMotorFeedforward(LINEAR_KS_GAIN, LINEAR_KV_GAIN, LINEAR_KA_GAIN);
+          CONSTANTS.LINEAR_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
+          CONSTANTS.ROTATION_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
+          CONSTANTS.ROTATION_ENCODER_OFFSET = Rotation2d.fromRotations(0.108643).getRadians();
           CONSTANTS.NUMBER = NUMBER;
         }
       }
@@ -82,16 +89,16 @@ public static final class Measurements {
         public static final Integer LINEAR_CONTROLLER_ID = (12);
         public static final Integer ROTATIONAL_CONTROLLER_ID = (22);
         public static final Integer ABSOLUTE_ENCODER_ID = (32);
-        public static final Double ROTATIONAL_P_GAIN = (1d);
-        public static final Double ROTATIONAL_I_GAIN = (1d);
-        public static final Double ROTATIONAL_D_GAIN = (1d);
-        public static final Double LINEAR_P_GAIN = (1d);
-        public static final Double LINEAR_I_GAIN = (1d);
-        public static final Double LINEAR_D_GAIN = (1d);
-        public static final Double LINEAR_KS_GAIN = (1d);
-        public static final Double LINEAR_KV_GAIN = (1d);
-        public static final Double LINEAR_KA_GAIN = (1d);
-        public static final Integer NUMBER = 0;
+        public static final Double ROTATIONAL_P_GAIN = (2.8d);
+        public static final Double ROTATIONAL_I_GAIN = (0d);
+        public static final Double ROTATIONAL_D_GAIN = (0.00001d);
+        public static final Double LINEAR_P_GAIN = (0.02d);
+        public static final Double LINEAR_I_GAIN = (0d);
+        public static final Double LINEAR_D_GAIN = (0d);
+        public static final Double LINEAR_KS_GAIN = (0d);
+        public static final Double LINEAR_KV_GAIN = (0.021d);
+        public static final Double LINEAR_KA_GAIN = (0d);
+        public static final Integer NUMBER = (1);
         public static final ModuleConstants CONSTANTS = new ModuleConstants();
         static {
           CONSTANTS.LINEAR_CONTROLLER = new CANSparkMax(LINEAR_CONTROLLER_ID, MotorType.kBrushless);
@@ -100,7 +107,10 @@ public static final class Measurements {
           CONSTANTS.LINEAR_CONTROLLER_PID = new PIDController(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
           CONSTANTS.ROTATIONAL_CONTROLLER_PID = new PIDController(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
           CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD = new SimpleMotorFeedforward(LINEAR_KS_GAIN, LINEAR_KV_GAIN, LINEAR_KA_GAIN);
+          CONSTANTS.LINEAR_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
+          CONSTANTS.ROTATION_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
+          CONSTANTS.ROTATION_ENCODER_OFFSET = Rotation2d.fromRotations(0.321533).getRadians();
           CONSTANTS.NUMBER = NUMBER;
         }
       }
@@ -109,16 +119,16 @@ public static final class Measurements {
         public static final Integer LINEAR_CONTROLLER_ID = (13);
         public static final Integer ROTATIONAL_CONTROLLER_ID = (23);
         public static final Integer ABSOLUTE_ENCODER_ID = (33);
-        public static final Double ROTATIONAL_P_GAIN = (1d);
-        public static final Double ROTATIONAL_I_GAIN = (1d);
-        public static final Double ROTATIONAL_D_GAIN = (1d);
-        public static final Double LINEAR_P_GAIN = (1d);
-        public static final Double LINEAR_I_GAIN = (1d);
-        public static final Double LINEAR_D_GAIN = (1d);
-        public static final Double LINEAR_KS_GAIN = (1d);
-        public static final Double LINEAR_KV_GAIN = (1d);
-        public static final Double LINEAR_KA_GAIN = (1d);
-        public static final Integer NUMBER = 0;
+        public static final Double ROTATIONAL_P_GAIN = (2.8d);
+        public static final Double ROTATIONAL_I_GAIN = (0d);
+        public static final Double ROTATIONAL_D_GAIN = (0.00001d);
+        public static final Double LINEAR_P_GAIN = (0.02d);
+        public static final Double LINEAR_I_GAIN = (0d);
+        public static final Double LINEAR_D_GAIN = (0d);
+        public static final Double LINEAR_KS_GAIN = (0d);
+        public static final Double LINEAR_KV_GAIN = (0.021d);
+        public static final Double LINEAR_KA_GAIN = (0d);
+        public static final Integer NUMBER = (2);
         public static final ModuleConstants CONSTANTS = new ModuleConstants();
         static {
           CONSTANTS.LINEAR_CONTROLLER = new CANSparkMax(LINEAR_CONTROLLER_ID, MotorType.kBrushless);
@@ -127,7 +137,10 @@ public static final class Measurements {
           CONSTANTS.LINEAR_CONTROLLER_PID = new PIDController(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
           CONSTANTS.ROTATIONAL_CONTROLLER_PID = new PIDController(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
           CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD = new SimpleMotorFeedforward(LINEAR_KS_GAIN, LINEAR_KV_GAIN, LINEAR_KA_GAIN);
+          CONSTANTS.LINEAR_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
+          CONSTANTS.ROTATION_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
+          CONSTANTS.ROTATION_ENCODER_OFFSET = Rotation2d.fromRotations(-0.149658).getRadians();
           CONSTANTS.NUMBER = NUMBER;
         }
       }
@@ -136,16 +149,18 @@ public static final class Measurements {
         public static final Integer LINEAR_CONTROLLER_ID = (14);
         public static final Integer ROTATIONAL_CONTROLLER_ID = (24);
         public static final Integer ABSOLUTE_ENCODER_ID = (34);
-        public static final Double ROTATIONAL_P_GAIN = (1d);
-        public static final Double ROTATIONAL_I_GAIN = (1d);
-        public static final Double ROTATIONAL_D_GAIN = (1d);
-        public static final Double LINEAR_P_GAIN = (1d);
-        public static final Double LINEAR_I_GAIN = (1d);
-        public static final Double LINEAR_D_GAIN = (1d);
-        public static final Double LINEAR_KS_GAIN = (1d);
-        public static final Double LINEAR_KV_GAIN = (1d);
-        public static final Double LINEAR_KA_GAIN = (1d);
-        public static final Integer NUMBER = 0;
+        public static final Double ROTATIONAL_P_GAIN = (2.8d);
+        public static final Double ROTATIONAL_I_GAIN = (0d);
+        public static final Double ROTATIONAL_D_GAIN = (0.00001d);
+        public static final Double LINEAR_P_GAIN = (0.02d);
+        public static final Double LINEAR_I_GAIN = (0d);
+        public static final Double LINEAR_D_GAIN = (0d);
+        public static final Double LINEAR_KS_GAIN = (0d);
+        public static final Double LINEAR_KV_GAIN = (0.021d);
+        public static final Double LINEAR_KA_GAIN = (0d);
+        public static final Integer NUMBER = (3);
+        public static final Boolean ROTATIONAL_INVERTED = (false);
+        public static final Boolean LINEAR_INVERTED = (false);
         public static final ModuleConstants CONSTANTS = new ModuleConstants();
         static {
           CONSTANTS.LINEAR_CONTROLLER = new CANSparkMax(LINEAR_CONTROLLER_ID, MotorType.kBrushless);
@@ -154,7 +169,10 @@ public static final class Measurements {
           CONSTANTS.LINEAR_CONTROLLER_PID = new PIDController(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
           CONSTANTS.ROTATIONAL_CONTROLLER_PID = new PIDController(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
           CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD = new SimpleMotorFeedforward(LINEAR_KS_GAIN, LINEAR_KV_GAIN, LINEAR_KA_GAIN);
+          CONSTANTS.LINEAR_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
+          CONSTANTS.ROTATION_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
+          CONSTANTS.ROTATION_ENCODER_OFFSET = Rotation2d.fromRotations(-0.005859).getRadians();
           CONSTANTS.NUMBER = NUMBER;
         }
       }

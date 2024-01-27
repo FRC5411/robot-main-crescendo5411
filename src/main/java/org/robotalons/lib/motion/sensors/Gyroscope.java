@@ -45,7 +45,7 @@ public abstract class Gyroscope implements Closeable {
   }
 
   /**
-   * Provides the most-recent measurement yaw
+   * Provides the most-recent measurement yaw from recent {@link #update()} cycle.
    * @return Rotation in radians of yaw position
    */
   public Rotation2d getYawRotation() {
@@ -53,8 +53,8 @@ public abstract class Gyroscope implements Closeable {
   }
 
   /**
-   * Provides the most-recent measurements of 
-   * @return
+   * Provides the most-recent measurements of gyroscope's yaw rotation during the most
+   * @return Deltas of the gyroscopes yaw rotations
    */
   public Rotation2d[] getOdometryYawRotations() {
     return Status.PositionDeltas;
