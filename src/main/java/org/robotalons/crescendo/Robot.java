@@ -66,22 +66,22 @@ public final class Robot extends LoggedRobot {
     @Override
     @SuppressWarnings("ExtractMethodRecommender")
     public void robotInit() {
-      Logger.recordMetadata(("ProjectName"), BuildMetadata.MAVEN_NAME);
-      Logger.recordMetadata(("BuildDate"), BuildMetadata.BUILD_DATE);
-      Logger.recordMetadata(("GitSHA"), BuildMetadata.GIT_SHA);
-      Logger.recordMetadata(("GitDate"), BuildMetadata.GIT_DATE);
-      Logger.recordMetadata(("GitBranch"), BuildMetadata.GIT_BRANCH);
-      switch (BuildMetadata.DIRTY) {
-        case 0:
-          Logger.recordMetadata(("Changes"), ("Committed"));
-          break;
-        case 1:
-          Logger.recordMetadata(("Changes"), ("Uncommitted"));
-          break;
-        default:
-          Logger.recordMetadata(("Changes"), ("Unknown"));
-          break;
-      }
+      // Logger.recordMetadata(("ProjectName"), BuildMetadata.MAVEN_NAME);
+      // Logger.recordMetadata(("BuildDate"), BuildMetadata.BUILD_DATE);
+      // Logger.recordMetadata(("GitSHA"), BuildMetadata.GIT_SHA);
+      // Logger.recordMetadata(("GitDate"), BuildMetadata.GIT_DATE);
+      // Logger.recordMetadata(("GitBranch"), BuildMetadata.GIT_BRANCH);
+      // switch (BuildMetadata.DIRTY) {
+      //   case 0:
+      //     Logger.recordMetadata(("Changes"), ("Committed"));
+      //     break;
+      //   case 1:
+      //     Logger.recordMetadata(("Changes"), ("Uncommitted"));
+      //     break;
+      //   default:
+      //     Logger.recordMetadata(("Changes"), ("Unknown"));
+      //     break;
+      // }
       if (Subsystems.IS_REAL_ROBOT) {
         if(Logging.LOGGING_ENABLED) {
           Logger.addDataReceiver(new WPILOGWriter(("/media/sda1/")));
