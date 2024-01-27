@@ -1,0 +1,61 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.2923545847091693,
+      "y": 4.841619137783731
+    },
+    "rotation": -32.275644314577605
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "StartToNote3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note3ToNote2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note2ToNote1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note1ToNote4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note4ToShoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ShootToNote5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note5ToShoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
