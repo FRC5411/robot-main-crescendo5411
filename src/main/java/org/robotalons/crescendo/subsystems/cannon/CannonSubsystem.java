@@ -46,7 +46,6 @@ public class CannonSubsystem extends SubsystemBase {
     DIRECTIONAL_CONTROLLER.periodic();
     System.out.println(DIRECTIONAL_CONTROLLER);
     LAUNCH_CONTROLLER.periodic();
-    set(null);
     Constants.Objects.ODOMETRY_LOCKER.lock();
   }
   
@@ -64,48 +63,11 @@ public class CannonSubsystem extends SubsystemBase {
     FIELD_ORIENTED,
   }
   // --------------------------------------------------------------[Mutators]--------------------------------------------------------------- //
-   public static synchronized void set(Double DirectionalDemand, Double LaunchDemand) {
-    // switch(Control_Mode) {
-    //   case OBJECT_ORIENTED:
-    //     //TODO: AUTOMATION TEAM (OBJECT ORIENTATION DRIVEBASE)
-    //     break;      
-    //   case ROBOT_ORIENTED:
-    //     set(new ChassisSpeeds(
-    //       Translation.getX(), 
-    //       Translation.getY(), 
-    //       Rotation.getRadians()));      
-    //     break;
-    //   case FIELD_ORIENTED:
-    //     set(ChassisSpeeds.fromFieldRelativeSpeeds(
-    //       Translation.getX(), 
-    //       Translation.getY(), 
-    //       Rotation.getRadians(), 
-    //       GYROSCOPE.getYawRotation()));      
-    //     break;
-    // }
-    DIRECTIONAL_CONTROLLER.setVoltage(15);
+   public static synchronized void set(double DirectionalDemand, double LaunchDemand) {
+    DIRECTIONAL_CONTROLLER.setVoltage(DirectionalDemand);
+    LAUNCH_CONTROLLER.setVoltage(LaunchDemand);
   }
-
-    public static synchronized void set(final ChassisSpeeds Demand) {
-      // if (Demand.omegaRadiansPerSecond > (1e-6) && Demand.vxMetersPerSecond > (1e-6) && Demand.vyMetersPerSecond > (1e-6)) {
-      //   set();
-      // } else {
-      //     IntStream.range((0), MODULES.size()).boxed().map(
-      //       (Index) -> 
-      //         MODULES.get(Index).set(Reference[Index]))
-      //       .toArray(SwerveModuleState[]::new));
-      // }
-    }
   
-
-  // public static synchronized void set() {
-  //   if(Module_Locking) {
-  //     KINEMATICS.resetHeadings(MODULES.stream().map((Module) -> 
-  //       Module.getObserved().angle
-  //     ).toArray(Rotation2d[]::new));  
-  //   }
-  //   set(new ChassisSpeeds());
-  // }
   // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
   /**
    * Retrieves the existing instance of this static utility class
