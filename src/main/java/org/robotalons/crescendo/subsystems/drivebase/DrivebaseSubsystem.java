@@ -254,8 +254,8 @@ public class DrivebaseSubsystem extends SubsystemBase implements Closeable {
    * @param Rotation    Demand rotation in two-dimensional space
    * @param Mode        Type of demand being made
    */
-  public static synchronized void set(final Translation2d Translation, final Rotation2d Rotation, final OrientationMode Mode) {
-    switch(Mode) {
+  public static synchronized void set(final Translation2d Translation, final Rotation2d Rotation) {
+    switch(Control_Mode) {
       case OBJECT_ORIENTED:
         //TODO: AUTOMATION TEAM
         break;      

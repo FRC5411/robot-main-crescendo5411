@@ -163,7 +163,7 @@ public final class REVControllerModule extends Module {
               (CONSTANTS.LINEAR_CONTROLLER_PID.calculate(AdjustReferenceSpeed))
                                     +
               (CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD.calculate(Status.LinearVelocityRadiansSecond, AdjustReferenceSpeed)));
-          }
+          }  
         }      
         break;
       case DISABLED:

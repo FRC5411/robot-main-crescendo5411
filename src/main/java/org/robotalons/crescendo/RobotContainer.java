@@ -15,7 +15,6 @@ import org.robotalons.crescendo.Constants.Profiles;
 import org.robotalons.crescendo.Constants.Profiles.KeybindingNames;
 import org.robotalons.crescendo.Constants.Profiles.PreferenceNames;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
-import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem.OrientationMode;
 import org.robotalons.lib.utilities.PilotProfile;
 
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
@@ -77,8 +76,7 @@ public final class RobotContainer {
         (Double) DrivebasePilotSelector.get().getPreference(PreferenceNames.TRANSLATIONAL_Y_DEADZONE)))),
         new Rotation2d(
           applyInputSquare(MathUtil.applyDeadband(-(Double) DrivebasePilotSelector.get().getPreference(PreferenceNames.ORIENTATION_INPUT),
-        (Double) DrivebasePilotSelector.get().getPreference(PreferenceNames.ORIENTATION_DEADZONE)))),
-        OrientationMode.ROBOT_ORIENTED), 
+        (Double) DrivebasePilotSelector.get().getPreference(PreferenceNames.ORIENTATION_DEADZONE))))), 
         DrivebaseSubsystem.getInstance()
     ));
   }
