@@ -1,5 +1,8 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.cannon;
+import org.robotalons.crescendo.subsystems.cannon.Constants.Devices;
+import org.robotalons.lib.roller.Roller;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -20,10 +23,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  */
 public class CannonSubsystem extends SubsystemBase {
   // --------------------------------------------------------------[Constants]-------------------------------------------------------------- //
-  private static final CANSparkMax DIRECTIONAL_CONTROLLER;
-  private static final CANSparkMax LAUNCH_CONTROLLER;
-  private static final RelativeEncoder DIRECTIONAL_ENCODER;
-  private static final RelativeEncoder LAUNCH_ENCODER;
+  private static final Roller DIRECTIONAL_CONTROLLER;
+  private static final Roller LAUNCH_CONTROLLER;
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
   private static CannonSubsystem Instance;
   
@@ -32,10 +33,10 @@ public class CannonSubsystem extends SubsystemBase {
    * Cannon Subsystem Constructor 
    */
   private CannonSubsystem() {} static {
-    DIRECTIONAL_CONTROLLER = new CANSparkMax(Constants.Ports.DIRECTIONAL_CONTROLLER_ID, MotorType.kBrushless);
-    LAUNCH_CONTROLLER = new CANSparkMax(Constants.Ports.LAUNCH_CONTROLLER_ID, MotorType.kBrushless);
-    DIRECTIONAL_ENCODER = DIRECTIONAL_CONTROLLER.getEncoder();
-    LAUNCH_ENCODER = LAUNCH_CONTROLLER.getEncoder();
+    DIRECTIONAL_CONTROLLER = Devices.DIRECTIONAL_CONTROLLER;
+    LAUNCH_CONTROLLER = Devices.LAUNCH_CONTROLLER;
+    // DIRECTIONAL_ENCODER = DIRECTIONAL_CONTROLLER.getEncoder();
+    // LAUNCH_ENCODER = LAUNCH_CONTROLLER.getEncoder();
   }
   
   // ---------------------------------------------------------------[Methods]--------------------------------------------------------------- //

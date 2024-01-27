@@ -3,6 +3,8 @@ package org.robotalons.crescendo.subsystems.cannon;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import org.robotalons.lib.roller.Roller;
 // ---------------------------------------------------------------[Constants]---------------------------------------------------------------//
 /**
  *
@@ -29,6 +31,11 @@ public class Constants {
   }
 
   public static final class Devices {
+
+    public static final Roller DIRECTIONAL_CONTROLLER = 
+      new REVRollerModule(null);
+    public static final Roller LAUNCH_CONTROLLER = 
+      new REVRollerModule(null);
 
   }
   
