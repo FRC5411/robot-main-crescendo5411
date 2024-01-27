@@ -32,7 +32,7 @@ public class PigeonGyroscope extends Gyroscope {
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Pigeon Gyroscope Constructor.
-   * @param PhoenixDrive Whether or not this gyroscope is based on a CTRE or REV drivebase
+   * @param PhoenixDrive Whether this gyroscope is based on a CTRE or REV drivebase
    */
   public PigeonGyroscope(final Boolean PhoenixDrive) {
     GYROSCOPE = new Pigeon2(Constants.Ports.GYROSCOPE_ID);
@@ -63,7 +63,7 @@ public class PigeonGyroscope extends Gyroscope {
     Status.YawVelocityRadiansSecond = Units.degreesToRadians(YAW_VELOCITY.getValue());
     Status.PositionDeltas =
         YAW_ROTATION_QUEUE.stream()
-            .map((Value) -> Rotation2d.fromDegrees(Value))
+            .map(Rotation2d::fromDegrees)
             .toArray(Rotation2d[]::new);
     YAW_ROTATION_QUEUE.clear();
   }

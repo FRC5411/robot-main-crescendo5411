@@ -10,6 +10,7 @@ import edu.wpi.first.math.util.Units;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.RelativeEncoder;
 
@@ -37,15 +38,16 @@ import java.util.stream.IntStream;
 public final class REVControllerModule extends Module {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private final List<SwerveModulePosition> DELTAS;
+  private final List<Double> TIMESTAMPS;
   private final ModuleConstants CONSTANTS;
   private final RelativeEncoder LINEAR_ENCODER;
   private final RelativeEncoder ROTATIONAL_ENCODER;
   private final Queue<Double> LINEAR_QUEUE;
   private final Queue<Double> ROTATIONAL_QUEUE;    
+  private final Queue<Double> TIMESTAMP_QUEUE;
   private final Lock ODOMETRY_LOCK;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private ReferenceType ReferenceMode;
-  private Double CurrentPosition;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * REV Controller Module Constructor
@@ -54,15 +56,24 @@ public final class REVControllerModule extends Module {
   public REVControllerModule(final ModuleConstants Constants) {
     super(Constants);
     ReferenceMode = ReferenceType.STATE_CONTROL;
-    CurrentPosition = (0.0);
     CONSTANTS = Constants;
     
     CONSTANTS.LINEAR_CONTROLLER.restoreFactoryDefaults();
     CONSTANTS.ROTATIONAL_CONTROLLER.restoreFactoryDefaults();
     LINEAR_ENCODER = CONSTANTS.LINEAR_CONTROLLER.getEncoder();
     ROTATIONAL_ENCODER = CONSTANTS.ROTATIONAL_CONTROLLER.getEncoder();
+
+    try {
+      Thread.sleep((1000));
+    } catch (final InterruptedException Ignored) {}
+
     CONSTANTS.LINEAR_CONTROLLER.setCANTimeout((250));
     CONSTANTS.ROTATIONAL_CONTROLLER.setCANTimeout((250));
+
+    CONSTANTS.LINEAR_CONTROLLER.setPeriodicFramePeriod(
+      PeriodicFrame.kStatus2, (int) (1000.0 / org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements.ODOMETRY_FREQUENCY));
+    CONSTANTS.ROTATIONAL_CONTROLLER.setPeriodicFramePeriod(
+        PeriodicFrame.kStatus2, (int) (1000.0 / org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements.ODOMETRY_FREQUENCY));
 
     CONSTANTS.LINEAR_CONTROLLER.setSmartCurrentLimit((40));
     CONSTANTS.ROTATIONAL_CONTROLLER.setSmartCurrentLimit((30));
@@ -73,12 +84,17 @@ public final class REVControllerModule extends Module {
     LINEAR_ENCODER.setMeasurementPeriod((10));
     LINEAR_ENCODER.setAverageDepth((2));
 
+    CONSTANTS.LINEAR_CONTROLLER.setIdleMode(IdleMode.kBrake);
+    CONSTANTS.ROTATIONAL_CONTROLLER.setIdleMode(IdleMode.kCoast);
+
     ROTATIONAL_ENCODER.setPosition((0.0));
     ROTATIONAL_ENCODER.setMeasurementPeriod((10));
     ROTATIONAL_ENCODER.setAverageDepth((2));
 
-    CONSTANTS.LINEAR_CONTROLLER.setCANTimeout((0));
-    CONSTANTS.ROTATIONAL_CONTROLLER.setCANTimeout((0));
+    CONSTANTS.LINEAR_CONTROLLER.setCANTimeout((250));
+    CONSTANTS.ROTATIONAL_CONTROLLER.setCANTimeout((250));
+
+    CONSTANTS.ROTATIONAL_CONTROLLER_PID.enableContinuousInput(-Math.PI, Math.PI);
 
     CONSTANTS.LINEAR_CONTROLLER.setPeriodicFramePeriod(
         PeriodicFrame.kStatus2, (int) (1000.0 / org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements.ODOMETRY_FREQUENCY));
@@ -87,9 +103,12 @@ public final class REVControllerModule extends Module {
     ODOMETRY_LOCK = new ReentrantLock();    
     LINEAR_QUEUE = org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD.register(LINEAR_ENCODER::getPosition);
     ROTATIONAL_QUEUE = org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD.register(ROTATIONAL_ENCODER::getPosition); 
+    TIMESTAMP_QUEUE = org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD.timestamp();
     CONSTANTS.LINEAR_CONTROLLER.burnFlash();
     CONSTANTS.ROTATIONAL_CONTROLLER.burnFlash();
     DELTAS = new ArrayList<>();
+    TIMESTAMPS = new ArrayList<>();
+    reset();
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//  
   public static final class ModuleConstants extends Constants {
@@ -126,7 +145,7 @@ public final class REVControllerModule extends Module {
     Status.LinearCurrentAmperage = 
       new double[] {CONSTANTS.LINEAR_CONTROLLER.getOutputCurrent()};
     Status.RotationalAbsolutePosition = 
-      Rotation2d.fromDegrees(CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValue());
+      Rotation2d.fromRotations(CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValue());
     Status.RotationalRelativePosition =
         Rotation2d.fromRotations(ROTATIONAL_ENCODER.getPosition() / CONSTANTS.ROTATION_GEAR_RATIO);
     Status.RotationalVelocityRadiansSecond =
@@ -135,6 +154,7 @@ public final class REVControllerModule extends Module {
       CONSTANTS.ROTATIONAL_CONTROLLER.getAppliedOutput() * CONSTANTS.ROTATIONAL_CONTROLLER.getBusVoltage();
     Status.RotationalAppliedAmperage = 
       new double[] {CONSTANTS.ROTATIONAL_CONTROLLER.getOutputCurrent()};
+    Status.OdometryTimestamps = TIMESTAMP_QUEUE.stream().mapToDouble(Double::valueOf).toArray();
     Status.OdometryLinearPositionsRadians =
       LINEAR_QUEUE.stream()
         .mapToDouble((Double value) -> Units.rotationsToRadians(value) / CONSTANTS.ROTATION_GEAR_RATIO)
@@ -145,48 +165,59 @@ public final class REVControllerModule extends Module {
         .toArray(Rotation2d[]::new);
     LINEAR_QUEUE.clear();
     ROTATIONAL_QUEUE.clear();
+    TIMESTAMP_QUEUE.clear();
   }
 
   @Override
-  public void periodic() {
+  public synchronized void periodic() {
     ODOMETRY_LOCK.lock();
+    update();
     switch(ReferenceMode) {
       case STATE_CONTROL:
-        if (Objects.isNull(Azimuth_Offset) && Status.RotationalAbsolutePosition.getRadians() != (0d)) {
-          Azimuth_Offset = Status.RotationalAbsolutePosition.minus(Status.RotationalRelativePosition);
-        }
-        if (!Objects.isNull(Reference.angle)) {
-          setRotationVoltage(CONSTANTS.ROTATIONAL_CONTROLLER_PID.calculate(getRelativeRotation().getRadians(),Reference.angle.getRadians()));
-          if(!Objects.isNull(Reference.speedMetersPerSecond)) {
-            var AdjustReferenceSpeed = Reference.speedMetersPerSecond * Math.cos(CONSTANTS.ROTATIONAL_CONTROLLER_PID.getPositionError()) / CONSTANTS.WHEEL_RADIUS_METERS;
-            setLinearVoltage(
-              (CONSTANTS.LINEAR_CONTROLLER_PID.calculate(AdjustReferenceSpeed))
-                                    +
-              (CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD.calculate(Status.LinearVelocityRadiansSecond, AdjustReferenceSpeed)));
+        if(Reference != null) {
+          if (Reference.angle != null) {
+            setRotationVoltage(CONSTANTS.ROTATIONAL_CONTROLLER_PID.calculate(getRelativeRotation().getRadians(),Reference.angle.getRadians()));
           }
-        }      
+          var AdjustReferenceSpeed = Reference.speedMetersPerSecond * Math.cos(CONSTANTS.ROTATIONAL_CONTROLLER_PID.getPositionError()) / CONSTANTS.WHEEL_RADIUS_METERS;
+          setLinearVoltage(
+            (CONSTANTS.LINEAR_CONTROLLER_PID.calculate(AdjustReferenceSpeed))
+                                  +
+            (CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD.calculate(Status.LinearVelocityRadiansSecond, AdjustReferenceSpeed)));          
+        }
         break;
       case DISABLED:
         cease();
+        break;
       case CLOSED:
         close();
         break;
     }
     DELTAS.clear();
+    TIMESTAMPS.clear();
     IntStream.range((0), Math.min(Status.OdometryLinearPositionsRadians.length, Status.OdometryAzimuthPositions.length)).forEach((Index) -> {
-      DELTAS.add(new SwerveModulePosition((getLinearPosition() - CurrentPosition), getRelativeRotation()));
+      DELTAS.add(new SwerveModulePosition(getLinearPosition(), getRelativeRotation()));
+      TIMESTAMPS.add(Status.OdometryTimestamps[Index]);
     });
+
     ODOMETRY_LOCK.unlock();    
+  }
+
+  /**
+   * Zeroes the azimuth relatively offset from the position of the absolute encoders.
+   */
+  public synchronized void reset() {
+    update();
+    Azimuth_Offset = Status.RotationalAbsolutePosition.minus(Status.RotationalRelativePosition);
   }
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
   @Override
-  public SwerveModuleState set(SwerveModuleState Reference) {
+  public SwerveModuleState set(final SwerveModuleState Reference) {
     this.Reference = SwerveModuleState.optimize(Reference, getAbsoluteRotation());
     return this.Reference;
   }
 
   @Override
-  public void set(ReferenceType Mode) {
+  public void set(final ReferenceType Mode) {
     ReferenceMode = Mode;
   }
 
@@ -196,7 +227,6 @@ public final class REVControllerModule extends Module {
    */
   public void setRotationVoltage(final Double Demand) {
     CONSTANTS.ROTATIONAL_CONTROLLER.setVoltage(Demand);
-
   }
 
   /**
@@ -210,6 +240,10 @@ public final class REVControllerModule extends Module {
   @Override
   public List<SwerveModulePosition> getPositionDeltas() {
     return DELTAS;
+  }
+
+  public List<Double> getPositionTimestamps() {
+    return TIMESTAMPS;
   }
 
   public Rotation2d getRelativeRotation() {
