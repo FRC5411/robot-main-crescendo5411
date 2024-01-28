@@ -17,7 +17,9 @@ import org.robotalons.lib.vision.Camera;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.Num;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -137,7 +139,10 @@ public final class VisionCamera extends Camera {
     double sdPitch = getSD(pitch);
     double sdRoll = getSD(roll);
     double sdYaw = getSD(yaw);
-    return null;
+
+    double[] data = new double[]{sdX, sdY, sdZ, sdPitch, sdRoll, sdYaw};
+
+    return MatBuilder.fill(Nat.N1(), Nat.N1());
   }
 
   private double getSD(double[] nums){
@@ -221,6 +226,11 @@ public final class VisionCamera extends Camera {
   @Override
   public List<Transform3d> getTargets() {
     return CAMERA.getLatestResult().getTargets().stream().map(PhotonTrackedTarget::getBestCameraToTarget).toList();
+  }
+
+  @Override
+  public Optional<Pose3d> getAprilTagPose(int FIDICUAL_ID) {
+    return FIELD_LAYOUT.getTagPose(FIDICUAL_ID);
   }
 
   @Override
