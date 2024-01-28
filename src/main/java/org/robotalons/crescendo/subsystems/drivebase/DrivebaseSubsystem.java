@@ -76,7 +76,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
     Odometry_Pose = new Pose2d();
     GYROSCOPE = new PigeonGyroscope(Constants.Measurements.PHOENIX_DRIVE);
     Control_Mode = OrientationMode.ROBOT_ORIENTED;
-    Module_Locking = (false);
+    Module_Locking = (true);
     Path_Flipped = (false); 
     Gyroscope_Rotation_Delta = new Rotation2d();
     Current_Time = Timer.getFPGATimestamp();

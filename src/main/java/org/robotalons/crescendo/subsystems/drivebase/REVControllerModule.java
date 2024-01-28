@@ -1,5 +1,6 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.drivebase;
+
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -7,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.MathUtil;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
@@ -154,9 +156,9 @@ public final class REVControllerModule extends Module {
     Status.LinearCurrentAmperage = 
       new double[] {CONSTANTS.LINEAR_CONTROLLER.getOutputCurrent()};
     Status.RotationalAbsolutePosition = 
-      Rotation2d.fromRotations(CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValue() / 2 + CONSTANTS.ROTATION_ENCODER_OFFSET);
+      Rotation2d.fromRotations((Units.rotationsToRadians(CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValue()) + CONSTANTS.ROTATION_ENCODER_OFFSET));
     Status.RotationalRelativePosition =
-        Rotation2d.fromRotations((ROTATIONAL_ENCODER.getPosition() / CONSTANTS.ROTATION_GEAR_RATIO) / 2).plus(Status.RotationalAbsolutePosition);
+        Rotation2d.fromRotations(MathUtil.angleModulus((ROTATIONAL_ENCODER.getPosition() / CONSTANTS.ROTATION_GEAR_RATIO)));
     Status.RotationalVelocityRadiansSecond =
         Units.rotationsPerMinuteToRadiansPerSecond(ROTATIONAL_ENCODER.getVelocity()) / CONSTANTS.ROTATION_GEAR_RATIO;
     Status.RotationalAppliedVoltage = 
@@ -222,7 +224,7 @@ public final class REVControllerModule extends Module {
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
   @Override
   public SwerveModuleState set(final SwerveModuleState Reference) {
-    this.Reference = SwerveModuleState.optimize(Reference, getAbsoluteRotation());
+    this.Reference = SwerveModuleState.optimize(Reference, getRelativeRotation());
     return this.Reference;
   }
 
@@ -244,7 +246,7 @@ public final class REVControllerModule extends Module {
    * @param Demand Demand of Voltage, relative to battery
    */
   public void setLinearVoltage(final Double Demand) {
-    CONSTANTS.LINEAR_CONTROLLER.setVoltage(Demand);
+    CONSTANTS.LINEAR_CONTROLLER.setVoltage(Demand * 0.2); //TODO: Remove Slowing Factor
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   @Override
