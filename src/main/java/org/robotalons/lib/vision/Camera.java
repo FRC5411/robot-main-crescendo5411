@@ -85,13 +85,13 @@ public abstract class Camera implements Closeable {
    * Mutates the underlying VisionMode state of the relevant camera
    * @param Mode New vision mode of camera
    */
-  public abstract void set(final VisionLEDMode Mode);
+  public abstract void set(final VisionLEDMode Mode) throws UnsupportedOperationException;
 
   /**
    * Mutates the underlying PipelineMode state of the relevant camera
    * @param Mode New pipeline mode of camera
    */
-  public abstract void set(final Integer Mode);
+  public abstract void set(final Integer Mode) throws UnsupportedOperationException;
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Provides the robot relative position to a given object based on the estimated position of this camera and a transformation to a known object
@@ -99,7 +99,7 @@ public abstract class Camera implements Closeable {
    * @return Position of the object relative to the field
    */
   public Pose3d getObjectFieldPose(final Transform3d Target) {
-    final var Robot = getRobotPosition();
+    final Pose3d Robot = getRobotPosition();
     return new Pose3d(
       (Target.getX() + Robot.getX()),
       (Target.getY() + Robot.getY()),
