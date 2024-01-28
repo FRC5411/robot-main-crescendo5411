@@ -47,6 +47,7 @@ public final class VisionCamera extends Camera {
   private List<Double> TIMESTAMP_LIST;
   private List<Pose3d> DELTAS_LIST;
   private List<Pose3d> POSES_LIST;
+  private int COUNTER;
 
   
   private final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
@@ -67,6 +68,8 @@ public final class VisionCamera extends Camera {
     TIMESTAMP_LIST = new ArrayList<>();
     DELTAS_LIST = new ArrayList<>();
     POSES_LIST = new ArrayList<>();
+
+    COUNTER = 0;
   }
 
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
@@ -90,11 +93,12 @@ public final class VisionCamera extends Camera {
 
   @Override
   public void close() throws IOException {
-    // CHECK
+    // TODO CHECK
     POSE_ESTIMATOR = null;
     TIMESTAMP_LIST = null;
     DELTAS_LIST = null;
     POSES_LIST = null;
+    COUNTER = 0;
   }
 
   @Override
@@ -212,15 +216,37 @@ public final class VisionCamera extends Camera {
 
   @Override
   public Pose3d getRobotPosition() {
-    EstimatedRobotPose CURRENT_POSE = POSE_ESTIMATOR.update().get();
-    
-    Pose3d CONVERTED = CURRENT_POSE.estimatedPose;
-    POSES_LIST.add(CONVERTED);
 
-    double time = CURRENT_POSE.timestampSeconds;
-    TIMESTAMP_LIST.add(time);
+    if(COUNTER == 0){
+      EstimatedRobotPose CURRENT_POSE = POSE_ESTIMATOR.update().get();
+      
+      Pose3d CONVERTED = CURRENT_POSE.estimatedPose;
+      POSES_LIST.add(CONVERTED);
 
-    return CONVERTED;
+      double time = CURRENT_POSE.timestampSeconds;
+      TIMESTAMP_LIST.add(time);
+
+      COUNTER ++;
+
+      return CONVERTED;
+    }
+
+    else{
+      Pose3d PREV_POSE = POSES_LIST.get(COUNTER);
+      POSE_ESTIMATOR.setReferencePose(PREV_POSE);
+
+      EstimatedRobotPose CURRENT_POSE = POSE_ESTIMATOR.update().get();
+      
+      Pose3d CONVERTED = CURRENT_POSE.estimatedPose;
+      POSES_LIST.add(CONVERTED);
+
+      double time = CURRENT_POSE.timestampSeconds;
+      TIMESTAMP_LIST.add(time);
+
+      COUNTER ++;
+
+      return CONVERTED;
+    }
   }
 
   @Override
