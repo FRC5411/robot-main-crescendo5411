@@ -3,8 +3,8 @@ package org.robotalons.crescendo.subsystems.drivebase;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.math.MathUtil;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
@@ -79,8 +79,7 @@ public static final class Measurements {
           CONSTANTS.LINEAR_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
           CONSTANTS.ROTATION_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
-          CONSTANTS.ROTATION_ENCODER_OFFSET = MathUtil.angleModulus(
-            Units.rotationsToRadians((0.607422d) + CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValue() / 2));
+          CONSTANTS.ROTATIONAL_ENCODER_OFFSET = Rotation2d.fromRotations(((0.607422d)));
           CONSTANTS.NUMBER = NUMBER;
         }
       }
@@ -110,8 +109,7 @@ public static final class Measurements {
           CONSTANTS.LINEAR_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
           CONSTANTS.ROTATION_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
-          CONSTANTS.ROTATION_ENCODER_OFFSET = MathUtil.angleModulus(
-            Units.rotationsToRadians((0.821045d) + CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValue() / 2));
+          CONSTANTS.ROTATIONAL_ENCODER_OFFSET = Rotation2d.fromRotations((0.821045d));
           CONSTANTS.NUMBER = NUMBER;
         }
       }
@@ -141,8 +139,7 @@ public static final class Measurements {
           CONSTANTS.LINEAR_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
           CONSTANTS.ROTATION_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
-          CONSTANTS.ROTATION_ENCODER_OFFSET = MathUtil.angleModulus(
-            Units.rotationsToRadians((0.353027) + CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValue() / 2));
+          CONSTANTS.ROTATIONAL_ENCODER_OFFSET = Rotation2d.fromRotations((0.353027d));
           CONSTANTS.NUMBER = NUMBER;
         }
       }
@@ -174,8 +171,7 @@ public static final class Measurements {
           CONSTANTS.LINEAR_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
           CONSTANTS.ROTATION_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
-          CONSTANTS.ROTATION_ENCODER_OFFSET = MathUtil.angleModulus(
-            Units.rotationsToRadians((0.483643d) + CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValue() / 2));
+          CONSTANTS.ROTATIONAL_ENCODER_OFFSET = Rotation2d.fromRotations((0.483643d));
           CONSTANTS.NUMBER = NUMBER;
         }
       }

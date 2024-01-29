@@ -26,8 +26,9 @@ public abstract class Module implements Closeable {
   protected final Constants CONSTANTS;  
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   protected ModuleStatusContainerAutoLogged Status = new ModuleStatusContainerAutoLogged();  
-  protected SwerveModuleState Reference = null;
-  protected Rotation2d Azimuth_Offset = null;
+  protected Rotation2d RotationalAbsoluteOffset = (null);
+  protected Rotation2d RotationalRelativeOffset = (null);
+  protected SwerveModuleState Reference = (null);
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Common Module Constructor.
@@ -72,7 +73,6 @@ public abstract class Module implements Closeable {
     public Double ROTATION_GEAR_RATIO = (1d);
     public Double POSITION_METERS = (0d);
     public Double WHEEL_RADIUS_METERS = (1d);
-    public Double ROTATION_ENCODER_OFFSET = (0d);
     public Boolean ROTATION_INVERTED = (false);
     public Boolean LINEAR_INVERTED = (false);
     public Integer NUMBER;
