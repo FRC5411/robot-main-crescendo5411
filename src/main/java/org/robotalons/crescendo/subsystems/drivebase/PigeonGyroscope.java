@@ -9,6 +9,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
+import org.littletonrobotics.junction.Logger;
 import org.robotalons.lib.motion.sensors.Gyroscope;
 
 import java.util.Queue;
@@ -66,5 +67,6 @@ public class PigeonGyroscope extends Gyroscope {
             .map(Rotation2d::fromDegrees)
             .toArray(Rotation2d[]::new);
     YAW_ROTATION_QUEUE.clear();
+    Logger.processInputs(("RealInputs/Gyroscope"), Status);
   }
 }

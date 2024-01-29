@@ -14,7 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
- 
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -56,15 +56,15 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
   private static final List<Module> MODULES;
   private static final Gyroscope GYROSCOPE;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  private static List<SwerveModulePosition> Current_Position;
-  private static Rotation2d Gyroscope_Rotation_Delta;
-  private static OrientationMode Control_Mode;
+  private static List<SwerveModulePosition> CurrentPositions;
+  private static OrientationMode CurrentMode;
+  private static Rotation2d CurrentRotation;
+  private static PilotProfile CurrentPilot;
+  private static Pose2d CurrentPose;  
+  private static Double CurrentTime;
   private static DrivebaseSubsystem Instance;
-  private static Pose2d Odometry_Pose;  
-  private static Boolean Module_Locking;      
-  private static Boolean Path_Flipped;  
-  private static Double Current_Time;
-  private static PilotProfile Current_Pilot;
+  private static Boolean ModuleLocked;      
+  private static Boolean PathFlipped;    
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Drivebase Subsystem Constructor.
@@ -73,13 +73,13 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
     super("Drivebase Subsystem");
   } static {
     Instance = new DrivebaseSubsystem();
-    Odometry_Pose = new Pose2d();
+    CurrentPose = new Pose2d();
     GYROSCOPE = new PigeonGyroscope(Constants.Measurements.PHOENIX_DRIVE);
-    Control_Mode = OrientationMode.ROBOT_ORIENTED;
-    Module_Locking = (true);
-    Path_Flipped = (false); 
-    Gyroscope_Rotation_Delta = new Rotation2d();
-    Current_Time = Timer.getFPGATimestamp();
+    CurrentMode = OrientationMode.ROBOT_ORIENTED;
+    ModuleLocked = (true);
+    PathFlipped = (false); 
+    CurrentRotation = new Rotation2d();
+    CurrentTime = Timer.getFPGATimestamp();
     MODULES = List.of(
       Devices.FRONT_LEFT_MODULE,
       Devices.FRONT_RIGHT_MODULE,
@@ -99,7 +99,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
       KINEMATICS, 
       GYROSCOPE.getYawRotation(),
       getModulePositions(),   
-      Odometry_Pose
+      CurrentPose
     );
     AutoBuilder.configureHolonomic(
       DrivebaseSubsystem::getPose,
@@ -121,7 +121,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
           (true),
           (true)
         )), 
-      () -> Path_Flipped,
+      () -> PathFlipped,
       Instance);
       Pathfinding.setPathfinder(new LocalADStarAK());
       PathPlannerLogging.setLogActivePathCallback(
@@ -149,17 +149,17 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
           return new SwerveModulePosition(
               Module.getPositionDeltas().get(DeltaIndex).distanceMeters
                                           - 
-                  Current_Position.get(DeltaIndex).distanceMeters,
+                  CurrentPositions.get(DeltaIndex).distanceMeters,
             Angle);
         }).toArray(SwerveModulePosition[]::new);
-      Current_Position = List.of(WheelDeltas);  
+      CurrentPositions = List.of(WheelDeltas);  
       if(GYROSCOPE.getConnected()) {
-        Gyroscope_Rotation_Delta = GYROSCOPE.getOdometryYawRotations()[DeltaIndex];
+        CurrentRotation = GYROSCOPE.getOdometryYawRotations()[DeltaIndex];
       } else {
         Twist2d TwistDelta = KINEMATICS.toTwist2d(WheelDeltas);
-        Gyroscope_Rotation_Delta = Gyroscope_Rotation_Delta.plus(new Rotation2d(TwistDelta.dtheta));
+        CurrentRotation = CurrentRotation.plus(new Rotation2d(TwistDelta.dtheta));
       }
-      POSE_ESTIMATOR.updateWithTime(Timestamps.get(DeltaIndex), Gyroscope_Rotation_Delta, WheelDeltas);
+      POSE_ESTIMATOR.updateWithTime(Timestamps.get(DeltaIndex), CurrentRotation, WheelDeltas);
     });
     //TODO: AUTOMATION TEAM (VISION MEASUREMENTS)
     org.robotalons.crescendo.Constants.Subsystems.ROBOT_FIELD.setRobotPose(getPose());
@@ -172,12 +172,12 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
   @AutoLogOutput(key = "Drivebase/DiscretizationTimestamp")
   private static synchronized Double discretize() {
     var DiscretizationTimestep = (0.0);
-    if (Current_Time.equals((0.0))) {
+    if (CurrentTime.equals((0.0))) {
       DiscretizationTimestep = ((1.0) / (50.0));
     } else {
       var MeasuredTime = Timer.getFPGATimestamp();
-      DiscretizationTimestep = MeasuredTime - Current_Time;
-      Current_Time = MeasuredTime;
+      DiscretizationTimestep = MeasuredTime - CurrentTime;
+      CurrentTime = MeasuredTime;
     }    
     return DiscretizationTimestep;
   }
@@ -198,13 +198,13 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
    * Toggles between the possible states of orientation types
    */
   public static synchronized void toggleOrientationType() {
-    switch (Control_Mode) {
+    switch (CurrentMode) {
       case ROBOT_ORIENTED:
-        Control_Mode = OrientationMode.FIELD_ORIENTED;
+        CurrentMode = OrientationMode.FIELD_ORIENTED;
       case FIELD_ORIENTED:
-        Control_Mode = OrientationMode.OBJECT_ORIENTED;
+        CurrentMode = OrientationMode.OBJECT_ORIENTED;
       case OBJECT_ORIENTED:
-        Control_Mode = OrientationMode.ROBOT_ORIENTED;
+        CurrentMode = OrientationMode.ROBOT_ORIENTED;
     }
   }
 
@@ -212,23 +212,23 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
    * Configures a pilot to operate this given subsystem.
    */
   public void configure(final PilotProfile Pilot) {
-    Current_Pilot = Pilot;
+    CurrentPilot = Pilot;
     DrivebaseSubsystem.getInstance().setDefaultCommand(
       new InstantCommand(() ->
       DrivebaseSubsystem.set(
         new Translation2d(
-          applySquared(MathUtil.applyDeadband(-(Double) Current_Pilot.getPreference(Preferences.TRANSLATIONAL_X_INPUT),
-        (Double) Current_Pilot.getPreference(Preferences.TRANSLATIONAL_X_DEADZONE))),
-          applySquared(MathUtil.applyDeadband(-(Double) Current_Pilot.getPreference(Preferences.TRANSLATIONAL_Y_INPUT),
-        (Double) Current_Pilot.getPreference(Preferences.TRANSLATIONAL_Y_DEADZONE)))),
+          applySquared(MathUtil.applyDeadband(-(Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_X_INPUT),
+        (Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_X_DEADZONE))),
+          applySquared(MathUtil.applyDeadband(-(Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_Y_INPUT),
+        (Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_Y_DEADZONE)))),
         new Rotation2d(
-          applySquared(MathUtil.applyDeadband(-(Double) Current_Pilot.getPreference(Preferences.ORIENTATION_INPUT),
-        (Double) Current_Pilot.getPreference(Preferences.ORIENTATION_DEADZONE))))), 
+          applySquared(MathUtil.applyDeadband(-(Double) CurrentPilot.getPreference(Preferences.ORIENTATION_INPUT),
+        (Double) CurrentPilot.getPreference(Preferences.ORIENTATION_DEADZONE))))), 
         DrivebaseSubsystem.getInstance()
     ));
-    Current_Pilot.getKeybinding(Keybindings.ORIENTATION_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleOrientationType, DrivebaseSubsystem.getInstance()));
-    Current_Pilot.getKeybinding(Keybindings.MODULE_LOCKING_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleModuleLocking, DrivebaseSubsystem.getInstance()));
-    Current_Pilot.getKeybinding(Keybindings.PATHFINDING_FLIP_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::togglePathFlipped, DrivebaseSubsystem.getInstance()));
+    CurrentPilot.getKeybinding(Keybindings.ORIENTATION_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleOrientationType, DrivebaseSubsystem.getInstance()));
+    CurrentPilot.getKeybinding(Keybindings.MODULE_LOCKING_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleModuleLocking, DrivebaseSubsystem.getInstance()));
+    CurrentPilot.getKeybinding(Keybindings.PATHFINDING_FLIP_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::togglePathFlipped, DrivebaseSubsystem.getInstance()));
   }
 
   /**
@@ -244,14 +244,14 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
    * Toggles between the modules should go into a locking format when idle or not
    */
   public static synchronized void toggleModuleLocking() {
-    Module_Locking = !Module_Locking;
+    ModuleLocked = !ModuleLocked;
   }
 
   /**
    * Toggles between is pathfinding should be flipped or not.
    */
   public static synchronized void togglePathFlipped() {
-    Path_Flipped = !Path_Flipped;
+    PathFlipped = !PathFlipped;
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
 
@@ -266,7 +266,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
    * @param Demand Chassis speeds object which represents the demand speeds of the drivebase
    */
   public static synchronized void set(final ChassisSpeeds Demand) {
-    if (Demand.omegaRadiansPerSecond > (1e-6) && Demand.vxMetersPerSecond > (1e-6) && Demand.vyMetersPerSecond > (1e-6) && Module_Locking) {
+    if (Demand.omegaRadiansPerSecond > (1e-6) && Demand.vxMetersPerSecond > (1e-6) && Demand.vyMetersPerSecond > (1e-6) && ModuleLocked) {
       set();
     } else {
       var Discrete = ChassisSpeeds.discretize(Demand, discretize());
@@ -292,7 +292,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
    * @param Rotation    Demand rotation in two-dimensional space
    */
   public static synchronized void set(final Translation2d Translation, final Rotation2d Rotation) {
-    switch(Control_Mode) {
+    switch(CurrentMode) {
       case OBJECT_ORIENTED:
         //TODO: AUTOMATION TEAM (OBJECT ORIENTATION DRIVEBASE)
         break;      
@@ -317,7 +317,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
    * reset into an 'X' orientation.
    */
   public static synchronized void set() {
-    if(Module_Locking) {
+    if(ModuleLocked) {
       KINEMATICS.resetHeadings(MODULES.stream().map((Module) -> 
         Module.getObserved().angle
       ).toArray(Rotation2d[]::new));  
@@ -330,7 +330,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
    * @param Pose Robot Pose in Meters
    */
   public static synchronized void set(final Pose2d Pose) {
-    Odometry_Pose = Pose;
+    CurrentPose = Pose;
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
@@ -338,7 +338,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
    * @return Pilot of this subsystem
    */
   public PilotProfile getPilot() {
-    return Current_Pilot;
+    return CurrentPilot;
   }
   /**
    * Provides the current position of the drivebase in space

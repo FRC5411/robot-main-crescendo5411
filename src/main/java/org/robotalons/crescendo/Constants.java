@@ -5,13 +5,13 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import org.robotalons.crescendo.subsystems.TalonSubsystemBase;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.REVOdometryThread;
 import org.robotalons.lib.utilities.PilotProfile;
-
-import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import java.util.ArrayList;
 import java.util.HashMap;

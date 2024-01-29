@@ -2,13 +2,13 @@
 package org.robotalons.crescendo.subsystems.drivebase;
 
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.math.MathUtil;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
@@ -41,12 +41,12 @@ public final class REVControllerModule extends Module {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private final List<SwerveModulePosition> DELTAS;
   private final List<Double> TIMESTAMPS;
-  private final ModuleConstants CONSTANTS;
-  private final RelativeEncoder LINEAR_ENCODER;
   private final RelativeEncoder ROTATIONAL_ENCODER;
-  private final Queue<Double> LINEAR_QUEUE;
+  private final RelativeEncoder LINEAR_ENCODER;
+  private final ModuleConstants CONSTANTS;
   private final Queue<Double> ROTATIONAL_QUEUE;    
   private final Queue<Double> TIMESTAMP_QUEUE;
+  private final Queue<Double> LINEAR_QUEUE;
   private final Lock ODOMETRY_LOCK;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private ReferenceType ReferenceMode;
@@ -66,8 +66,10 @@ public final class REVControllerModule extends Module {
     ROTATIONAL_ENCODER = CONSTANTS.ROTATIONAL_CONTROLLER.getEncoder();
 
     try {
-      Thread.sleep((2500));
-    } catch (final InterruptedException Ignored) {}
+      Thread.sleep((2500L));
+    } catch (final InterruptedException Ignored) {
+
+    }
 
     RotationalAbsoluteOffset = CONSTANTS.ROTATIONAL_ENCODER_OFFSET;
 
@@ -86,18 +88,18 @@ public final class REVControllerModule extends Module {
     CONSTANTS.ROTATIONAL_CONTROLLER.enableVoltageCompensation((12d));
 
     LINEAR_ENCODER.setPosition((0d));
-    LINEAR_ENCODER.setMeasurementPeriod((10));
     LINEAR_ENCODER.setAverageDepth((2));
-
+    LINEAR_ENCODER.setMeasurementPeriod((10));
+    
     CONSTANTS.LINEAR_CONTROLLER.setIdleMode(IdleMode.kBrake);
     CONSTANTS.ROTATIONAL_CONTROLLER.setIdleMode(IdleMode.kCoast);
 
     ROTATIONAL_ENCODER.setPosition((0d));
-    ROTATIONAL_ENCODER.setMeasurementPeriod((10));
     ROTATIONAL_ENCODER.setAverageDepth((2));
+    ROTATIONAL_ENCODER.setMeasurementPeriod((10));
 
-    CONSTANTS.LINEAR_CONTROLLER.setCANTimeout((250));
-    CONSTANTS.ROTATIONAL_CONTROLLER.setCANTimeout((250));
+    CONSTANTS.LINEAR_CONTROLLER.setCANTimeout((0));
+    CONSTANTS.ROTATIONAL_CONTROLLER.setCANTimeout((0));
 
     CONSTANTS.ROTATIONAL_CONTROLLER_PID.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -109,10 +111,10 @@ public final class REVControllerModule extends Module {
     LINEAR_QUEUE = org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD.register(LINEAR_ENCODER::getPosition);
     ROTATIONAL_QUEUE = org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD.register(ROTATIONAL_ENCODER::getPosition); 
     TIMESTAMP_QUEUE = org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD.timestamp();
-    CONSTANTS.LINEAR_CONTROLLER.burnFlash();
     CONSTANTS.ROTATIONAL_CONTROLLER.burnFlash();
-    DELTAS = new ArrayList<>();
+    CONSTANTS.LINEAR_CONTROLLER.burnFlash();
     TIMESTAMPS = new ArrayList<>();
+    DELTAS = new ArrayList<>();
     reset();
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//  
@@ -172,13 +174,13 @@ public final class REVControllerModule extends Module {
     LINEAR_QUEUE.clear();
     ROTATIONAL_QUEUE.clear();
     TIMESTAMP_QUEUE.clear();
+    Logger.processInputs("RealInputs/" + '(' + Integer.toString(CONSTANTS.NUMBER) + ") MODULE", Status);
   }
 
   @Override
   public synchronized void periodic() {
     ODOMETRY_LOCK.lock();
     update();
-    Logger.processInputs("RealInputs/" + Integer.toString(CONSTANTS.NUMBER), Status);
     if (RotationalRelativeOffset == (null) && Status.RotationalAbsolutePosition.getRadians() != (0d)) {
       RotationalRelativeOffset = Status.RotationalAbsolutePosition.minus(Status.RotationalRelativePosition);
     }
@@ -188,7 +190,7 @@ public final class REVControllerModule extends Module {
           if (Reference.angle != (null)) {
             setRotationVoltage(CONSTANTS.ROTATIONAL_CONTROLLER_PID.calculate(getRelativeRotation().getRadians(),Reference.angle.getRadians()));
           }
-          var AdjustReferenceVelocity = Reference.speedMetersPerSecond * Math.cos(CONSTANTS.ROTATIONAL_CONTROLLER_PID.getPositionError()) / CONSTANTS.WHEEL_RADIUS_METERS;
+          var AdjustReferenceVelocity = (Reference.speedMetersPerSecond * Math.cos(CONSTANTS.ROTATIONAL_CONTROLLER_PID.getPositionError())) / CONSTANTS.WHEEL_RADIUS_METERS;
           setLinearVoltage(     (CONSTANTS.LINEAR_CONTROLLER_PID.calculate(AdjustReferenceVelocity))
                                                               +
             (CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD.calculate(Status.LinearVelocityRadiansSecond, AdjustReferenceVelocity)));          
@@ -201,6 +203,7 @@ public final class REVControllerModule extends Module {
         close();
         break;
     }
+    ODOMETRY_LOCK.unlock();  
     DELTAS.clear();
     IntStream.range((0), Status.OdometryTimestamps.length).forEach((Index) -> {
       final var Position = Status.OdometryLinearPositionsRadians[Index] * CONSTANTS.WHEEL_RADIUS_METERS;
@@ -208,7 +211,6 @@ public final class REVControllerModule extends Module {
         RotationalRelativeOffset != (null)? RotationalRelativeOffset: new Rotation2d());
       DELTAS.add(new SwerveModulePosition(Position, Rotation));
     });
-    ODOMETRY_LOCK.unlock();    
   }
 
   /**
