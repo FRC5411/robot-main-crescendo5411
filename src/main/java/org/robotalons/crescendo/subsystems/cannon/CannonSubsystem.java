@@ -1,7 +1,6 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.cannon;
 
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.robotalons.crescendo.subsystems.cannon.Constants.Devices;
@@ -44,7 +43,7 @@ public class CannonSubsystem extends SubsystemBase {
   public synchronized void periodic() {
     Constants.Objects.ODOMETRY_LOCKER.lock();
     DIRECTIONAL_CONTROLLER.periodic();
-    System.out.println(DIRECTIONAL_CONTROLLER);
+    
     LAUNCH_CONTROLLER.periodic();
     Constants.Objects.ODOMETRY_LOCKER.lock();
   }
