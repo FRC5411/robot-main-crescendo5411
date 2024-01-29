@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -277,11 +278,15 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
         Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
         Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
         Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY);
+      Logger.recordOutput(("Drivebase/ReferenceTranslation"), new Translation2d(Discrete.vxMetersPerSecond, Discrete.vyMetersPerSecond));
+      Logger.recordOutput(("Drivebase/ReferenceRotation"), new Rotation2d(Discrete.omegaRadiansPerSecond));
       Logger.recordOutput(("Drivebase/Reference"), Reference);
       Logger.recordOutput(("Drivebase/Optimized"),
         IntStream.range((0), MODULES.size()).boxed().map(
-          (Index) -> 
-            MODULES.get(Index).set(Reference[Index]))
+          (Index) -> {
+            Reference[Index].speedMetersPerSecond *= (Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY * 3);
+            return MODULES.get(Index).set(Reference[Index]);
+          })
           .toArray(SwerveModuleState[]::new));
     }
   }
@@ -318,11 +323,10 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
    */
   public static synchronized void set() {
     if(ModuleLocked) {
-      KINEMATICS.resetHeadings(MODULES.stream().map((Module) -> 
-        Module.getObserved().angle
-      ).toArray(Rotation2d[]::new));  
+      set(new Translation2d(), new Rotation2d(Units.degreesToRadians((45))));
+    } else {
+      set(new ChassisSpeeds());
     }
-    set(new ChassisSpeeds());
   }
 
   /**

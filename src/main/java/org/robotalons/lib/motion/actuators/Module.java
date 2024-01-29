@@ -177,6 +177,6 @@ public abstract class Module implements Closeable {
   public SwerveModuleState getObserved() {
     return new SwerveModuleState(
       Status.LinearVelocityRadiansSecond * CONSTANTS.WHEEL_RADIUS_METERS, 
-      Status.RotationalAbsolutePosition);
+      Status.RotationalRelativePosition);
   }
 }

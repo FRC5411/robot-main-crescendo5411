@@ -84,6 +84,7 @@ public final class REVControllerModule extends Module {
 
     CONSTANTS.LINEAR_CONTROLLER.setSmartCurrentLimit((40));
     CONSTANTS.ROTATIONAL_CONTROLLER.setSmartCurrentLimit((30));
+    
     CONSTANTS.LINEAR_CONTROLLER.enableVoltageCompensation((12d));
     CONSTANTS.ROTATIONAL_CONTROLLER.enableVoltageCompensation((12d));
 
@@ -97,6 +98,9 @@ public final class REVControllerModule extends Module {
     ROTATIONAL_ENCODER.setPosition((0d));
     ROTATIONAL_ENCODER.setAverageDepth((2));
     ROTATIONAL_ENCODER.setMeasurementPeriod((10));
+
+    CONSTANTS.LINEAR_CONTROLLER.setInverted(CONSTANTS.LINEAR_INVERTED);
+    CONSTANTS.ROTATIONAL_CONTROLLER.setInverted(CONSTANTS.ROTATIONAL_INVERTED);
 
     CONSTANTS.LINEAR_CONTROLLER.setCANTimeout((0));
     CONSTANTS.ROTATIONAL_CONTROLLER.setCANTimeout((0));
@@ -126,6 +130,8 @@ public final class REVControllerModule extends Module {
     public CANSparkMax ROTATIONAL_CONTROLLER; 
     public CANSparkMax LINEAR_CONTROLLER;
     public CANcoder ABSOLUTE_ENCODER;
+    public Boolean ROTATIONAL_INVERTED;
+    public Boolean LINEAR_INVERTED;
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override

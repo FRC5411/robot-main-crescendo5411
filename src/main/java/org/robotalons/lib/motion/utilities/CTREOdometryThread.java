@@ -65,6 +65,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
       super.start();
     }
   }
+  
   @Override
   public synchronized Queue<Double> register(final StatusSignal<Double> Signal) {
     Queue<Double> Queue = new ArrayDeque<>((100));
@@ -117,7 +118,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
           Thread.sleep((long) ((1000.0)/ Frequency));
           Signals.forEach(StatusSignal::refresh);
         }
-      } catch (InterruptedException Exception) {
+      } catch (final InterruptedException Exception) {
         Exception.printStackTrace();
       } finally {
         SIGNALS_LOCK.unlock();
