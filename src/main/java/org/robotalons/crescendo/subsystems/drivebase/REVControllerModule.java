@@ -180,7 +180,7 @@ public final class REVControllerModule extends Module {
     LINEAR_QUEUE.clear();
     ROTATIONAL_QUEUE.clear();
     TIMESTAMP_QUEUE.clear();
-    Logger.processInputs("RealInputs/" + '(' + Integer.toString(CONSTANTS.NUMBER) + ") MODULE", Status);
+    Logger.processInputs("RealInputs/" + "MODULE (" + Integer.toString(CONSTANTS.NUMBER) + ')', Status);
   }
 
   @Override
@@ -230,6 +230,7 @@ public final class REVControllerModule extends Module {
   @Override
   public SwerveModuleState set(final SwerveModuleState Reference) {
     this.Reference = SwerveModuleState.optimize(Reference, getRelativeRotation());
+    this.Reference.speedMetersPerSecond *= (CONSTANTS.LINEAR_INVERTED)? (-1): (1);
     return this.Reference;
   }
 
