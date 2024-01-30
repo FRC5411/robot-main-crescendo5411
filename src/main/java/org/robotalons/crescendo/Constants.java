@@ -43,7 +43,7 @@ public final class Constants {
   }
 
   public static final class Logging {
-    public static final String LOGGING_DEPOSIT_FOLDER = ("src\\main\\java\\main\\deploy\\logs");
+    public static final String LOGGING_DEPOSIT_FOLDER = ("/U/logs");
     public static final Boolean LOGGING_TURBO_MODE = (false);
     public static final Boolean LOGGING_ENABLED = (false);
     public static final Boolean REPLAY_FROM_LOG = (false);

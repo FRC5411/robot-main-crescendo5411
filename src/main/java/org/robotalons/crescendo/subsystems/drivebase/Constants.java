@@ -62,7 +62,7 @@ public static final class Measurements {
         public static final Double ROTATIONAL_I_GAIN = (0d);
         public static final Double ROTATIONAL_D_GAIN = (0.00001d);
         public static final Rotation2d ROTATIONAL_ENCODER_OFFSET = Rotation2d.fromRotations((0.607422d));
-        public static final Boolean ROTATIONAL_INVERTED = (false);
+        public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
         public static final Double LINEAR_P_GAIN = (0.02d);
         public static final Double LINEAR_I_GAIN = (0d);
@@ -168,7 +168,7 @@ public static final class Measurements {
         public static final Double ROTATIONAL_D_GAIN = (0.00001d);
         public static final Rotation2d ROTATIONAL_ENCODER_OFFSET = Rotation2d.fromRotations((0.483643d));
         public static final Boolean ROTATIONAL_INVERTED = (false);
-        public static final Boolean LINEAR_INVERTED = (true);
+        public static final Boolean LINEAR_INVERTED = (false);
         public static final Double LINEAR_P_GAIN = (0.02d);
         public static final Double LINEAR_I_GAIN = (0d);
         public static final Double LINEAR_D_GAIN = (0d);

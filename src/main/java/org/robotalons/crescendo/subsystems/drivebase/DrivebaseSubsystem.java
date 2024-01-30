@@ -284,7 +284,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
       Logger.recordOutput(("Drivebase/Optimized"),
         IntStream.range((0), MODULES.size()).boxed().map(
           (Index) -> {
-            Reference[Index].speedMetersPerSecond *= (Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY * 3);
+            Reference[Index].speedMetersPerSecond *= (Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY * 10);
             return MODULES.get(Index).set(Reference[Index]);
           })
           .toArray(SwerveModuleState[]::new));
