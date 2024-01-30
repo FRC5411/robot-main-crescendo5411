@@ -15,12 +15,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.pathfinding.Pathfinding;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.PathPlannerLogging;
-import com.pathplanner.lib.util.ReplanningConfig;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -31,7 +25,6 @@ import org.robotalons.crescendo.subsystems.drivebase.Constants.Devices;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Objects;
 import org.robotalons.lib.motion.actuators.Module;
-import org.robotalons.lib.motion.pathfinding.LocalADStarAK;
 import org.robotalons.lib.motion.sensors.Gyroscope;
 import org.robotalons.lib.utilities.PilotProfile;
 
@@ -101,35 +94,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
       getModulePositions(),   
       CurrentPose
     );
-    AutoBuilder.configureHolonomic(
-      DrivebaseSubsystem::getPose,
-      DrivebaseSubsystem::set, 
-      () -> KINEMATICS.toChassisSpeeds(getModuleMeasurements()), 
-      DrivebaseSubsystem::set, 
-      new HolonomicPathFollowerConfig(
-        new PIDConstants(
-          Measurements.ROBOT_TRANSLATION_KP,
-          Measurements.ROBOT_TRANSLATION_KI,
-          Measurements.ROBOT_TRANSLATION_KP), 
-        new PIDConstants(
-          Measurements.ROBOT_ROTATIONAL_KP,
-          Measurements.ROBOT_ROTATIONAL_KI,
-          Measurements.ROBOT_ROTATIONAL_KD), 
-        Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
-        Measurements.ROBOT_RADIUS_METERS, 
-        new ReplanningConfig(
-          (true),
-          (true)
-        )), 
-      () -> PathFlipped,
-      Instance);
-      Pathfinding.setPathfinder(new LocalADStarAK());
-      PathPlannerLogging.setLogActivePathCallback(
-        (ActivePath) -> Logger.recordOutput(("Drivebase/Trajectory"), ActivePath.toArray(new Pose2d[0])));
-      PathPlannerLogging.setLogTargetPoseCallback(
-        (TargetPose) -> Logger.recordOutput(("Drivebase/Reference"), TargetPose));
-      MODULES.forEach((Module) -> 
-        Module.set(org.robotalons.lib.motion.actuators.Module.ReferenceType.STATE_CONTROL));
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   public synchronized void periodic() {
@@ -161,8 +125,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
       }
       POSE_ESTIMATOR.updateWithTime(Timestamps.get(DeltaIndex), CurrentRotation, WheelDeltas);
     });
-    //TODO: AUTOMATION TEAM (VISION MEASUREMENTS)
-    org.robotalons.crescendo.Constants.Subsystems.ROBOT_FIELD.setRobotPose(getPose());
   }
 
   /**
@@ -359,6 +321,30 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
   @AutoLogOutput(key = "Drivebase/Pose")
   public static Pose2d getPose() {
     return POSE_ESTIMATOR.getEstimatedPosition();
+  }
+
+  /**
+   * Provides a boolean representation of if the pathfinding should flip paths or not.
+   * @return Boolean of if Pathfinding is flipped or not
+   */
+  public static Boolean getPath() {
+    return PathFlipped;
+  }
+
+  /**
+   * Provides a list of modules that this subsystem has
+   * @return List of drive modules
+   */
+  public static List<Module> getModules() {
+    return MODULES;
+  }
+
+  /**
+   * Provides the kinematics chassis speeds of the current module measurements
+   * @return Drivebase kinematics objects
+   */
+  public static ChassisSpeeds getSpeeds() {
+    return KINEMATICS.toChassisSpeeds(getModuleMeasurements());
   }
 
   /**

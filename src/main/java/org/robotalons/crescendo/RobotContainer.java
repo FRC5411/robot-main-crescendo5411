@@ -3,13 +3,12 @@ package org.robotalons.crescendo;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.robotalons.crescendo.Constants.Pathplanner;
 import org.robotalons.crescendo.Constants.Profiles;
-import org.robotalons.crescendo.Constants.Subsystems;
+import org.robotalons.crescendo.subsystems.SubsystemManager;
 import org.robotalons.lib.utilities.PilotProfile;
 
 import java.util.ArrayList;
@@ -24,16 +23,16 @@ import java.util.List;
  */
 public final class RobotContainer {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  public static final List<LoggedDashboardChooser<PilotProfile>> PilotSelector;
+  public static final List<LoggedDashboardChooser<PilotProfile>> PilotSelectors;
   public static final LoggedDashboardChooser<Command> AutonomousSelector;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static RobotContainer Instance = (null);
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private RobotContainer() {} static {
-    PilotSelector = new ArrayList<>();
+    PilotSelectors = new ArrayList<>();
     AutonomousSelector = new LoggedDashboardChooser<>(("Autonomous Selector"), AutoBuilder.buildAutoChooser());
     Pathplanner.ROUTINES.forEach((Name, Routine) -> AutonomousSelector.addOption(Name, Routine));
-    Subsystems.SUBSYSTEMS.forEach((Subsystem) -> {
+    SubsystemManager.getSubsystems().forEach((Subsystem) -> {
       final var Selector = new SendableChooser<PilotProfile>();
       final var Iterator = Profiles.PILOT_PROFILES.iterator();
       final var Initial = Iterator.next();
@@ -41,7 +40,7 @@ public final class RobotContainer {
       Selector.setDefaultOption(Initial.getName(), Initial);
       Selector.onChange(Subsystem::configure);
       Subsystem.configure(Initial);
-      PilotSelector.add(new LoggedDashboardChooser<PilotProfile>(Subsystem.getName() + " Pilot Selector", Selector));
+      PilotSelectors.add(new LoggedDashboardChooser<PilotProfile>(Subsystem.getName() + " Pilot Selector", Selector));
     });
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//

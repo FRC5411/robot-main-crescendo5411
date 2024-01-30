@@ -27,27 +27,20 @@ import java.util.concurrent.locks.ReentrantLock;
  * @see DrivebaseSubsystem
  */
 public final class Constants {
-  // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
-public static final class Measurements {
-    public static final Double ROBOT_WHEEL_DIAMETER_METERS = Units.inchesToMeters((4));
+// ------------------------------------------------------------[Internal]-------------------------------------------------------------//
+  public static final class Measurements {
+    public static final Double ROBOT_WHEEL_DIAMETER_METERS = Units.inchesToMeters((4d));
     public static final Double ROBOT_WHEEL_PERIMETER_METERS = ROBOT_WHEEL_DIAMETER_METERS * Math.PI;
+
     public static final Double ROBOT_LENGTH_METERS = Units.inchesToMeters((29));        
     public static final Double ROBOT_WIDTH_METERS = Units.inchesToMeters((29));
-    public static final Double ROBOT_RADIUS_METERS = Math.hypot(ROBOT_LENGTH_METERS / (2.0), ROBOT_WIDTH_METERS / (2.0));      
+    public static final Double ROBOT_RADIUS_METERS = Math.hypot(ROBOT_LENGTH_METERS / (2.0), ROBOT_WIDTH_METERS / (2.0)); 
 
     public static final Double ROBOT_MAXIMUM_LINEAR_VELOCITY = Units.feetToMeters((15.4d));
     public static final Double ROBOT_MAXIMUM_ANGULAR_VELOCITY = ROBOT_MAXIMUM_LINEAR_VELOCITY / ROBOT_RADIUS_METERS;
 
-    public static final Double ROBOT_LINEAR_GEAR_RATIO = ((6.75));
-    public static final Double ROBOT_ROTATION_GEAR_RATIO = (((150.0) / (7.0)));
-
-    public static final Double ROBOT_TRANSLATION_KP = (1d);
-    public static final Double ROBOT_TRANSLATION_KI = (1d);
-    public static final Double ROBOT_TRANSLATION_KD = (1d);    
-
-    public static final Double ROBOT_ROTATIONAL_KP = (1d);
-    public static final Double ROBOT_ROTATIONAL_KI = (1d);
-    public static final Double ROBOT_ROTATIONAL_KD = (1d);
+    public static final Double ROBOT_LINEAR_GEAR_RATIO = ((6.75d));
+    public static final Double ROBOT_ROTATION_GEAR_RATIO = (((150d) / (7d)));
 
     public static final Boolean PHOENIX_DRIVE = (false);
 
@@ -197,23 +190,23 @@ public static final class Measurements {
   }
 
   public static final class Ports {
-    public static final Integer GYROSCOPE_ID = (10);      
+  public static final Integer GYROSCOPE_ID = (10);      
   }
 
   public static final class Objects {
-      public static final Lock ODOMETRY_LOCK = new ReentrantLock();
+    public static final Lock ODOMETRY_LOCK = new ReentrantLock();
   }
 
   public static final class Devices {
-    public static final Gyroscope GYROSCOPE = 
-      new PigeonGyroscope(Measurements.PHOENIX_DRIVE);
-    public static final Module FRONT_LEFT_MODULE = 
-      new REVControllerModule(Measurements.Modules.FL.CONSTANTS);     
-    public static final Module FRONT_RIGHT_MODULE = 
-      new REVControllerModule(Measurements.Modules.FR.CONSTANTS);             
-    public static final Module REAR_LEFT_MODULE = 
-      new REVControllerModule(Measurements.Modules.RL.CONSTANTS);        
-    public static final Module REAR_RIGHT_MODULE = 
-      new REVControllerModule(Measurements.Modules.RR.CONSTANTS);    
-    }
+  public static final Gyroscope GYROSCOPE = 
+    new PigeonGyroscope(Measurements.PHOENIX_DRIVE);
+  public static final Module FRONT_LEFT_MODULE = 
+    new REVControllerModule(Measurements.Modules.FL.CONSTANTS);     
+  public static final Module FRONT_RIGHT_MODULE = 
+    new REVControllerModule(Measurements.Modules.FR.CONSTANTS);             
+  public static final Module REAR_LEFT_MODULE = 
+    new REVControllerModule(Measurements.Modules.RL.CONSTANTS);        
+  public static final Module REAR_RIGHT_MODULE = 
+    new REVControllerModule(Measurements.Modules.RR.CONSTANTS);    
   }
+}

@@ -2,13 +2,11 @@
 package org.robotalons.crescendo;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
-import org.robotalons.crescendo.subsystems.TalonSubsystemBase;
-import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
+import org.robotalons.crescendo.subsystems.SubsystemManager;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.REVOdometryThread;
 import org.robotalons.lib.utilities.PilotProfile;
@@ -33,13 +31,8 @@ public final class Constants {
   // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
 
   public static final class Subsystems {
-    public static final Field2d ROBOT_FIELD = new Field2d();
+    public static final SubsystemManager MANAGER = SubsystemManager.getInstance();
     public static final Boolean IS_REAL_ROBOT = RobotBase.isReal();
-    public static final DrivebaseSubsystem DRIVEBASE_SUBSYSTEM = DrivebaseSubsystem.getInstance();
-    public static final List<TalonSubsystemBase> SUBSYSTEMS = new ArrayList<>();
-    static {
-      SUBSYSTEMS.add(DRIVEBASE_SUBSYSTEM);
-    }
   }
 
   public static final class Logging {

@@ -22,6 +22,7 @@ import org.littletonrobotics.urcl.URCL;
 import org.robotalons.crescendo.Constants.Logging;
 import org.robotalons.crescendo.Constants.Ports;
 import org.robotalons.crescendo.Constants.Subsystems;
+import org.robotalons.crescendo.subsystems.SubsystemManager;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.REVOdometryThread;
 
@@ -86,6 +87,7 @@ public final class Robot extends LoggedRobot {
           Logger.recordMetadata(("Changes"), ("Unknown"));
           break;
       }
+      //TODO: Optimize Here
       if (Subsystems.IS_REAL_ROBOT) {
         if(Logging.LOGGING_ENABLED) {
           Logger.addDataReceiver(new WPILOGWriter(("/media/sda1/")));
@@ -166,6 +168,7 @@ public final class Robot extends LoggedRobot {
     // ------------------------------------------------------------[Autonomous]---------------------------------------------------------------//
     @Override
     public void autonomousInit() {
+      SubsystemManager.ensure();
       Autonomous = RobotContainer.AutonomousSelector.get();
       if(!java.util.Objects.isNull(Autonomous)) {
         Autonomous.schedule();
