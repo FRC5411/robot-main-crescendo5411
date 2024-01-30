@@ -1,9 +1,8 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems;
-import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
-
-// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.util.Units;
+
+import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 // ---------------------------------------------------------------[Constants]---------------------------------------------------------------//
 /**
  *
