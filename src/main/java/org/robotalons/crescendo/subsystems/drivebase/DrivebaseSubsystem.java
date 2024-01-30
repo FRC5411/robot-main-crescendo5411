@@ -15,7 +15,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -216,15 +215,24 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
     CurrentPilot = Pilot;
     DrivebaseSubsystem.getInstance().setDefaultCommand(
       new InstantCommand(() ->
-      DrivebaseSubsystem.set(
+      DrivebaseSubsystem.set(((Boolean) CurrentPilot.getPreference(Preferences.SQUARED_INPUT))?
         new Translation2d(
-          applySquared(MathUtil.applyDeadband(-(Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_X_INPUT),
-        (Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_X_DEADZONE))),
-          applySquared(MathUtil.applyDeadband(-(Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_Y_INPUT),
-        (Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_Y_DEADZONE)))),
+            applySquared(MathUtil.applyDeadband(-(Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_X_INPUT),
+          (Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_X_DEADZONE))),
+            applySquared(MathUtil.applyDeadband(-(Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_Y_INPUT),
+          (Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_Y_DEADZONE)))):
+          new Translation2d(
+            MathUtil.applyDeadband(-(Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_X_INPUT),
+          (Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_X_DEADZONE)),
+            MathUtil.applyDeadband(-(Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_Y_INPUT),
+          (Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_Y_DEADZONE))),
+        ((Boolean) CurrentPilot.getPreference(Preferences.SQUARED_INPUT))?
         new Rotation2d(
-          applySquared(MathUtil.applyDeadband(-(Double) CurrentPilot.getPreference(Preferences.ORIENTATION_INPUT),
-        (Double) CurrentPilot.getPreference(Preferences.ORIENTATION_DEADZONE))))), 
+            applySquared(MathUtil.applyDeadband(-(Double) CurrentPilot.getPreference(Preferences.ORIENTATION_INPUT),
+          (Double) CurrentPilot.getPreference(Preferences.ORIENTATION_DEADZONE)))):
+          new Rotation2d(
+            (MathUtil.applyDeadband(-(Double) CurrentPilot.getPreference(Preferences.ORIENTATION_INPUT),
+          (Double) CurrentPilot.getPreference(Preferences.ORIENTATION_DEADZONE))))), 
         DrivebaseSubsystem.getInstance()
     ));
     CurrentPilot.getKeybinding(Keybindings.ORIENTATION_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleOrientationType, DrivebaseSubsystem.getInstance()));

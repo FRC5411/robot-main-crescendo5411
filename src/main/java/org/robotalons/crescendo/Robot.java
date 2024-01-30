@@ -22,12 +22,16 @@ import org.littletonrobotics.urcl.URCL;
 import org.robotalons.crescendo.Constants.Logging;
 import org.robotalons.crescendo.Constants.Ports;
 import org.robotalons.crescendo.Constants.Subsystems;
+import org.robotalons.lib.motion.utilities.CTREOdometryThread;
+import org.robotalons.lib.motion.utilities.REVOdometryThread;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
+
+import javax.management.InstanceNotFoundException;
 // -----------------------------------------------------------------[Robot]----------------------------------------------------------------//
 /**
  *
@@ -120,6 +124,12 @@ public final class Robot extends LoggedRobot {
         (Command Command) -> CommandLogger.accept(Command, (false)));    
       Logger.registerURCL(URCL.startExternal());
       Logger.start();
+      
+      try {
+        CTREOdometryThread.getInstance();
+        REVOdometryThread.getInstance();
+      } catch (final InstanceNotFoundException Exception) {}
+
       RobotContainer.getInstance();
       COMMAND_LOGGER.schedule();    
       Shuffleboard.startRecording();
