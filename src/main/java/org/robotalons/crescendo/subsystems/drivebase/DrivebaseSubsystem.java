@@ -53,7 +53,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
   private static OrientationMode CurrentMode;
   private static Rotation2d CurrentRotation;
   private static PilotProfile CurrentPilot;
-  private static Pose2d CurrentPose;  
   private static Double CurrentTime;
   private static DrivebaseSubsystem Instance;
   private static Boolean ModuleLocked;      
@@ -66,7 +65,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
     super("Drivebase Subsystem");
   } static {
     Instance = new DrivebaseSubsystem();
-    CurrentPose = new Pose2d();
     GYROSCOPE = new PigeonGyroscope(Constants.Measurements.PHOENIX_DRIVE);
     CurrentMode = OrientationMode.ROBOT_ORIENTED;
     ModuleLocked = (true);
@@ -92,7 +90,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
       KINEMATICS, 
       GYROSCOPE.getYawRotation(),
       getModulePositions(),   
-      CurrentPose
+      getPose()
     );
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
@@ -304,7 +302,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
    * @param Pose Robot Pose in Meters
    */
   public static synchronized void set(final Pose2d Pose) {
-    CurrentPose = Pose;
+    POSE_ESTIMATOR.resetPosition(GYROSCOPE.getYawRotation(),getModulePositions(),getPose());
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
