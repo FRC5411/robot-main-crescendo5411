@@ -1,5 +1,6 @@
 // ----------------------------------------------------------------[Package]---------------------------------------------------------------- //
 package org.robotalons.crescendo.subsystems.indexer;
+
 // ---------------------------------------------------------------[Libraries]--------------------------------------------------------------- //
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,9 +27,11 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
     private static final CANSparkMax INDEXER_CANNON_MOTOR;
     private static final DigitalInput INDEXER_INTAKE_RECEIVER;
     private static final DigitalInput INDEXER_CANNON_RECEIVER;
+
     // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
     private static IndexerSubsystem Instance;
     private static Boolean HasNote;
+
     // ------------------------------------------------------------[Constructors]------------------------------------------------------------- //
     /**
      * Indexer Subsystem Constructor
@@ -70,6 +73,7 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
       BACKWARD_CANNON,
       BACKWARD_INDEXER,
     }
+
     // --------------------------------------------------------------[Mutators]--------------------------------------------------------------- //
     /**
      * Indexer moves a game piece a given direction through the indexer subsystem given a direction, e.g. Backward Indexer would mean pulling 
@@ -78,31 +82,32 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
      */
     public synchronized void set(final Direction Demand) {
         switch(Demand) {
-            case FORWARD_INDEXER:   //will be called by the intake subsystem after completing a pickup.
+            case FORWARD_INDEXER:   /* will be called by the intake subsystem after completing a pickup.
                 if (!(getHoldingNote())) {
-                    //(INDEXER_INTAKE_MOTOR) spin at (INDEXER_INTAKE_MOTOR_SPEED) for (INDEXER_INTAKE_MOTOR_DURATION);\
-                }
+                    INDEXER_INTAKE_MOTOR spin at INDEXER_INTAKE_MOTOR_SPEED for INDEXER_INTAKE_MOTOR_DURATION;
+                } */
                 break;
-            case FORWARD_CANNON:    //will be called by the cannon subsystem in order to put a Note in firing position.
+            case FORWARD_CANNON:    /* will be called by the cannon subsystem in order to put a Note in firing position.
                 if (getHoldingNote()) {
-                    //(INDEXER_CANNON_MOTOR) spin at (INDEXER_CANNON_MOTOR_SPEED) for (INDEXER_CANNON_MOTOR_DURATION);
-                    //[Tell cannon subsystem to continue with fire sequence];
+                    INDEXER_CANNON_MOTOR spin at INDEXER_CANNON_MOTOR_SPEED for INDEXER_CANNON_MOTOR_DURATION;
+                    Tell CANNON to continueWithFireSequence;
                 }
                 else {
-                    //[Tell cannon subsystem to abort fire sequence]
-                }
+                    Tell CANNON to abortFireSequence;
+                } */
                 break;
-            case BACKWARD_INDEXER:  //will be called by the operator/copilot if a Note needs to be put back on the ground (e.g. Note jammed in singulator).
+            case BACKWARD_INDEXER:  /* will be called by the operator/copilot if a Note needs to be put back on the ground (e.g. Note jammed in singulator).
                 if (getHoldingNote())
                 {
-                    //(INDEXER_INTAKE_MOTOR) spins at negative (INDEXER_INTAKE_MOTOR_SPEED) for (INDEXER_INTAKE_MOTOR_DURATION);
-                    //[Tell intake motors to go through intake sequence backwards (negative speed, same time, etc etc)];
-                }
+                    INDEXER_INTAKE_MOTOR spins at -INDEXER_INTAKE_MOTOR_SPEED for INDEXER_INTAKE_MOTOR_DURATION;
+                    Tell INTAKE to do intakeSequence but backwards (negative speed, same time, etc etc);
+                } */
                 break;
             default:
                 break;
         }
     }
+
     // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
     /**
      * Provides a boolean representation of if this indexer is currently holding a not or not.
