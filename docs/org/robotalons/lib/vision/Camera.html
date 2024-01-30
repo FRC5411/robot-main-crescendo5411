@@ -95,9 +95,18 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>protected final <a href="CameraStatusContainer.html" title="class in org.robotalons.lib.vision">CameraStatusContainer</a></code></div>
-<div class="col-second even-row-color"><code><a href="#STATUS" class="member-name-link">STATUS</a></code></div>
+<div class="col-first even-row-color"><code>protected final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#IDENTITY" class="member-name-link">IDENTITY</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>protected final edu.wpi.first.networktables.NetworkTable</code></div>
+<div class="col-second odd-row-color"><code><a href="#INSTANCE" class="member-name-link">INSTANCE</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>protected final edu.wpi.first.math.geometry.Transform3d</code></div>
+<div class="col-second even-row-color"><code><a href="#OFFSET" class="member-name-link">OFFSET</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>protected final <a href="CameraStatusContainer.html" title="class in org.robotalons.lib.vision">CameraStatusContainer</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#STATUS" class="member-name-link">STATUS</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -106,12 +115,16 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <section class="constructor-summary" id="constructor-summary">
 <h2>Constructor Summary</h2>
 <div class="caption"><span>Constructors</span></div>
-<div class="summary-table two-column-summary">
-<div class="table-header col-first">Constructor</div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier</div>
+<div class="table-header col-second">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String)" class="member-name-link">Camera</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;CameraName)</code></div>
+<div class="col-first even-row-color"><code>protected </code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(edu.wpi.first.networktables.NetworkTable,edu.wpi.first.math.geometry.Transform3d,java.lang.String)" class="member-name-link">Camera</a><wbr>(edu.wpi.first.networktables.NetworkTable&nbsp;Instance,
+ edu.wpi.first.math.geometry.Transform3d&nbsp;Relative,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;Identifier)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Updates the underlying signals within this module.</div>
+<div class="block">Camera Constructor</div>
 </div>
 </div>
 </section>
@@ -132,44 +145,122 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Closes this instance and all held resources immediately, but does not render the class unusable hence forth and can be re-instantiated.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.geometry.Pose3d</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAprilTagPose(int)" class="member-name-link">getAprilTagPose</a><wbr>(int&nbsp;fiducialID)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>org.photonvision.targeting.PhotonTrackedTarget</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBestTarget()" class="member-name-link">getBestTarget</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getConnected()" class="member-name-link">getConnected</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;edu.wpi.first.math.geometry.Pose3d&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getAprilTagPose(int)" class="member-name-link">getAprilTagPose</a><wbr>(int&nbsp;ID)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Provides the april tag with the id that we asked for in Pose3d</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;edu.wpi.first.math.Matrix&lt;edu.wpi.first.math.numbers.N3,<wbr>edu.wpi.first.math.numbers.N3&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getCameraMatrix()" class="member-name-link">getCameraMatrix</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Provides the matrix of this camera's hardware data, distortion, etc.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;edu.wpi.first.math.Matrix&lt;edu.wpi.first.math.numbers.N5,<wbr>edu.wpi.first.math.numbers.N1&gt;&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getCoefficientMatrix()" class="member-name-link">getCoefficientMatrix</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Provides the coefficient matrix of the distance camera relative to the current target</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getConnected()" class="member-name-link">getConnected</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Provides a boolean representation of if the module is still connected to the system and all signals are okay.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>double</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract edu.wpi.first.math.Pair&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getImageResolution()" class="member-name-link">getImageResolution</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Returns the resolution of the camera as a pair of integers representing with width, and length</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLatency()" class="member-name-link">getLatency</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.geometry.Pose3d</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getObjectFieldPose()" class="member-name-link">getObjectFieldPose</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Provides the latency or 'lag' of the camera to retrieve information, should always be greater than 0d.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getName()" class="member-name-link">getName</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Provides the identifier name of this camera, which is separate from the actual name on network tables</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.geometry.Pose3d</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getObjectFieldPose(org.photonvision.targeting.PhotonTrackedTarget)" class="member-name-link">getObjectFieldPose</a><wbr>(org.photonvision.targeting.PhotonTrackedTarget&nbsp;target)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getObjectFieldPose()" class="member-name-link">getObjectFieldPose</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Provides the robot relative position to a given object based on the estimated position of this camera and a transformation assuming that
+ the desired object is the optimal target of this camera.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.geometry.Pose3d</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRobotPose()" class="member-name-link">getRobotPose</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;org.photonvision.targeting.PhotonTrackedTarget&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTargets()" class="member-name-link">getTargets</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.geometry.Transform3d</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTransformationToObject()" class="member-name-link">getTransformationToObject</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getObjectFieldPose(edu.wpi.first.math.geometry.Transform3d)" class="member-name-link">getObjectFieldPose</a><wbr>(edu.wpi.first.math.geometry.Transform3d&nbsp;Target)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Provides the robot relative position to a given object based on the estimated position of this camera and a transformation to a known object</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.geometry.Transform3d</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTransformationToObject(org.photonvision.targeting.PhotonTrackedTarget)" class="member-name-link">getTransformationToObject</a><wbr>(org.photonvision.targeting.PhotonTrackedTarget&nbsp;target)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasTarget(int)" class="member-name-link">hasTarget</a><wbr>(int&nbsp;ID)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOptimalTarget()" class="member-name-link">getOptimalTarget</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Provides the robot-relative transformation to the best target within view of the camera</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.geometry.Transform3d</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRobotOffset()" class="member-name-link">getRobotOffset</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Provides the offset of this camera relative to the center of the robot.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.geometry.Pose3d</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRobotPosition()" class="member-name-link">getRobotPosition</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Provides the robot relative (minus offset) position immediately.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;edu.wpi.first.math.geometry.Pose3d&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getRobotPositionDeltas()" class="member-name-link">getRobotPositionDeltas</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Provides the robot relative (minus offset) position deltas from last update control cycle up to the current query.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getRobotPositionTimestamps()" class="member-name-link">getRobotPositionTimestamps</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Provides the robot relative position timestamps of each delta from the last update control cycle up to the current query.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract edu.wpi.first.math.Matrix&lt;edu.wpi.first.math.Num,<wbr>edu.wpi.first.math.numbers.N1&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getStandardDeviations()" class="member-name-link">getStandardDeviations</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Provides the confidence or standard deviation of the cameras evaluations of estimations</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;edu.wpi.first.math.geometry.Transform3d&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getTargets()" class="member-name-link">getTargets</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Provides a list of robot-relative transformations to the best target within view of the camera</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasTargets()" class="member-name-link">hasTargets</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Provides a boolean representation of if the module has an april tag / object detected</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#periodic()" class="member-name-link">periodic</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">This method is called periodically by the <code>CommandScheduler</code>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#request(java.lang.String)" class="member-name-link">request</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;Topic)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Requests raw object metadata from the raw network table instance of the camera</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#set(java.lang.Integer)" class="member-name-link">set</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;Mode)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Mutates the underlying PipelineMode state of the relevant camera</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#set(org.photonvision.common.hardware.VisionLEDMode)" class="member-name-link">set</a><wbr>(org.photonvision.common.hardware.VisionLEDMode&nbsp;Mode)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Mutates the underlying VisionMode state of the relevant camera</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#snapshot()" class="member-name-link">snapshot</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Forces the camera to take a snapshot of it's current processed feed.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Updates the underlying signals within this module</div>
+</div>
 </div>
 </div>
 </div>
@@ -193,6 +284,24 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type"><a href="CameraStatusContainer.html" title="class in org.robotalons.lib.vision">CameraStatusContainer</a></span>&nbsp;<span class="element-name">STATUS</span></div>
 </section>
 </li>
+<li>
+<section class="detail" id="INSTANCE">
+<h3>INSTANCE</h3>
+<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type">edu.wpi.first.networktables.NetworkTable</span>&nbsp;<span class="element-name">INSTANCE</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="OFFSET">
+<h3>OFFSET</h3>
+<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Transform3d</span>&nbsp;<span class="element-name">OFFSET</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="IDENTITY">
+<h3>IDENTITY</h3>
+<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">IDENTITY</span></div>
+</section>
+</li>
 </ul>
 </section>
 </li>
@@ -202,10 +311,18 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(java.lang.String)">
+<section class="detail" id="&lt;init&gt;(edu.wpi.first.networktables.NetworkTable,edu.wpi.first.math.geometry.Transform3d,java.lang.String)">
 <h3>Camera</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Camera</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;CameraName)</span></div>
-<div class="block">Updates the underlying signals within this module.</div>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="element-name">Camera</span><wbr><span class="parameters">(edu.wpi.first.networktables.NetworkTable&nbsp;Instance,
+ edu.wpi.first.math.geometry.Transform3d&nbsp;Relative,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;Identifier)</span></div>
+<div class="block">Camera Constructor</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>Instance</code> - Network table instance for raw object data to be retrieved from</dd>
+<dd><code>Relative</code> - Robot relative offset of the camera from the center of the robot's base</dd>
+<dd><code>Identifier</code> - Name of this camera, not bound by the type of camera it implements upon</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -217,9 +334,43 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
+<section class="detail" id="periodic()">
+<h3>periodic</h3>
+<div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">periodic</span>()</div>
+<div class="block">This method is called periodically by the <code>CommandScheduler</code>. Useful for updating
+ subsystem-specific state that you don't want to offload to a <code>Command</code>. Teams should try
+ to be consistent within their own codebases about which responsibilities will be handled by
+ Commands, and which will be handled here.</div>
+</section>
+</li>
+<li>
 <section class="detail" id="update()">
 <h3>update</h3>
 <div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span>()</div>
+<div class="block">Updates the underlying signals within this module</div>
+</section>
+</li>
+<li>
+<section class="detail" id="snapshot()">
+<h3>snapshot</h3>
+<div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">snapshot</span>()</div>
+<div class="block">Forces the camera to take a snapshot of it's current processed feed.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="request(java.lang.String)">
+<h3>request</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span>&nbsp;<span class="element-name">request</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;Topic)</span>
+               throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/NullPointerException.html" title="class or interface in java.lang" class="external-link">NullPointerException</a></span></div>
+<div class="block">Requests raw object metadata from the raw network table instance of the camera</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>Topic</code> - Name of the requested topic as a string value</dd>
+<dt>Returns:</dt>
+<dd>Value of the requested topic as an object, which must be cast to the corresponding datatype</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/NullPointerException.html" title="class or interface in java.lang" class="external-link">NullPointerException</a></code> - When the value requested does not exist within the network tables instance</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -239,63 +390,210 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 </section>
 </li>
 <li>
-<section class="detail" id="getLatency()">
-<h3>getLatency</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">getLatency</span>()</div>
+<section class="detail" id="set(org.photonvision.common.hardware.VisionLEDMode)">
+<h3>set</h3>
+<div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">set</span><wbr><span class="parameters">(org.photonvision.common.hardware.VisionLEDMode&nbsp;Mode)</span>
+                  throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/UnsupportedOperationException.html" title="class or interface in java.lang" class="external-link">UnsupportedOperationException</a></span></div>
+<div class="block">Mutates the underlying VisionMode state of the relevant camera</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>Mode</code> - New vision mode of camera</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/UnsupportedOperationException.html" title="class or interface in java.lang" class="external-link">UnsupportedOperationException</a></code></dd>
+</dl>
 </section>
 </li>
 <li>
-<section class="detail" id="getBestTarget()">
-<h3>getBestTarget</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">org.photonvision.targeting.PhotonTrackedTarget</span>&nbsp;<span class="element-name">getBestTarget</span>()</div>
+<section class="detail" id="set(java.lang.Integer)">
+<h3>set</h3>
+<div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">set</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;Mode)</span>
+                  throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/UnsupportedOperationException.html" title="class or interface in java.lang" class="external-link">UnsupportedOperationException</a></span></div>
+<div class="block">Mutates the underlying PipelineMode state of the relevant camera</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>Mode</code> - New pipeline mode of camera</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/UnsupportedOperationException.html" title="class or interface in java.lang" class="external-link">UnsupportedOperationException</a></code></dd>
+</dl>
 </section>
 </li>
 <li>
-<section class="detail" id="hasTarget(int)">
-<h3>hasTarget</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hasTarget</span><wbr><span class="parameters">(int&nbsp;ID)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="getTargets()">
-<h3>getTargets</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;org.photonvision.targeting.PhotonTrackedTarget&gt;</span>&nbsp;<span class="element-name">getTargets</span>()</div>
-</section>
-</li>
-<li>
-<section class="detail" id="getAprilTagPose(int)">
-<h3>getAprilTagPose</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Pose3d</span>&nbsp;<span class="element-name">getAprilTagPose</span><wbr><span class="parameters">(int&nbsp;fiducialID)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="getRobotPose()">
-<h3>getRobotPose</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Pose3d</span>&nbsp;<span class="element-name">getRobotPose</span>()</div>
-</section>
-</li>
-<li>
-<section class="detail" id="getTransformationToObject()">
-<h3>getTransformationToObject</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Transform3d</span>&nbsp;<span class="element-name">getTransformationToObject</span>()</div>
-</section>
-</li>
-<li>
-<section class="detail" id="getTransformationToObject(org.photonvision.targeting.PhotonTrackedTarget)">
-<h3>getTransformationToObject</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Transform3d</span>&nbsp;<span class="element-name">getTransformationToObject</span><wbr><span class="parameters">(org.photonvision.targeting.PhotonTrackedTarget&nbsp;target)</span></div>
+<section class="detail" id="getObjectFieldPose(edu.wpi.first.math.geometry.Transform3d)">
+<h3>getObjectFieldPose</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Pose3d</span>&nbsp;<span class="element-name">getObjectFieldPose</span><wbr><span class="parameters">(edu.wpi.first.math.geometry.Transform3d&nbsp;Target)</span></div>
+<div class="block">Provides the robot relative position to a given object based on the estimated position of this camera and a transformation to a known object</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>Target</code> - Transformation to a given target anywhere on the field</dd>
+<dt>Returns:</dt>
+<dd>Position of the object relative to the field</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getObjectFieldPose()">
 <h3>getObjectFieldPose</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Pose3d</span>&nbsp;<span class="element-name">getObjectFieldPose</span>()</div>
+<div class="block">Provides the robot relative position to a given object based on the estimated position of this camera and a transformation assuming that
+ the desired object is the optimal target of this camera.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Position of the object relative to the field</dd>
+</dl>
 </section>
 </li>
 <li>
-<section class="detail" id="getObjectFieldPose(org.photonvision.targeting.PhotonTrackedTarget)">
-<h3>getObjectFieldPose</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Pose3d</span>&nbsp;<span class="element-name">getObjectFieldPose</span><wbr><span class="parameters">(org.photonvision.targeting.PhotonTrackedTarget&nbsp;target)</span></div>
+<section class="detail" id="getAprilTagPose(int)">
+<h3>getAprilTagPose</h3>
+<div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;edu.wpi.first.math.geometry.Pose3d&gt;</span>&nbsp;<span class="element-name">getAprilTagPose</span><wbr><span class="parameters">(int&nbsp;ID)</span></div>
+<div class="block">Provides the april tag with the id that we asked for in Pose3d</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Position of the tag relative to the field</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getStandardDeviations()">
+<h3>getStandardDeviations</h3>
+<div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type">edu.wpi.first.math.Matrix&lt;edu.wpi.first.math.Num,<wbr>edu.wpi.first.math.numbers.N1&gt;</span>&nbsp;<span class="element-name">getStandardDeviations</span>()</div>
+<div class="block">Provides the confidence or standard deviation of the cameras evaluations of estimations</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Matrix of standard deviations of estimation</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getCameraMatrix()">
+<h3>getCameraMatrix</h3>
+<div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;edu.wpi.first.math.Matrix&lt;edu.wpi.first.math.numbers.N3,<wbr>edu.wpi.first.math.numbers.N3&gt;&gt;</span>&nbsp;<span class="element-name">getCameraMatrix</span>()</div>
+<div class="block">Provides the matrix of this camera's hardware data, distortion, etc.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Optional value that may exist of the camera's hardware data</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getCoefficientMatrix()">
+<h3>getCoefficientMatrix</h3>
+<div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;edu.wpi.first.math.Matrix&lt;edu.wpi.first.math.numbers.N5,<wbr>edu.wpi.first.math.numbers.N1&gt;&gt;</span>&nbsp;<span class="element-name">getCoefficientMatrix</span>()</div>
+<div class="block">Provides the coefficient matrix of the distance camera relative to the current target</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Optional value that may exist of the camera's distance coefficients</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getImageResolution()">
+<h3>getImageResolution</h3>
+<div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type">edu.wpi.first.math.Pair&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;</span>&nbsp;<span class="element-name">getImageResolution</span>()</div>
+<div class="block">Returns the resolution of the camera as a pair of integers representing with width, and length</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Pair of integers representing video resolution</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getRobotPositionTimestamps()">
+<h3>getRobotPositionTimestamps</h3>
+<div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&gt;</span>&nbsp;<span class="element-name">getRobotPositionTimestamps</span>()</div>
+<div class="block">Provides the robot relative position timestamps of each delta from the last update control cycle up to the current query.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>List of robot relative snapshot time deltas</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getRobotPositionDeltas()">
+<h3>getRobotPositionDeltas</h3>
+<div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;edu.wpi.first.math.geometry.Pose3d&gt;</span>&nbsp;<span class="element-name">getRobotPositionDeltas</span>()</div>
+<div class="block">Provides the robot relative (minus offset) position deltas from last update control cycle up to the current query.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>List of Poses of the robot since the last control cycle</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getRobotPosition()">
+<h3>getRobotPosition</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Pose3d</span>&nbsp;<span class="element-name">getRobotPosition</span>()</div>
+<div class="block">Provides the robot relative (minus offset) position immediately.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Current estimated Pose of the robot at this moment</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getRobotOffset()">
+<h3>getRobotOffset</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Transform3d</span>&nbsp;<span class="element-name">getRobotOffset</span>()</div>
+<div class="block">Provides the offset of this camera relative to the center of the robot.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Permanent offset of the robot relative to the center of the robot</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getTargets()">
+<h3>getTargets</h3>
+<div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;edu.wpi.first.math.geometry.Transform3d&gt;</span>&nbsp;<span class="element-name">getTargets</span>()</div>
+<div class="block">Provides a list of robot-relative transformations to the best target within view of the camera</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>List of robot-relative target transformations</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="hasTargets()">
+<h3>hasTargets</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">hasTargets</span>()</div>
+<div class="block">Provides a boolean representation of if the module has an april tag / object detected</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>List of robot-relative target transformations</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getOptimalTarget()">
+<h3>getOptimalTarget</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Transform3d</span>&nbsp;<span class="element-name">getOptimalTarget</span>()</div>
+<div class="block">Provides the robot-relative transformation to the best target within view of the camera</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Robot-relative best target transformation</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getName()">
+<h3>getName</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getName</span>()</div>
+<div class="block">Provides the identifier name of this camera, which is separate from the actual name on network tables</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>String representation of the camera's name</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getLatency()">
+<h3>getLatency</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a></span>&nbsp;<span class="element-name">getLatency</span>()</div>
+<div class="block">Provides the latency or 'lag' of the camera to retrieve information, should always be greater than 0d.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Double representation of the latency to retrieve information</dd>
+</dl>
 </section>
 </li>
 <li>

@@ -2,17 +2,17 @@
 package org.robotalons.crescendo.subsystems.vision;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import org.robotalons.lib.vision.Camera;
-
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.util.Units;
+
+import org.robotalons.lib.vision.Camera;
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 // ---------------------------------------------------------------[Constants]---------------------------------------------------------------//
 /**
  *

@@ -1,18 +1,10 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.lib.vision;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-
-import org.photonvision.common.hardware.VisionLEDMode;
-
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Num;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -20,6 +12,13 @@ import edu.wpi.first.math.numbers.N5;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
+import org.photonvision.common.hardware.VisionLEDMode;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 // -----------------------------------------------------------------[Camera]----------------------------------------------------------------//
 /**
  *
@@ -92,20 +91,15 @@ public abstract class Camera implements Closeable {
    * @param Mode New pipeline mode of camera
    */
   public abstract void set(final Integer Mode) throws UnsupportedOperationException;
+ 
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Provides the robot relative position to a given object based on the estimated position of this camera and a transformation to a known object
    * @param Target Transformation to a given target anywhere on the field
    * @return Position of the object relative to the field
    */
-  public Pose3d getObjectFieldPose(final Transform3d Target) {
-    final Pose3d Robot = getRobotPosition();
-    return new Pose3d(
-      (Target.getX() + Robot.getX()),
-      (Target.getY() + Robot.getY()),
-      Target.getZ(),
-      new Rotation3d()
-    );
+  public Pose3d getObjectFieldPose(final Transform3d Target){
+    return STATUS.TargetPose;
   }
 
   /**
@@ -113,16 +107,15 @@ public abstract class Camera implements Closeable {
    * the desired object is the optimal target of this camera.
    * @return Position of the object relative to the field
    */
-  public Pose3d getObjectFieldPose() {
-    final var Robot = getRobotPosition();
-    final var Target = getOptimalTarget();
-    return new Pose3d(
-      (Target.getX() + Robot.getX()),
-      (Target.getY() + Robot.getY()),
-      Target.getZ(),
-      new Rotation3d()
-    );
+  public Pose3d getObjectFieldPose(){
+    return STATUS.TargetPose;
   }
+
+  /**
+   * Provides the april tag with the id that we asked for in Pose3d
+   * @return Position of the tag relative to the field
+   */
+  public abstract Optional<Pose3d> getAprilTagPose(final int ID);
 
   /**
    * Provides the confidence or standard deviation of the cameras evaluations of estimations
@@ -163,7 +156,9 @@ public abstract class Camera implements Closeable {
    * Provides the robot relative (minus offset) position immediately.
    * @return Current estimated Pose of the robot at this moment
    */
-  public abstract Pose3d getRobotPosition();
+  public Pose3d getRobotPosition(){
+    return STATUS.RobotPose;
+  };
 
   /**
    * Provides the offset of this camera relative to the center of the robot.
@@ -179,12 +174,22 @@ public abstract class Camera implements Closeable {
    */
   public abstract List<Transform3d> getTargets();
 
+  /**
+   * Provides a boolean representation of if the module has an april tag / object detected
+   * @return List of robot-relative target transformations
+   */
+  public Boolean hasTargets(){
+    return STATUS.ContainsTarget;
+  }
+
 
   /**
    * Provides the robot-relative transformation to the best target within view of the camera
    * @return Robot-relative best target transformation
    */
-  public abstract Transform3d getOptimalTarget();
+  public Transform3d getOptimalTarget(){
+    return STATUS.BestTargetTransform;
+  }
 
   /**
    * Provides the identifier name of this camera, which is separate from the actual name on network tables

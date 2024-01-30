@@ -2,19 +2,6 @@
 package org.robotalons.crescendo.subsystems.vision;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.photonvision.EstimatedRobotPose;
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.common.hardware.VisionLEDMode;
-import org.photonvision.targeting.PhotonTrackedTarget;
-import org.robotalons.lib.vision.Camera;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MatBuilder;
@@ -28,6 +15,19 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.numbers.N5;
+
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.common.hardware.VisionLEDMode;
+import org.photonvision.targeting.PhotonTrackedTarget;
+import org.robotalons.lib.vision.Camera;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 // ---------------------------------------------------------[Photon Vision Module]--------------------------------------------------------//
 /**
  *
@@ -93,11 +93,11 @@ public final class VisionCamera extends Camera {
 
   @Override
   public void close() throws IOException {
-    // TODO CHECK
     POSE_ESTIMATOR = null;
-    TIMESTAMP_LIST = null;
-    DELTAS_LIST = null;
-    POSES_LIST = null;
+    TIMESTAMP_LIST.clear();
+    DELTAS_LIST.clear();
+    POSES_LIST.clear();
+    CAMERA.close();
     COUNTER = 0;
   }
 
@@ -113,7 +113,6 @@ public final class VisionCamera extends Camera {
 
   @Override
   public Matrix<Num, N1> getStandardDeviations() {
-    // TODO Fix this method to be working //
     Pose3d POSE = new Pose3d();
     int length = POSES_LIST.size();
 
@@ -146,7 +145,7 @@ public final class VisionCamera extends Camera {
 
     double[] data = new double[]{sdX, sdY, sdZ, sdPitch, sdRoll, sdYaw};
 
-    return MatBuilder.fill(Nat.N1(), Nat.N1());
+    return MatBuilder.fill(() -> 6, Nat.N1(), data);
   }
 
   private double getSD(double[] nums){
@@ -250,6 +249,29 @@ public final class VisionCamera extends Camera {
   }
 
   @Override
+  public Pose3d getObjectFieldPose(){
+    final var Robot = getRobotPosition();
+    final var Target = getOptimalTarget();
+    return new Pose3d(
+      (Target.getX() + Robot.getX()),
+      (Target.getY() + Robot.getY()),
+      Target.getZ(),
+      new Rotation3d()
+    );
+  }
+
+  @Override
+  public Pose3d getObjectFieldPose(Transform3d Target){
+    final Pose3d Robot = getRobotPosition();
+    return new Pose3d(
+      (Target.getX() + Robot.getX()),
+      (Target.getY() + Robot.getY()),
+      Target.getZ(),
+      new Rotation3d()
+    );
+  }
+
+  @Override
   public List<Transform3d> getTargets() {
     return CAMERA.getLatestResult().getTargets().stream().map(PhotonTrackedTarget::getBestCameraToTarget).toList();
   }
@@ -260,8 +282,29 @@ public final class VisionCamera extends Camera {
   }
 
   @Override
+  public Boolean hasTargets(){
+    return CAMERA.getLatestResult().hasTargets();
+  }
+
+
+  @Override
   public Transform3d getOptimalTarget() {
     return CAMERA.getLatestResult().getBestTarget().getBestCameraToTarget();
+  }
+
+  @Override
+  public Double getLatency(){
+    return CAMERA.getLatestResult().getLatencyMillis();
+  }
+
+  @Override
+  public Boolean getConnected(){
+    return CAMERA.isConnected();
+  }
+
+  @Override
+  public String getName(){
+    return CAMERA.getName();
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
 
