@@ -123,14 +123,14 @@ public final class Robot extends LoggedRobot {
         (Command Command) -> CommandLogger.accept(Command, (false)));
       CommandScheduler.getInstance().onCommandFinish(
         (Command Command) -> CommandLogger.accept(Command, (false)));    
-      Logger.registerURCL(URCL.startExternal());
-      Logger.start();
-      
+
       try {
         CTREOdometryThread.getInstance();
         REVOdometryThread.getInstance();
       } catch (final InstanceNotFoundException Exception) {}
 
+      Logger.registerURCL(URCL.startExternal());
+      Logger.start();
       RobotContainer.getInstance();
       COMMAND_LOGGER.schedule();    
       Shuffleboard.startRecording();

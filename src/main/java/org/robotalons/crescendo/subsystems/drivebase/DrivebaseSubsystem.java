@@ -11,7 +11,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -62,7 +61,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
    * Drivebase Subsystem Constructor.
    */
   private DrivebaseSubsystem() {
-    super("Drivebase Subsystem");
+    super(("Drivebase Subsystem"));
   } static {
     Instance = new DrivebaseSubsystem();
     GYROSCOPE = new PigeonGyroscope(Constants.Measurements.PHOENIX_DRIVE);
@@ -94,6 +93,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
     );
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
+  @Override
   public synchronized void periodic() {
     Objects.ODOMETRY_LOCK.lock();
     MODULES.forEach(Module::periodic);
@@ -290,9 +290,10 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
    * reset into an 'X' orientation.
    */
   public static synchronized void set() {
+    KINEMATICS.resetHeadings(MODULES.stream().map((Module) -> 
+      Module.getObserved().angle
+    ).toArray(Rotation2d[]::new));  
     if(ModuleLocked) {
-      set(new Translation2d(), new Rotation2d(Units.degreesToRadians((45))));
-    } else {
       set(new ChassisSpeeds());
     }
   }

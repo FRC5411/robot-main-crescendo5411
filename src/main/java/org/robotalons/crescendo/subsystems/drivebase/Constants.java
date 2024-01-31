@@ -49,12 +49,12 @@ public final class Constants {
     public static final class Modules {
       public static final class FL {
         public static final Integer LINEAR_CONTROLLER_ID = (11);
-        public static final Integer ROTATIONAL_CONTROLLER_ID = (21);
-        public static final Integer ABSOLUTE_ENCODER_ID = (31);
+        public static final Integer ROTATIONAL_CONTROLLER_ID = (15);
+        public static final Integer ABSOLUTE_ENCODER_ID = (3);
         public static final Double ROTATIONAL_P_GAIN = (2.8d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
         public static final Double ROTATIONAL_D_GAIN = (0.00001d);
-        public static final Double ROTATIONAL_ENCODER_OFFSET = (0.854980d);
+        public static final Double ROTATIONAL_ENCODER_OFFSET = (0.44196d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
         public static final Double LINEAR_P_GAIN = (0.02d);
@@ -84,12 +84,12 @@ public final class Constants {
 
       public static final class FR {
         public static final Integer LINEAR_CONTROLLER_ID = (12);
-        public static final Integer ROTATIONAL_CONTROLLER_ID = (22);
-        public static final Integer ABSOLUTE_ENCODER_ID = (32);
+        public static final Integer ROTATIONAL_CONTROLLER_ID = (16);
+        public static final Integer ABSOLUTE_ENCODER_ID = (4);
         public static final Double ROTATIONAL_P_GAIN = (2.8d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
         public static final Double ROTATIONAL_D_GAIN = (0.00001d);
-        public static final Double ROTATIONAL_ENCODER_OFFSET = (-0.916016d);
+        public static final Double ROTATIONAL_ENCODER_OFFSET = (0.3012d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (true);
         public static final Double LINEAR_P_GAIN = (0.02d);
@@ -119,12 +119,12 @@ public final class Constants {
 
       public static final class RL {
         public static final Integer LINEAR_CONTROLLER_ID = (13);
-        public static final Integer ROTATIONAL_CONTROLLER_ID = (23);
-        public static final Integer ABSOLUTE_ENCODER_ID = (33);
+        public static final Integer ROTATIONAL_CONTROLLER_ID = (17);
+        public static final Integer ABSOLUTE_ENCODER_ID = (5);
         public static final Double ROTATIONAL_P_GAIN = (2.8d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
         public static final Double ROTATIONAL_D_GAIN = (0.00001d);
-        public static final Double ROTATIONAL_ENCODER_OFFSET = (0.957275d);
+        public static final Double ROTATIONAL_ENCODER_OFFSET = (-0.1794d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (true);
         public static final Double LINEAR_P_GAIN = (0.02d);
@@ -154,12 +154,12 @@ public final class Constants {
 
       public static final class RR {
         public static final Integer LINEAR_CONTROLLER_ID = (14);
-        public static final Integer ROTATIONAL_CONTROLLER_ID = (24);
-        public static final Integer ABSOLUTE_ENCODER_ID = (34);
+        public static final Integer ROTATIONAL_CONTROLLER_ID = (18);
+        public static final Integer ABSOLUTE_ENCODER_ID = (6);
         public static final Double ROTATIONAL_P_GAIN = (2.8d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
         public static final Double ROTATIONAL_D_GAIN = (0.00001d);
-        public static final Double ROTATIONAL_ENCODER_OFFSET = (0.451660d);
+        public static final Double ROTATIONAL_ENCODER_OFFSET = (-0.4082d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (true);
         public static final Double LINEAR_P_GAIN = (0.02d);
