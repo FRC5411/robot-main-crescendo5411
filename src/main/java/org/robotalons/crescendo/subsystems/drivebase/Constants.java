@@ -54,7 +54,7 @@ public final class Constants {
         public static final Double ROTATIONAL_P_GAIN = (2.8d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
         public static final Double ROTATIONAL_D_GAIN = (0.00001d);
-        public static final Rotation2d ROTATIONAL_ENCODER_OFFSET = Rotation2d.fromRotations((0.108643d));
+        public static final Double ROTATIONAL_ENCODER_OFFSET = (0.854980d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
         public static final Double LINEAR_P_GAIN = (0.02d);
@@ -75,7 +75,7 @@ public final class Constants {
           CONSTANTS.LINEAR_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
           CONSTANTS.ROTATION_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
-          CONSTANTS.ROTATIONAL_ENCODER_OFFSET = ROTATIONAL_ENCODER_OFFSET;
+          CONSTANTS.ROTATIONAL_ENCODER_OFFSET = Rotation2d.fromRotations(ROTATIONAL_ENCODER_OFFSET);
           CONSTANTS.LINEAR_INVERTED = LINEAR_INVERTED;
           CONSTANTS.ROTATIONAL_INVERTED = ROTATIONAL_INVERTED;
           CONSTANTS.NUMBER = NUMBER;
@@ -89,7 +89,7 @@ public final class Constants {
         public static final Double ROTATIONAL_P_GAIN = (2.8d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
         public static final Double ROTATIONAL_D_GAIN = (0.00001d);
-        public static final Rotation2d ROTATIONAL_ENCODER_OFFSET = Rotation2d.fromRotations((0.321533d));
+        public static final Double ROTATIONAL_ENCODER_OFFSET = (-0.916016d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (true);
         public static final Double LINEAR_P_GAIN = (0.02d);
@@ -110,7 +110,7 @@ public final class Constants {
           CONSTANTS.LINEAR_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
           CONSTANTS.ROTATION_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
-          CONSTANTS.ROTATIONAL_ENCODER_OFFSET = ROTATIONAL_ENCODER_OFFSET;
+          CONSTANTS.ROTATIONAL_ENCODER_OFFSET = Rotation2d.fromRotations(ROTATIONAL_ENCODER_OFFSET);
           CONSTANTS.LINEAR_INVERTED = LINEAR_INVERTED;
           CONSTANTS.ROTATIONAL_INVERTED = ROTATIONAL_INVERTED;
           CONSTANTS.NUMBER = NUMBER;
@@ -124,7 +124,7 @@ public final class Constants {
         public static final Double ROTATIONAL_P_GAIN = (2.8d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
         public static final Double ROTATIONAL_D_GAIN = (0.00001d);
-        public static final Rotation2d ROTATIONAL_ENCODER_OFFSET = Rotation2d.fromRotations((-0.149658d));
+        public static final Double ROTATIONAL_ENCODER_OFFSET = (0.957275d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (true);
         public static final Double LINEAR_P_GAIN = (0.02d);
@@ -145,7 +145,7 @@ public final class Constants {
           CONSTANTS.LINEAR_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
           CONSTANTS.ROTATION_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
-          CONSTANTS.ROTATIONAL_ENCODER_OFFSET = ROTATIONAL_ENCODER_OFFSET;
+          CONSTANTS.ROTATIONAL_ENCODER_OFFSET = Rotation2d.fromRotations(ROTATIONAL_ENCODER_OFFSET);
           CONSTANTS.LINEAR_INVERTED = LINEAR_INVERTED;
           CONSTANTS.ROTATIONAL_INVERTED = ROTATIONAL_INVERTED;
           CONSTANTS.NUMBER = NUMBER;
@@ -159,7 +159,7 @@ public final class Constants {
         public static final Double ROTATIONAL_P_GAIN = (2.8d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
         public static final Double ROTATIONAL_D_GAIN = (0.00001d);
-        public static final Rotation2d ROTATIONAL_ENCODER_OFFSET = Rotation2d.fromRotations((-0.005859d));
+        public static final Double ROTATIONAL_ENCODER_OFFSET = (0.451660d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (true);
         public static final Double LINEAR_P_GAIN = (0.02d);
@@ -180,7 +180,7 @@ public final class Constants {
           CONSTANTS.LINEAR_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
           CONSTANTS.ROTATION_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
-          CONSTANTS.ROTATIONAL_ENCODER_OFFSET = ROTATIONAL_ENCODER_OFFSET;
+          CONSTANTS.ROTATIONAL_ENCODER_OFFSET = Rotation2d.fromRotations(ROTATIONAL_ENCODER_OFFSET);
           CONSTANTS.LINEAR_INVERTED = LINEAR_INVERTED;
           CONSTANTS.ROTATIONAL_INVERTED = ROTATIONAL_INVERTED;
           CONSTANTS.NUMBER = NUMBER;
