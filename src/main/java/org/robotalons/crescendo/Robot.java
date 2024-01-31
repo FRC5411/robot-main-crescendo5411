@@ -100,13 +100,13 @@ public final class Robot extends LoggedRobot {
           Logger.setReplaySource(new WPILOGReader(LogPath));
           if(Logging.LOGGING_ENABLED) {
             Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(LogPath, ("_sim"))));
+          }
           } else {
             if(Logging.LOGGING_ENABLED) {
               Logger.addDataReceiver(new WPILOGWriter(Logging.LOGGING_DEPOSIT_FOLDER));
             }
             Logger.addDataReceiver(new NT4Publisher());        
           }
-        }
       }
       HashMap<String,Integer> CommandInstances = new HashMap<>();
       BiConsumer<Command, Boolean> CommandLogger = 

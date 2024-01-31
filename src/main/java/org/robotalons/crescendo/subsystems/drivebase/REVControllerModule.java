@@ -196,7 +196,9 @@ public final class REVControllerModule extends Module {
           var AdjustReferenceVelocity = (Reference.speedMetersPerSecond * Math.cos(CONSTANTS.ROTATIONAL_CONTROLLER_PID.getPositionError())) / CONSTANTS.WHEEL_RADIUS_METERS;
           setLinearVoltage(     -(CONSTANTS.LINEAR_CONTROLLER_PID.calculate(AdjustReferenceVelocity))
                                                               +
-            (CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD.calculate(Status.LinearVelocityRadiansSecond, AdjustReferenceVelocity)));          
+            (CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD.calculate(Status.LinearVelocityRadiansSecond, AdjustReferenceVelocity)) 
+                                                              * 
+                                            ((CONSTANTS.LINEAR_INVERTED)? (-1): (1)));          
         }
         break;
       case DISABLED:
@@ -227,7 +229,6 @@ public final class REVControllerModule extends Module {
   @Override
   public SwerveModuleState set(final SwerveModuleState Reference) {
     this.Reference = SwerveModuleState.optimize(Reference, getRelativeRotation());
-    this.Reference.speedMetersPerSecond *= (CONSTANTS.LINEAR_INVERTED)? (-1): (1);
     return this.Reference;
   }
 
