@@ -57,20 +57,19 @@ public final class REVControllerModule extends Module {
    */
   public REVControllerModule(final ModuleConstants Constants) {
     super(Constants);
+
     ReferenceMode = ReferenceType.STATE_CONTROL;
     CONSTANTS = Constants;
-    
+
     CONSTANTS.LINEAR_CONTROLLER.restoreFactoryDefaults();
     CONSTANTS.ROTATIONAL_CONTROLLER.restoreFactoryDefaults();
+
+    CONSTANTS.LINEAR_CONTROLLER.setInverted(CONSTANTS.LINEAR_INVERTED);
+    CONSTANTS.ROTATIONAL_CONTROLLER.setInverted(CONSTANTS.ROTATIONAL_INVERTED);
+
     LINEAR_ENCODER = CONSTANTS.LINEAR_CONTROLLER.getEncoder();
     ROTATIONAL_ENCODER = CONSTANTS.ROTATIONAL_CONTROLLER.getEncoder();
-
-    try {
-      Thread.sleep((2500L));
-    } catch (final InterruptedException Ignored) {
-
-    }
-
+      
     RotationalAbsoluteOffset = CONSTANTS.ROTATIONAL_ENCODER_OFFSET;
 
     CONSTANTS.LINEAR_CONTROLLER.setCANTimeout((250));
@@ -95,12 +94,9 @@ public final class REVControllerModule extends Module {
     CONSTANTS.LINEAR_CONTROLLER.setIdleMode(IdleMode.kBrake);
     CONSTANTS.ROTATIONAL_CONTROLLER.setIdleMode(IdleMode.kCoast);
 
-    ROTATIONAL_ENCODER.setPosition((0d));
+    ROTATIONAL_ENCODER.setPosition(-RotationalAbsoluteOffset.plus(Rotation2d.fromRotations(CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble())).getRotations());
     ROTATIONAL_ENCODER.setAverageDepth((2));
     ROTATIONAL_ENCODER.setMeasurementPeriod((10));
-
-    CONSTANTS.LINEAR_CONTROLLER.setInverted(CONSTANTS.LINEAR_INVERTED);
-    CONSTANTS.ROTATIONAL_CONTROLLER.setInverted(CONSTANTS.ROTATIONAL_INVERTED);
 
     CONSTANTS.LINEAR_CONTROLLER.setCANTimeout((0));
     CONSTANTS.ROTATIONAL_CONTROLLER.setCANTimeout((0));
@@ -120,6 +116,7 @@ public final class REVControllerModule extends Module {
     TIMESTAMPS = new ArrayList<>();
     DELTAS = new ArrayList<>();
     reset();
+    Reference = new SwerveModuleState();
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//  
   public static final class ModuleConstants extends Constants {
@@ -159,9 +156,9 @@ public final class REVControllerModule extends Module {
     Status.LinearCurrentAmperage = 
       new double[] {CONSTANTS.LINEAR_CONTROLLER.getOutputCurrent()};
     Status.RotationalAbsolutePosition = 
-      Rotation2d.fromRotations((Units.rotationsToRadians(CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValue()))).minus(RotationalAbsoluteOffset);
+      Rotation2d.fromRotations(CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble()).minus(RotationalAbsoluteOffset);
     Status.RotationalRelativePosition =
-        Rotation2d.fromRotations(ROTATIONAL_ENCODER.getPosition() / CONSTANTS.ROTATION_GEAR_RATIO);
+      Rotation2d.fromRotations(ROTATIONAL_ENCODER.getPosition() / CONSTANTS.ROTATION_GEAR_RATIO);
     Status.RotationalVelocityRadiansSecond =
         Units.rotationsPerMinuteToRadiansPerSecond(ROTATIONAL_ENCODER.getVelocity()) / CONSTANTS.ROTATION_GEAR_RATIO;
     Status.RotationalAppliedVoltage = 
@@ -197,7 +194,7 @@ public final class REVControllerModule extends Module {
             setRotationVoltage(CONSTANTS.ROTATIONAL_CONTROLLER_PID.calculate(getRelativeRotation().getRadians(),Reference.angle.getRadians()));
           }
           var AdjustReferenceVelocity = (Reference.speedMetersPerSecond * Math.cos(CONSTANTS.ROTATIONAL_CONTROLLER_PID.getPositionError())) / CONSTANTS.WHEEL_RADIUS_METERS;
-          setLinearVoltage(     (CONSTANTS.LINEAR_CONTROLLER_PID.calculate(AdjustReferenceVelocity))
+          setLinearVoltage(     -(CONSTANTS.LINEAR_CONTROLLER_PID.calculate(AdjustReferenceVelocity))
                                                               +
             (CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD.calculate(Status.LinearVelocityRadiansSecond, AdjustReferenceVelocity)));          
         }
@@ -214,7 +211,7 @@ public final class REVControllerModule extends Module {
     IntStream.range((0), Status.OdometryTimestamps.length).forEach((Index) -> {
       final var Position = Status.OdometryLinearPositionsRadians[Index] * CONSTANTS.WHEEL_RADIUS_METERS;
       final var Rotation = Status.OdometryAzimuthPositions[Index].plus(
-        RotationalRelativeOffset != (null)? RotationalRelativeOffset: new Rotation2d());
+        RotationalRelativeOffset != null? RotationalRelativeOffset: new Rotation2d());
       DELTAS.add(new SwerveModulePosition(Position, Rotation));
     });
   }
@@ -265,11 +262,11 @@ public final class REVControllerModule extends Module {
   }
 
   public Rotation2d getRelativeRotation() {
-    return Status.RotationalRelativePosition;
+    return Status.RotationalRelativePosition.plus(RotationalRelativeOffset);
   }
 
   public Rotation2d getAbsoluteRotation() {
-    return Status.RotationalAbsolutePosition;
+    return Status.RotationalAbsolutePosition.plus(RotationalAbsoluteOffset);
   }
 
   public Double getLinearPosition() {
