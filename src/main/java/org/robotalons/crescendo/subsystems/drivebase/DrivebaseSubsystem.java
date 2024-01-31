@@ -90,7 +90,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
       KINEMATICS, 
       GYROSCOPE.getYawRotation(),
       getModulePositions(),   
-      getPose()
+      new Pose2d() //TODO: AUTOMATION TEAM (DEFAULT FROM CAMERA STATES)
     );
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
