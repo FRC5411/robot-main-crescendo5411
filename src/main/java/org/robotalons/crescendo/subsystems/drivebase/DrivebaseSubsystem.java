@@ -27,6 +27,7 @@ import org.robotalons.lib.motion.actuators.Module;
 import org.robotalons.lib.motion.sensors.Gyroscope;
 import org.robotalons.lib.utilities.PilotProfile;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.IntStream;
 // ----------------------------------------------------------[Drivebase Subsystem]----------------------------------------------------------//
@@ -248,14 +249,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
         Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY);
       Logger.recordOutput(("Drivebase/ReferenceTranslation"), new Translation2d(Discrete.vxMetersPerSecond, Discrete.vyMetersPerSecond));
       Logger.recordOutput(("Drivebase/ReferenceRotation"), new Rotation2d(Discrete.omegaRadiansPerSecond));
-      Logger.recordOutput(("Drivebase/Reference"), Reference);
-      Logger.recordOutput(("Drivebase/Optimized"),
-        IntStream.range((0), MODULES.size()).boxed().map(
-          (Index) -> {
-            Reference[Index].speedMetersPerSecond *= (Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY * 10);
-            return MODULES.get(Index).set(Reference[Index]);
-          })
-          .toArray(SwerveModuleState[]::new));
+      set(List.of(Reference));
     }
   }
 
@@ -286,16 +280,27 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
   }
 
   /**
+   * Drives the robot provided Module States
+   * @param <State> State Type to apply from the module
+   * @param States Collection of module states
+   */
+  public static synchronized <State extends SwerveModuleState> void set(Collection<State> States) {
+    final var StateIterator = States.iterator();
+    Logger.recordOutput(("Drivebase/Reference"), States.toArray(SwerveModuleState[]::new));
+    Logger.recordOutput(("Drivebase/Optimized"),
+    MODULES.stream().map((Module) -> {
+      final var State = StateIterator.next();
+      State.speedMetersPerSecond *= (Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY * (10));
+      return Module.set(State);
+    }).toArray(SwerveModuleState[]::new));
+  }
+
+  /**
    * Stops all drivebase movement, if locking is enabled then all modules are 
    * reset into an 'X' orientation.
    */
   public static synchronized void set() {
-    KINEMATICS.resetHeadings(MODULES.stream().map((Module) -> 
-      Module.getObserved().angle
-    ).toArray(Rotation2d[]::new));  
-    if(ModuleLocked) {
-      set(new ChassisSpeeds());
-    }
+    set(MODULES.stream().map((Module) -> new SwerveModuleState()).toList());
   }
 
   /**

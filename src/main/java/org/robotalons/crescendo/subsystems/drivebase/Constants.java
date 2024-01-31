@@ -32,14 +32,14 @@ public final class Constants {
     public static final Double ROBOT_WHEEL_DIAMETER_METERS = Units.inchesToMeters((4d));
     public static final Double ROBOT_WHEEL_PERIMETER_METERS = ROBOT_WHEEL_DIAMETER_METERS * Math.PI;
 
-    public static final Double ROBOT_LENGTH_METERS = Units.inchesToMeters((29));        
-    public static final Double ROBOT_WIDTH_METERS = Units.inchesToMeters((29));
+    public static final Double ROBOT_LENGTH_METERS = Units.inchesToMeters((29.5));        
+    public static final Double ROBOT_WIDTH_METERS = Units.inchesToMeters((29.5));
     public static final Double ROBOT_RADIUS_METERS = Math.hypot(ROBOT_LENGTH_METERS / (2.0), ROBOT_WIDTH_METERS / (2.0)); 
 
-    public static final Double ROBOT_MAXIMUM_LINEAR_VELOCITY = Units.feetToMeters((15.4d));
+    public static final Double ROBOT_MAXIMUM_LINEAR_VELOCITY = Units.feetToMeters((16.6d));
     public static final Double ROBOT_MAXIMUM_ANGULAR_VELOCITY = ROBOT_MAXIMUM_LINEAR_VELOCITY / ROBOT_RADIUS_METERS;
 
-    public static final Double ROBOT_LINEAR_GEAR_RATIO = ((6.75d));
+    public static final Double ROBOT_LINEAR_GEAR_RATIO = ((6.12d));
     public static final Double ROBOT_ROTATION_GEAR_RATIO = (((150d) / (7d)));
 
     public static final Boolean PHOENIX_DRIVE = (false);
