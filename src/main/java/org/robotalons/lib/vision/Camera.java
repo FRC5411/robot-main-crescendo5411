@@ -196,7 +196,7 @@ public abstract class Camera implements Closeable {
    * @return String representation of the camera's name
    */
   public String getName() {
-    return IDENTITY;
+    return STATUS.Name;
   }
 
   /**

@@ -15,7 +15,7 @@ import org.littletonrobotics.junction.AutoLog;
  */
 @AutoLog
 public class CameraStatusContainer {
-
+  public String Name = ("");
   public boolean Connected = (false);
   public boolean ContainsTarget = (false);
   public double Latency = (0d);
