@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
@@ -94,7 +95,12 @@ public final class REVControllerModule extends Module {
     CONSTANTS.LINEAR_CONTROLLER.setIdleMode(IdleMode.kBrake);
     CONSTANTS.ROTATIONAL_CONTROLLER.setIdleMode(IdleMode.kCoast);
 
-    ROTATIONAL_ENCODER.setPosition(-RotationalAbsoluteOffset.plus(Rotation2d.fromRotations(CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble())).getRotations());
+    if (RobotBase.isReal()) {
+      ROTATIONAL_ENCODER.setPosition(-RotationalAbsoluteOffset.plus(Rotation2d.fromRotations(CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble())).getRotations());
+    } else {
+      ROTATIONAL_ENCODER.setPosition((0d));
+    }
+    
     ROTATIONAL_ENCODER.setAverageDepth((2));
     ROTATIONAL_ENCODER.setMeasurementPeriod((10));
 
@@ -115,7 +121,6 @@ public final class REVControllerModule extends Module {
     CONSTANTS.LINEAR_CONTROLLER.burnFlash();
     TIMESTAMPS = new ArrayList<>();
     DELTAS = new ArrayList<>();
-    reset();
     Reference = new SwerveModuleState();
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//  
@@ -223,7 +228,7 @@ public final class REVControllerModule extends Module {
    */
   public synchronized void reset() {
     update();
-    RotationalAbsoluteOffset = Status.RotationalAbsolutePosition.minus(Status.RotationalRelativePosition);
+    ROTATIONAL_ENCODER.setPosition(Status.RotationalAbsolutePosition.minus(Status.RotationalRelativePosition).getRotations());
   }
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
   @Override

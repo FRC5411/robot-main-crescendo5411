@@ -40,15 +40,15 @@ public class PigeonGyroscope extends Gyroscope {
     YAW_ROTATION = GYROSCOPE.getYaw();
     YAW_VELOCITY = GYROSCOPE.getAngularVelocityZWorld();
     GYROSCOPE.getConfigurator().apply(new Pigeon2Configuration());
-    GYROSCOPE.getConfigurator().setYaw((0.0));
+    GYROSCOPE.getConfigurator().setYaw((0d));
     YAW_ROTATION.setUpdateFrequency(Constants.Measurements.ODOMETRY_FREQUENCY);
-    YAW_VELOCITY.setUpdateFrequency((100.0));
+    YAW_VELOCITY.setUpdateFrequency((100d));
     if (PhoenixDrive) {
       YAW_ROTATION_QUEUE = org.robotalons.crescendo.Constants.Odometry.CTRE_ODOMETRY_THREAD
         .register(GYROSCOPE.getYaw());
     } else {
       YAW_ROTATION_QUEUE = org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD
-        .register(() -> GYROSCOPE.getYaw().getValue());
+        .register(() -> GYROSCOPE.getYaw().getValueAsDouble());
     }
 
   }
@@ -60,8 +60,8 @@ public class PigeonGyroscope extends Gyroscope {
   @Override
   public synchronized void update() {
     Status.Connected = YAW_VELOCITY.refresh().getStatus() == StatusCode.OK;
-    Status.YawRotation = Rotation2d.fromDegrees(YAW_ROTATION.getValue());
-    Status.YawVelocityRadiansSecond = Units.degreesToRadians(YAW_VELOCITY.getValue());
+    Status.YawRotation = Rotation2d.fromDegrees(YAW_ROTATION.getValueAsDouble());
+    Status.YawVelocityRadiansSecond = Units.degreesToRadians(YAW_VELOCITY.getValueAsDouble());
     Status.PositionDeltas =
         YAW_ROTATION_QUEUE.stream()
             .map(Rotation2d::fromDegrees)

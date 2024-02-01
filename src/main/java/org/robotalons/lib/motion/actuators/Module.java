@@ -112,6 +112,11 @@ public abstract class Module implements Closeable {
    * @param Mode Mode of Module control
    */
   public abstract void set(final ReferenceType Mode);
+
+  /**
+   * Zeroes the azimuth relatively offset from the position of the absolute encoders.
+   */
+  public abstract void reset();
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Provides the deltas, or captured data points from odometry from the most recent {@link #periodic()} cycle.

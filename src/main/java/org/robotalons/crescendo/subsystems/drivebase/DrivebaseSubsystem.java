@@ -92,6 +92,11 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
       getModulePositions(),   
       new Pose2d() //TODO: AUTOMATION TEAM (DEFAULT FROM CAMERA STATES)
     );
+    Logger.recordOutput(("Drivebase/Measurements"),getModuleMeasurements());
+    Logger.recordOutput(("Drivebase/Translation"), new Translation2d());
+    Logger.recordOutput(("Drivebase/Rotation"), new Rotation2d());
+    Logger.recordOutput(("Drivebase/Reference"), new SwerveModuleState[MODULES.size()]);
+    Logger.recordOutput(("Drivebase/Optimized"),new SwerveModuleState[MODULES.size()]);
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
@@ -224,7 +229,9 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
     PathFlipped = !PathFlipped;
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
-
+  /**
+   * Describes a robot's current mode of orientation
+   */
   public enum OrientationMode {
     OBJECT_ORIENTED,    
     ROBOT_ORIENTED,
@@ -247,8 +254,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
         Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
         Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
         Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY);
-      Logger.recordOutput(("Drivebase/ReferenceTranslation"), new Translation2d(Discrete.vxMetersPerSecond, Discrete.vyMetersPerSecond));
-      Logger.recordOutput(("Drivebase/ReferenceRotation"), new Rotation2d(Discrete.omegaRadiansPerSecond));
+      Logger.recordOutput(("Drivebase/Translation"), new Translation2d(Discrete.vxMetersPerSecond, Discrete.vyMetersPerSecond));
+      Logger.recordOutput(("Drivebase/Rotation"), new Rotation2d(Discrete.omegaRadiansPerSecond));
       set(List.of(Reference));
     }
   }
@@ -300,7 +307,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
    * reset into an 'X' orientation.
    */
   public static synchronized void set() {
-    set(MODULES.stream().map((Module) -> new SwerveModuleState()).toList());
+    MODULES.forEach((Module) -> Module.reset());
   }
 
   /**
