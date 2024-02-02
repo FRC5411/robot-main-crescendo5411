@@ -151,6 +151,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
   /**
    * Closes this instance and all held resources immediately.
    */
+  @Override
   public synchronized void close() {
     MODULES.forEach(Module::close);
     POSE_ESTIMATOR.resetPosition(
@@ -174,9 +175,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
     }
   }
 
-  /**
-   * Configures a pilot to operate this given subsystem.
-   */
+  @Override
   public void configure(final PilotProfile Pilot) {
     CurrentPilot = Pilot;
     DrivebaseSubsystem.getInstance().setDefaultCommand(
@@ -201,9 +200,27 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
           (Double) CurrentPilot.getPreference(Preferences.ORIENTATION_DEADZONE))))), 
         DrivebaseSubsystem.getInstance()
     ));
-    CurrentPilot.getKeybinding(Keybindings.ORIENTATION_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleOrientationType, DrivebaseSubsystem.getInstance()));
-    CurrentPilot.getKeybinding(Keybindings.MODULE_LOCKING_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleModuleLocking, DrivebaseSubsystem.getInstance()));
-    CurrentPilot.getKeybinding(Keybindings.PATHFINDING_FLIP_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::togglePathFlipped, DrivebaseSubsystem.getInstance()));
+    try {
+      CurrentPilot.getKeybinding(Keybindings.ORIENTATION_TOGGLE)
+        .onTrue(new InstantCommand(
+          DrivebaseSubsystem::toggleOrientationType,
+          DrivebaseSubsystem.getInstance()
+        ));
+    } catch(final NullPointerException Ignored) {}
+    try {
+      CurrentPilot.getKeybinding(Keybindings.MODULE_LOCKING_TOGGLE)
+        .onTrue(new InstantCommand(
+          DrivebaseSubsystem::toggleModuleLocking,
+          DrivebaseSubsystem.getInstance()
+        ));
+    } catch(final NullPointerException Ignored) {}
+    try {
+      CurrentPilot.getKeybinding(Keybindings.PATHFINDING_FLIP_TOGGLE)
+        .onTrue(new InstantCommand(
+          DrivebaseSubsystem::togglePathFlipped,
+          DrivebaseSubsystem.getInstance()
+        ));
+    } catch(final NullPointerException Ignored) {}
   }
 
   /**
@@ -322,6 +339,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
    * Provides the current pilot of the drivebase
    * @return Pilot of this subsystem
    */
+  @Override
   public PilotProfile getPilot() {
     return CurrentPilot;
   }

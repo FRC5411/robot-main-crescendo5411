@@ -80,9 +80,9 @@ public final class Constants {
           .addPreference(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (0.1))
           .addPreference(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (0.1))
           .addPreference(Preferences.ORIENTATION_DEADZONE, () -> (0.1))
-          .addKeybinding(Keybindings.SHOOTER_TOGGLE, CONTROLLER.a())
-          .addKeybinding(Keybindings.INTAKE_TOGGLE, CONTROLLER.b())
-          .addKeybinding(Keybindings.OUTTAKE_TOGGLE, CONTROLLER.x());
+          .addKeybinding(Keybindings.MODULE_LOCKING_TOGGLE, CONTROLLER.a())
+          .addKeybinding(Keybindings.ORIENTATION_TOGGLE, CONTROLLER.b())
+          .addKeybinding(Keybindings.PATHFINDING_FLIP_TOGGLE, CONTROLLER.x());
       }
 
 
