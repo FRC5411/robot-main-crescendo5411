@@ -201,9 +201,9 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
           (Double) CurrentPilot.getPreference(Preferences.ORIENTATION_DEADZONE))))), 
         DrivebaseSubsystem.getInstance()
     ));
-    CurrentPilot.getKeybinding(Keybindings.ORIENTATION_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleOrientationType, DrivebaseSubsystem.getInstance()));
-    CurrentPilot.getKeybinding(Keybindings.MODULE_LOCKING_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleModuleLocking, DrivebaseSubsystem.getInstance()));
-    CurrentPilot.getKeybinding(Keybindings.PATHFINDING_FLIP_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::togglePathFlipped, DrivebaseSubsystem.getInstance()));
+    // CurrentPilot.getKeybinding(Keybindings.ORIENTATION_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleOrientationType, DrivebaseSubsystem.getInstance()));
+    // CurrentPilot.getKeybinding(Keybindings.MODULE_LOCKING_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleModuleLocking, DrivebaseSubsystem.getInstance()));
+    // CurrentPilot.getKeybinding(Keybindings.PATHFINDING_FLIP_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::togglePathFlipped, DrivebaseSubsystem.getInstance()));
   }
 
   /**
@@ -297,7 +297,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
     Logger.recordOutput(("Drivebase/Optimized"),
     MODULES.stream().map((Module) -> {
       final var State = StateIterator.next();
-      State.speedMetersPerSecond *= (Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY * (10));
+      State.speedMetersPerSecond *= (Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY * 0);
       return Module.set(State);
     }).toArray(SwerveModuleState[]::new));
   }

@@ -77,12 +77,12 @@ public final class Constants {
           .addPreference(Preferences.TRANSLATIONAL_Y_INPUT, () -> CONTROLLER.getRawAxis((0)))
           .addPreference(Preferences.ORIENTATION_INPUT, () -> CONTROLLER.getRawAxis((4)))
           .addPreference(Preferences.SQUARED_INPUT, () -> (true))
-          .addPreference(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (0.01))
-          .addPreference(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (0.01))
-          .addPreference(Preferences.ORIENTATION_DEADZONE, () -> (0.01))
-          .addKeybinding(Keybindings.MODULE_LOCKING_TOGGLE, CONTROLLER.a())
-          .addKeybinding(Keybindings.ORIENTATION_TOGGLE, CONTROLLER.b())
-          .addKeybinding(Keybindings.PATHFINDING_FLIP_TOGGLE, CONTROLLER.x());
+          .addPreference(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (0.1))
+          .addPreference(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (0.1))
+          .addPreference(Preferences.ORIENTATION_DEADZONE, () -> (0.1))
+          .addKeybinding(Keybindings.SHOOTER_TOGGLE, CONTROLLER.a())
+          .addKeybinding(Keybindings.INTAKE_TOGGLE, CONTROLLER.b())
+          .addKeybinding(Keybindings.OUTTAKE_TOGGLE, CONTROLLER.x());
       }
 
 
@@ -102,6 +102,9 @@ public final class Constants {
       public static final String MODULE_LOCKING_TOGGLE = ("LOCKING_ENABLED_TRIGGER");
       public static final String ORIENTATION_TOGGLE = ("ORIENTATION_TOGGLE");
       public static final String PATHFINDING_FLIP_TOGGLE = ("PATHFINDING_FLIP_TOGGLE");
+      public static final String INTAKE_TOGGLE = ("INTAKE_TOGGLE");
+      public static final String SHOOTER_TOGGLE = ("SHOOTER_TOGGLE");
+      public static final String OUTTAKE_TOGGLE = ("OUTTAKE_TOGGLE");
     }
   }
 }
