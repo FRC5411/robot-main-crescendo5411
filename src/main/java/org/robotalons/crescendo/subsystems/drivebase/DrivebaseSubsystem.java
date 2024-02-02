@@ -201,9 +201,9 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
           (Double) CurrentPilot.getPreference(Preferences.ORIENTATION_DEADZONE))))), 
         DrivebaseSubsystem.getInstance()
     ));
-    // CurrentPilot.getKeybinding(Keybindings.ORIENTATION_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleOrientationType, DrivebaseSubsystem.getInstance()));
-    // CurrentPilot.getKeybinding(Keybindings.MODULE_LOCKING_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleModuleLocking, DrivebaseSubsystem.getInstance()));
-    // CurrentPilot.getKeybinding(Keybindings.PATHFINDING_FLIP_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::togglePathFlipped, DrivebaseSubsystem.getInstance()));
+    CurrentPilot.getKeybinding(Keybindings.ORIENTATION_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleOrientationType, DrivebaseSubsystem.getInstance()));
+    CurrentPilot.getKeybinding(Keybindings.MODULE_LOCKING_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::toggleModuleLocking, DrivebaseSubsystem.getInstance()));
+    CurrentPilot.getKeybinding(Keybindings.PATHFINDING_FLIP_TOGGLE).onTrue(new InstantCommand(DrivebaseSubsystem::togglePathFlipped, DrivebaseSubsystem.getInstance()));
   }
 
   /**
@@ -272,16 +272,19 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
         break;      
       case ROBOT_ORIENTED:
         set(new ChassisSpeeds(
-          Translation.getX(), 
-          Translation.getY(), 
-          Rotation.getRadians()));      
+          Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
+          Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
+          Rotation.getRadians() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY
+        ));      
         break;
       case FIELD_ORIENTED:
         set(ChassisSpeeds.fromFieldRelativeSpeeds(
-          Translation.getX(), 
-          Translation.getY(), 
+          Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
+          Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
           Rotation.getRadians(), 
-          GYROSCOPE.getYawRotation()));      
+          GYROSCOPE.getYawRotation()
+            .times(Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY)
+        ));      
         break;
     }
   }
@@ -295,11 +298,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
     final var StateIterator = States.iterator();
     Logger.recordOutput(("Drivebase/Reference"), States.toArray(SwerveModuleState[]::new));
     Logger.recordOutput(("Drivebase/Optimized"),
-    MODULES.stream().map((Module) -> {
-      final var State = StateIterator.next();
-      State.speedMetersPerSecond *= (Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY * 0);
-      return Module.set(State);
-    }).toArray(SwerveModuleState[]::new));
+      MODULES.stream().map((Module) -> 
+        Module.set(StateIterator.next())).toArray(SwerveModuleState[]::new));
   }
 
   /**

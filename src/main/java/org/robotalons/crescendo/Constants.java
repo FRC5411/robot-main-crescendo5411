@@ -75,7 +75,7 @@ public final class Constants {
         public static final PilotProfile PROFILE = new PilotProfile(("John Doe"))
           .addPreference(Preferences.TRANSLATIONAL_X_INPUT, () -> CONTROLLER.getRawAxis((1)))
           .addPreference(Preferences.TRANSLATIONAL_Y_INPUT, () -> CONTROLLER.getRawAxis((0)))
-          .addPreference(Preferences.ORIENTATION_INPUT, () -> CONTROLLER.getRawAxis((4)))
+          .addPreference(Preferences.ORIENTATION_INPUT, () -> -CONTROLLER.getRawAxis((4)))
           .addPreference(Preferences.SQUARED_INPUT, () -> (true))
           .addPreference(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (0.1))
           .addPreference(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (0.1))
