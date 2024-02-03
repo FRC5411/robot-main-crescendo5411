@@ -28,7 +28,8 @@ import java.util.Optional;
  */
 public abstract class Camera implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  protected final CameraStatusContainer STATUS = new CameraStatusContainer();
+  protected final CameraStatusContainer CAMERASTATUS = new CameraStatusContainer();
+  protected final TargetStatusContainer TARGETSTATUS = new TargetStatusContainer();
   protected final NetworkTable INSTANCE;
   protected final Transform3d OFFSET;
   protected final String IDENTITY;
@@ -47,7 +48,7 @@ public abstract class Camera implements Closeable {
   // ---------------------------------------------------------------[Abstract]--------------------------------------------------------------//
   /**
    * This method is called periodically by the {@link CommandScheduler}. Useful for updating
-   * subsystem-specific state that you don't want to offload to a {@link Command}. Teams should try
+   * subsystem-specific stte that you don't want to offload to a {@link Command}. Teams should try
    * to be consistent within their own codebases about which responsibilities will be handled by
    * Commands, and which will be handled here.
    */
@@ -99,7 +100,7 @@ public abstract class Camera implements Closeable {
    * @return Position of the object relative to the field
    */
   public Pose3d getObjectFieldPose(final Transform3d Target){
-    return STATUS.TargetPose;
+    return TARGETSTATUS.BestTargetPose;
   }
 
   /**
@@ -108,14 +109,14 @@ public abstract class Camera implements Closeable {
    * @return Position of the object relative to the field
    */
   public Pose3d getObjectFieldPose(){
-    return STATUS.TargetPose;
-  }
+    return TARGETSTATUS.BestTargetPose;
+  };
 
   /**
    * Provides the april tag with the id that we asked for in Pose3d
    * @return Position of the tag relative to the field
    */
-  public abstract Optional<Pose3d> getAprilTagPose(final int ID);
+  public abstract Pose3d getAprilTagPose(final Integer ID);
 
   /**
    * Provides the confidence or standard deviation of the cameras evaluations of estimations
@@ -144,20 +145,24 @@ public abstract class Camera implements Closeable {
    * Provides the robot relative position timestamps of each delta from the last update control cycle up to the current query.
    * @return List of robot relative snapshot time deltas
    */
-  public abstract List<Double> getRobotPositionTimestamps();  
+  public List<Double> getRobotPositionTimestamps(){
+    return CAMERASTATUS.timestamps;
+  }
 
   /**
    * Provides the robot relative (minus offset) position deltas from last update control cycle up to the current query.
    * @return List of Poses of the robot since the last control cycle
    */
-  public abstract List<Pose3d> getRobotPositionDeltas();
+  public List<Pose3d> getRobotPositionDeltas(){
+    return CAMERASTATUS.deltas;
+  };
 
   /**
    * Provides the robot relative (minus offset) position immediately.
    * @return Current estimated Pose of the robot at this moment
    */
   public Pose3d getRobotPosition(){
-    return STATUS.RobotPose;
+    return CAMERASTATUS.RobotPose;
   };
 
   /**
@@ -172,14 +177,16 @@ public abstract class Camera implements Closeable {
    * Provides a list of robot-relative transformations to the best target within view of the camera
    * @return List of robot-relative target transformations
    */
-  public abstract List<Transform3d> getTargets();
+  public List<Transform3d> getTargets(){
+    return TARGETSTATUS.Targets;
+  }
 
   /**
    * Provides a boolean representation of if the module has an april tag / object detected
    * @return List of robot-relative target transformations
    */
   public Boolean hasTargets(){
-    return STATUS.ContainsTarget;
+    return TARGETSTATUS.HasTargets;
   }
 
 
@@ -188,7 +195,15 @@ public abstract class Camera implements Closeable {
    * @return Robot-relative best target transformation
    */
   public Transform3d getOptimalTarget(){
-    return STATUS.BestTargetTransform;
+    return TARGETSTATUS.BestTargetTransform;
+  }
+
+  /**
+   * Provides the number of targest that is deteced within the view of the camera
+   * @return Number of targets detected by camera
+   */
+  public Integer getNumTargets(){
+    return TARGETSTATUS.NumTargets;
   }
 
   /**
@@ -196,7 +211,7 @@ public abstract class Camera implements Closeable {
    * @return String representation of the camera's name
    */
   public String getName() {
-    return STATUS.Name;
+    return CAMERASTATUS.Name;
   }
 
   /**
@@ -204,7 +219,7 @@ public abstract class Camera implements Closeable {
    * @return Double representation of the latency to retrieve information
    */
   public Double getLatency() {
-    return STATUS.Latency;
+    return CAMERASTATUS.Latency;
   }
 
   /**
@@ -212,6 +227,6 @@ public abstract class Camera implements Closeable {
    * @return Boolean representing Connectivity
    */
   public Boolean getConnected() {
-    return STATUS.Connected;
+    return CAMERASTATUS.Connected;
   }
 }

@@ -12,7 +12,6 @@ import org.robotalons.lib.vision.Camera;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 // ------------------------------------------------------------[Vision Subsystem]----------------------------------------------------------//
 /**
  *
@@ -42,7 +41,7 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
   /**
    * Vision Subsystem Constructor.
    */
-  private VisionSubsystem() {} static {
+  public VisionSubsystem(){} static {
     SOURCE = new PhotonCamera("Camera_1");
     SPEAKER_FRONT = new PhotonCamera("Camera_2");
     SPEAKER_REAR = new PhotonCamera("Camera_3");
@@ -245,7 +244,7 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    * @throws IllegalArgumentException when CAMERA_ID is not 4 or not an integer. 
    * @throws IllegalArgumentException when APRILTAG_ID is greater than 16, less than 0, or not an integer. 
    */
-  public Optional<Pose3d> getAprilTagPose(Integer CAMERA_ID, Integer APRILTAG_ID) throws IllegalArgumentException{
+  public Pose3d getAprilTagPose(Integer CAMERA_ID, Integer APRILTAG_ID) throws IllegalArgumentException{
 
     if(CAMERA_ID != 4 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
       throw new IllegalArgumentException("Camera ID for method 'getAprilTagPose' should not be greater than 4, less than 1, or not an integer");
@@ -274,6 +273,23 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
 
     Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
     return CAMERA.hasTargets();
+  }
+
+  /**
+   * Provides a number of targets detected by the specified camera (april tag / object detected)
+   * 1 - Source Camera, 2 - Speaker Front Camera, 3- Speaker Rear Camera, 4 - OD Camera.
+   * @param CAMERA_ID that gets the specific camera.
+   * @return Number of Targets found by camera
+   * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
+   */
+  public Integer getNumTargest(Integer CAMERA_ID) throws IllegalArgumentException{
+
+    if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
+      throw new IllegalArgumentException("Camera ID for method 'hasTargets' should not be greater than 4, less than 1, or not an integer");
+    }
+
+    Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
+    return CAMERA.getNumTargets();
   }
 
   /**

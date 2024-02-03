@@ -3,7 +3,8 @@ package org.robotalons.lib.vision;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Transform3d;
+
+import java.util.ArrayList;
 
 import org.littletonrobotics.junction.AutoLog;
 
@@ -17,10 +18,8 @@ import org.littletonrobotics.junction.AutoLog;
 public class CameraStatusContainer {
   public String Name = ("");
   public boolean Connected = (false);
-  public boolean ContainsTarget = (false);
   public double Latency = (0d);
   public Pose3d RobotPose = new Pose3d(0, 0, 0, null);
-  public Pose3d TargetPose = new Pose3d(0, 0, 0, null);
-  public Transform3d BestTargetTransform = new Transform3d(0, 0, 0, null);
-
+  public ArrayList<Double> timestamps = new ArrayList<Double>();
+  public ArrayList<Pose3d> deltas = new ArrayList<Pose3d>();
 }

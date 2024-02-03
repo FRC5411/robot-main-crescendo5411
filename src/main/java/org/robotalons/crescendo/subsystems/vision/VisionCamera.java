@@ -277,13 +277,18 @@ public final class VisionCamera extends Camera {
   }
 
   @Override
-  public Optional<Pose3d> getAprilTagPose(int FIDICUAL_ID) {
-    return FIELD_LAYOUT.getTagPose(FIDICUAL_ID);
+  public Pose3d getAprilTagPose(Integer FIDICUAL_ID) {
+    return FIELD_LAYOUT.getTagPose(FIDICUAL_ID).get();
   }
 
   @Override
   public Boolean hasTargets(){
     return CAMERA.getLatestResult().hasTargets();
+  }
+
+  @Override
+  public Integer getNumTargets(){
+    return CAMERA.getLatestResult().getTargets().size();
   }
 
 
