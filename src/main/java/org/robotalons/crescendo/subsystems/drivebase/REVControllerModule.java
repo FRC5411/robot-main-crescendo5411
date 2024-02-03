@@ -82,10 +82,10 @@ public final class REVControllerModule extends Module {
     CONSTANTS.ROTATIONAL_CONTROLLER.setPeriodicFramePeriod(
         PeriodicFrame.kStatus2, (int) (1000d / org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements.ODOMETRY_FREQUENCY));
 
-    CONSTANTS.LINEAR_CONTROLLER.setSmartCurrentLimit((15));
-    CONSTANTS.LINEAR_CONTROLLER.setSecondaryCurrentLimit((25));
-    CONSTANTS.ROTATIONAL_CONTROLLER.setSecondaryCurrentLimit((35));
-    CONSTANTS.ROTATIONAL_CONTROLLER.setSmartCurrentLimit((25));
+    CONSTANTS.LINEAR_CONTROLLER.setSmartCurrentLimit((40));
+    CONSTANTS.LINEAR_CONTROLLER.setSecondaryCurrentLimit((50));
+    CONSTANTS.ROTATIONAL_CONTROLLER.setSmartCurrentLimit((35));
+    CONSTANTS.ROTATIONAL_CONTROLLER.setSecondaryCurrentLimit((45));
     
     CONSTANTS.LINEAR_CONTROLLER.enableVoltageCompensation((12d));
     CONSTANTS.ROTATIONAL_CONTROLLER.enableVoltageCompensation((12d));
@@ -97,12 +97,17 @@ public final class REVControllerModule extends Module {
     CONSTANTS.LINEAR_CONTROLLER.setIdleMode(IdleMode.kBrake);
     CONSTANTS.ROTATIONAL_CONTROLLER.setIdleMode(IdleMode.kCoast);
 
-    if (RobotBase.isReal()) {
-      ROTATIONAL_ENCODER.setPosition(-RotationalAbsoluteOffset.plus(Rotation2d.fromRotations(CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble())).getRotations());
-    } else {
-      ROTATIONAL_ENCODER.setPosition((0d));
-    }
-    
+    ROTATIONAL_ENCODER.setPosition(
+      (RobotBase.isReal())?
+      (-RotationalAbsoluteOffset
+              .plus(
+        Rotation2d.fromRotations(
+          CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble())
+        ).getRotations()
+      ):
+      (0d)
+    );
+
     ROTATIONAL_ENCODER.setAverageDepth((2));
     ROTATIONAL_ENCODER.setMeasurementPeriod((10));
 
