@@ -17,7 +17,6 @@ import org.photonvision.common.hardware.VisionLEDMode;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 // -----------------------------------------------------------------[Camera]----------------------------------------------------------------//
 /**
@@ -145,7 +144,7 @@ public abstract class Camera implements Closeable {
    * Provides the robot relative position timestamps of each delta from the last update control cycle up to the current query.
    * @return List of robot relative snapshot time deltas
    */
-  public List<Double> getRobotPositionTimestamps(){
+  public double[] getRobotPositionTimestamps(){
     return CAMERASTATUS.timestamps;
   }
 
@@ -153,7 +152,7 @@ public abstract class Camera implements Closeable {
    * Provides the robot relative (minus offset) position deltas from last update control cycle up to the current query.
    * @return List of Poses of the robot since the last control cycle
    */
-  public List<Pose3d> getRobotPositionDeltas(){
+  public Pose3d[] getRobotPositionDeltas(){
     return CAMERASTATUS.deltas;
   };
 
@@ -177,7 +176,7 @@ public abstract class Camera implements Closeable {
    * Provides a list of robot-relative transformations to the best target within view of the camera
    * @return List of robot-relative target transformations
    */
-  public List<Transform3d> getTargets(){
+  public Transform3d[] getTargets(){
     return TARGETSTATUS.Targets;
   }
 
@@ -185,7 +184,7 @@ public abstract class Camera implements Closeable {
    * Provides a boolean representation of if the module has an april tag / object detected
    * @return List of robot-relative target transformations
    */
-  public Boolean hasTargets(){
+  public boolean hasTargets(){
     return TARGETSTATUS.HasTargets;
   }
 
@@ -202,7 +201,7 @@ public abstract class Camera implements Closeable {
    * Provides the number of targest that is deteced within the view of the camera
    * @return Number of targets detected by camera
    */
-  public Integer getNumTargets(){
+  public int getNumTargets(){
     return TARGETSTATUS.NumTargets;
   }
 

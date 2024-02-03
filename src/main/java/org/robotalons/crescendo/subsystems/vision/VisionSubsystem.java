@@ -3,7 +3,6 @@ package org.robotalons.crescendo.subsystems.vision;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.photonvision.PhotonCamera;
@@ -172,7 +171,7 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    * @return List of robot relative snapshot time deltas of specific camera called.
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public List<Double> getRobotPositionTimestamps(Integer CAMERA_ID) throws IllegalArgumentException{
+  public double[] getRobotPositionTimestamps(Integer CAMERA_ID) throws IllegalArgumentException{
 
     if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
       throw new IllegalArgumentException("Camera ID for method 'getRobotPositionTimestamps' should not be greater than 4, less than 1, or not an integer");
@@ -189,7 +188,7 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    * @return List of Poses of the robot since the last control cycle.
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public List<Pose3d> getRobotPositionDeltas(Integer CAMERA_ID) throws IllegalArgumentException{
+  public Pose3d[] getRobotPositionDeltas(Integer CAMERA_ID) throws IllegalArgumentException{
 
     if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
       throw new IllegalArgumentException("Camera ID for method 'snapshot' should not be greater than 4, less than 1, or not an integer");
@@ -224,7 +223,7 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    * @return List of robot-relative target transformations.
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public List<Transform3d> getTargets(Integer CAMERA_ID) throws IllegalArgumentException{
+  public Transform3d[] getTargets(Integer CAMERA_ID) throws IllegalArgumentException{
 
     if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
       throw new IllegalArgumentException("Camera ID for method 'getTargets' should not be greater than 4, less than 1, or not an integer");
@@ -265,7 +264,7 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    * @return Boolean if Camera has Target or not
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public Boolean hasTargets(Integer CAMERA_ID) throws IllegalArgumentException{
+  public boolean hasTargets(Integer CAMERA_ID) throws IllegalArgumentException{
 
     if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
       throw new IllegalArgumentException("Camera ID for method 'hasTargets' should not be greater than 4, less than 1, or not an integer");
@@ -282,7 +281,7 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    * @return Number of Targets found by camera
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public Integer getNumTargest(Integer CAMERA_ID) throws IllegalArgumentException{
+  public int getNumTargets(Integer CAMERA_ID) throws IllegalArgumentException{
 
     if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
       throw new IllegalArgumentException("Camera ID for method 'hasTargets' should not be greater than 4, less than 1, or not an integer");

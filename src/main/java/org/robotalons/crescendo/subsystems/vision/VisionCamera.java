@@ -45,7 +45,6 @@ public final class VisionCamera extends Camera {
   private final Transform3d RELATIVE;
   private PhotonPoseEstimator POSE_ESTIMATOR;
   private List<Double> TIMESTAMP_LIST;
-  private List<Pose3d> DELTAS_LIST;
   private List<Pose3d> POSES_LIST;
   private int COUNTER;
 
@@ -66,7 +65,6 @@ public final class VisionCamera extends Camera {
       RELATIVE);
 
     TIMESTAMP_LIST = new ArrayList<>();
-    DELTAS_LIST = new ArrayList<>();
     POSES_LIST = new ArrayList<>();
 
     COUNTER = 0;
@@ -95,7 +93,6 @@ public final class VisionCamera extends Camera {
   public void close() throws IOException {
     POSE_ESTIMATOR = null;
     TIMESTAMP_LIST.clear();
-    DELTAS_LIST.clear();
     POSES_LIST.clear();
     CAMERA.close();
     COUNTER = 0;
@@ -181,13 +178,20 @@ public final class VisionCamera extends Camera {
   }
 
   @Override
-  public List<Double> getRobotPositionTimestamps() {
-    return TIMESTAMP_LIST;
+  public double[] getRobotPositionTimestamps() {
+    double[] timestamps = new double[TIMESTAMP_LIST.size()];
+
+    for(int i = 0; i < timestamps.length; i++){
+      timestamps[i] = TIMESTAMP_LIST.get(i);
+    }
+
+    return timestamps;
   }
 
   @Override
-  public List<Pose3d> getRobotPositionDeltas() {
+  public Pose3d[] getRobotPositionDeltas() {
 
+    Pose3d[] DELTAS_LIST = new Pose3d[POSES_LIST.size() - 1];
     
     Pose3d PREV_POSE = POSES_LIST.get(0);
     Pose3d CURRENT_POSE = POSES_LIST.get(1);
@@ -206,7 +210,7 @@ public final class VisionCamera extends Camera {
       double D_YAW = CURRENT_POSE.getRotation().getZ() - PREV_POSE.getRotation().getZ();
       
       DELTA = new Pose3d(D_X, D_Y, D_Z, new Rotation3d(D_PITCH, D_ROLL, D_YAW));
-      DELTAS_LIST.add(DELTA);
+      DELTAS_LIST[i] = DELTA;
     }
 
     return DELTAS_LIST;
@@ -272,8 +276,15 @@ public final class VisionCamera extends Camera {
   }
 
   @Override
-  public List<Transform3d> getTargets() {
-    return CAMERA.getLatestResult().getTargets().stream().map(PhotonTrackedTarget::getBestCameraToTarget).toList();
+  public Transform3d[] getTargets() {
+    ArrayList<Transform3d> targets = (ArrayList<Transform3d>) CAMERA.getLatestResult().getTargets().stream().map(PhotonTrackedTarget::getBestCameraToTarget).toList();
+    Transform3d[] transforms = new Transform3d[targets.size()];
+
+    for(int i = 0; i < transforms.length; i++){
+      transforms[i] = targets.get(i);
+    }
+
+    return transforms;
   }
 
   @Override
@@ -282,12 +293,12 @@ public final class VisionCamera extends Camera {
   }
 
   @Override
-  public Boolean hasTargets(){
+  public boolean hasTargets(){
     return CAMERA.getLatestResult().hasTargets();
   }
 
   @Override
-  public Integer getNumTargets(){
+  public int getNumTargets(){
     return CAMERA.getLatestResult().getTargets().size();
   }
 

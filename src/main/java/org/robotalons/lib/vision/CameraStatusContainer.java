@@ -4,8 +4,6 @@ package org.robotalons.lib.vision;
 
 import edu.wpi.first.math.geometry.Pose3d;
 
-import java.util.ArrayList;
-
 import org.littletonrobotics.junction.AutoLog;
 
 // ---------------------------------------------------------[CameraStatusContainer]----------------------------------------------------------//
@@ -20,6 +18,6 @@ public class CameraStatusContainer {
   public boolean Connected = (false);
   public double Latency = (0d);
   public Pose3d RobotPose = new Pose3d(0, 0, 0, null);
-  public ArrayList<Double> timestamps = new ArrayList<Double>();
-  public ArrayList<Pose3d> deltas = new ArrayList<Pose3d>();
+  public Pose3d[] deltas = new Pose3d[]{};
+  public double[] timestamps = new double[]{};
 }
