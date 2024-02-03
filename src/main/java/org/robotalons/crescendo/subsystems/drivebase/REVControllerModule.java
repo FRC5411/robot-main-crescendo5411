@@ -82,8 +82,10 @@ public final class REVControllerModule extends Module {
     CONSTANTS.ROTATIONAL_CONTROLLER.setPeriodicFramePeriod(
         PeriodicFrame.kStatus2, (int) (1000d / org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements.ODOMETRY_FREQUENCY));
 
-    CONSTANTS.LINEAR_CONTROLLER.setSmartCurrentLimit((40));
-    CONSTANTS.ROTATIONAL_CONTROLLER.setSmartCurrentLimit((30));
+    CONSTANTS.LINEAR_CONTROLLER.setSmartCurrentLimit((20));
+    CONSTANTS.LINEAR_CONTROLLER.setSecondaryCurrentLimit((30));
+    CONSTANTS.ROTATIONAL_CONTROLLER.setSecondaryCurrentLimit((35));
+    CONSTANTS.ROTATIONAL_CONTROLLER.setSmartCurrentLimit((25));
     
     CONSTANTS.LINEAR_CONTROLLER.enableVoltageCompensation((12d));
     CONSTANTS.ROTATIONAL_CONTROLLER.enableVoltageCompensation((12d));
@@ -108,11 +110,12 @@ public final class REVControllerModule extends Module {
     CONSTANTS.ROTATIONAL_CONTROLLER.setCANTimeout((0));
 
     CONSTANTS.ROTATIONAL_CONTROLLER_PID.enableContinuousInput(-Math.PI, Math.PI);
-
-    CONSTANTS.LINEAR_CONTROLLER.setPeriodicFramePeriod(
-        PeriodicFrame.kStatus2, (int) (1000d / org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements.ODOMETRY_FREQUENCY));
-    CONSTANTS.ROTATIONAL_CONTROLLER.setPeriodicFramePeriod(
-        PeriodicFrame.kStatus2, (int) (1000d / org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements.ODOMETRY_FREQUENCY));
+    IntStream.range((0),(4)).forEach((Index) -> {
+      CONSTANTS.LINEAR_CONTROLLER.setPeriodicFramePeriod(
+          PeriodicFrame.kStatus2, (int) (1000d / org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements.ODOMETRY_FREQUENCY));
+      CONSTANTS.ROTATIONAL_CONTROLLER.setPeriodicFramePeriod(
+          PeriodicFrame.kStatus2, (int) (1000d / org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements.ODOMETRY_FREQUENCY));      
+    });
     ODOMETRY_LOCK = new ReentrantLock();    
     LINEAR_QUEUE = org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD.register(LINEAR_ENCODER::getPosition);
     ROTATIONAL_QUEUE = org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD.register(ROTATIONAL_ENCODER::getPosition); 
@@ -158,8 +161,7 @@ public final class REVControllerModule extends Module {
         Units.rotationsPerMinuteToRadiansPerSecond(LINEAR_ENCODER.getVelocity()) / CONSTANTS.LINEAR_GEAR_RATIO;
     Status.LinearAppliedVoltage = 
       CONSTANTS.LINEAR_CONTROLLER.getAppliedOutput() * CONSTANTS.LINEAR_CONTROLLER.getBusVoltage();
-    Status.LinearCurrentAmperage = 
-      new double[] {CONSTANTS.LINEAR_CONTROLLER.getOutputCurrent()};
+    Status.LinearCurrentAmperage = CONSTANTS.LINEAR_CONTROLLER.getOutputCurrent();
     Status.RotationalAbsolutePosition = 
       Rotation2d.fromRotations(CONSTANTS.ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble()).minus(RotationalAbsoluteOffset);
     Status.RotationalRelativePosition =
@@ -168,8 +170,7 @@ public final class REVControllerModule extends Module {
         Units.rotationsPerMinuteToRadiansPerSecond(ROTATIONAL_ENCODER.getVelocity()) / CONSTANTS.ROTATION_GEAR_RATIO;
     Status.RotationalAppliedVoltage = 
       CONSTANTS.ROTATIONAL_CONTROLLER.getAppliedOutput() * CONSTANTS.ROTATIONAL_CONTROLLER.getBusVoltage();
-    Status.RotationalAppliedAmperage = 
-      new double[] {CONSTANTS.ROTATIONAL_CONTROLLER.getOutputCurrent()};
+    Status.RotationalAppliedAmperage = CONSTANTS.ROTATIONAL_CONTROLLER.getOutputCurrent();
     Status.OdometryTimestamps = TIMESTAMP_QUEUE.stream().mapToDouble(Double::valueOf).toArray();
     Status.OdometryLinearPositionsRadians =
       LINEAR_QUEUE.stream()
@@ -196,14 +197,15 @@ public final class REVControllerModule extends Module {
       case STATE_CONTROL:
         if(Reference != (null)) {
           if (Reference.angle != (null)) {
-            setRotationVoltage(CONSTANTS.ROTATIONAL_CONTROLLER_PID.calculate(getRelativeRotation().getRadians(),Reference.angle.getRadians()));
+            setRotationVoltage(
+              CONSTANTS.ROTATIONAL_CONTROLLER_PID.calculate(Status.RotationalAbsolutePosition.getRadians(), Reference.angle.getRadians())
+            );
           }
-          var AdjustReferenceVelocity = (Reference.speedMetersPerSecond * Math.cos(CONSTANTS.ROTATIONAL_CONTROLLER_PID.getPositionError())) / CONSTANTS.WHEEL_RADIUS_METERS;
-          setLinearVoltage(     -(CONSTANTS.LINEAR_CONTROLLER_PID.calculate(AdjustReferenceVelocity))
-                                                              +
-            (CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD.calculate(Status.LinearVelocityRadiansSecond, AdjustReferenceVelocity)) 
-                                                              * 
-                                            ((CONSTANTS.LINEAR_INVERTED)? (-1): (1)));          
+          setLinearVoltage(
+              CONSTANTS.LINEAR_CONTROLLER_PID.calculate(Status.LinearVelocityRadiansSecond, Reference.speedMetersPerSecond / CONSTANTS.WHEEL_RADIUS_METERS)
+                                                                            + 
+                    CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD.calculate(Reference.speedMetersPerSecond / CONSTANTS.WHEEL_RADIUS_METERS)
+          );      
         }
         break;
       case DISABLED:
@@ -222,7 +224,7 @@ public final class REVControllerModule extends Module {
       DELTAS.add(new SwerveModulePosition(Position, Rotation));
     });
   }
-  //TODO: Add 1/2Pi (90 degree)
+
   /**
    * Zeroes the azimuth relatively offset from the position of the absolute encoders.
    */
@@ -247,7 +249,7 @@ public final class REVControllerModule extends Module {
    * @param Demand Demand of Voltage, relative to battery
    */
   public void setRotationVoltage(final Double Demand) {
-    CONSTANTS.ROTATIONAL_CONTROLLER.setVoltage(MathUtil.clamp(Demand, (-12d), (12d)));
+    CONSTANTS.ROTATIONAL_CONTROLLER.setVoltage(MathUtil.clamp(Demand, (-8d), (8d)));
   }
 
   /**
@@ -255,7 +257,7 @@ public final class REVControllerModule extends Module {
    * @param Demand Demand of Voltage, relative to battery
    */
   public void setLinearVoltage(final Double Demand) {
-    CONSTANTS.LINEAR_CONTROLLER.setVoltage(MathUtil.clamp(Demand, (-12d), (12d)));
+    CONSTANTS.LINEAR_CONTROLLER.setVoltage(MathUtil.clamp(Demand, (-8d), (8d)));
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   @Override

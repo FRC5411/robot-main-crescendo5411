@@ -149,6 +149,21 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
   }
 
   /**
+   * Resets the modules are pose estimation
+   */
+  public synchronized void reset() {
+    MODULES.forEach(Module::reset);
+    KINEMATICS.resetHeadings(MODULES.stream().map((Module) -> 
+      Module.getObserved().angle
+    ).toArray(Rotation2d[]::new));
+    POSE_ESTIMATOR.resetPosition(
+      GYROSCOPE.getYawRotation(),
+      getModulePositions(),
+      new Pose2d()
+    );
+  }
+
+  /**
    * Closes this instance and all held resources immediately.
    */
   @Override
@@ -285,22 +300,20 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
   public static synchronized void set(final Translation2d Translation, final Rotation2d Rotation) {
     switch(CurrentMode) {
       case OBJECT_ORIENTED:
-        //TODO: AUTOMATION TEAM (OBJECT ORIENTATION DRIVEBASE)
-        break;      
+        //TODO: AUTOMATION TEAM (OBJECT ORIENTATION DRIVEBASE)   
       case ROBOT_ORIENTED:
         set(new ChassisSpeeds(
-          Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
-          Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
-          Rotation.getRadians() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY
+          -Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
+          -Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
+          -Rotation.getRadians() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY
         ));      
         break;
       case FIELD_ORIENTED:
         set(ChassisSpeeds.fromFieldRelativeSpeeds(
-          Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
-          Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
-          Rotation.getRadians(), 
+          -Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
+          -Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
+          -Rotation.getRadians() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY, 
           GYROSCOPE.getYawRotation()
-            .times(Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY)
         ));      
         break;
     }

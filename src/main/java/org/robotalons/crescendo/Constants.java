@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
+import org.robotalons.crescendo.Robot.RobotType;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.REVOdometryThread;
@@ -28,15 +29,36 @@ import java.util.concurrent.locks.ReentrantLock;
  * @see RobotContainer
  */
 public final class Constants {
+  // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
+    /**
+     * Checks if the robot is deployed with a valid mode
+     * @param Options Additional options applied via the command line
+     */
+  public static void main(String... Options) {
+    if (Subsystems.TYPE == RobotType.SIMULATION) {
+      System.err.println("CANNOT DEPLOY, INVALID TYPE: " + Subsystems.TYPE.toString());
+      System.exit((1));
+    }
+  }
   // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
+
 
   public static final class Subsystems {
     public static final SubsystemManager MANAGER = SubsystemManager.getInstance();
     public static final Boolean IS_REAL_ROBOT = RobotBase.isReal();
+    public static final RobotType TYPE = 
+      (Logging.REPLAY_FROM_LOG)?
+       (RobotType.REPLAY):
+      ((IS_REAL_ROBOT)? 
+        (RobotType.CONCRETE):
+        (RobotType.SIMULATION)
+      );
   }
 
   public static final class Logging {
-    public static final String LOGGING_DEPOSIT_FOLDER = ("/U/logs");
+    public static final Map<RobotType,String> LOGGING_DEPOSIT = Map.of(
+      RobotType.CONCRETE, ("/media/sda1/")
+    );
     public static final Boolean LOGGING_TURBO_MODE = (false);
     public static final Boolean LOGGING_ENABLED = (false);
     public static final Boolean REPLAY_FROM_LOG = (false);
@@ -73,19 +95,18 @@ public final class Constants {
         public static final Integer CONTROLLER_PORT = (0);
         public static final CommandXboxController CONTROLLER = new CommandXboxController(CONTROLLER_PORT);
         public static final PilotProfile PROFILE = new PilotProfile(("John Doe"))
-          .addPreference(Preferences.TRANSLATIONAL_X_INPUT, () -> CONTROLLER.getRawAxis((1)))
-          .addPreference(Preferences.TRANSLATIONAL_Y_INPUT, () -> CONTROLLER.getRawAxis((0)))
-          .addPreference(Preferences.ORIENTATION_INPUT, () -> -CONTROLLER.getRawAxis((4)))
+          .addPreference(Preferences.TRANSLATIONAL_X_INPUT, () -> -CONTROLLER.getRawAxis((1)))
+          .addPreference(Preferences.TRANSLATIONAL_Y_INPUT, () -> -CONTROLLER.getRawAxis((0)))
+          .addPreference(Preferences.ORIENTATION_INPUT, () -> CONTROLLER.getRawAxis((4)))
           .addPreference(Preferences.SQUARED_INPUT, () -> (true))
-          .addPreference(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (0.1))
-          .addPreference(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (0.1))
-          .addPreference(Preferences.ORIENTATION_DEADZONE, () -> (0.1))
-          .addKeybinding(Keybindings.MODULE_LOCKING_TOGGLE, CONTROLLER.a())
-          .addKeybinding(Keybindings.ORIENTATION_TOGGLE, CONTROLLER.b())
-          .addKeybinding(Keybindings.PATHFINDING_FLIP_TOGGLE, CONTROLLER.x());
+          .addPreference(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (0.2))
+          .addPreference(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (0.2))
+          .addPreference(Preferences.ORIENTATION_DEADZONE, () -> (0.2))
+          .addKeybinding(Keybindings.ORIENTATION_TOGGLE, CONTROLLER.y())
+          .addKeybinding(Keybindings.INTAKE_TOGGLE, CONTROLLER.leftBumper())
+          .addKeybinding(Keybindings.SHOOTER_TOGGLE, CONTROLLER.b())
+          .addKeybinding(Keybindings.OUTTAKE_TOGGLE, CONTROLLER.rightBumper());
       }
-
-
     }
 
     public static final class Preferences {
