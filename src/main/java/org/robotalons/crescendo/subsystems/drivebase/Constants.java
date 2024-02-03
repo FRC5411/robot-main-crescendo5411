@@ -57,12 +57,12 @@ public final class Constants {
         public static final Double ROTATIONAL_ENCODER_OFFSET = (0.403320d + ((1/2) * Math.PI));
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
-        public static final Double LINEAR_P_GAIN = (0.02d);
+        public static final Double LINEAR_P_GAIN = (0.2d);
         public static final Double LINEAR_I_GAIN = (0d);
         public static final Double LINEAR_D_GAIN = (0d);
-        public static final Double LINEAR_KS_GAIN = (0.001d);
-        public static final Double LINEAR_KV_GAIN = (0.021d);
-        public static final Double LINEAR_KA_GAIN = (0.5d);
+        public static final Double LINEAR_KS_GAIN = (0d);
+        public static final Double LINEAR_KV_GAIN = (0d);
+        public static final Double LINEAR_KA_GAIN = (0d);
         public static final Integer NUMBER = (0);
         public static final ModuleConstants CONSTANTS = new ModuleConstants();
         static {
@@ -92,12 +92,12 @@ public final class Constants {
         public static final Double ROTATIONAL_ENCODER_OFFSET = (0.298340d + ((1/2) * Math.PI));
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
-        public static final Double LINEAR_P_GAIN = (0.02d);
+        public static final Double LINEAR_P_GAIN = (0.2d);
         public static final Double LINEAR_I_GAIN = (0d);
         public static final Double LINEAR_D_GAIN = (0d);
-        public static final Double LINEAR_KS_GAIN = (0.001d);
-        public static final Double LINEAR_KV_GAIN = (0.021d);
-        public static final Double LINEAR_KA_GAIN = (0.5d);
+        public static final Double LINEAR_KS_GAIN = (0d);
+        public static final Double LINEAR_KV_GAIN = (0d);
+        public static final Double LINEAR_KA_GAIN = (0d);
         public static final Integer NUMBER = (1);
         public static final ModuleConstants CONSTANTS = new ModuleConstants();
         static {
@@ -127,12 +127,12 @@ public final class Constants {
         public static final Double ROTATIONAL_ENCODER_OFFSET = (-0.164795d + ((1/2) * Math.PI));
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
-        public static final Double LINEAR_P_GAIN = (0.02d);
+        public static final Double LINEAR_P_GAIN = (0.2d);
         public static final Double LINEAR_I_GAIN = (0d);
         public static final Double LINEAR_D_GAIN = (0d);
-        public static final Double LINEAR_KS_GAIN = (0.001d);
-        public static final Double LINEAR_KV_GAIN = (0.021d);
-        public static final Double LINEAR_KA_GAIN = (0.5d);
+        public static final Double LINEAR_KS_GAIN = (0d);
+        public static final Double LINEAR_KV_GAIN = (0d);
+        public static final Double LINEAR_KA_GAIN = (0d);
         public static final Integer NUMBER = (2);
         public static final ModuleConstants CONSTANTS = new ModuleConstants();
         static {
@@ -162,12 +162,12 @@ public final class Constants {
         public static final Double ROTATIONAL_ENCODER_OFFSET = (-0.412842d + ((1/2) * Math.PI));
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
-        public static final Double LINEAR_P_GAIN = (0.02d);
+        public static final Double LINEAR_P_GAIN = (0.2d);
         public static final Double LINEAR_I_GAIN = (0d);
         public static final Double LINEAR_D_GAIN = (0d);
-        public static final Double LINEAR_KS_GAIN = (0.001d);
-        public static final Double LINEAR_KV_GAIN = (0.021d);
-        public static final Double LINEAR_KA_GAIN = (0.5d);
+        public static final Double LINEAR_KS_GAIN = (0d);
+        public static final Double LINEAR_KV_GAIN = (0d);
+        public static final Double LINEAR_KA_GAIN = (0d);
         public static final Integer NUMBER = (3);
         public static final ModuleConstants CONSTANTS = new ModuleConstants();
         static {

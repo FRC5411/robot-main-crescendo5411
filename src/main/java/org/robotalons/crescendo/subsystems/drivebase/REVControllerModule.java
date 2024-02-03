@@ -82,8 +82,8 @@ public final class REVControllerModule extends Module {
     CONSTANTS.ROTATIONAL_CONTROLLER.setPeriodicFramePeriod(
         PeriodicFrame.kStatus2, (int) (1000d / org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements.ODOMETRY_FREQUENCY));
 
-    CONSTANTS.LINEAR_CONTROLLER.setSmartCurrentLimit((20));
-    CONSTANTS.LINEAR_CONTROLLER.setSecondaryCurrentLimit((30));
+    CONSTANTS.LINEAR_CONTROLLER.setSmartCurrentLimit((15));
+    CONSTANTS.LINEAR_CONTROLLER.setSecondaryCurrentLimit((25));
     CONSTANTS.ROTATIONAL_CONTROLLER.setSecondaryCurrentLimit((35));
     CONSTANTS.ROTATIONAL_CONTROLLER.setSmartCurrentLimit((25));
     
@@ -198,14 +198,16 @@ public final class REVControllerModule extends Module {
         if(Reference != (null)) {
           if (Reference.angle != (null)) {
             setRotationVoltage(
-              CONSTANTS.ROTATIONAL_CONTROLLER_PID.calculate(Status.RotationalAbsolutePosition.getRadians(), Reference.angle.getRadians())
+              CONSTANTS.ROTATIONAL_CONTROLLER_PID.calculate(getRelativeRotation().getRadians(), Reference.angle.getRadians())
             );
           }
-          setLinearVoltage(
-              CONSTANTS.LINEAR_CONTROLLER_PID.calculate(Status.LinearVelocityRadiansSecond, Reference.speedMetersPerSecond / CONSTANTS.WHEEL_RADIUS_METERS)
-                                                                            + 
-                    CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD.calculate(Reference.speedMetersPerSecond / CONSTANTS.WHEEL_RADIUS_METERS)
-          );      
+          var AdjustReferenceVelocity = (Reference.speedMetersPerSecond / CONSTANTS.WHEEL_RADIUS_METERS);
+          setLinearVoltage(     -(CONSTANTS.LINEAR_CONTROLLER_PID.calculate(AdjustReferenceVelocity))
+                                                              +
+            (CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD.calculate(Status.LinearVelocityRadiansSecond, AdjustReferenceVelocity)) 
+                                                              * 
+                                            ((CONSTANTS.LINEAR_INVERTED)? (-1): (1)));          
+
         }
         break;
       case DISABLED:
