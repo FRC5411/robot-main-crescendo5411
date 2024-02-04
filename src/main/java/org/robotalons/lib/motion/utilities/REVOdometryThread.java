@@ -121,6 +121,11 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
     return Instance;
   }
 
+  @Override
+  public Double getFrequency() {
+    return Frequency;
+  }
+  
   /**
    * Retrieves the existing instance of this static utility class
    * @return Utility class's instance

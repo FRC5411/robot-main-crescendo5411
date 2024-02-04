@@ -47,4 +47,10 @@ public interface OdometryThread<SignalType> extends Runnable, Closeable {
    * @param Frequency Frequency of odometry updates in Hertz
    */
   void set(final Double Frequency);
+
+  /**
+   * Provides the frequency of this thread
+   * @return Frequency as a double
+   */
+  Double getFrequency();
 }

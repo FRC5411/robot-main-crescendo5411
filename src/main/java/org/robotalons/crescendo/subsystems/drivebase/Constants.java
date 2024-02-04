@@ -1,16 +1,13 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.drivebase;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 
-import com.ctre.phoenix6.hardware.CANcoder;
+import com.pathplanner.lib.util.PIDConstants;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import org.robotalons.crescendo.subsystems.drivebase.REVControllerModule.ModuleConstants;
+import org.robotalons.lib.motion.actuators.archetype.SparkModule;
 import org.robotalons.lib.motion.actuators.Module;
 import org.robotalons.lib.motion.sensors.Gyroscope;
 
@@ -60,23 +57,28 @@ public final class Constants {
         public static final Double LINEAR_P_GAIN = (0.2d);
         public static final Double LINEAR_I_GAIN = (0d);
         public static final Double LINEAR_D_GAIN = (0d);
-        public static final Double LINEAR_KS_GAIN = (0d);
-        public static final Double LINEAR_KV_GAIN = (0d);
-        public static final Double LINEAR_KA_GAIN = (0d);
+        public static final Double LINEAR_KS_GAIN = (0.0001d);
+        public static final Double LINEAR_KV_GAIN = (0.21d);
+        public static final Double LINEAR_KA_GAIN = (0.0001d);
         public static final Integer NUMBER = (0);
-        public static final ModuleConstants CONSTANTS = new ModuleConstants();
+        public static final SparkModule.Constants CONSTANTS = new SparkModule.Constants();
         static {
-          CONSTANTS.LINEAR_CONTROLLER = new CANSparkMax(LINEAR_CONTROLLER_ID, MotorType.kBrushless);
-          CONSTANTS.ROTATIONAL_CONTROLLER = new CANSparkMax(ROTATIONAL_CONTROLLER_ID, MotorType.kBrushless);
-          CONSTANTS.ABSOLUTE_ENCODER = new CANcoder(ABSOLUTE_ENCODER_ID);
-          CONSTANTS.LINEAR_CONTROLLER_PID = new PIDController(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
-          CONSTANTS.ROTATIONAL_CONTROLLER_PID = new PIDController(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
-          CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD = new SimpleMotorFeedforward(LINEAR_KS_GAIN, LINEAR_KV_GAIN, LINEAR_KA_GAIN);
-          CONSTANTS.LINEAR_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
-          CONSTANTS.ROTATION_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
+          CONSTANTS.TRANSLATIONAL_CONTROLLER_PORT = LINEAR_CONTROLLER_ID;
+          CONSTANTS.ROTATIONAL_CONTROLLER_PORT = ROTATIONAL_CONTROLLER_ID;
+          CONSTANTS.ABSOLUTE_ENCODER_PORT = ABSOLUTE_ENCODER_ID;
+          CONSTANTS.TRANSLATIONAL_PID_CONSTANTS = new PIDConstants(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
+          CONSTANTS.ROTATIONAL_PID_CONSTANTS = new PIDConstants(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
+          CONSTANTS.TRANSLATIONAL_KS_GAIN = LINEAR_KS_GAIN;
+          CONSTANTS.TRANSLATIONAL_KV_GAIN = LINEAR_KV_GAIN;
+          CONSTANTS.TRANSLATIONAL_KA_GAIN = LINEAR_KA_GAIN;
+          CONSTANTS.TRANSLATIONAL_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
+          CONSTANTS.ROTATIONAL_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
+          CONSTANTS.STATUS_PROVIDER = org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD;
+          CONSTANTS.TRANSLATIONAL_MAXIMUM_VELOCITY_METERS = Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY;
+          CONSTANTS.ROTATIONAL_MAXIMUM_VELOCITY_METERS = Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY;
           CONSTANTS.ROTATIONAL_ENCODER_OFFSET = Rotation2d.fromRotations(ROTATIONAL_ENCODER_OFFSET);
-          CONSTANTS.LINEAR_INVERTED = LINEAR_INVERTED;
+          CONSTANTS.TRANSLATIONAL_INVERTED = LINEAR_INVERTED;
           CONSTANTS.ROTATIONAL_INVERTED = ROTATIONAL_INVERTED;
           CONSTANTS.NUMBER = NUMBER;
         }
@@ -95,23 +97,28 @@ public final class Constants {
         public static final Double LINEAR_P_GAIN = (0.2d);
         public static final Double LINEAR_I_GAIN = (0d);
         public static final Double LINEAR_D_GAIN = (0d);
-        public static final Double LINEAR_KS_GAIN = (0d);
-        public static final Double LINEAR_KV_GAIN = (0d);
-        public static final Double LINEAR_KA_GAIN = (0d);
-        public static final Integer NUMBER = (1);
-        public static final ModuleConstants CONSTANTS = new ModuleConstants();
+        public static final Double LINEAR_KS_GAIN = (0.0001d);
+        public static final Double LINEAR_KV_GAIN = (0.21d);
+        public static final Double LINEAR_KA_GAIN = (0.0001d);
+        public static final Integer NUMBER = (0);
+        public static final SparkModule.Constants CONSTANTS = new SparkModule.Constants();
         static {
-          CONSTANTS.LINEAR_CONTROLLER = new CANSparkMax(LINEAR_CONTROLLER_ID, MotorType.kBrushless);
-          CONSTANTS.ROTATIONAL_CONTROLLER = new CANSparkMax(ROTATIONAL_CONTROLLER_ID, MotorType.kBrushless);
-          CONSTANTS.ABSOLUTE_ENCODER = new CANcoder(ABSOLUTE_ENCODER_ID);
-          CONSTANTS.LINEAR_CONTROLLER_PID = new PIDController(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
-          CONSTANTS.ROTATIONAL_CONTROLLER_PID = new PIDController(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
-          CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD = new SimpleMotorFeedforward(LINEAR_KS_GAIN, LINEAR_KV_GAIN, LINEAR_KA_GAIN);
-          CONSTANTS.LINEAR_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
-          CONSTANTS.ROTATION_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
+          CONSTANTS.TRANSLATIONAL_CONTROLLER_PORT = LINEAR_CONTROLLER_ID;
+          CONSTANTS.ROTATIONAL_CONTROLLER_PORT = ROTATIONAL_CONTROLLER_ID;
+          CONSTANTS.ABSOLUTE_ENCODER_PORT = ABSOLUTE_ENCODER_ID;
+          CONSTANTS.TRANSLATIONAL_PID_CONSTANTS = new PIDConstants(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
+          CONSTANTS.ROTATIONAL_PID_CONSTANTS = new PIDConstants(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
+          CONSTANTS.TRANSLATIONAL_KS_GAIN = LINEAR_KS_GAIN;
+          CONSTANTS.TRANSLATIONAL_KV_GAIN = LINEAR_KV_GAIN;
+          CONSTANTS.TRANSLATIONAL_KA_GAIN = LINEAR_KA_GAIN;
+          CONSTANTS.TRANSLATIONAL_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
+          CONSTANTS.ROTATIONAL_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
+          CONSTANTS.STATUS_PROVIDER = org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD;
+          CONSTANTS.TRANSLATIONAL_MAXIMUM_VELOCITY_METERS = Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY;
+          CONSTANTS.ROTATIONAL_MAXIMUM_VELOCITY_METERS = Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY;
           CONSTANTS.ROTATIONAL_ENCODER_OFFSET = Rotation2d.fromRotations(ROTATIONAL_ENCODER_OFFSET);
-          CONSTANTS.LINEAR_INVERTED = LINEAR_INVERTED;
+          CONSTANTS.TRANSLATIONAL_INVERTED = LINEAR_INVERTED;
           CONSTANTS.ROTATIONAL_INVERTED = ROTATIONAL_INVERTED;
           CONSTANTS.NUMBER = NUMBER;
         }
@@ -130,23 +137,28 @@ public final class Constants {
         public static final Double LINEAR_P_GAIN = (0.2d);
         public static final Double LINEAR_I_GAIN = (0d);
         public static final Double LINEAR_D_GAIN = (0d);
-        public static final Double LINEAR_KS_GAIN = (0d);
-        public static final Double LINEAR_KV_GAIN = (0d);
-        public static final Double LINEAR_KA_GAIN = (0d);
-        public static final Integer NUMBER = (2);
-        public static final ModuleConstants CONSTANTS = new ModuleConstants();
+        public static final Double LINEAR_KS_GAIN = (0.0001d);
+        public static final Double LINEAR_KV_GAIN = (0.21d);
+        public static final Double LINEAR_KA_GAIN = (0.0001d);
+        public static final Integer NUMBER = (0);
+        public static final SparkModule.Constants CONSTANTS = new SparkModule.Constants();
         static {
-          CONSTANTS.LINEAR_CONTROLLER = new CANSparkMax(LINEAR_CONTROLLER_ID, MotorType.kBrushless);
-          CONSTANTS.ROTATIONAL_CONTROLLER = new CANSparkMax(ROTATIONAL_CONTROLLER_ID, MotorType.kBrushless);
-          CONSTANTS.ABSOLUTE_ENCODER = new CANcoder(ABSOLUTE_ENCODER_ID);
-          CONSTANTS.LINEAR_CONTROLLER_PID = new PIDController(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
-          CONSTANTS.ROTATIONAL_CONTROLLER_PID = new PIDController(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
-          CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD = new SimpleMotorFeedforward(LINEAR_KS_GAIN, LINEAR_KV_GAIN, LINEAR_KA_GAIN);
-          CONSTANTS.LINEAR_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
-          CONSTANTS.ROTATION_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
+          CONSTANTS.TRANSLATIONAL_CONTROLLER_PORT = LINEAR_CONTROLLER_ID;
+          CONSTANTS.ROTATIONAL_CONTROLLER_PORT = ROTATIONAL_CONTROLLER_ID;
+          CONSTANTS.ABSOLUTE_ENCODER_PORT = ABSOLUTE_ENCODER_ID;
+          CONSTANTS.TRANSLATIONAL_PID_CONSTANTS = new PIDConstants(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
+          CONSTANTS.ROTATIONAL_PID_CONSTANTS = new PIDConstants(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
+          CONSTANTS.TRANSLATIONAL_KS_GAIN = LINEAR_KS_GAIN;
+          CONSTANTS.TRANSLATIONAL_KV_GAIN = LINEAR_KV_GAIN;
+          CONSTANTS.TRANSLATIONAL_KA_GAIN = LINEAR_KA_GAIN;
+          CONSTANTS.TRANSLATIONAL_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
+          CONSTANTS.ROTATIONAL_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
+          CONSTANTS.STATUS_PROVIDER = org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD;
+          CONSTANTS.TRANSLATIONAL_MAXIMUM_VELOCITY_METERS = Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY;
+          CONSTANTS.ROTATIONAL_MAXIMUM_VELOCITY_METERS = Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY;
           CONSTANTS.ROTATIONAL_ENCODER_OFFSET = Rotation2d.fromRotations(ROTATIONAL_ENCODER_OFFSET);
-          CONSTANTS.LINEAR_INVERTED = LINEAR_INVERTED;
+          CONSTANTS.TRANSLATIONAL_INVERTED = LINEAR_INVERTED;
           CONSTANTS.ROTATIONAL_INVERTED = ROTATIONAL_INVERTED;
           CONSTANTS.NUMBER = NUMBER;
         }
@@ -165,23 +177,28 @@ public final class Constants {
         public static final Double LINEAR_P_GAIN = (0.2d);
         public static final Double LINEAR_I_GAIN = (0d);
         public static final Double LINEAR_D_GAIN = (0d);
-        public static final Double LINEAR_KS_GAIN = (0d);
-        public static final Double LINEAR_KV_GAIN = (0d);
-        public static final Double LINEAR_KA_GAIN = (0d);
-        public static final Integer NUMBER = (3);
-        public static final ModuleConstants CONSTANTS = new ModuleConstants();
+        public static final Double LINEAR_KS_GAIN = (0.0001d);
+        public static final Double LINEAR_KV_GAIN = (0.21d);
+        public static final Double LINEAR_KA_GAIN = (0.0001d);
+        public static final Integer NUMBER = (0);
+        public static final SparkModule.Constants CONSTANTS = new SparkModule.Constants();
         static {
-          CONSTANTS.LINEAR_CONTROLLER = new CANSparkMax(LINEAR_CONTROLLER_ID, MotorType.kBrushless);
-          CONSTANTS.ROTATIONAL_CONTROLLER = new CANSparkMax(ROTATIONAL_CONTROLLER_ID, MotorType.kBrushless);
-          CONSTANTS.ABSOLUTE_ENCODER = new CANcoder(ABSOLUTE_ENCODER_ID);
-          CONSTANTS.LINEAR_CONTROLLER_PID = new PIDController(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
-          CONSTANTS.ROTATIONAL_CONTROLLER_PID = new PIDController(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
-          CONSTANTS.LINEAR_CONTROLLER_FEEDFORWARD = new SimpleMotorFeedforward(LINEAR_KS_GAIN, LINEAR_KV_GAIN, LINEAR_KA_GAIN);
-          CONSTANTS.LINEAR_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
-          CONSTANTS.ROTATION_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
+          CONSTANTS.TRANSLATIONAL_CONTROLLER_PORT = LINEAR_CONTROLLER_ID;
+          CONSTANTS.ROTATIONAL_CONTROLLER_PORT = ROTATIONAL_CONTROLLER_ID;
+          CONSTANTS.ABSOLUTE_ENCODER_PORT = ABSOLUTE_ENCODER_ID;
+          CONSTANTS.TRANSLATIONAL_PID_CONSTANTS = new PIDConstants(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
+          CONSTANTS.ROTATIONAL_PID_CONSTANTS = new PIDConstants(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
+          CONSTANTS.TRANSLATIONAL_KS_GAIN = LINEAR_KS_GAIN;
+          CONSTANTS.TRANSLATIONAL_KV_GAIN = LINEAR_KV_GAIN;
+          CONSTANTS.TRANSLATIONAL_KA_GAIN = LINEAR_KA_GAIN;
+          CONSTANTS.TRANSLATIONAL_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
+          CONSTANTS.ROTATIONAL_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
+          CONSTANTS.STATUS_PROVIDER = org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD;
+          CONSTANTS.TRANSLATIONAL_MAXIMUM_VELOCITY_METERS = Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY;
+          CONSTANTS.ROTATIONAL_MAXIMUM_VELOCITY_METERS = Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY;
           CONSTANTS.ROTATIONAL_ENCODER_OFFSET = Rotation2d.fromRotations(ROTATIONAL_ENCODER_OFFSET);
-          CONSTANTS.LINEAR_INVERTED = LINEAR_INVERTED;
+          CONSTANTS.TRANSLATIONAL_INVERTED = LINEAR_INVERTED;
           CONSTANTS.ROTATIONAL_INVERTED = ROTATIONAL_INVERTED;
           CONSTANTS.NUMBER = NUMBER;
         }
@@ -201,12 +218,12 @@ public final class Constants {
   public static final Gyroscope GYROSCOPE = 
     new PigeonGyroscope(Measurements.PHOENIX_DRIVE);
   public static final Module FRONT_LEFT_MODULE = 
-    new REVControllerModule(Measurements.Modules.FL.CONSTANTS);     
+    new SparkModule<CANSparkMax>(Measurements.Modules.FL.CONSTANTS);     
   public static final Module FRONT_RIGHT_MODULE = 
-    new REVControllerModule(Measurements.Modules.FR.CONSTANTS);             
+    new SparkModule<CANSparkMax>(Measurements.Modules.FR.CONSTANTS);             
   public static final Module REAR_LEFT_MODULE = 
-    new REVControllerModule(Measurements.Modules.RL.CONSTANTS);        
+    new SparkModule<CANSparkMax>(Measurements.Modules.RL.CONSTANTS);        
   public static final Module REAR_RIGHT_MODULE = 
-    new REVControllerModule(Measurements.Modules.RR.CONSTANTS);    
+    new SparkModule<CANSparkMax>(Measurements.Modules.RR.CONSTANTS);    
   }
 }

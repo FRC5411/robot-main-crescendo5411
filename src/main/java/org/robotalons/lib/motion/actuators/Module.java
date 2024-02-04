@@ -26,9 +26,10 @@ public abstract class Module implements Closeable {
   protected final Constants CONSTANTS;  
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   protected ModuleStatusContainerAutoLogged Status = new ModuleStatusContainerAutoLogged();  
-  protected Rotation2d RotationalAbsoluteOffset = (null);
-  protected Rotation2d RotationalRelativeOffset = (null);
-  protected SwerveModuleState Reference = (null);
+  protected Rotation2d RotationalAbsoluteOffset = new Rotation2d();
+  protected Rotation2d RotationalRelativeOffset = new Rotation2d();
+  protected SwerveModuleState Reference = new SwerveModuleState();
+  protected ReferenceType ReferenceMode = ReferenceType.STATE_CONTROL;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Common Module Constructor.
@@ -69,14 +70,16 @@ public abstract class Module implements Closeable {
    * <p>Describes a given {@link Module}'s measured constants that cannot otherwise be derived through its sensors and hardware.
    */
   public static class Constants {
-    public Double LINEAR_GEAR_RATIO = (1d);
-    public Double ROTATION_GEAR_RATIO = (1d);
-    public Double POSITION_METERS = (0d);
+    public Double TRANSLATIONAL_GEAR_RATIO = (1d);
+    public Double ROTATIONAL_GEAR_RATIO = (1d);
     public Double WHEEL_RADIUS_METERS = (1d);
-    public Boolean ROTATION_INVERTED = (false);
-    public Boolean LINEAR_INVERTED = (false);
-    public Integer NUMBER;
-    
+    public Boolean ROTATIONAL_INVERTED = (false);
+    public Boolean TRANSLATIONAL_INVERTED = (false);
+    public Double TRANSLATIONAL_MAXIMUM_VELOCITY_METERS = (0d);
+    public Double ROTATIONAL_MAXIMUM_VELOCITY_METERS = (0d);
+    public Double TRANSLATIONAL_POSITION_METERS = (0d);
+    public Rotation2d ROTATIONAL_ENCODER_OFFSET = new Rotation2d();
+    public Integer NUMBER = (0);
   }    
 
   /**
@@ -101,17 +104,20 @@ public abstract class Module implements Closeable {
   }
 
   /**
+   * Mutates the module controller's current mode of operation and how it should identify and calculate reference 'set-points'
+   * @param Mode Mode of Module control
+   */
+  public void set(final ReferenceType Mode) {
+    ReferenceMode = Mode;
+  }
+
+  /**
    * Mutates the module controller's current 'set-point' or reference {@link SwerveModuleState state}
    * @param Reference Module's new Goal or 'set-point' reference
    * @return An optimized version of the reference
    */
   public abstract SwerveModuleState set(final SwerveModuleState Reference);
 
-  /**
-   * Mutates the module controller's current mode of operation and how it should identify and calculate reference 'set-points'
-   * @param Mode Mode of Module control
-   */
-  public abstract void set(final ReferenceType Mode);
 
   /**
    * Zeroes the azimuth relatively offset from the position of the absolute encoders.
@@ -181,7 +187,7 @@ public abstract class Module implements Closeable {
    */
   public SwerveModuleState getObserved() {
     return new SwerveModuleState(
-      Status.LinearVelocityRadiansSecond * CONSTANTS.WHEEL_RADIUS_METERS, 
+      Status.LinearVelocityRadiansSecond * CONSTANTS.WHEEL_RADIUS_METERS * CONSTANTS.TRANSLATIONAL_MAXIMUM_VELOCITY_METERS, 
       Status.RotationalAbsolutePosition);
   }
 }
