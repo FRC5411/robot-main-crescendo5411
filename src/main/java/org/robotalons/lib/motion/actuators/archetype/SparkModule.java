@@ -134,13 +134,13 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     ROTATIONAL_PID.setPositionPIDWrappingMaxInput(Math.PI);
     ROTATIONAL_PID.setPositionPIDWrappingMinInput(-Math.PI);
     ROTATIONAL_PID.setOutputRange(
-      -MODULE_CONSTANTS.ROTATIONAL_MAXIMUM_VELOCITY_METERS,
-       MODULE_CONSTANTS.ROTATIONAL_MAXIMUM_VELOCITY_METERS);
+      -(1), 
+       (1));
     ROTATIONAL_PID.setFeedbackDevice(ROTATIONAL_ENCODER);
     
     TRANSLATIONAL_PID.setOutputRange(
-      -MODULE_CONSTANTS.TRANSLATIONAL_MAXIMUM_VELOCITY_METERS, 
-       MODULE_CONSTANTS.TRANSLATIONAL_MAXIMUM_VELOCITY_METERS);
+      -(1), 
+       (1));
     TRANSLATIONAL_PID.setFeedbackDevice(TRANSLATIONAL_ENCODER);
 
     ROTATIONAL_ENCODER.setPosition(
@@ -207,9 +207,9 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
           if (Reference.angle != (null)) {
             ROTATIONAL_PID.setReference(Reference.angle.getRadians(), ControlType.kPosition);
           }
-          final var AdjustedVelocity = Reference.speedMetersPerSecond / CONSTANTS.WHEEL_RADIUS_METERS;
-          TRANSLATIONAL_PID.setReference(AdjustedVelocity / CONSTANTS.TRANSLATIONAL_MAXIMUM_VELOCITY_METERS, ControlType.kVelocity, (0), 
-            TRANSLATIONAL_FF.calculate(Status.LinearVelocityRadiansSecond * CONSTANTS.WHEEL_RADIUS_METERS), ArbFFUnits.kVoltage);
+          Reference.speedMetersPerSecond *= Math.cos(Reference.angle.minus(getRelativeRotation()).getRadians());
+          TRANSLATIONAL_PID.setReference(Reference.speedMetersPerSecond, ControlType.kVelocity, (0), 
+            TRANSLATIONAL_FF.calculate(Reference.speedMetersPerSecond), ArbFFUnits.kVoltage);
         }
         break;
       case DISABLED:
@@ -222,8 +222,8 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     ODOMETRY_LOCK.unlock();  
     DELTAS.clear();
     IntStream.range((0), Status.OdometryTimestamps.length).forEach((Index) -> {
-      final var Position = Status.OdometryLinearPositionsRadians[Index] * CONSTANTS.WHEEL_RADIUS_METERS;
-      final var Rotation = Status.OdometryAzimuthPositions[Index].plus(
+      final var Position = Status.OdometryTranslationalPositionsRadians[Index] * CONSTANTS.WHEEL_RADIUS_METERS;
+      final var Rotation = Status.OdometryRotationalPositions[Index].plus(
         RotationalRelativeOffset != null? RotationalRelativeOffset: new Rotation2d());
       DELTAS.add(new SwerveModulePosition(Position, Rotation));
     });
@@ -232,14 +232,15 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
   /**
    * Forces an update of the AutoLogged values to AdvantageKit, logged with the corresponding module number
    */
+  @Override
   public synchronized void update() {
-    Status.LinearPositionRadians =
+    Status.TranslationalPositionRadians =
         Units.rotationsToRadians(TRANSLATIONAL_ENCODER.getPosition()) / CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
-    Status.LinearVelocityRadiansSecond =
+    Status.TranslationalVelocityRadiansSecond =
         Units.rotationsPerMinuteToRadiansPerSecond(TRANSLATIONAL_ENCODER.getVelocity()) / CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
-    Status.LinearAppliedVoltage = 
+    Status.TranslationalAppliedVoltage = 
       TRANSLATIONAL_CONTROLLER.getAppliedOutput() * TRANSLATIONAL_CONTROLLER.getBusVoltage();
-    Status.LinearCurrentAmperage = TRANSLATIONAL_CONTROLLER.getOutputCurrent();
+    Status.TranslationalCurrentAmperage = TRANSLATIONAL_CONTROLLER.getOutputCurrent();
     Status.RotationalAbsolutePosition = 
       Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble()).minus(RotationalAbsoluteOffset);
     Status.RotationalRelativePosition =
@@ -250,11 +251,11 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       ROTATIONAL_CONTROLLER.getAppliedOutput() * ROTATIONAL_CONTROLLER.getBusVoltage();
     Status.RotationalAppliedAmperage = ROTATIONAL_CONTROLLER.getOutputCurrent();
     Status.OdometryTimestamps = TIMESTAMP_QUEUE.stream().mapToDouble(Double::valueOf).toArray();
-    Status.OdometryLinearPositionsRadians =
+    Status.OdometryTranslationalPositionsRadians =
       TRANSLATIONAL_VELOCITY_QUEUE.stream()
         .mapToDouble((Double value) -> Units.rotationsToRadians(value) / CONSTANTS.ROTATIONAL_GEAR_RATIO)
         .toArray();
-    Status.OdometryAzimuthPositions =
+    Status.OdometryRotationalPositions =
       ROTATIONAL_POSITION_QUEUE.stream()
         .map((Double value) -> Rotation2d.fromRotations(value / CONSTANTS.TRANSLATIONAL_GEAR_RATIO))
         .toArray(Rotation2d[]::new);
@@ -267,6 +268,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
   /**
    * Zeroes the rotational relative to offset from the position of the absolute encoders.
    */
+  @Override
   public synchronized void reset() {
     update();
     ROTATIONAL_ENCODER.setPosition(
@@ -309,19 +311,28 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     return DELTAS;
   }
 
+  @Override
   public List<Double> getPositionTimestamps() {
     return TIMESTAMPS;
   }
 
+  @Override
   public Rotation2d getRelativeRotation() {
     return Status.RotationalRelativePosition.plus(RotationalRelativeOffset);
   }
 
+  @Override
   public Rotation2d getAbsoluteRotation() {
     return Status.RotationalAbsolutePosition.plus(RotationalAbsoluteOffset);
   }
 
+  @Override
+  public Double getLinearVelocity() {
+    return TRANSLATIONAL_ENCODER.getVelocity();
+  }
+
+  @Override
   public Double getLinearPosition() {
-    return Status.LinearPositionRadians * CONSTANTS.WHEEL_RADIUS_METERS;
+    return Status.TranslationalPositionRadians * CONSTANTS.WHEEL_RADIUS_METERS;
   }
 }

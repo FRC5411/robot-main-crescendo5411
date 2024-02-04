@@ -148,6 +148,18 @@ public abstract class Module implements Closeable {
   public abstract Rotation2d getAbsoluteRotation();
 
   /**
+   * Provides the current linear position
+   * @return Linear position in meters
+   */
+  public abstract Double getLinearPosition();
+
+  /**
+   * Provides the current linear velocity
+   * @return Linear velocity in meters per second
+   */
+  public abstract Double getLinearVelocity();
+
+  /**
    * Provides the internal denotation of this module, i.e. Front Left = 0, Front Right = 1
    * @return Natural number representation of this module
    */
@@ -161,7 +173,7 @@ public abstract class Module implements Closeable {
    */
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(
-      Status.LinearPositionRadians * CONSTANTS.WHEEL_RADIUS_METERS,
+      Status.TranslationalPositionRadians * CONSTANTS.WHEEL_RADIUS_METERS,
       Status.RotationalRelativePosition);
   }
 
@@ -181,13 +193,15 @@ public abstract class Module implements Closeable {
     return Reference;
   }
 
+  
+
   /**
    * Provides the most-recent cycle observed (measured) state of this module
    * @return Measure module state
    */
   public SwerveModuleState getObserved() {
     return new SwerveModuleState(
-      Status.LinearVelocityRadiansSecond * CONSTANTS.WHEEL_RADIUS_METERS * CONSTANTS.TRANSLATIONAL_MAXIMUM_VELOCITY_METERS, 
-      Status.RotationalAbsolutePosition);
+      getLinearVelocity(), 
+      getRelativeRotation());
   }
 }

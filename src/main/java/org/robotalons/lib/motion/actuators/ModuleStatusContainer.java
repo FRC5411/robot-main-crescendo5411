@@ -15,10 +15,10 @@ import org.littletonrobotics.junction.AutoLog;
  */
 @AutoLog
 public class ModuleStatusContainer {
-  public double LinearPositionRadians = (0d);
-  public double LinearVelocityRadiansSecond = (0d);
-  public double LinearAppliedVoltage = (0d);
-  public double LinearCurrentAmperage = (0d);
+  public double TranslationalPositionRadians = (0d);
+  public double TranslationalVelocityRadiansSecond = (0d);
+  public double TranslationalAppliedVoltage = (0d);
+  public double TranslationalCurrentAmperage = (0d);
 
   public Rotation2d RotationalAbsolutePosition = new Rotation2d();
   public Rotation2d RotationalRelativePosition = new Rotation2d();
@@ -27,6 +27,6 @@ public class ModuleStatusContainer {
   public double RotationalAppliedAmperage = (0d);
 
   public double[] OdometryTimestamps = new double[] {};
-  public double[] OdometryLinearPositionsRadians = new double[] {};
-  public Rotation2d[] OdometryAzimuthPositions = new Rotation2d[] {};
+  public double[] OdometryTranslationalPositionsRadians = new double[] {};
+  public Rotation2d[] OdometryRotationalPositions = new Rotation2d[] {};
 }
