@@ -3,7 +3,6 @@ package org.robotalons.crescendo.subsystems.drivebase;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
-// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -13,9 +12,10 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import com.pathplanner.lib.util.PIDConstants;
 import com.revrobotics.CANSparkMax;
 
-import org.robotalons.lib.motion.actuators.archetype.SparkModule;
 import org.robotalons.lib.motion.actuators.Module;
+import org.robotalons.lib.motion.actuators.archetype.SparkModule;
 import org.robotalons.lib.motion.sensors.Gyroscope;
+import org.robotalons.lib.motion.sensors.archetype.PigeonGyroscope;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -238,7 +238,7 @@ public final class Constants {
 
   public static final class Devices {
   public static final Gyroscope GYROSCOPE = 
-    new PigeonGyroscope(Measurements.PHOENIX_DRIVE);
+    new PigeonGyroscope(Ports.GYROSCOPE_ID,org.robotalons.crescendo.Constants.Odometry.CTRE_ODOMETRY_THREAD);
   public static final Module FRONT_LEFT_MODULE = 
     new SparkModule<CANSparkMax>(Measurements.Modules.FL.CONSTANTS);     
   public static final Module FRONT_RIGHT_MODULE = 

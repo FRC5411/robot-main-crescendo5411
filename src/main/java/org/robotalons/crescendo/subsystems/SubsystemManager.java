@@ -31,7 +31,7 @@ import java.util.List;
  */
 public final class SubsystemManager extends SubsystemBase {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  public static final ArrayList<TalonSubsystemBase> SUBSYSTEMS;
+  public static final List<TalonSubsystemBase> SUBSYSTEMS;
   public static final TalonSubsystemBase DRIVEBASE;
   public static final Field2d FIELD;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
@@ -66,13 +66,13 @@ public final class SubsystemManager extends SubsystemBase {
         )), 
       () -> DrivebaseSubsystem.getPath(),
       DRIVEBASE);
-      Pathfinding.setPathfinder(new LocalADStarAK());
-      PathPlannerLogging.setLogActivePathCallback(
-        (Trajectory) -> Logger.recordOutput(("Pathfinding/Trajectory"), Trajectory.toArray(new Pose2d[0])));
-      PathPlannerLogging.setLogTargetPoseCallback(
-        (Reference) -> Logger.recordOutput(("Pathfinding/Reference"), Reference));
-      DrivebaseSubsystem.getModules().forEach((Module) -> 
-        Module.set(org.robotalons.lib.motion.actuators.Module.ReferenceType.STATE_CONTROL));
+    Pathfinding.setPathfinder(new LocalADStarAK());
+    PathPlannerLogging.setLogActivePathCallback(
+      (Trajectory) -> Logger.recordOutput(("Pathfinding/Trajectory"), Trajectory.toArray(new Pose2d[0])));
+    PathPlannerLogging.setLogTargetPoseCallback(
+      (Reference) -> Logger.recordOutput(("Pathfinding/Reference"), Reference));
+    DrivebaseSubsystem.getModules().forEach((Module) -> 
+      Module.set(org.robotalons.lib.motion.actuators.Module.ReferenceType.STATE_CONTROL));
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override

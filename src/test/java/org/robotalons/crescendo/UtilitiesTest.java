@@ -9,8 +9,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
 // -------------------------------------------------------------[Utilities Test]-----------------------------------------------------------//
+/**
+ * Test the program using general CTRE and REV utility classes
+ */
 public final class UtilitiesTest {
     /** Test CTRE Error Codes throw runtime expected exceptions */
     @Test

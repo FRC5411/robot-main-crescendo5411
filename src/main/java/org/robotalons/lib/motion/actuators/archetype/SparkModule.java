@@ -114,8 +114,8 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
 
     TRANSLATIONAL_CONTROLLER.setSmartCurrentLimit((40));
     ROTATIONAL_CONTROLLER.setSmartCurrentLimit((30));
-    TRANSLATIONAL_CONTROLLER.enableVoltageCompensation((12d));
-    ROTATIONAL_CONTROLLER.enableVoltageCompensation((12d));
+    TRANSLATIONAL_CONTROLLER.enableVoltageCompensation((10d));
+    ROTATIONAL_CONTROLLER.enableVoltageCompensation((10d));
 
     TRANSLATIONAL_ENCODER.setPosition((0d));
     TRANSLATIONAL_ENCODER.setMeasurementPeriod((10));

@@ -4,8 +4,6 @@ package org.robotalons.lib.motion.sensors;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 import java.io.Closeable;
-import java.io.IOException;
-
 // ---------------------------------------------------------------[Gyroscope]---------------------------------------------------------------//
 /**
  *
@@ -26,7 +24,7 @@ public abstract class Gyroscope implements Closeable {
   /**
    * Closes this instance and all held resources immediately, but does not render the class unusable hence forth and can be re-instantiated.
    */
-  public abstract void close() throws IOException;
+  public abstract void close();
 
   /**
    * Provides a boolean representation of if the module is still connected to the system and all signals are okay.

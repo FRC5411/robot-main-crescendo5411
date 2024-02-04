@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
-package org.robotalons.crescendo.subsystems.drivebase;
+package org.robotalons.lib.motion.sensors.archetype;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -11,7 +11,7 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 
 import org.littletonrobotics.junction.Logger;
 import org.robotalons.lib.motion.sensors.Gyroscope;
-
+import org.robotalons.lib.motion.utilities.OdometryThread;
 import java.util.Queue;
 // ------------------------------------------------------------[Pigeon Gyroscope]-----------------------------------------------------------//
 /**
@@ -22,7 +22,6 @@ import java.util.Queue;
  * <p>Implementation of an auto-logged Gyroscope using a Pigeon as hardware.<p>
  * 
  * @see Gyroscope
- * @see DrivebaseSubsystem
  */
 public class PigeonGyroscope extends Gyroscope {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
@@ -33,24 +32,18 @@ public class PigeonGyroscope extends Gyroscope {
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Pigeon Gyroscope Constructor.
-   * @param PhoenixDrive Whether this gyroscope is based on a CTRE or REV drivebase
+   * @param Port Port (ID) of the PigeonDevice
+   * @param Provider Status Provider which accepts Double StatusSignals 
    */
-  public PigeonGyroscope(final Boolean PhoenixDrive) {
-    GYROSCOPE = new Pigeon2(Constants.Ports.GYROSCOPE_ID);
+  public PigeonGyroscope(final Integer Port, final OdometryThread<StatusSignal<Double>> Provider) {
+    GYROSCOPE = new Pigeon2(Port);
     YAW_ROTATION = GYROSCOPE.getYaw();
     YAW_VELOCITY = GYROSCOPE.getAngularVelocityZWorld();
     GYROSCOPE.getConfigurator().apply(new Pigeon2Configuration());
     GYROSCOPE.getConfigurator().setYaw((0d));
-    YAW_ROTATION.setUpdateFrequency(Constants.Measurements.ODOMETRY_FREQUENCY);
+    YAW_ROTATION.setUpdateFrequency(Provider.getFrequency());
     YAW_VELOCITY.setUpdateFrequency((100d));
-    if (PhoenixDrive) {
-      YAW_ROTATION_QUEUE = org.robotalons.crescendo.Constants.Odometry.CTRE_ODOMETRY_THREAD
-        .register(GYROSCOPE.getYaw());
-    } else {
-      YAW_ROTATION_QUEUE = org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD
-        .register(() -> GYROSCOPE.getYaw().getValueAsDouble());
-    }
-
+    YAW_ROTATION_QUEUE = Provider.register(GYROSCOPE.getYaw());
   }
 
   public synchronized void close() {

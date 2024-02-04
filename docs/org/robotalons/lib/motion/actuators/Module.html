@@ -78,6 +78,10 @@ loadScripts(document, 'script');</script>
 <dt>All Implemented Interfaces:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Closeable.html" title="class or interface in java.io" class="external-link">Closeable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
 </dl>
+<dl class="notes">
+<dt>Direct Known Subclasses:</dt>
+<dd><code><a href="archetype/FlywheelModule.html" title="class in org.robotalons.lib.motion.actuators.archetype">FlywheelModule</a></code>, <code><a href="archetype/SparkModule.html" title="class in org.robotalons.lib.motion.actuators.archetype">SparkModule</a></code></dd>
+</dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public abstract class </span><span class="element-name type-name-label">Module</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
@@ -127,14 +131,20 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>protected edu.wpi.first.math.geometry.Rotation2d</code></div>
-<div class="col-second even-row-color"><code><a href="#Azimuth_Offset" class="member-name-link">Azimuth_Offset</a></code></div>
+<div class="col-first even-row-color"><code>protected final <a href="Module.Constants.html" title="class in org.robotalons.lib.motion.actuators">Module.Constants</a></code></div>
+<div class="col-second even-row-color"><code><a href="#CONSTANTS" class="member-name-link">CONSTANTS</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected final <a href="Module.Constants.html" title="class in org.robotalons.lib.motion.actuators">Module.Constants</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#CONSTANTS" class="member-name-link">CONSTANTS</a></code></div>
+<div class="col-first odd-row-color"><code>protected edu.wpi.first.math.kinematics.SwerveModuleState</code></div>
+<div class="col-second odd-row-color"><code><a href="#Reference" class="member-name-link">Reference</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>protected edu.wpi.first.math.kinematics.SwerveModuleState</code></div>
-<div class="col-second even-row-color"><code><a href="#Reference" class="member-name-link">Reference</a></code></div>
+<div class="col-first even-row-color"><code>protected <a href="Module.ReferenceType.html" title="enum class in org.robotalons.lib.motion.actuators">Module.ReferenceType</a></code></div>
+<div class="col-second even-row-color"><code><a href="#ReferenceMode" class="member-name-link">ReferenceMode</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>protected edu.wpi.first.math.geometry.Rotation2d</code></div>
+<div class="col-second odd-row-color"><code><a href="#RotationalAbsoluteOffset" class="member-name-link">RotationalAbsoluteOffset</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>protected edu.wpi.first.math.geometry.Rotation2d</code></div>
+<div class="col-second even-row-color"><code><a href="#RotationalRelativeOffset" class="member-name-link">RotationalRelativeOffset</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>protected org.robotalons.lib.motion.actuators.ModuleStatusContainerAutoLogged</code></div>
 <div class="col-second odd-row-color"><code><a href="#Status" class="member-name-link">Status</a></code></div>
@@ -182,10 +192,20 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="block">Immediately closes this object and all held resources, renders it henceforth unusable and
  no longer queryable through its mutators.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract edu.wpi.first.math.geometry.Rotation2d</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getAbsoluteRotation()" class="member-name-link">getAbsoluteRotation</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.geometry.Rotation2d</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAbsoluteRotation()" class="member-name-link">getAbsoluteRotation</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Provides the current absolute rotation of the module rotational axis</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLinearPosition()" class="member-name-link">getLinearPosition</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Provides the current linear velocity</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLinearVelocity()" class="member-name-link">getLinearVelocity</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Provides the current linear position</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNumber()" class="member-name-link">getNumber</a>()</code></div>
@@ -212,24 +232,34 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Provides the deltas, or captured data points from odometry from the most recent <a href="#periodic()"><code>periodic()</code></a> cycle.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.kinematics.SwerveModuleState</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getReference()" class="member-name-link">getReference</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getPositionTimestamps()" class="member-name-link">getPositionTimestamps</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Provides the corresponding timestamps of the deltas from odometry from the most recent <a href="#periodic()"><code>periodic()</code></a> cycle.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.kinematics.SwerveModuleState</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getReference()" class="member-name-link">getReference</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Provides the un-optimized most-recent reference, or 'set-point' for this module's controller</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract edu.wpi.first.math.geometry.Rotation2d</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getRelativeRotation()" class="member-name-link">getRelativeRotation</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.geometry.Rotation2d</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRelativeRotation()" class="member-name-link">getRelativeRotation</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Provides the current relative rotation of the module rotational axis</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#periodic()" class="member-name-link">periodic</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#periodic()" class="member-name-link">periodic</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">This method is called periodically by the <code>CommandScheduler</code>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract edu.wpi.first.math.kinematics.SwerveModuleState</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#set(edu.wpi.first.math.kinematics.SwerveModuleState)" class="member-name-link">set</a><wbr>(edu.wpi.first.math.kinematics.SwerveModuleState&nbsp;Reference)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#reset()" class="member-name-link">reset</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Zeroes the azimuth relatively offset from the position of the absolute encoders.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.kinematics.SwerveModuleState</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#set(edu.wpi.first.math.kinematics.SwerveModuleState)" class="member-name-link">set</a><wbr>(edu.wpi.first.math.kinematics.SwerveModuleState&nbsp;Reference)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Mutates the module controller's current 'set-point' or reference <code>state</code></div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final edu.wpi.first.math.kinematics.SwerveModuleState</code></div>
@@ -239,9 +269,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="block">Mutates the module controller's current 'set-point' or reference state and mutates the module controller's current mode of operation
  and how it should identify and calculate reference 'set-points'</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#set(org.robotalons.lib.motion.actuators.Module.ReferenceType)" class="member-name-link">set</a><wbr>(<a href="Module.ReferenceType.html" title="enum class in org.robotalons.lib.motion.actuators">Module.ReferenceType</a>&nbsp;Mode)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#set(org.robotalons.lib.motion.actuators.Module.ReferenceType)" class="member-name-link">set</a><wbr>(<a href="Module.ReferenceType.html" title="enum class in org.robotalons.lib.motion.actuators">Module.ReferenceType</a>&nbsp;Mode)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Mutates the module controller's current mode of operation and how it should identify and calculate reference 'set-points'</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract void</code></div>
@@ -280,15 +310,27 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 </section>
 </li>
 <li>
+<section class="detail" id="RotationalAbsoluteOffset">
+<h3>RotationalAbsoluteOffset</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Rotation2d</span>&nbsp;<span class="element-name">RotationalAbsoluteOffset</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="RotationalRelativeOffset">
+<h3>RotationalRelativeOffset</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Rotation2d</span>&nbsp;<span class="element-name">RotationalRelativeOffset</span></div>
+</section>
+</li>
+<li>
 <section class="detail" id="Reference">
 <h3>Reference</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">edu.wpi.first.math.kinematics.SwerveModuleState</span>&nbsp;<span class="element-name">Reference</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="Azimuth_Offset">
-<h3>Azimuth_Offset</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Rotation2d</span>&nbsp;<span class="element-name">Azimuth_Offset</span></div>
+<section class="detail" id="ReferenceMode">
+<h3>ReferenceMode</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="Module.ReferenceType.html" title="enum class in org.robotalons.lib.motion.actuators">Module.ReferenceType</a></span>&nbsp;<span class="element-name">ReferenceMode</span></div>
 </section>
 </li>
 </ul>
@@ -375,9 +417,20 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 </section>
 </li>
 <li>
+<section class="detail" id="set(org.robotalons.lib.motion.actuators.Module.ReferenceType)">
+<h3>set</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">set</span><wbr><span class="parameters">(<a href="Module.ReferenceType.html" title="enum class in org.robotalons.lib.motion.actuators">Module.ReferenceType</a>&nbsp;Mode)</span></div>
+<div class="block">Mutates the module controller's current mode of operation and how it should identify and calculate reference 'set-points'</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>Mode</code> - Mode of Module control</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="set(edu.wpi.first.math.kinematics.SwerveModuleState)">
 <h3>set</h3>
-<div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type">edu.wpi.first.math.kinematics.SwerveModuleState</span>&nbsp;<span class="element-name">set</span><wbr><span class="parameters">(edu.wpi.first.math.kinematics.SwerveModuleState&nbsp;Reference)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.kinematics.SwerveModuleState</span>&nbsp;<span class="element-name">set</span><wbr><span class="parameters">(edu.wpi.first.math.kinematics.SwerveModuleState&nbsp;Reference)</span></div>
 <div class="block">Mutates the module controller's current 'set-point' or reference <code>state</code></div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -388,14 +441,10 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 </section>
 </li>
 <li>
-<section class="detail" id="set(org.robotalons.lib.motion.actuators.Module.ReferenceType)">
-<h3>set</h3>
-<div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">set</span><wbr><span class="parameters">(<a href="Module.ReferenceType.html" title="enum class in org.robotalons.lib.motion.actuators">Module.ReferenceType</a>&nbsp;Mode)</span></div>
-<div class="block">Mutates the module controller's current mode of operation and how it should identify and calculate reference 'set-points'</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>Mode</code> - Mode of Module control</dd>
-</dl>
+<section class="detail" id="reset()">
+<h3>reset</h3>
+<div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">reset</span>()</div>
+<div class="block">Zeroes the azimuth relatively offset from the position of the absolute encoders.</div>
 </section>
 </li>
 <li>
@@ -410,24 +459,13 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 </section>
 </li>
 <li>
-<section class="detail" id="getRelativeRotation()">
-<h3>getRelativeRotation</h3>
-<div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Rotation2d</span>&nbsp;<span class="element-name">getRelativeRotation</span>()</div>
-<div class="block">Provides the current relative rotation of the module rotational axis</div>
+<section class="detail" id="getPositionTimestamps()">
+<h3>getPositionTimestamps</h3>
+<div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&gt;</span>&nbsp;<span class="element-name">getPositionTimestamps</span>()</div>
+<div class="block">Provides the corresponding timestamps of the deltas from odometry from the most recent <a href="#periodic()"><code>periodic()</code></a> cycle.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Rotational axis heading as a relative <code>Rotation2d</code> object</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="getAbsoluteRotation()">
-<h3>getAbsoluteRotation</h3>
-<div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Rotation2d</span>&nbsp;<span class="element-name">getAbsoluteRotation</span>()</div>
-<div class="block">Provides the current absolute rotation of the module rotational axis</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>Rotational axis heading as a absolute <code>Rotation2d</code> object</dd>
+<dd>List of measured module position timestamps</dd>
 </dl>
 </section>
 </li>
@@ -472,6 +510,50 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>Reference module state</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getRelativeRotation()">
+<h3>getRelativeRotation</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Rotation2d</span>&nbsp;<span class="element-name">getRelativeRotation</span>()</div>
+<div class="block">Provides the current relative rotation of the module rotational axis</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Rotational axis heading as a relative <code>Rotation2d</code> object</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getAbsoluteRotation()">
+<h3>getAbsoluteRotation</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Rotation2d</span>&nbsp;<span class="element-name">getAbsoluteRotation</span>()</div>
+<div class="block">Provides the current absolute rotation of the module rotational axis</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Rotational axis heading as an absolute <code>Rotation2d</code> object</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getLinearVelocity()">
+<h3>getLinearVelocity</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a></span>&nbsp;<span class="element-name">getLinearVelocity</span>()</div>
+<div class="block">Provides the current linear position</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Linear position in meters</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getLinearPosition()">
+<h3>getLinearPosition</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a></span>&nbsp;<span class="element-name">getLinearPosition</span>()</div>
+<div class="block">Provides the current linear velocity</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Linear velocity in meters per second</dd>
 </dl>
 </section>
 </li>

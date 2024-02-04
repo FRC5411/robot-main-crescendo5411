@@ -65,7 +65,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
     super(("Drivebase Subsystem"));
   } static {
     Instance = new DrivebaseSubsystem();
-    GYROSCOPE = new PigeonGyroscope(Constants.Measurements.PHOENIX_DRIVE);
+    GYROSCOPE = Constants.Devices.GYROSCOPE;
     CurrentMode = OrientationMode.ROBOT_ORIENTED;
     ModuleLocked = (true);
     PathFlipped = (false); 

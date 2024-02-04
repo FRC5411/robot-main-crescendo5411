@@ -1,20 +1,19 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.lib.motion.actuators.archetype;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-
-import org.littletonrobotics.junction.Logger;
-import org.robotalons.lib.motion.utilities.OdometryThread;
-
-import com.pathplanner.lib.util.PIDConstants;
-import org.robotalons.lib.motion.actuators.Module;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+
+import com.pathplanner.lib.util.PIDConstants;
+
+import org.littletonrobotics.junction.Logger;
+import org.robotalons.lib.motion.actuators.Module;
+import org.robotalons.lib.motion.utilities.OdometryThread;
 
 import java.util.ArrayList;
 import java.util.List;
