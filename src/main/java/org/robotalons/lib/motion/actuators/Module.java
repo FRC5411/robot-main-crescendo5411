@@ -116,7 +116,10 @@ public abstract class Module implements Closeable {
    * @param Reference Module's new Goal or 'set-point' reference
    * @return An optimized version of the reference
    */
-  public abstract SwerveModuleState set(final SwerveModuleState Reference);
+  public SwerveModuleState set(final SwerveModuleState Reference) {
+    this.Reference = SwerveModuleState.optimize(Reference, getRelativeRotation());
+    return this.Reference;
+  }
 
 
   /**
@@ -135,29 +138,6 @@ public abstract class Module implements Closeable {
    * @return List of measured module position timestamps
    */
   public abstract List<Double> getPositionTimestamps();
-  /**
-   * Provides the current relative rotation of the module rotational axis
-   * @return Rotational axis heading as a relative {@link Rotation2d} object
-   */
-  public abstract Rotation2d getRelativeRotation();
-
-  /**
-   * Provides the current absolute rotation of the module rotational axis
-   * @return Rotational axis heading as an absolute {@link Rotation2d} object
-   */
-  public abstract Rotation2d getAbsoluteRotation();
-
-  /**
-   * Provides the current linear position
-   * @return Linear position in meters
-   */
-  public abstract Double getLinearPosition();
-
-  /**
-   * Provides the current linear velocity
-   * @return Linear velocity in meters per second
-   */
-  public abstract Double getLinearVelocity();
 
   /**
    * Provides the internal denotation of this module, i.e. Front Left = 0, Front Right = 1
@@ -193,7 +173,37 @@ public abstract class Module implements Closeable {
     return Reference;
   }
 
-  
+  /**
+   * Provides the current relative rotation of the module rotational axis
+   * @return Rotational axis heading as a relative {@link Rotation2d} object
+   */
+  public Rotation2d getRelativeRotation() {
+    return Status.RotationalRelativePosition.plus(RotationalRelativeOffset);
+  }
+
+  /**
+   * Provides the current absolute rotation of the module rotational axis
+   * @return Rotational axis heading as an absolute {@link Rotation2d} object
+   */
+  public Rotation2d getAbsoluteRotation() {
+    return Status.RotationalAbsolutePosition.plus(RotationalAbsoluteOffset);
+  }
+
+  /**
+   * Provides the current linear position
+   * @return Linear position in meters
+   */
+  public Double getLinearVelocity() {
+    return Status.TranslationalVelocityRadiansSecond * CONSTANTS.WHEEL_RADIUS_METERS;
+  }
+
+  /**
+   * Provides the current linear velocity
+   * @return Linear velocity in meters per second
+   */
+  public Double getLinearPosition() {
+    return Status.TranslationalPositionRadians * CONSTANTS.WHEEL_RADIUS_METERS;
+  }
 
   /**
    * Provides the most-recent cycle observed (measured) state of this module

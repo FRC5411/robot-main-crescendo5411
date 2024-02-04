@@ -4,7 +4,6 @@ package org.robotalons.lib.motion.actuators.archetype;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 
@@ -15,20 +14,20 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
-import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
 import org.littletonrobotics.junction.Logger;
 import org.robotalons.lib.motion.actuators.Module;
 import org.robotalons.lib.motion.utilities.OdometryThread;
 
-import java.util.function.DoubleSupplier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.DoubleSupplier;
 import java.util.stream.IntStream;
 // --------------------------------------------------------------[Spark Module]-------------------------------------------------------------//
 /**
@@ -299,12 +298,6 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     public Double TRANSLATIONAL_KV_GAIN;
     public Double TRANSLATIONAL_KA_GAIN;    
   }
-  // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
-  @Override
-  public SwerveModuleState set(final SwerveModuleState Reference) {
-    this.Reference = SwerveModuleState.optimize(Reference, getRelativeRotation());
-    return this.Reference;
-  }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   @Override
   public List<SwerveModulePosition> getPositionDeltas() {
@@ -314,25 +307,5 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
   @Override
   public List<Double> getPositionTimestamps() {
     return TIMESTAMPS;
-  }
-
-  @Override
-  public Rotation2d getRelativeRotation() {
-    return Status.RotationalRelativePosition.plus(RotationalRelativeOffset);
-  }
-
-  @Override
-  public Rotation2d getAbsoluteRotation() {
-    return Status.RotationalAbsolutePosition.plus(RotationalAbsoluteOffset);
-  }
-
-  @Override
-  public Double getLinearVelocity() {
-    return TRANSLATIONAL_ENCODER.getVelocity();
-  }
-
-  @Override
-  public Double getLinearPosition() {
-    return Status.TranslationalPositionRadians * CONSTANTS.WHEEL_RADIUS_METERS;
   }
 }

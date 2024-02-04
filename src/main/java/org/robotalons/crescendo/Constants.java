@@ -41,8 +41,6 @@ public final class Constants {
     }
   }
   // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
-
-
   public static final class Subsystems {
     public static final SubsystemManager MANAGER = SubsystemManager.getInstance();
     public static final Boolean IS_REAL_ROBOT = RobotBase.isReal();

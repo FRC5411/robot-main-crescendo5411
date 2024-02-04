@@ -1,8 +1,14 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.drivebase;
+import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
 import com.pathplanner.lib.util.PIDConstants;
 import com.revrobotics.CANSparkMax;
@@ -25,6 +31,21 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public final class Constants {
 // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
+  public static final class Simulation {
+    public static final Double TRANSLATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (505.597120488d); //TODO: Update
+    public static final Double ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (249.71004822d); //TODO: Update
+    public static final Matrix<N1,N1> TRANSLATIONAL_MEASUREMENT_STDEVS = MatBuilder.fill(Nat.N1(), Nat.N1(), (0.25));
+    public static final Matrix<N1,N1> ROTATIONAL_MEASUREMENT_STDEVS = MatBuilder.fill(Nat.N1(), Nat.N1(), (0.25));
+    public static final FlywheelSim TRANSLATIONAL_FLYWHEEL = new FlywheelSim(
+      DCMotor.getNEO((1)), 
+      Measurements.ROBOT_LINEAR_GEAR_RATIO, 
+      TRANSLATIONAL_FLYWHEEL_KG_PER_METER_SQUARED, TRANSLATIONAL_MEASUREMENT_STDEVS);
+    public static final FlywheelSim ROTATIONAL_FLYWHEEL = new FlywheelSim(
+      DCMotor.getNEO((1)), 
+      Measurements.ROBOT_ROTATION_GEAR_RATIO, 
+      ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED, ROTATIONAL_MEASUREMENT_STDEVS);
+  }
+
   public static final class Measurements {
     public static final Double ROBOT_WHEEL_DIAMETER_METERS = Units.inchesToMeters((4d));
     public static final Double ROBOT_WHEEL_PERIMETER_METERS = ROBOT_WHEEL_DIAMETER_METERS * Math.PI;
@@ -44,6 +65,7 @@ public final class Constants {
     public static final Double ODOMETRY_FREQUENCY = (250d);
 
     public static final class Modules {
+      
       public static final class FL {
         public static final Integer LINEAR_CONTROLLER_ID = (11);
         public static final Integer ROTATIONAL_CONTROLLER_ID = (15);
@@ -207,7 +229,7 @@ public final class Constants {
   }
 
   public static final class Ports {
-  public static final Integer GYROSCOPE_ID = (10);      
+    public static final Integer GYROSCOPE_ID = (10);      
   }
 
   public static final class Objects {
