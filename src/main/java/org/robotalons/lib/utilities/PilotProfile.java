@@ -35,12 +35,9 @@ public final class PilotProfile implements Sendable {
 
   @Override
   public void initSendable(final SendableBuilder Builder) {
-    PREFERENCES.forEach((Attribute,Value) -> {
-      Builder.addStringProperty(Attribute, () -> Value.toString(), (null));
-    });
-    KEYBINDINGS.forEach((Attribute,Value) -> {
-      Builder.addStringProperty(Attribute, () -> Value.toString(), (null));
-    });
+    Builder.addStringProperty(PILOT_NAME, this::getName, (String) -> {});
+    PREFERENCES.forEach((Attribute,Value) -> Builder.addStringProperty(Attribute, Value::toString, (null)));
+    KEYBINDINGS.forEach((Attribute,Value) -> Builder.addStringProperty(Attribute, Value::toString, (null)));
   }
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
   /**
