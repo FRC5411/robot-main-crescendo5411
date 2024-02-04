@@ -1,3 +1,4 @@
+org.robotalons.lib
 org.robotalons.lib.motion.actuators
 org.robotalons.lib.motion.actuators.archetype
 org.robotalons.lib.motion.pathfinding

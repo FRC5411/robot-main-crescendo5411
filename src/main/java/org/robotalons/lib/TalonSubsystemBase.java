@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
-package org.robotalons.crescendo.subsystems;
+package org.robotalons.lib;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -15,6 +15,7 @@ import java.io.Closeable;
  * <p>An extension of the traditional SubsystemBase class which allows for implementation of a pilot control based system.<p>
  * 
  * @see SubsystemBase
+ * @author Cody Washington
  */
 public abstract class TalonSubsystemBase extends SubsystemBase implements Closeable {
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//

@@ -14,6 +14,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import org.littletonrobotics.junction.Logger;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
+import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.pathfinding.LocalADStarAK;
 
 import java.util.ArrayList;
