@@ -8,11 +8,9 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.pathplanner.lib.util.PIDConstants;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -20,14 +18,11 @@ import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
 import org.littletonrobotics.junction.Logger;
 import org.robotalons.lib.motion.actuators.Module;
-import org.robotalons.lib.motion.utilities.OdometryThread;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.DoubleSupplier;
 import java.util.stream.IntStream;
 // --------------------------------------------------------------[Spark Module]-------------------------------------------------------------//
 /**
@@ -58,24 +53,23 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
   private final List<Double> TIMESTAMPS;
   private final Lock ODOMETRY_LOCK;
 
-  private final Constants MODULE_CONSTANTS;
+  private final ModuleConfiguration<Controller> MODULE_CONSTANTS;
   // -----------------------------------------------------------[Constructor(s)]------------------------------------------------------------//
   /**
    * Spark Module Constructor
    * @param Constants Constant values to construct a new module from
    */
-  @SuppressWarnings("unchecked")
-  public SparkModule(final Constants Constants) {
+  public SparkModule(final ModuleConfiguration<Controller> Constants) {
     super(Constants);
     MODULE_CONSTANTS = Constants;
-    TRANSLATIONAL_CONTROLLER = (Controller) new CANSparkMax(MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER_PORT, MotorType.kBrushless);
+    TRANSLATIONAL_CONTROLLER = MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER;
     TRANSLATIONAL_PID = TRANSLATIONAL_CONTROLLER.getPIDController();
     TRANSLATIONAL_FF = new SimpleMotorFeedforward(
       MODULE_CONSTANTS.TRANSLATIONAL_KS_GAIN,
       MODULE_CONSTANTS.TRANSLATIONAL_KV_GAIN,
       MODULE_CONSTANTS.TRANSLATIONAL_KA_GAIN);
     TRANSLATIONAL_ENCODER = TRANSLATIONAL_CONTROLLER.getEncoder();
-    ROTATIONAL_CONTROLLER = (Controller) new CANSparkMax(MODULE_CONSTANTS.ROTATIONAL_CONTROLLER_PORT, MotorType.kBrushless);
+    ROTATIONAL_CONTROLLER = MODULE_CONSTANTS.ROTATIONAL_CONTROLLER;
     ROTATIONAL_PID = ROTATIONAL_CONTROLLER.getPIDController();
     ROTATIONAL_ENCODER = ROTATIONAL_CONTROLLER.getEncoder();
     ABSOLUTE_ENCODER = new CANcoder(MODULE_CONSTANTS.ABSOLUTE_ENCODER_PORT);
@@ -280,23 +274,6 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       ):
       (0d)
     );
-  }
-  // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
-  /**
-   * <p>Describes a given {@link Module}'s measured constants that cannot otherwise be derived through its sensors and hardware.
-   */
-  public static class Constants extends Module.Constants {
-    public OdometryThread<DoubleSupplier> STATUS_PROVIDER;
-    public RelativeEncoder TRANSLATIONAL_ENCODER;
-    public RelativeEncoder ROTATIONAL_ENCODER;
-    public PIDConstants TRANSLATIONAL_PID_CONSTANTS;
-    public PIDConstants ROTATIONAL_PID_CONSTANTS;  
-    public Integer TRANSLATIONAL_CONTROLLER_PORT;
-    public Integer ROTATIONAL_CONTROLLER_PORT;
-    public Integer ABSOLUTE_ENCODER_PORT;      
-    public Double TRANSLATIONAL_KS_GAIN;
-    public Double TRANSLATIONAL_KV_GAIN;
-    public Double TRANSLATIONAL_KA_GAIN;    
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   @Override

@@ -162,7 +162,7 @@ public abstract class Module implements Closeable {
    * @return Reference module state
    */
   public SwerveModuleState getOptimized() {
-    return SwerveModuleState.optimize(Reference, Status.RotationalRelativePosition);
+    return Reference;
   }
 
   /**

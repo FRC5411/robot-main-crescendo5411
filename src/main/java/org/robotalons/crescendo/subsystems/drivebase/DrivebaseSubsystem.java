@@ -186,6 +186,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
       case FIELD_ORIENTED:
         CurrentMode = OrientationMode.OBJECT_ORIENTED;
       case OBJECT_ORIENTED:
+        CurrentMode = OrientationMode.CANNON_ORIENTED;
+      case CANNON_ORIENTED:
         CurrentMode = OrientationMode.ROBOT_ORIENTED;
     }
   }
@@ -268,6 +270,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
     OBJECT_ORIENTED,    
     ROBOT_ORIENTED,
     FIELD_ORIENTED,
+    CANNON_ORIENTED,
   }
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
   /**
@@ -299,6 +302,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
    */
   public static synchronized void set(final Translation2d Translation, final Rotation2d Rotation) {
     switch(CurrentMode) {
+      case CANNON_ORIENTED:
+        //TODO: AUTOMATION TEAM (CANNON ORIENTATION DRIVEBASE)   
       case OBJECT_ORIENTED:
         //TODO: AUTOMATION TEAM (OBJECT ORIENTATION DRIVEBASE)   
       case ROBOT_ORIENTED:
