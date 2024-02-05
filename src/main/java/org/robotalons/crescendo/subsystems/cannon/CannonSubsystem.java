@@ -1,10 +1,8 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.cannon;
-
+// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import org.robotalons.crescendo.subsystems.cannon.Constants.Devices;
-import org.robotalons.lib.roller.Roller;
 // ------------------------------------------------------------[Cannon Subsystem]-----------------------------------------------------------//
 /**
  *
@@ -19,32 +17,22 @@ import org.robotalons.lib.roller.Roller;
  */
 public class CannonSubsystem extends SubsystemBase {
   // --------------------------------------------------------------[Constants]-------------------------------------------------------------- //
-  private static final Roller DIRECTIONAL_CONTROLLER;
-  private static final Roller LAUNCH_CONTROLLER;
-  private static OrientationMode Control_Mode;
+
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
   private static CannonSubsystem Instance;
-  
-  // ------------------------------------------------------------[Constructors]------------------------------------------------------------- //
+    // ------------------------------------------------------------[Constructors]------------------------------------------------------------- //
   /** 
    * Cannon Subsystem Constructor 
    */
   private CannonSubsystem() {} static {
-    DIRECTIONAL_CONTROLLER = Devices.DIRECTIONAL_CONTROLLER;
-    LAUNCH_CONTROLLER = Devices.LAUNCH_CONTROLLER;
-    Control_Mode = OrientationMode.ROBOT_ORIENTED;
 
-    // DIRECTIONAL_ENCODER = DIRECTIONAL_CONTROLLER.getEncoder();
-    // LAUNCH_ENCODER = LAUNCH_CONTROLLER.getEncoder();
   }
   
   // ---------------------------------------------------------------[Methods]--------------------------------------------------------------- //
   @Override
   public synchronized void periodic() {
     Constants.Objects.ODOMETRY_LOCKER.lock();
-    DIRECTIONAL_CONTROLLER.periodic();
     
-    LAUNCH_CONTROLLER.periodic();
     Constants.Objects.ODOMETRY_LOCKER.lock();
   }
   
@@ -54,19 +42,8 @@ public class CannonSubsystem extends SubsystemBase {
   public synchronized void close() {
     
   }
-  
-  // --------------------------------------------------------------[Internal]--------------------------------------------------------------- //
-  public enum OrientationMode {
-    OBJECT_ORIENTED,    
-    ROBOT_ORIENTED,
-    FIELD_ORIENTED,
-  }
   // --------------------------------------------------------------[Mutators]--------------------------------------------------------------- //
-   public static synchronized void set(double DirectionalDemand, double LaunchDemand) {
-    DIRECTIONAL_CONTROLLER.setVoltage(DirectionalDemand);
-    LAUNCH_CONTROLLER.setVoltage(LaunchDemand);
-  }
-  
+
   // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
   /**
    * Retrieves the existing instance of this static utility class
