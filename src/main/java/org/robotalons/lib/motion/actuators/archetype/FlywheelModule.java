@@ -141,7 +141,7 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
           TRANSLATIONAL_CONTROLLER.setInputVoltage(
             10000 * (TRANSLATIONAL_PID.calculate(Status.TranslationalVelocityRadiansSecond, Reference.speedMetersPerSecond) 
                                         +
-            TRANSLATIONAL_FF.calculate(TRANSLATIONAL_CONTROLLER.getAngularVelocityRadPerSec() * DiscretizationTimestamp, Reference.speedMetersPerSecond, (0.02))));
+                TRANSLATIONAL_FF.calculate(Status.TranslationalVelocityRadiansSecond, Reference.speedMetersPerSecond)));
         }
         break;
       case DISABLED:

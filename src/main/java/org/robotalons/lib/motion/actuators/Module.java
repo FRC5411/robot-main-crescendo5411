@@ -4,6 +4,7 @@ package org.robotalons.lib.motion.actuators;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -194,7 +195,7 @@ public abstract class Module implements Closeable {
    * @return Linear position in meters
    */
   public Double getLinearVelocity() {
-    return Status.TranslationalVelocityRadiansSecond * CONSTANTS.WHEEL_RADIUS_METERS;
+    return Units.radiansPerSecondToRotationsPerMinute(Status.TranslationalVelocityRadiansSecond * CONSTANTS.TRANSLATIONAL_GEAR_RATIO);
   }
 
   /**

@@ -201,8 +201,9 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
             ROTATIONAL_PID.setReference(Reference.angle.getRadians(), ControlType.kPosition);
           }
           Reference.speedMetersPerSecond *= Math.cos(Reference.angle.minus(getRelativeRotation()).getRadians());
-          TRANSLATIONAL_PID.setReference(Reference.speedMetersPerSecond, ControlType.kVelocity, (0), 
-            TRANSLATIONAL_FF.calculate(Reference.speedMetersPerSecond), ArbFFUnits.kVoltage);
+          /*TRANSLATIONAL_PID.setReference(-Reference.speedMetersPerSecond, ControlType.kVelocity, (0), 
+            TRANSLATIONAL_FF.calculate(Status.TranslationalVelocityRadiansSecond, Reference.speedMetersPerSecond), ArbFFUnits.kVoltage); */
+          TRANSLATIONAL_CONTROLLER.set(Reference.speedMetersPerSecond / MODULE_CONSTANTS.TRANSLATIONAL_MAXIMUM_VELOCITY_METERS);
         }
         break;
       case DISABLED:
