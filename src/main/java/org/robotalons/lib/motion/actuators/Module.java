@@ -4,7 +4,6 @@ package org.robotalons.lib.motion.actuators;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -27,9 +26,9 @@ public abstract class Module implements Closeable {
   protected final Constants CONSTANTS;  
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   protected ModuleStatusContainerAutoLogged Status = new ModuleStatusContainerAutoLogged();  
-  protected Rotation2d RotationalAbsoluteOffset = new Rotation2d();
-  protected Rotation2d RotationalRelativeOffset = new Rotation2d();
-  protected SwerveModuleState Reference = new SwerveModuleState();
+  protected Rotation2d RotationalAbsoluteOffset = (null);
+  protected Rotation2d RotationalRelativeOffset = (null);
+  protected SwerveModuleState Reference = (null);
   protected ReferenceType ReferenceMode = ReferenceType.STATE_CONTROL;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
@@ -195,7 +194,7 @@ public abstract class Module implements Closeable {
    * @return Linear position in meters
    */
   public Double getLinearVelocity() {
-    return Units.radiansPerSecondToRotationsPerMinute(Status.TranslationalVelocityRadiansSecond * CONSTANTS.TRANSLATIONAL_GEAR_RATIO);
+    return Status.TranslationalVelocityRadiansSecond * CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
   }
 
   /**
@@ -212,7 +211,7 @@ public abstract class Module implements Closeable {
    */
   public SwerveModuleState getObserved() {
     return new SwerveModuleState(
-      getLinearVelocity(), 
-      getRelativeRotation());
+      Status.TranslationalVelocityRadiansSecond * CONSTANTS.WHEEL_RADIUS_METERS, 
+      Status.RotationalRelativePosition);
   }
 }

@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -57,15 +58,9 @@ public final class RobotContainer {
     INDEXER.setSecondaryCurrentLimit((30));
     INDEXER.setIdleMode(IdleMode.kCoast);
     @SuppressWarnings("resource")
-    final var LEFT_OUT = new CANSparkMax((31), MotorType.kBrushless);
-    LEFT_OUT.setSmartCurrentLimit((40));
-    LEFT_OUT.setSecondaryCurrentLimit((60));
-    LEFT_OUT.setIdleMode(IdleMode.kCoast);
+    final var LEFT_OUT = new TalonFX(0);
     @SuppressWarnings("resource")
-    final var RIGHT_OUT = new CANSparkMax((32), MotorType.kBrushless);
-    RIGHT_OUT.setSmartCurrentLimit((40));
-    RIGHT_OUT.setSecondaryCurrentLimit((60));
-    RIGHT_OUT.setIdleMode(IdleMode.kCoast);
+    final var RIGHT_OUT = new TalonFX(1);
     @SuppressWarnings("resource")
     final var INTAKE = new CANSparkMax((21), MotorType.kBrushless);
     INTAKE.setSmartCurrentLimit((20));
