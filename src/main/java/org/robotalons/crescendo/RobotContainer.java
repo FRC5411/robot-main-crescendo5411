@@ -8,6 +8,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.robotalons.crescendo.subsystems.climb.ClimbSubsystem;
+import org.robotalons.crescendo.subsystems.climb.Constants.Measurements;
 // -------------------------------------------------------------[Robot Container]-----------------------------------------------------------//
 /**
  *
@@ -19,7 +20,6 @@ import org.robotalons.crescendo.subsystems.climb.ClimbSubsystem;
 public final class RobotContainer {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   public static final LoggedDashboardChooser<Command> CommandSelector;
-  private static CommandXboxController driveController;
   private static CommandXboxController operatorController;
   private static ClimbSubsystem climbSS = new ClimbSubsystem();
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
@@ -27,7 +27,6 @@ public final class RobotContainer {
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private RobotContainer() {} static {
     CommandSelector = new LoggedDashboardChooser<>(("Autonomous Command Selector"), AutoBuilder.buildAutoChooser());
-    driveController = new CommandXboxController(0);
     operatorController = new CommandXboxController(1);
     configureDefaultCommands();
     configurePilotKeybinds();
@@ -44,12 +43,29 @@ public final class RobotContainer {
    * Configures the bindings, and preferences for each subsystem driver
    */
   private static void configurePilotKeybinds() {
-    operatorController.povUp()
-    .onTrue(new InstantCommand(() -> climbSS.set(org.robotalons.crescendo.subsystems.climb.Constants.Measurements.HIGH_PRESET)));
-    operatorController.povRight()
-    .onTrue(new InstantCommand(() -> climbSS.set(org.robotalons.crescendo.subsystems.climb.Constants.Measurements.HIGH_PRESET)));
-    operatorController.povDown()
-    .onTrue(new InstantCommand(() -> climbSS.set(org.robotalons.crescendo.subsystems.climb.Constants.Measurements.HIGH_PRESET)));
+    
+    // Single Arm Right Movement // 
+    operatorController.rightTrigger()
+    .onTrue(new InstantCommand(() -> climbSS.set(1, Measurements.CONTROLLER_ARM_SPEED)))
+    .onFalse(new InstantCommand(() -> climbSS.set(1, 0.0)));
+
+    // Single Arm Left Movement // 
+    operatorController.leftTrigger()
+    .onTrue(new InstantCommand(() -> climbSS.set(0, Measurements.CONTROLLER_ARM_SPEED)))
+    .onFalse(new InstantCommand(() -> climbSS.set(0, 0.0)));
+
+    // Single Arm Right Movement // 
+    operatorController.rightBumper()
+    .onTrue(new InstantCommand(() -> climbSS.set(1, -Measurements.CONTROLLER_ARM_SPEED)))
+    .onFalse(new InstantCommand(() -> climbSS.set(1, 0.0)));
+
+    // Single Arm Left Movement // 
+    operatorController.leftBumper()
+    .onTrue(new InstantCommand(() -> climbSS.set(0, -Measurements.CONTROLLER_ARM_SPEED)));
+
+    operatorController.leftBumper()
+    .onFalse(new InstantCommand(() -> climbSS.set(0, 0.0)));
+  
   }  
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**

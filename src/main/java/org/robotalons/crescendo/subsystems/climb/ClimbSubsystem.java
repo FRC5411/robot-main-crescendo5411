@@ -2,6 +2,7 @@
 package org.robotalons.crescendo.subsystems.climb;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.CANSparkMax;
@@ -9,10 +10,11 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.RelativeEncoder;
+import com.revrobotics.MotorFeedbackSensor;
 import com.revrobotics.SparkMaxPIDController;
 
 import org.littletonrobotics.junction.Logger;
+import org.robotalons.crescendo.subsystems.climb.Constants.Measurements;
 
 // ---------------------------------------------------------------[Libraries]--------------------------------------------------------------- //
 
@@ -31,14 +33,14 @@ public class ClimbSubsystem extends SubsystemBase {
   // --------------------------------------------------------------[Constants]-------------------------------------------------------------- //
   private static final CANSparkMax LEFT_ARM;  
   private static final CANSparkMax RIGHT_ARM; 
-  private static final RelativeEncoder LEFT_ENCODER;
-  private static final RelativeEncoder RIGHT_ENCODER;
+  private static final Encoder LEFT_ENCODER;
+  private static final Encoder RIGHT_ENCODER;
   private static final SparkMaxPIDController LEFT_PID;
   private static final SparkMaxPIDController RIGHT_PID;
   private static final ArmFeedforward LEFT_FEEDFORWARD;
   private static final ArmFeedforward RIGHT_FEEDFORWARD;
   private static final CANSparkMax[] MOTORS;
-  private static final RelativeEncoder[] ENCODERS;
+  private static final Encoder[] ENCODERS;
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
   private static ClimbSubsystem Instance;
   // ------------------------------------------------------------[Constructors]------------------------------------------------------------- //
@@ -49,12 +51,9 @@ public class ClimbSubsystem extends SubsystemBase {
     LEFT_ARM = new CANSparkMax(Constants.Ports.LEFT_ARM_CONTROLLER_ID, MotorType.kBrushless);
     RIGHT_ARM = new CANSparkMax(Constants.Ports.RIGHT_ARM_CONTROLLER_ID, MotorType.kBrushless);
 
-    LEFT_ENCODER = LEFT_ARM.getEncoder();
-    LEFT_ENCODER.setPositionConversionFactor(org.robotalons.crescendo.subsystems.climb.Constants.Measurements.K_TICKS_2_RAD);
+    LEFT_ENCODER = new Encoder(Measurements.K_LEFT_FORWARD_CHANNELA, Measurements.K_LEFT_FORWARD_CHANNELB);
 
-    RIGHT_ENCODER = RIGHT_ARM.getEncoder();
-    RIGHT_ENCODER.setPositionConversionFactor(org.robotalons.crescendo.subsystems.climb.Constants.Measurements.K_TICKS_2_RAD);
-
+    RIGHT_ENCODER = new Encoder(Measurements.K_RIGHT_FORWARD_CHANNELA, Measurements.K_RIGHT_FORWARD_CHANNELB);
 
     LEFT_PID = LEFT_ARM.getPIDController();
     RIGHT_PID = RIGHT_ARM.getPIDController();
@@ -79,18 +78,22 @@ public class ClimbSubsystem extends SubsystemBase {
     );
 
     MOTORS = new CANSparkMax[]{LEFT_ARM, RIGHT_ARM};
-    ENCODERS = new RelativeEncoder[]{LEFT_ENCODER, RIGHT_ENCODER};
+    ENCODERS = new Encoder[]{LEFT_ENCODER, RIGHT_ENCODER};
 
   }
   
   // ---------------------------------------------------------------[Methods]--------------------------------------------------------------- //
   @Override
   public synchronized void periodic() {
-    Constants.Objects.ODOMETRY_LOCKER.lock();
     //TODO: Updates Odometry (Multi-Thread Safe)
     Constants.Objects.ODOMETRY_LOCKER.lock();
-    Logger.recordOutput(("Climb/LeftEncoder"),LEFT_ENCODER.getPosition());
-    Logger.recordOutput(("Climb/RightEncoder"),RIGHT_ENCODER.getPosition());
+    Logger.recordOutput(("Climb/RightEncoder/Pos"), getPosistion(1));
+    Logger.recordOutput(("Climb/RightEncoder/Velocity"), getVelocity(1));
+    Logger.recordOutput(("Climb/RightEncoder/Temperature"), getTemperature(1));
+
+    Logger.recordOutput(("Climb/LeftEncoder/Pos"), getPosistion(0));
+    Logger.recordOutput(("Climb/LeftEncoder/Velocity"), getVelocity(0));
+    Logger.recordOutput(("Climb/LeftEncoder/Temperature"), getTemperature(0) );
   }
   
   /**
@@ -101,15 +104,13 @@ public class ClimbSubsystem extends SubsystemBase {
     RIGHT_ARM.close();
   }
 
-  // TODO: Check
   public synchronized static void configPID(){
-
-    LEFT_PID.setFeedbackDevice(LEFT_ENCODER);
+    LEFT_PID.setFeedbackDevice((MotorFeedbackSensor) LEFT_ENCODER);
     LEFT_PID.setP(org.robotalons.crescendo.subsystems.climb.Constants.Measurements.LEFT_ARM_P);
     LEFT_PID.setI(org.robotalons.crescendo.subsystems.climb.Constants.Measurements.LEFT_ARM_I);
     LEFT_PID.setD(org.robotalons.crescendo.subsystems.climb.Constants.Measurements.LEFT_ARM_D);
 
-    RIGHT_PID.setFeedbackDevice(RIGHT_ENCODER);
+    RIGHT_PID.setFeedbackDevice((MotorFeedbackSensor) RIGHT_ENCODER);
     RIGHT_PID.setP(org.robotalons.crescendo.subsystems.climb.Constants.Measurements.RIGHT_ARM_P);
     RIGHT_PID.setI(org.robotalons.crescendo.subsystems.climb.Constants.Measurements.RIGHT_ARM_I);
     RIGHT_PID.setD(org.robotalons.crescendo.subsystems.climb.Constants.Measurements.RIGHT_ARM_D);
@@ -141,19 +142,19 @@ public class ClimbSubsystem extends SubsystemBase {
    * @param RightDemand Desired rotation of the right arm in radians
    */
   public synchronized void pidSet(final Double LeftDemand, final Double RightDemand) {
-    //TODO: PID Implementation Here
+    //TODO: Double check PID slot
     LEFT_PID.setReference(
       LeftDemand, 
       ControlType.kPosition, 
       (0), 
-      LEFT_FEEDFORWARD.calculate(0, 0), 
+      LEFT_FEEDFORWARD.calculate(getPosistion(0), getVelocity(0)), 
       SparkMaxPIDController.ArbFFUnits.kVoltage);
     
       RIGHT_PID.setReference(
       RightDemand, 
       ControlType.kPosition, 
-      (0), 
-      RIGHT_FEEDFORWARD.calculate(0, 0), 
+      (1), 
+      RIGHT_FEEDFORWARD.calculate(getPosistion(1), getVelocity(1)), 
       SparkMaxPIDController.ArbFFUnits.kVoltage);
   }
 
@@ -192,9 +193,10 @@ public class ClimbSubsystem extends SubsystemBase {
    * @param NUM Picks Motors
    * @return Velocity of Motor
    */
+  // TODO: Doulble Check
   public static synchronized Double getVelocity(Integer NUM){
-    RelativeEncoder ENCODER = ENCODERS[NUM];
-    return ENCODER.getVelocity();
+    Encoder ENCODER = ENCODERS[NUM];
+    return ENCODER.getDistancePerPulse();
   }
 
    /**
@@ -204,8 +206,19 @@ public class ClimbSubsystem extends SubsystemBase {
    * @return Posistion of Motor
    */
   public static synchronized Double getPosistion(Integer NUM){
-    RelativeEncoder ENCODER = ENCODERS[NUM];
-    return ENCODER.getPosition();
+    Encoder ENCODER = ENCODERS[NUM];
+    return ENCODER.getDistance() * Measurements.K_TICKS_2_RAD / Measurements.K_GEARRATIO;
+  }
+
+   /**
+   * Returns the motors' temperature for the specified motors
+   * 0 - Left Arm, 1 - Right Arm
+   * @param NUM Picks Motors
+   * @return Temperature of Motor
+   */
+  public static synchronized Double getTemperature(Integer NUM){
+    CANSparkMax MOTOR = MOTORS[NUM];
+    return MOTOR.getMotorTemperature();
   }
 
   /**
