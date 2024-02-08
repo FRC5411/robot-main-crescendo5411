@@ -106,14 +106,14 @@ public class ClimbSubsystem extends SubsystemBase {
 
   public synchronized static void configPID(){
     LEFT_PID.setFeedbackDevice((MotorFeedbackSensor) LEFT_ENCODER);
-    LEFT_PID.setP(org.robotalons.crescendo.subsystems.climb.Constants.Measurements.LEFT_ARM_P);
-    LEFT_PID.setI(org.robotalons.crescendo.subsystems.climb.Constants.Measurements.LEFT_ARM_I);
-    LEFT_PID.setD(org.robotalons.crescendo.subsystems.climb.Constants.Measurements.LEFT_ARM_D);
+    LEFT_PID.setP(Measurements.LEFT_ARM_P);
+    LEFT_PID.setI(Measurements.LEFT_ARM_I);
+    LEFT_PID.setD(Measurements.LEFT_ARM_D);
 
     RIGHT_PID.setFeedbackDevice((MotorFeedbackSensor) RIGHT_ENCODER);
-    RIGHT_PID.setP(org.robotalons.crescendo.subsystems.climb.Constants.Measurements.RIGHT_ARM_P);
-    RIGHT_PID.setI(org.robotalons.crescendo.subsystems.climb.Constants.Measurements.RIGHT_ARM_I);
-    RIGHT_PID.setD(org.robotalons.crescendo.subsystems.climb.Constants.Measurements.RIGHT_ARM_D);
+    RIGHT_PID.setP(Measurements.RIGHT_ARM_P);
+    RIGHT_PID.setI(Measurements.RIGHT_ARM_I);
+    RIGHT_PID.setD(Measurements.RIGHT_ARM_D);
   }
 
   //TODO: Run by Isaac
@@ -122,15 +122,15 @@ public class ClimbSubsystem extends SubsystemBase {
     motor.restoreFactoryDefaults();
     motor.clearFaults();
     
-    motor.setSmartCurrentLimit(org.robotalons.crescendo.subsystems.climb.Constants.Measurements.K_CURRENT_LIMIT);
+    motor.setSmartCurrentLimit(Measurements.K_CURRENT_LIMIT);
 
     motor.setSoftLimit(
       SoftLimitDirection.kForward, 
-      org.robotalons.crescendo.subsystems.climb.Constants.Measurements.K_FORWARD_ARM_LIMIT);
+      Measurements.K_FORWARD_ARM_LIMIT);
     
     motor.setSoftLimit(
       SoftLimitDirection.kReverse, 
-      org.robotalons.crescendo.subsystems.climb.Constants.Measurements.K_REVERSE_ARM_LIMIT);
+      Measurements.K_REVERSE_ARM_LIMIT);
   }
   // --------------------------------------------------------------[Internal]--------------------------------------------------------------- //
 
