@@ -102,7 +102,6 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
 
     ROTATIONAL_CONTROLLER.setInverted(MODULE_CONSTANTS.ROTATIONAL_INVERTED);
     TRANSLATIONAL_CONTROLLER.setInverted(MODULE_CONSTANTS.TRANSLATIONAL_INVERTED);
-
     TRANSLATIONAL_CONTROLLER.setIdleMode(IdleMode.kBrake);
     ROTATIONAL_CONTROLLER.setIdleMode(IdleMode.kCoast);
 
@@ -118,6 +117,11 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     TRANSLATIONAL_ENCODER.setMeasurementPeriod((10));
     TRANSLATIONAL_ENCODER.setAverageDepth((2));
 
+    ROTATIONAL_ENCODER.setPosition((0d));
+    reset();
+    ROTATIONAL_ENCODER.setAverageDepth((2));
+    ROTATIONAL_ENCODER.setMeasurementPeriod((10));
+    
     TRANSLATIONAL_PID.setP(MODULE_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS.kP);
     TRANSLATIONAL_PID.setI(MODULE_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS.kI);
     TRANSLATIONAL_PID.setD(MODULE_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS.kD);
@@ -126,23 +130,14 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     ROTATIONAL_PID.setI(MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kI);
     ROTATIONAL_PID.setD(MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kD);
 
-    ROTATIONAL_PID.setPositionPIDWrappingEnabled((true));
-    ROTATIONAL_PID.setPositionPIDWrappingMaxInput(Math.PI);
-    ROTATIONAL_PID.setPositionPIDWrappingMinInput(-Math.PI);
-    ROTATIONAL_PID.setOutputRange(
-      -(1), 
-       (1));
     ROTATIONAL_PID.setFeedbackDevice(ROTATIONAL_ENCODER);
+    ROTATIONAL_PID.setPositionPIDWrappingEnabled((true));
+    ROTATIONAL_PID.setPositionPIDWrappingMaxInput(1/2 * MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO);
+    ROTATIONAL_PID.setPositionPIDWrappingMinInput(-1/2 * MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO);
     
-    TRANSLATIONAL_PID.setOutputRange(
-      -(1), 
-       (1));
     TRANSLATIONAL_PID.setFeedbackDevice(TRANSLATIONAL_ENCODER);
 
-    ROTATIONAL_ENCODER.setPosition(
-      -RotationalAbsoluteOffset.plus(Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble())).getRotations());
-    ROTATIONAL_ENCODER.setAverageDepth((2));
-    ROTATIONAL_ENCODER.setMeasurementPeriod((10));
+
 
     TRANSLATIONAL_CONTROLLER.setPeriodicFramePeriod(
       PeriodicFrame.kStatus2,
@@ -191,12 +186,16 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     switch(ReferenceMode) {
       case STATE_CONTROL:
         if(Reference != (null)) {
+          //final var PositionalError = Reference.angle.getRotations() - ROTATIONAL_ENCODER.getPosition();
           if (Reference.angle != (null)) {
-            ROTATIONAL_PID.setReference(Reference.angle.getRadians(), ControlType.kPosition);
+            ROTATIONAL_PID.setReference(
+              Reference.angle.getRadians() * MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO,
+              ControlType.kPosition);
           }
-          Reference.speedMetersPerSecond *= Math.cos(Reference.angle.minus(getRelativeRotation()).getRadians());
+          Reference.speedMetersPerSecond = (60) * Reference.speedMetersPerSecond / (2 * Math.PI * MODULE_CONSTANTS.WHEEL_RADIUS_METERS);
+          //TODO: Use Cosine
           TRANSLATIONAL_PID.setReference(Reference.speedMetersPerSecond, ControlType.kVelocity, (0), 
-            TRANSLATIONAL_FF.calculate(Status.TranslationalVelocityRadiansSecond, Reference.speedMetersPerSecond), ArbFFUnits.kVoltage);
+            TRANSLATIONAL_FF.calculate(Reference.speedMetersPerSecond), ArbFFUnits.kVoltage);
         }
         break;
       case DISABLED:
@@ -260,7 +259,10 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
   @Override
   public synchronized void reset() {
     update();
-    RotationalAbsoluteOffset = Status.RotationalAbsolutePosition.minus(Status.RotationalRelativePosition);
+    //RotationalAbsoluteOffset = Status.RotationalAbsolutePosition.minus(Status.RotationalRelativePosition);
+    Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble())
+    .minus(MODULE_CONSTANTS.ROTATIONAL_ENCODER_OFFSET);
+    ROTATIONAL_ENCODER.setPosition(RotationalRelativeOffset.getRotations());
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   @Override
