@@ -2,6 +2,7 @@
 package org.robotalons.crescendo.subsystems;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -93,6 +94,14 @@ public final class SubsystemManager extends SubsystemBase {
     Pathfinding.setStartPosition(DrivebaseSubsystem.getPose().getTranslation());
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
+  /**
+   * Provides the current chassis speeds
+   * @return Chassis speeds of Robot drivebase
+   */
+  public static ChassisSpeeds getChassisSpeeds() {
+    return DrivebaseSubsystem.getChassisSpeeds();
+  }
+
   /**
    * Provides the employee subsystems managed my this subsystem manager
    * @return List of dependent subsystems

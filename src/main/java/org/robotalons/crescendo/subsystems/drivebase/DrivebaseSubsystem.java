@@ -380,15 +380,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
   public static List<Module> getModules() {
     return MODULES;
   }
-
-  /**
-   * Provides the kinematics chassis speeds of the current module measurements
-   * @return Drivebase kinematics objects
-   */
-  public static ChassisSpeeds getSpeeds() {
-    return KINEMATICS.toChassisSpeeds(getModuleMeasurements());
-  }
-
+  
   /**
    * Provides the current position of the drivebase in space
    * @return Pose2d of Robot drivebase
