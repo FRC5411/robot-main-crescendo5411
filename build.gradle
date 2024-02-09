@@ -8,7 +8,7 @@ plugins {
     id "com.diffplug.spotless" version "6.23.+"
     id "com.peterabeles.gversion" version "1.+"
     id 'com.github.johnrengelman.shadow' version '7.+'
-    id "edu.wpi.first.GradleRIO" version "2024.1.1"    
+    id "edu.wpi.first.GradleRIO" version "2024.1.1"
 }
 
 project.setGroup('org.talonrobotics')

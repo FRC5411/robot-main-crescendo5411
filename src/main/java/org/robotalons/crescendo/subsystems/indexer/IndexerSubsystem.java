@@ -4,9 +4,12 @@ package org.robotalons.crescendo.subsystems.indexer;
 // ---------------------------------------------------------------[Libraries]--------------------------------------------------------------- //
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkBase.IdleMode;
 
 import java.io.Closeable;
 
@@ -23,10 +26,10 @@ import java.io.Closeable;
 
 public class IndexerSubsystem extends SubsystemBase implements Closeable {
     // --------------------------------------------------------------[Constants]-------------------------------------------------------------- //
-    private static final CANSparkMax INDEXER_INTAKE_MOTOR;  
-    private static final CANSparkMax INDEXER_CANNON_MOTOR;
-    private static final DigitalInput INDEXER_INTAKE_RECEIVER;
-    private static final DigitalInput INDEXER_CANNON_RECEIVER;
+    private final CANSparkMax INDEXER_INTAKE_MOTOR;
+    private final CANSparkMax INDEXER_CANNON_MOTOR;
+    private final DigitalInput INDEXER_INTAKE_RECEIVER;
+    private final DigitalInput INDEXER_CANNON_RECEIVER;
 
     // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
     private static IndexerSubsystem Instance;
@@ -82,26 +85,26 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
      */
     public synchronized void set(final Direction Demand) {
         switch(Demand) {
-            case FORWARD_INDEXER:   /* will be called by the intake subsystem after completing a pickup.
+            case FORWARD_INDEXER:   // will be called by the intake subsystem after completing a pickup.
                 if (!(getHoldingNote())) {
-                    INDEXER_INTAKE_MOTOR spin at INDEXER_INTAKE_MOTOR_SPEED for INDEXER_INTAKE_MOTOR_DURATION;
-                } */
+                //  INDEXER_INTAKE_MOTOR spin at INDEXER_INTAKE_MOTOR_SPEED for INDEXER_INTAKE_MOTOR_DURATION;
+                }
                 break;
-            case FORWARD_CANNON:    /* will be called by the cannon subsystem in order to put a Note in firing position.
+            case FORWARD_CANNON:    // will be called by the cannon subsystem in order to put a Note in firing position.
                 if (getHoldingNote()) {
-                    INDEXER_CANNON_MOTOR spin at INDEXER_CANNON_MOTOR_SPEED for INDEXER_CANNON_MOTOR_DURATION;
-                    Tell CANNON to continueWithFireSequence;
+                //  INDEXER_CANNON_MOTOR spin at INDEXER_CANNON_MOTOR_SPEED for INDEXER_CANNON_MOTOR_DURATION;
+                //  Tell CANNON to continueWithFireSequence;
                 }
                 else {
-                    Tell CANNON to abortFireSequence;
-                } */
+                //  Tell CANNON to abortFireSequence;
+                }
                 break;
-            case BACKWARD_INDEXER:  /* will be called by the operator/copilot if a Note needs to be put back on the ground (e.g. Note jammed in singulator).
+            case BACKWARD_INDEXER:  // will be called by the operator/copilot if a Note needs to be put back on the ground (e.g. Note jammed in singulator).
                 if (getHoldingNote())
                 {
-                    INDEXER_INTAKE_MOTOR spins at -INDEXER_INTAKE_MOTOR_SPEED for INDEXER_INTAKE_MOTOR_DURATION;
-                    Tell INTAKE to do intakeSequence but backwards (negative speed, same time, etc etc);
-                } */
+                //  INDEXER_INTAKE_MOTOR spins at -INDEXER_INTAKE_MOTOR_SPEED for INDEXER_INTAKE_MOTOR_DURATION;
+                //  Tell INTAKE to do intakeSequence but backwards (negative speed, same time, etc etc);
+                }
                 break;
             default:
                 break;
