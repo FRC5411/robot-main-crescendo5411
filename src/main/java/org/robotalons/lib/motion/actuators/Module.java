@@ -121,11 +121,25 @@ public abstract class Module implements Closeable {
     return this.Reference;
   }
 
+  /**
+   * Mutates the module's current applied voltage to the translational controller
+   * @param Voltage Next applied voltage
+   */
+  protected abstract void setTranslationalVoltage(final Double Voltage);
 
   /**
-   * Zeroes the azimuth relatively offset from the position of the absolute encoders.
+   * Mutates the module's current applied voltage to the rotational controller
+   * @param Voltage next applied voltage
    */
-  public abstract void reset();
+  protected abstract void setRotationalVoltage(final Double Voltage);
+
+  /**
+   * Zeroes the rotational relative to offset from the position of the absolute encoders.
+   */
+  public synchronized void reset() {
+    update();
+    RotationalAbsoluteOffset = Status.RotationalAbsolutePosition.minus(Status.RotationalRelativePosition);
+  }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Provides the deltas, or captured data points from odometry from the most recent {@link #periodic()} cycle.

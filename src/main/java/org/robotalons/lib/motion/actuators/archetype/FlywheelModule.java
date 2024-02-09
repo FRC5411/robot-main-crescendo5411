@@ -1,5 +1,6 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.lib.motion.actuators.archetype;
+import edu.wpi.first.math.MathUtil;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -216,6 +217,17 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
     RotationalIntegratedPosition = (MODULE_CONSTANTS.TRANSLATIONAL_POSITION_METERS);
     TranslationalIntegratedPosition = (MODULE_CONSTANTS.ROTATIONAL_ENCODER_OFFSET.getRadians());
   }
+
+  @Override
+  protected synchronized void setTranslationalVoltage(final Double Voltage) {
+    TRANSLATIONAL_CONTROLLER.setInputVoltage(MathUtil.clamp(Voltage, (-12d), (12d)));
+  }
+
+  @Override
+  protected synchronized void setRotationalVoltage(final Double Voltage) {
+    ROTATIONAL_CONTROLLER.setInputVoltage(MathUtil.clamp(Voltage, (-12d), (12d)));
+  }
+  
 
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
   @Override
