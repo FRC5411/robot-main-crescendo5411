@@ -4,12 +4,9 @@ package org.robotalons.crescendo.subsystems.indexer;
 // ---------------------------------------------------------------[Libraries]--------------------------------------------------------------- //
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.CANSparkBase.IdleMode;
 
 import java.io.Closeable;
 
@@ -26,10 +23,10 @@ import java.io.Closeable;
 
 public class IndexerSubsystem extends SubsystemBase implements Closeable {
     // --------------------------------------------------------------[Constants]-------------------------------------------------------------- //
-    private final CANSparkMax INDEXER_INTAKE_MOTOR;
-    private final CANSparkMax INDEXER_CANNON_MOTOR;
-    private final DigitalInput INDEXER_INTAKE_RECEIVER;
-    private final DigitalInput INDEXER_CANNON_RECEIVER;
+    private final static CANSparkMax INDEXER_INTAKE_MOTOR;
+    private final static CANSparkMax INDEXER_CANNON_MOTOR;
+    private final static DigitalInput INDEXER_INTAKE_RECEIVER;
+    private final static DigitalInput INDEXER_CANNON_RECEIVER;
 
     // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
     private static IndexerSubsystem Instance;
