@@ -97,7 +97,6 @@ public final class Constants {
           .addPreference(Preferences.TRANSLATIONAL_Y_INPUT, () -> -CONTROLLER.getRawAxis((0)))
           .addPreference(Preferences.ORIENTATION_INPUT, () -> CONTROLLER.getRawAxis((4)))
           .addPreference(Preferences.SQUARED_INPUT, () -> (true))
-          .addPreference(Preferences.ORIGIN_SNAPPING, () -> (true))
           .addPreference(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (0.2))
           .addPreference(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (0.2))
           .addPreference(Preferences.ORIENTATION_DEADZONE, () -> (0.2))
@@ -112,7 +111,6 @@ public final class Constants {
       public static final String TRANSLATIONAL_X_INPUT = ("TRANSLATION_X_INPUT");
       public static final String TRANSLATIONAL_Y_INPUT = ("TRANSLATION_Y_INPUT");
       public static final String ORIENTATION_INPUT = ("ORIENTATION_X_INPUT");
-      public static final String ORIGIN_SNAPPING = ("ORIGIN_SNAPPING");
       public static final String SQUARED_INPUT = ("SQUARED_INPUT");
       public static final String TRANSLATIONAL_X_DEADZONE = ("TRANSLATIONAL_X_DEADZONE");
       public static final String TRANSLATIONAL_Y_DEADZONE = ("TRANSLATIONAL_Y_DEADZONE");
