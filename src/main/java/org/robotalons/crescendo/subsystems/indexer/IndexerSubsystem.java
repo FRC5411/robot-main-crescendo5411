@@ -116,42 +116,49 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
      * Describes the relationship of a relevant game piece to the position its going to be sent to.
      */
     public enum Direction {
-        FORWARD_CANNON,     //Indexer --> Cannon
-        FORWARD_INDEXER,    //Intake ---> Indexer
-        BACKWARD_INDEXER,   //Indexer --> Intake
+        FORWARD_CANNON,     //Indexer --> Cannon   (called by INTAKE system after completing a pickup)
+        FORWARD_INDEXER,    //Intake ---> Indexer  (called by CANNON system in order to put a Note in firing position)
+        BACKWARD_INDEXER,   //Indexer --> Intake   (called manually (e.g. Note jammed in singulator))
     }
 
     // --------------------------------------------------------------[Mutators]--------------------------------------------------------------- //
     /**
-     * Indexer moves a game piece a given direction through the indexer subsystem given a direction, e.g. Backward Indexer would mean pulling 
+     * Indexer moves a game piece a given direction through the indexer subsystem given a direction, e.g. BACKWARD_INDEXER would mean pulling 
      * a held game piece from the indexing chamber back out to the intake.
      * @param Demand Directional Demand, which way for a game piece to be moved.
      */
     public synchronized void set(final Direction Demand) {
-        switch(Demand) {
-            case FORWARD_INDEXER:   // will be called by the intake subsystem after completing a pickup.
-                if (!(getHoldingNote())) {
-                //  INDEXER_INTAKE_MOTOR spin at INDEXER_INTAKE_MOTOR_SPEED for INDEXER_INTAKE_MOTOR_DURATION;
-                }
-                break;
-            case FORWARD_CANNON:    // will be called by the cannon subsystem in order to put a Note in firing position.
-                if (getHoldingNote()) {
-                //  INDEXER_CANNON_MOTOR spin at INDEXER_CANNON_MOTOR_SPEED for INDEXER_CANNON_MOTOR_DURATION;
+        if (getHoldingNote()) {
+            switch(Demand) {
+                case FORWARD_CANNON:
+                //  MOTORS[] spin at Measurements.INDEXER_MOTOR_SPEED for Measurements.INDEXER_MOTOR_DURATION;
                 //  Tell CANNON to continueWithFireSequence;
-                }
-                else {
-                //  Tell CANNON to abortFireSequence;
-                }
-                break;
-            case BACKWARD_INDEXER:  // will be called by the operator/copilot if a Note needs to be put back on the ground (e.g. Note jammed in singulator).
-                if (getHoldingNote())
-                {
-                //  INDEXER_INTAKE_MOTOR spins at -INDEXER_INTAKE_MOTOR_SPEED for INDEXER_INTAKE_MOTOR_DURATION;
-                //  Tell INTAKE to do intakeSequence but backwards (negative speed, same time, etc etc);
-                }
-                break;
-            default:
-                break;
+                    break;
+                case BACKWARD_INDEXER:
+                //  MOTORS[] spin at -(Measurements.INDEXER_MOTOR_SPEED) for Measurements.INDEXER_MOTOR_DURATION;
+                //  Tell INTAKE to do intake sequence backwards (negative speed, same time, etc etc);
+                    break;
+                default:
+                //  STOP ALL INDEXER MOTORS
+                    break;
+            }
+        }
+        else {
+            switch(Demand) {
+                case FORWARD_INDEXER:
+                    //  MOTORS[] spin at Measurements.INDEXER_MOTOR_SPEED for Measurements.INDEXER_MOTOR_DURATION;
+                    break;
+                case FORWARD_CANNON:
+                    //  Tell CANNON to abortFireSequence;
+                    break;
+                case BACKWARD_INDEXER:
+                //  MOTORS[] spin at -(Measurements.INDEXER_MOTOR_SPEED) for Measurements.INDEXER_MOTOR_DURATION;
+                //  Tell INTAKE to do intake sequence backwards (negative speed, same time, etc etc);
+                    break;
+                default:
+                //  STOP ALL INDEXER MOTORS
+                    break;
+            }
         }
     }
 

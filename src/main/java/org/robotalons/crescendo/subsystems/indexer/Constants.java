@@ -18,11 +18,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Constants {
   // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
   public static final class Measurements {
-    public static final Double INDEXER_INTAKE_MOTOR_SPEED = (1d);
-    public static final Double INDEXER_CANNON_MOTOR_SPEED = (1d);
-
-    public static final Double INDEXER_INTAKE_MOTOR_DURATION = (1d);
-    public static final Double INDEXER_CANNON_MOTOR_DURATION = (1d);
+    public static final Double INDEXER_MOTOR_SPEED = (1d);
+    public static final Double INDEXER_MOTOR_DURATION = (1d);
 
     public static final Integer K_INDEXER_INTAKE_MOTOR_ENCODER_CHANNELA = (0);
     public static final Integer K_INDEXER_INTAKE_MOTOR_ENCODER_CHANNELB = (1);
@@ -49,7 +46,6 @@ public class Constants {
     public static final Double INDEXER_CANNON_MOTOR_KG = (0d);
 
     public static final Integer K_CURRENT_LIMIT = (60);
-
   }
 
   public static final class Ports {
