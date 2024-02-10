@@ -132,8 +132,28 @@ spotless {
 build.dependsOn(spotlessApply)
 
 java {
+  withSourcesJar()
   sourceCompatibility = JavaVersion.VERSION_17
   targetCompatibility = JavaVersion.VERSION_17
+}
+
+def getVersionControlBranch() {
+  return """git --git-dir=${rootDir}.git/
+                               --work-tree=${rootDir}/..
+                               rev-parse --abbrev-ref HEAD""".execute().text.trim()
+}
+
+jar {
+  exclude("org/robotalons/lib/**")
+  manifest {
+    attributes(
+        'Built-By'              : System.getProperty("user.name"),
+        'Build-Timestamp'       : new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
+        'Build-Jdk'             : "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
+        'Created-By'            : "Gradle ${gradle.gradleVersion}",
+        'Implementation-Title'  : "${project.name}-${getVersionControlBranch() ?: 'Unregistered'}",
+        'Implementation-Version': project.version)
+  }
 }
 
 deployArtifact.jarTask = shadowJar
@@ -160,20 +180,6 @@ tasks.withType(Javadoc).configureEach {
   options.addStringOption("charset", "utf-8")
   options.addStringOption("encoding", "utf-8")
   destinationDir = layout.projectDirectory.dir("docs").asFile
-}
-
-tasks.register('processTemplatesAdHoc') {
-  inputs.property('engine', TemplateEngineType.FREEMARKER)
-  inputs.files(fileTree('src/templates'))
-      .withPropertyName('sourceFiles')
-      .withPathSensitivity(PathSensitivity.RELATIVE)
-  inputs.property('templateData.name', 'docs')
-  inputs.property('templateData.variables', [year: '2013'])
-  outputs.dir(layout.buildDirectory.dir('genOutput2'))
-      .withPropertyName('outputDir')
-
-  doLast {
-  }
 }
 
 project.compileJava.dependsOn(createVersionFile)
