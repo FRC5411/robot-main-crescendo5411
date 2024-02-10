@@ -77,7 +77,7 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   }
 
   public synchronized void start() {
-    if (!TIMESTAMPS.isEmpty()) {
+    if (TIMESTAMPS.isEmpty()) {
       NOTIFIER.startPeriodic((1d)/ Frequency);
     }
   }
@@ -94,7 +94,7 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   public synchronized void run() {
     ODOMETRY_LOCK.lock();
     try {
-      var SignalIterator = SIGNALS.iterator();
+      final var SignalIterator = SIGNALS.iterator();
       final var RealTimestamp = Logger.getRealTimestamp() / (1e6);
       QUEUES.forEach((Queue) -> Queue.offer(SignalIterator.next().getAsDouble()));
       TIMESTAMPS.forEach((Timestamp) -> Timestamp.offer(RealTimestamp));
@@ -104,9 +104,11 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   }
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
   public synchronized void set(final Double Frequency) {
+    ODOMETRY_LOCK.lock();
     REVOdometryThread.Frequency = Frequency;
     NOTIFIER.stop();
     NOTIFIER.startPeriodic(Frequency);
+    ODOMETRY_LOCK.unlock();
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**

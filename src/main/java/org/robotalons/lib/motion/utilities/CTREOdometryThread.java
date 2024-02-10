@@ -61,7 +61,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
   public synchronized void start() {
-    if (!TIMESTAMPS.isEmpty()) {
+    if (TIMESTAMPS.isEmpty()) {
       super.start();
     }
   }
@@ -72,10 +72,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
     SIGNALS_LOCK.lock();
     ODOMETRY_LOCK.lock();
     try {
-      List<StatusSignal<Double>> UniqueSignals = new ArrayList<>();
-      System.arraycopy(Signals.toArray(StatusSignal[]::new), (0), UniqueSignals.toArray(StatusSignal[]::new), (0), Signals.size());
-      UniqueSignals.add(Signal);
-      Signals = UniqueSignals;
+      Signals.add(Signal);
       QUEUES.add(Queue);
     } finally {
       SIGNALS_LOCK.unlock();
@@ -86,8 +83,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
 
   public synchronized void close() throws IOException {
     QUEUES.clear();
-    Signals.clear();    
-    FlexibleCAN = (false);
+    Signals.clear();
     try {
       super.join();
     } catch (final InterruptedException Exception) {

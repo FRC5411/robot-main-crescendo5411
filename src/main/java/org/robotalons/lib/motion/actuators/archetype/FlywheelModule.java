@@ -1,7 +1,6 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.lib.motion.actuators.archetype;
 import edu.wpi.first.math.MathUtil;
-// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -152,14 +151,15 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
         close();
         break;
     }
-    ODOMETRY_LOCK.unlock();  
     DELTAS.clear();
-    IntStream.range((0), Status.OdometryTimestamps.length).forEach((Index) -> {
+    IntStream.range((0), (Status.OdometryTimestamps.length - 1)).forEach((Index) -> {
       final var Position = Status.OdometryTranslationalPositionsRadians[Index] * CONSTANTS.WHEEL_RADIUS_METERS;
       final var Rotation = Status.OdometryRotationalPositions[Index].plus(
         RotationalRelativeOffset != null? RotationalRelativeOffset: new Rotation2d());
       DELTAS.add(new SwerveModulePosition(Position, Rotation));
     });
+    ODOMETRY_LOCK.unlock();  
+
   }
 
   /**

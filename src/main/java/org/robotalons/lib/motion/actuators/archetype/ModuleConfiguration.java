@@ -3,6 +3,7 @@ package org.robotalons.lib.motion.actuators.archetype;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import com.pathplanner.lib.util.PIDConstants;
 import com.revrobotics.RelativeEncoder;
+
 import org.robotalons.lib.motion.actuators.Module;
 import org.robotalons.lib.motion.utilities.OdometryThread;
 

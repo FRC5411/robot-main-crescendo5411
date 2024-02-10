@@ -2,7 +2,6 @@
 package org.robotalons.lib.motion.actuators.archetype;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -16,6 +15,7 @@ import com.revrobotics.RelativeEncoder;
 
 import org.littletonrobotics.junction.Logger;
 import org.robotalons.lib.motion.actuators.Module;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -172,12 +172,19 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       case STATE_CONTROL:
         if(Reference != (null)) {
           if (Reference.angle != (null)) {
-            setRotationalVoltage(ROTATIONAL_PID.calculate(getRelativeRotation().getRadians(),Reference.angle.getRadians()));
+            setRotationalVoltage(
+              ROTATIONAL_PID.calculate(getRelativeRotation().getRadians(),Reference.angle.getRadians())
+            );
           }
-          var AdjustReferenceVelocity = (Reference.speedMetersPerSecond * Math.cos(ROTATIONAL_PID.getPositionError())) / CONSTANTS.WHEEL_RADIUS_METERS;
-          setTranslationalVoltage(  -(TRANSLATIONAL_PID.calculate(AdjustReferenceVelocity))
-                                                              +
-            (TRANSLATIONAL_FF.calculate(Status.TranslationalVelocityRadiansSecond, AdjustReferenceVelocity)));          
+          var AdjustReferenceVelocity = 
+            (Reference.speedMetersPerSecond * Math.cos(ROTATIONAL_PID.getPositionError())) 
+                                            /
+                                CONSTANTS.WHEEL_RADIUS_METERS;
+          setTranslationalVoltage(  
+                                -(TRANSLATIONAL_PID.calculate(AdjustReferenceVelocity))
+                                                        +
+            (TRANSLATIONAL_FF.calculate(Status.TranslationalVelocityRadiansSecond, AdjustReferenceVelocity))
+          );          
         }
         break;
       case DISABLED:
@@ -187,13 +194,14 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
         close();
         break;
     }
-    ODOMETRY_LOCK.unlock();  
     DELTAS.clear();
-    IntStream.range((0), Status.OdometryTimestamps.length).forEach((Index) -> {
+    IntStream.range((0), (Status.OdometryTimestamps.length - 1)).forEach((Index) -> {
       final var Position = Status.OdometryTranslationalPositionsRadians[Index] * CONSTANTS.WHEEL_RADIUS_METERS;
-      final var Rotation = Status.OdometryRotationalPositions[Index].plus(RotationalRelativeOffset != (null)? RotationalRelativeOffset: new Rotation2d());
+      final var Rotation = Status.OdometryRotationalPositions[Index].plus(
+        (RotationalRelativeOffset != (null))? (RotationalRelativeOffset): (new Rotation2d()));
       DELTAS.add(new SwerveModulePosition(Position, Rotation));
     });
+    ODOMETRY_LOCK.unlock(); 
   }
 
   @Override
@@ -244,6 +252,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       ROTATIONAL_POSITION_QUEUE.stream()
         .map((Double value) -> Rotation2d.fromRotations(value / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO))
         .toArray(Rotation2d[]::new);
+
     TRANSLATIONAL_VELOCITY_QUEUE.clear();
     ROTATIONAL_POSITION_QUEUE.clear();
     TIMESTAMP_QUEUE.clear();

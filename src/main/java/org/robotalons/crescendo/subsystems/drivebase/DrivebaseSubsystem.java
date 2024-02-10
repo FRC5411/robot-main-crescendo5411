@@ -108,7 +108,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
     if (DriverStation.isDisabled()) {
       MODULES.forEach(Module::cease);
     }
-    Objects.ODOMETRY_LOCK.unlock();
     final var Timestamps = MODULES.get((0)).getPositionTimestamps();
     IntStream.range((0), Timestamps.size()).forEachOrdered((DeltaIndex) -> {
       SwerveModulePosition[] WheelDeltas = MODULES.stream().map(
@@ -129,6 +128,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
       }
       POSE_ESTIMATOR.updateWithTime(Timestamps.get(DeltaIndex), CurrentRotation, WheelDeltas);
     });
+    Objects.ODOMETRY_LOCK.unlock();
   }
 
   /**
