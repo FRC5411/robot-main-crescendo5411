@@ -243,6 +243,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     Status.RotationalTemperatureCelsius = 
       ROTATIONAL_CONTROLLER.getMotorTemperature();
 
+    MODULE_CONSTANTS.STATUS_PROVIDER.getLock().lock();
     Status.OdometryTimestamps = TIMESTAMP_QUEUE.stream().mapToDouble(Double::valueOf).toArray();
     Status.OdometryTranslationalPositionsRadians =
       TRANSLATIONAL_VELOCITY_QUEUE.stream()
@@ -252,6 +253,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       ROTATIONAL_POSITION_QUEUE.stream()
         .map((Double value) -> Rotation2d.fromRotations(value / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO))
         .toArray(Rotation2d[]::new);
+    MODULE_CONSTANTS.STATUS_PROVIDER.getLock().unlock();
 
     TRANSLATIONAL_VELOCITY_QUEUE.clear();
     ROTATIONAL_POSITION_QUEUE.clear();

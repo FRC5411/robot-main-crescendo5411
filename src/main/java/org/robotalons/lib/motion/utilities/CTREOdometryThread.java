@@ -134,7 +134,21 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
         ODOMETRY_LOCK.unlock();
       }
     }
+  }  
+
+  /**
+   * Creates a new instance of the existing utility class
+   * @return Utility class's instance
+   */
+  public static synchronized CTREOdometryThread create(Lock OdometryLock) {
+    if (!java.util.Objects.isNull(Instance)) {
+      return Instance;
+    }
+    Instance = new CTREOdometryThread(OdometryLock);
+    return Instance;
   }
+
+
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
   /**
    * Mutates the current status of the can bus to determine if it supports flexible data rates.
@@ -148,23 +162,16 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
     CTREOdometryThread.Frequency = Frequency;
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
-  /**
-   * Creates a new instance of the existing utility class
-   * @return Utility class's instance
-   */
-  public static synchronized CTREOdometryThread create(Lock OdometryLock) {
-    if (!java.util.Objects.isNull(Instance)) {
-      return Instance;
-    }
-    Instance = new CTREOdometryThread(OdometryLock);
-    return Instance;
+  @Override
+  public Lock getLock() {
+    return ODOMETRY_LOCK;
   }
 
   @Override
   public Double getFrequency() {
     return Frequency;
-  }
-
+  }  
+  
   /**
    * Retrieves the existing instance of this static utility class
    * @return Utility class's instance

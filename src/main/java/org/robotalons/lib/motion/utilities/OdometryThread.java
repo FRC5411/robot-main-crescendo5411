@@ -4,6 +4,7 @@ package org.robotalons.lib.motion.utilities;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Queue;
+import java.util.concurrent.locks.Lock;
 // ------------------------------------------------------------[Odometry Thread]-----------------------------------------------------------//
 /**
  *
@@ -47,6 +48,12 @@ public interface OdometryThread<SignalType> extends Runnable, Closeable {
    * @param Frequency Frequency of odometry updates in Hertz
    */
   void set(final Double Frequency);
+
+  /**
+   * Provides the odometry lock of this thread
+   * @return Lock which prevents method reentrance
+   */
+  Lock getLock();
 
   /**
    * Provides the frequency of this thread
