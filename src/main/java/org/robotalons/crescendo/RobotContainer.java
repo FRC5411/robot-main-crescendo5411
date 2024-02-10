@@ -58,9 +58,9 @@ public final class RobotContainer {
     INDEXER.setSecondaryCurrentLimit((30));
     INDEXER.setIdleMode(IdleMode.kCoast);
     @SuppressWarnings("resource")
-    final var LEFT_OUT = new TalonFX(0);
+    final var LEFT_OUT = new TalonFX(35);
     @SuppressWarnings("resource")
-    final var RIGHT_OUT = new TalonFX(1);
+    final var RIGHT_OUT = new TalonFX(34);
     @SuppressWarnings("resource")
     final var INTAKE = new CANSparkMax((21), MotorType.kBrushless);
     INTAKE.setSmartCurrentLimit((20));
@@ -70,11 +70,11 @@ public final class RobotContainer {
     RIGHT_OUT.setInverted((true));
 
     Profiles.PILOT_PROFILES.get(0).getKeybinding(Keybindings.SHOOTER_TOGGLE).onTrue(new InstantCommand(() -> {
-      LEFT_OUT.set(0.75d);
+      LEFT_OUT.set(-0.75d);
       RIGHT_OUT.set(0.75d);
     }));
     Profiles.PILOT_PROFILES.get(0).getKeybinding(Keybindings.SHOOTER_TOGGLE).onFalse(new InstantCommand(() -> {
-      LEFT_OUT.set(0.1d);
+      LEFT_OUT.set(-0.1d);
       RIGHT_OUT.set(0.1d);
     }));
     Profiles.PILOT_PROFILES.get(0).getKeybinding(Keybindings.INTAKE_TOGGLE).onTrue(new InstantCommand(() -> {
