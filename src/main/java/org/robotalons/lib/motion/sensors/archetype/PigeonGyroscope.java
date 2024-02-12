@@ -12,6 +12,7 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import org.littletonrobotics.junction.Logger;
 import org.robotalons.lib.motion.sensors.Gyroscope;
 import org.robotalons.lib.motion.utilities.OdometryThread;
+
 import java.util.Queue;
 // ------------------------------------------------------------[Pigeon Gyroscope]-----------------------------------------------------------//
 /**

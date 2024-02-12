@@ -1,29 +1,21 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.cannon;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
-import java.util.function.Function;
+import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
 
 import org.littletonrobotics.junction.AutoLogOutput;
-import org.robotalons.crescendo.subsystems.SubsystemManager;
 import org.robotalons.crescendo.subsystems.cannon.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.cannon.Constants.Ports;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.spline.Spline;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
-// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.function.Function;
 
 // ------------------------------------------------------------[Cannon Subsystem]-----------------------------------------------------------//
 /**
@@ -51,7 +43,6 @@ public class CannonSubsystem extends SubsystemBase {
   public static final RelativeEncoder PIVOT_ENCODER;
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
   private static CannonSubsystem Instance;
-  private static Translation2d CurrentObjectTranslation;
   private static Double CurrentTime;
     // ------------------------------------------------------------[Constructors]----------------------------------------------------------- //
   /** 
@@ -96,13 +87,7 @@ public class CannonSubsystem extends SubsystemBase {
   @Override
   public synchronized void periodic() {
     Constants.Objects.ODOMETRY_LOCKER.lock();
-    if(DriverStation.isDisabled()) {
-      FIRING_CONTROLLERS.getFirst().stopMotor();
-      FIRING_CONTROLLERS.getSecond().stopMotor();
-      PIVOT_CONTROLLER.stopMotor();
-    } else if(CurrentObjectTranslation != (null)) {
-      var LocalizedTime = (0d);
-    } 
+
     Constants.Objects.ODOMETRY_LOCKER.unlock();
   }
    
