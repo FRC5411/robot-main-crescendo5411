@@ -37,9 +37,6 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
     private static final Encoder INTAKE_SPARK_MAX_ENCODER;
     private static final Encoder CANNON_SPARK_MAX_ENCODER;
     private static final Encoder[] ENCODERS;
-    
-    private static final SparkMaxPIDController INTAKE_SPARK_MAX_PID_CONTROLLER;
-    private static final SparkMaxPIDController CANNON_SPARK_MAX_PID_CONTROLLER;
 
     private final static DigitalInput INTAKE_BREAKBEAM_INPUT;
     private final static DigitalInput CANNON_BREAKBEAM_INPUT;
@@ -64,13 +61,6 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
         CANNON_SPARK_MAX_ENCODER = new Encoder(Measurements.K_INDEXER_CANNON_SPARK_MAX_ENCODER_CHANNELA, Measurements.K_INDEXER_CANNON_SPARK_MAX_ENCODER_CHANNELB);
         ENCODERS = new Encoder[]{INTAKE_SPARK_MAX_ENCODER, CANNON_SPARK_MAX_ENCODER};
 
-        INTAKE_SPARK_MAX_PID_CONTROLLER = INTAKE_SPARK_MAX.getPIDController();
-        CANNON_SPARK_MAX_PID_CONTROLLER = CANNON_SPARK_MAX.getPIDController();
-
-        configPID();
-        config(INTAKE_SPARK_MAX);
-        config(CANNON_SPARK_MAX);
-
         INTAKE_BREAKBEAM_INPUT = new DigitalInput(Constants.Ports.INDEXER_INTAKE_BREAKBEAM_INPUT_ID);
         CANNON_BREAKBEAM_INPUT = new DigitalInput(Constants.Ports.INDEXER_CANNON_BREAKBEAM_INPUT_ID);
     }
@@ -79,24 +69,12 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
     @Override
     public synchronized void periodic() {
         Constants.Objects.ODOMETRY_LOCKER.lock();
-        HasNote = !(INTAKE_BREAKBEAM_INPUT.get()|| CANNON_BREAKBEAM_INPUT.get());
+        HasNote = setHasNote();
         Constants.Objects.ODOMETRY_LOCKER.lock();
     }
 
-    public synchronized static void configPID() {
-        INTAKE_SPARK_MAX_PID_CONTROLLER.setFeedbackDevice((MotorFeedbackSensor) INTAKE_SPARK_MAX_ENCODER);
-        INTAKE_SPARK_MAX_PID_CONTROLLER.setP(Measurements.INDEXER_INTAKE_SPARK_MAX_P);
-        INTAKE_SPARK_MAX_PID_CONTROLLER.setI(Measurements.INDEXER_INTAKE_SPARK_MAX_I);
-        INTAKE_SPARK_MAX_PID_CONTROLLER.setD(Measurements.INDEXER_INTAKE_SPARK_MAX_D);
-
-        CANNON_SPARK_MAX_PID_CONTROLLER.setFeedbackDevice((MotorFeedbackSensor) CANNON_SPARK_MAX_ENCODER);
-        CANNON_SPARK_MAX_PID_CONTROLLER.setP(Measurements.INDEXER_CANNON_SPARK_MAX_P);
-        CANNON_SPARK_MAX_PID_CONTROLLER.setI(Measurements.INDEXER_CANNON_SPARK_MAX_I);
-        CANNON_SPARK_MAX_PID_CONTROLLER.setD(Measurements.INDEXER_CANNON_SPARK_MAX_D);
-    }
-
     public synchronized static void config(CANSparkMax motor){
-        motor.setIdleMode(IdleMode.kCoast);
+        motor.setIdleMode(IdleMode.kBrake);
         motor.restoreFactoryDefaults();
         motor.clearFaults();
     
@@ -147,8 +125,21 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
             default:
 //              Stop everything;
                 break;
-            }
         }
+    }
+
+    /**
+     * Sets the value of HasNote to either true or false.
+     * True: both Beam Break sensors read a 0 (beam disconnected)
+     * False: either Beam Break reads a 1 (beam connects)
+     * 
+     * @return new Boolean value of HasNote
+     */
+    public synchronized Boolean setHasNote()
+    {
+        return !(INTAKE_BREAKBEAM_INPUT.get() || CANNON_BREAKBEAM_INPUT.get());
+    }
+
 
     // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
     /**
