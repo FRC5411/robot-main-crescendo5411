@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.robotalons.crescendo.subsystems.indexer.IndexerSubsystem;
 // -------------------------------------------------------------[Robot Container]-----------------------------------------------------------//
 /**
  *
@@ -19,11 +20,13 @@ public final class RobotContainer {
   public static final LoggedDashboardChooser<Command> CommandSelector;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static RobotContainer Instance = (null);
+  private static IndexerSubsystem indexer;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private RobotContainer() {} static {
     CommandSelector = new LoggedDashboardChooser<>(("Autonomous Command Selector"), AutoBuilder.buildAutoChooser());
     configureDefaultCommands();
     configurePilotKeybinds();
+    indexer = new IndexerSubsystem();
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   /**

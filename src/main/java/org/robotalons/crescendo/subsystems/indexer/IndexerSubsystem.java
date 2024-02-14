@@ -52,7 +52,7 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
     /**
      * Indexer Subsystem Constructor
      */
-    private IndexerSubsystem() {} static {
+    public IndexerSubsystem() {} static {
         Instance = new IndexerSubsystem();
         HasNote = (false);
 
