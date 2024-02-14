@@ -1,5 +1,6 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.lib.motion.actuators.archetype;
+// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -99,7 +100,6 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
     ODOMETRY_LOCK.lock();
     TRANSLATIONAL_PID.enableContinuousInput((-1), (1));
     ROTATIONAL_PID.enableContinuousInput(-Math.PI, Math.PI);
-
     ODOMETRY_LOCK.unlock();
   }
 
@@ -133,16 +133,15 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
     }
     switch(ReferenceMode) {
       case STATE_CONTROL:
-        if(Reference != (null)) {
-          if (Reference.angle != (null)) {
-            ROTATIONAL_CONTROLLER.setInputVoltage(ROTATIONAL_PID.calculate(Status.RotationalRelativePosition.getRadians(), Reference.angle.getRadians()));
-          }
-          Reference.speedMetersPerSecond *= Math.cos(Reference.angle.minus(getRelativeRotation()).getRadians());
-          TRANSLATIONAL_CONTROLLER.setInputVoltage(
-            10000 * (TRANSLATIONAL_PID.calculate(Status.TranslationalVelocityRadiansSecond, Reference.speedMetersPerSecond) 
-                                        +
-                TRANSLATIONAL_FF.calculate(Status.TranslationalVelocityRadiansSecond, Reference.speedMetersPerSecond)));
+      if(Reference != (null)) {
+        if (Reference.angle != (null)) {
+          setRotationalVoltage(ROTATIONAL_PID.calculate(getRelativeRotation().getRadians(),Reference.angle.getRadians()));
         }
+        var AdjustReferenceVelocity = (Reference.speedMetersPerSecond * Math.cos(ROTATIONAL_PID.getPositionError())) / MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
+        setTranslationalVoltage(     -(TRANSLATIONAL_PID.calculate(AdjustReferenceVelocity))
+                                                            +
+          (TRANSLATIONAL_FF.calculate(Status.TranslationalVelocityRadiansSecond, AdjustReferenceVelocity)));          
+      }
         break;
       case DISABLED:
         cease();
@@ -216,8 +215,8 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
    */
   @Override
   public synchronized void reset() {
-    RotationalIntegratedPosition = (MODULE_CONSTANTS.TRANSLATIONAL_POSITION_METERS);
-    TranslationalIntegratedPosition = (MODULE_CONSTANTS.ROTATIONAL_ENCODER_OFFSET.getRadians());
+    update();
+    RotationalIntegratedPosition = (0d);
   }
 
   @Override

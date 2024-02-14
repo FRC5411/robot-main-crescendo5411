@@ -12,8 +12,10 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -45,6 +47,7 @@ import java.util.stream.IntStream;
 public class DrivebaseSubsystem extends TalonSubsystemBase {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private static final SwerveDrivePoseEstimator POSE_ESTIMATOR;
+  private static final SysIdRoutine CHARACTERIZATION_ROUTINE;
   private static final SwerveDriveKinematics KINEMATICS;
   private static final List<Module> MODULES;
   private static final Gyroscope GYROSCOPE;
@@ -68,8 +71,12 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
     GYROSCOPE = Constants.Devices.GYROSCOPE;
     CurrentMode = OrientationMode.ROBOT_ORIENTED;
     ModuleLocked = (true);
-    PathFlipped = (false); 
-    CurrentRotation = new Rotation2d();
+    PathFlipped = (
+      DriverStation.getAlliance().isPresent()?
+       (DriverStation.getAlliance().get().equals(Alliance.Red)):
+       (false)
+    );
+    CurrentRotation = GYROSCOPE.getYawRotation();
     CurrentTime = Timer.getFPGATimestamp();
     MODULES = List.of(
       Devices.FRONT_LEFT_MODULE,
@@ -90,7 +97,20 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
       KINEMATICS, 
       GYROSCOPE.getYawRotation(),
       getModulePositions(),   
-      new Pose2d() //TODO: AUTOMATION TEAM (DEFAULT FROM CAMERA STATES)
+      new Pose2d(new Translation2d(), CurrentRotation) //TODO: AUTOMATION TEAM (DEFAULT TRANSLATION FROM CAMERA STATES)
+    );
+    CHARACTERIZATION_ROUTINE = new SysIdRoutine(
+      new SysIdRoutine.Config(
+        (null),
+        (null),
+        (null),
+        (State) -> Logger.recordOutput(("Drivebase/Characterization"), State.toString())),
+      new SysIdRoutine.Mechanism(
+        (Voltage) -> {
+          MODULES.forEach(Module -> Module.characterize(Voltage.magnitude()));
+        },
+        (null),
+        getInstance())
     );
     Logger.recordOutput(("Drivebase/Measurements"),getModuleMeasurements());
     Logger.recordOutput(("Drivebase/Translation"), new Translation2d());
@@ -135,7 +155,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
    * Calculates the discretization timestep, {@code dt}, at this current time based on the FPGA clock.
    * @return Double representation of the time passed between now and the last timestep.
    */
-  @AutoLogOutput(key = "Drivebase/DiscretizationTimestamp")
   private static synchronized Double discretize() {
     var DiscretizationTimestep = (0.0);
     if (CurrentTime.equals((0.0))) {
@@ -153,14 +172,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
    */
   public synchronized void reset() {
     MODULES.forEach(Module::reset);
-    KINEMATICS.resetHeadings(MODULES.stream().map((Module) -> 
-      Module.getObserved().angle
-    ).toArray(Rotation2d[]::new));
-    POSE_ESTIMATOR.resetPosition(
-      GYROSCOPE.getYawRotation(),
-      getModulePositions(),
-      new Pose2d()
-    );
   }
 
   /**
@@ -183,12 +194,16 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
     switch (CurrentMode) {
       case ROBOT_ORIENTED:
         CurrentMode = OrientationMode.FIELD_ORIENTED;
+        break;
       case FIELD_ORIENTED:
         CurrentMode = OrientationMode.OBJECT_ORIENTED;
+        break;
       case OBJECT_ORIENTED:
         CurrentMode = OrientationMode.CANNON_ORIENTED;
+        break;
       case CANNON_ORIENTED:
         CurrentMode = OrientationMode.ROBOT_ORIENTED;
+        break;
     }
   }
 
@@ -199,9 +214,9 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
       new InstantCommand(() ->
       DrivebaseSubsystem.set(((Boolean) CurrentPilot.getPreference(Preferences.SQUARED_INPUT))?
         new Translation2d(
-            applySquared(MathUtil.applyDeadband(-(Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_X_INPUT),
+            square(MathUtil.applyDeadband(-(Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_X_INPUT),
           (Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_X_DEADZONE))),
-            applySquared(MathUtil.applyDeadband(-(Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_Y_INPUT),
+            square(MathUtil.applyDeadband(-(Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_Y_INPUT),
           (Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_Y_DEADZONE)))):
           new Translation2d(
             MathUtil.applyDeadband(-(Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_X_INPUT),
@@ -210,7 +225,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
           (Double) CurrentPilot.getPreference(Preferences.TRANSLATIONAL_Y_DEADZONE))),
         ((Boolean) CurrentPilot.getPreference(Preferences.SQUARED_INPUT))?
         new Rotation2d(
-            applySquared(MathUtil.applyDeadband(-(Double) CurrentPilot.getPreference(Preferences.ORIENTATION_INPUT),
+            square(MathUtil.applyDeadband(-(Double) CurrentPilot.getPreference(Preferences.ORIENTATION_INPUT),
           (Double) CurrentPilot.getPreference(Preferences.ORIENTATION_DEADZONE)))):
           new Rotation2d(
             (MathUtil.applyDeadband(-(Double) CurrentPilot.getPreference(Preferences.ORIENTATION_INPUT),
@@ -227,40 +242,47 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
     try {
       CurrentPilot.getKeybinding(Keybindings.MODULE_LOCKING_TOGGLE)
         .onTrue(new InstantCommand(
-          DrivebaseSubsystem::toggleModuleLocking,
-          DrivebaseSubsystem.getInstance()
-        ));
-    } catch(final NullPointerException Ignored) {}
-    try {
-      CurrentPilot.getKeybinding(Keybindings.PATHFINDING_FLIP_TOGGLE)
-        .onTrue(new InstantCommand(
-          DrivebaseSubsystem::togglePathFlipped,
+          DrivebaseSubsystem::toggle,
           DrivebaseSubsystem.getInstance()
         ));
     } catch(final NullPointerException Ignored) {}
   }
+
+  /**
+   * Performs linear characterization with sysID dynamically.
+   * @param Direction Direction of travel to characterize in
+   */
+  public static synchronized void characterizeDynamic(final SysIdRoutine.Direction Direction) {
+    synchronized(CHARACTERIZATION_ROUTINE) {
+      CHARACTERIZATION_ROUTINE.dynamic(Direction);
+    }
+  }
+
+  /**
+   * Performs linear characterization with sysID quasi-statically.
+   * @param Direction Direction of travel to characterize in
+   */
+  public static synchronized void characterizeQausistatic(final SysIdRoutine.Direction Direction) {
+    synchronized(CHARACTERIZATION_ROUTINE) {
+      CHARACTERIZATION_ROUTINE.quasistatic(Direction);
+    }
+  }
+
 
   /**
    * Applies squared inputs to a given input, while retaining the sign
    * @param Input Any Real Number
    * @return Input Squared, with the same sign of the original
    */
-  private static Double applySquared(final Double Input) {
+  private static Double square(final Double Input) {
     return Math.copySign(Input * Input, Input);
   }
 
   /**
    * Toggles between the modules should go into a locking format when idle or not
    */
-  public static synchronized void toggleModuleLocking() {
+  public static synchronized void toggle() {
     ModuleLocked = !ModuleLocked;
-  }
-
-  /**
-   * Toggles between is pathfinding should be flipped or not.
-   */
-  public static synchronized void togglePathFlipped() {
-    PathFlipped = !PathFlipped;
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
   /**

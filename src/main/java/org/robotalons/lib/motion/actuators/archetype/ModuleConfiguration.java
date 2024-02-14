@@ -19,15 +19,15 @@ import java.util.function.DoubleSupplier;
  * @see Module
  */
 public class ModuleConfiguration<Controller> extends Module.Constants {
-    public OdometryThread<DoubleSupplier> STATUS_PROVIDER;
-    public RelativeEncoder TRANSLATIONAL_ENCODER;
-    public RelativeEncoder ROTATIONAL_ENCODER;
-    public PIDConstants TRANSLATIONAL_PID_CONSTANTS;
-    public PIDConstants ROTATIONAL_PID_CONSTANTS;  
-    public Controller TRANSLATIONAL_CONTROLLER;
-    public Controller ROTATIONAL_CONTROLLER;
-    public Integer ABSOLUTE_ENCODER_PORT;      
-    public Double TRANSLATIONAL_KS_GAIN;
-    public Double TRANSLATIONAL_KV_GAIN;
-    public Double TRANSLATIONAL_KA_GAIN;  
+  public OdometryThread<DoubleSupplier> STATUS_PROVIDER;
+  public RelativeEncoder TRANSLATIONAL_ENCODER;
+  public RelativeEncoder ROTATIONAL_ENCODER;
+  public PIDConstants TRANSLATIONAL_PID_CONSTANTS;
+  public PIDConstants ROTATIONAL_PID_CONSTANTS;  
+  public Controller TRANSLATIONAL_CONTROLLER;
+  public Controller ROTATIONAL_CONTROLLER;
+  public Integer ABSOLUTE_ENCODER_PORT;      
+  public Double TRANSLATIONAL_KS_GAIN;
+  public Double TRANSLATIONAL_KV_GAIN;
+  public Double TRANSLATIONAL_KA_GAIN;  
 }

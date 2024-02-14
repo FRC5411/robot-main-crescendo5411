@@ -65,6 +65,15 @@ public abstract class Module implements Closeable {
    * Commands, and which will be handled here.
    */
   public abstract void periodic();
+
+  /**
+   * Updates the characterization voltages of this module's translation controller according
+   * to the values of voltage provided
+   * @param Voltage Applied voltage to the translation actuator of this module
+   */
+  public synchronized void characterize(final Double Voltage) {
+    setTranslationalVoltage(Voltage);
+  }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
   /**
    * <p>Describes a given {@link Module}'s measured constants that cannot otherwise be derived through its sensors and hardware.
@@ -138,7 +147,7 @@ public abstract class Module implements Closeable {
    */
   public synchronized void reset() {
     update();
-    RotationalAbsoluteOffset = Status.RotationalAbsolutePosition.minus(Status.RotationalRelativePosition);
+    RotationalRelativeOffset = Status.RotationalAbsolutePosition.minus(Status.RotationalRelativePosition);
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
