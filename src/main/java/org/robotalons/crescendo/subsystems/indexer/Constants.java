@@ -11,48 +11,48 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * <h1>Constants</h1>
  *
- * <p>Contains all indexer-wide constants, does not contain robot-wide constants.
+ * <p>Contains all subsystems-wide constants, does not contain robot-wide constants.
  *
  * @see IndexerSubsystem
  */
 public class Constants {
   // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
   public static final class Measurements {
-    public static final Double INDEXER_MOTOR_SPEED = (1d);
-    public static final Double INDEXER_MOTOR_DURATION = (1d);
+    public static final Double INDEXER_SPARK_MAX_SPEED = (1d);
+    public static final Double INDEXER_SPARK_MAX_DURATION = (1d);
 
-    public static final Integer K_INDEXER_INTAKE_MOTOR_ENCODER_CHANNELA = (0);
-    public static final Integer K_INDEXER_INTAKE_MOTOR_ENCODER_CHANNELB = (1);
+    public static final Integer K_INDEXER_INTAKE_SPARK_MAX_ENCODER_CHANNELA = (0);
+    public static final Integer K_INDEXER_INTAKE_SPARK_MAX_ENCODER_CHANNELB = (1);
 
-    public static final Integer K_INDEXER_CANNON_MOTOR_ENCODER_CHANNELA = (2);
-    public static final Integer K_INDEXER_CANNON_MOTOR_ENCODER_CHANNELB = (3);
+    public static final Integer K_INDEXER_CANNON_SPARK_MAX_ENCODER_CHANNELA = (2);
+    public static final Integer K_INDEXER_CANNON_SPARK_MAX_ENCODER_CHANNELB = (3);
 
-    public static final Double INDEXER_INTAKE_MOTOR_P = (0.001d);
-    public static final Double INDEXER_INTAKE_MOTOR_I = (0d);
-    public static final Double INDEXER_INTAKE_MOTOR_D = (0d);
+    public static final Double INDEXER_INTAKE_SPARK_MAX_P = (0.001d);
+    public static final Double INDEXER_INTAKE_SPARK_MAX_I = (0d);
+    public static final Double INDEXER_INTAKE_SPARK_MAX_D = (0d);
 
-    public static final Double INDEXER_CANNON_MOTOR_P = (0.001d);
-    public static final Double INDEXER_CANNON_MOTOR_I = (0d);
-    public static final Double INDEXER_CANNON_MOTOR_D = (0d);
+    public static final Double INDEXER_CANNON_SPARK_MAX_P = (0.001d);
+    public static final Double INDEXER_CANNON_SPARK_MAX_I = (0d);
+    public static final Double INDEXER_CANNON_SPARK_MAX_D = (0d);
 
-    public static final Double INDEXER_INTAKE_MOTOR_KS = (0.001d);
-    public static final Double INDEXER_INTAKE_MOTOR_KV = (0d);
-    public static final Double INDEXER_INTAKE_MOTOR_KA = (0d);
-    public static final Double INDEXER_INTAKE_MOTOR_KG = (0d);
+    public static final Double INDEXER_INTAKE_SPARK_MAX_KS = (0.001d);
+    public static final Double INDEXER_INTAKE_SPARK_MAX_KV = (0d);
+    public static final Double INDEXER_INTAKE_SPARK_MAX_KA = (0d);
+    public static final Double INDEXER_INTAKE_SPARK_MAX_KG = (0d);
     
-    public static final Double INDEXER_CANNON_MOTOR_KS = (0.001d);
-    public static final Double INDEXER_CANNON_MOTOR_KV = (0d);
-    public static final Double INDEXER_CANNON_MOTOR_KA = (0d);
-    public static final Double INDEXER_CANNON_MOTOR_KG = (0d);
+    public static final Double INDEXER_CANNON_SPARK_MAX_KS = (0.001d);
+    public static final Double INDEXER_CANNON_SPARK_MAX_KV = (0d);
+    public static final Double INDEXER_CANNON_SPARK_MAX_KA = (0d);
+    public static final Double INDEXER_CANNON_SPARK_MAX_KG = (0d);
 
     public static final Integer K_CURRENT_LIMIT = (60);
   }
 
   public static final class Ports {
-    public static final Integer INDEXER_INTAKE_MOTOR_ID = (0);
-    public static final Integer INDEXER_CANNON_MOTOR_ID = (1);
-    public static final Integer INDEXER_INTAKE_RECEIVER_ID = (2);
-    public static final Integer INDEXER_CANNON_RECEIVER_ID = (3);
+    public static final Integer INDEXER_INTAKE_SPARK_MAX_ID = (0);
+    public static final Integer INDEXER_CANNON_SPARK_MAX_ID = (1);
+    public static final Integer INDEXER_INTAKE_BREAKBEAM_INPUT_ID = (2);
+    public static final Integer INDEXER_CANNON_BREAKBEAM_INPUT_ID = (3);
   }
 
   public static final class Objects {
