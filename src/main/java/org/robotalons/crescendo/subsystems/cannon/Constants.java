@@ -2,9 +2,11 @@
 package org.robotalons.crescendo.subsystems.cannon;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.util.Units;
-
+import edu.wpi.first.math.geometry.Rotation2d;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import java.util.function.Function;
 // ---------------------------------------------------------------[Constants]---------------------------------------------------------------//
 /**
  *
@@ -28,7 +30,11 @@ public class Constants {
     public static final Double OBJECT_INNER_RADIUS = Units.inchesToMeters((10d));
     public static final Double OBJECT_OUTER_RADIUS = Units.inchesToMeters((14d));
     public static final Double OBJECT_VOLUME = 
-      (1/4) * Math.pow(Math.PI,(2)) * Math.pow((OBJECT_OUTER_RADIUS - OBJECT_INNER_RADIUS),(2)) * (OBJECT_OUTER_RADIUS + OBJECT_INNER_RADIUS);    
+      (1/4) * Math.pow(Math.PI,(2)) * Math.pow((OBJECT_OUTER_RADIUS - OBJECT_INNER_RADIUS),(2)) * (OBJECT_OUTER_RADIUS + OBJECT_INNER_RADIUS); 
+    public final Function<Rotation2d, Double> OBJECT_HORIZONTAL_CROSS_SECTION = (final Rotation2d Theta) -> 
+      (Math.PI * (OBJECT_OUTER_RADIUS - OBJECT_INNER_RADIUS)) * (Math.abs(Math.cos(Theta.getRadians())) + 1) * Math.PI * OBJECT_OUTER_RADIUS;
+    public final Function<Rotation2d, Double> OBJECT_VERTICAL_CROSS_SECTION = (final Rotation2d Theta) ->
+      (Math.PI * (OBJECT_OUTER_RADIUS - OBJECT_INNER_RADIUS)) * (Math.abs(Math.sin(Theta.getRadians())) + 1) * Math.PI * OBJECT_OUTER_RADIUS; 
     
     public static final Double UNIVERSAL_GRAVITATIONAL_CONSTANT = (6.67430e-10d);
 

@@ -3,7 +3,6 @@ package org.robotalons.crescendo.subsystems.cannon;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.CANSparkMax;
@@ -11,7 +10,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.robotalons.crescendo.subsystems.cannon.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.cannon.Constants.Ports;
 
@@ -43,7 +41,6 @@ public class CannonSubsystem extends SubsystemBase {
   public static final RelativeEncoder PIVOT_ENCODER;
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
   private static CannonSubsystem Instance;
-  private static Double CurrentTime;
     // ------------------------------------------------------------[Constructors]----------------------------------------------------------- //
   /** 
    * Cannon Subsystem Constructor 
@@ -90,23 +87,7 @@ public class CannonSubsystem extends SubsystemBase {
 
     Constants.Objects.ODOMETRY_LOCKER.unlock();
   }
-   
-  /**
-   * Calculates the discretization timestep, {@code dt}, at this current time based on the FPGA clock.
-   * @return Double representation of the time passed between now and the last timestep.
-   */
-  @AutoLogOutput(key = "Cannon/DiscretizationTimestamp")
-  private static synchronized Double discretize() {
-    var DiscretizationTimestep = (0.0);
-    if (CurrentTime.equals((0.0))) {
-      DiscretizationTimestep = ((1.0) / (50.0));
-    } else {
-      var MeasuredTime = Timer.getFPGATimestamp();
-      DiscretizationTimestep = MeasuredTime - CurrentTime;
-      CurrentTime = MeasuredTime;
-    }    
-    return DiscretizationTimestep;
-  }
+  
 
   /** 
    * Closes this instance and all held resources immediately 
