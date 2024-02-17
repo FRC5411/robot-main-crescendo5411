@@ -13,11 +13,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Callable;
 import java.util.Optional;
 
-import org.robotalons.crescendo.subsystems.cannon.Constants.Measurements;
-
 import com.jcabi.aspects.Timeable;
 
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.util.Units;
+
 import java.util.concurrent.ArrayBlockingQueue;
 // -----------------------------------------------------------[Trajectory Manager]----------------------------------------------------------//
 /**
@@ -56,10 +56,9 @@ public class TrajectoryManager extends Thread implements Closeable {
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   /**
    * Starts the Manager, should not explicitly be called explicitly.
-   * @throws IllegalAccessError When this method is called explicitly
    */
   @Override
-  public synchronized void start() throws IllegalAccessError {
+  public synchronized void start() {
     super.start();
   }
 
@@ -127,7 +126,7 @@ public class TrajectoryManager extends Thread implements Closeable {
    * Submits a Solvable Object to the trajectory solver, which will be added to a thread for evaluation during the next control loop
    * @param Object Object to solve for the trajectory of
    */
-  public synchronized CompletableFuture<SolvableObject> submit(final SolvableObject Object) {
+  public static synchronized CompletableFuture<SolvableObject> submit(final SolvableObject Object) {
     INPUT_CACHE.add(Object);
     return CompletableFuture.supplyAsync(() -> {
       return OUTPUT_CACHE.stream().filter((Solved) -> {
@@ -148,37 +147,54 @@ public class TrajectoryManager extends Thread implements Closeable {
     public final Double FIRING_ROTATION;
     public final Double MASS;
     public final Double MU;    
-    public final Double TERMINAL;    
+    public final Double TERMINAL; 
+    public final Double HORIZONTAL_AREA;
+    public final Double VERTICAL_AREA;
 
     public static final Double NOTE_MU = (1.17d);
     public static final Double NOTE_MASS = (2.35301e-1d);
+    public static final Double NOTE_INNER_RADIUS = Units.inchesToMeters((10d));
+    public static final Double NOTE_OUTER_RADIUS = Units.inchesToMeters((14d));
     // ----------------------------------------------------------[Constructors]-------------------------------------------------------------//
     /**
      * Solvable Object Constructor
-     * @param Velocity Speed of the object upon entering the trajectory     (m/s)
-     * @param Rotation Rotation of the object upon entering the trajectory  (rad)
-     * @param Mass     Constant mass of the object                          (kg)
-     * @param Mu       Friction coefficient by the air acting on the object (None)
-     * @param Horizon  Distance for which this object is a projectile       (m)
+     * @param Velocity   Speed of the object upon entering the trajectory         (m/s)
+     * @param Rotation   Rotation of the object upon entering the trajectory      (rad)
+     * @param Mass       Constant mass of the object                              (kg)
+     * @param Mu         Friction coefficient by the air acting on the object     (None)
+     * @param Horizon    Distance for which this object is a projectile           (m)
+     * @param Vertical   Initial vertical position upon entering the trajectory   (m)
+     * @param Horizontal Initial horizontal position upon entering the trajectory (m)
      */
-    public SolvableObject(final Double Velocity, final Double Rotation, final Double Mass, final Double Mu, final Double Horizon) {
+    public SolvableObject(
+       final Double Velocity, final Double Rotation, final Double Mass, final Double Mu, final Double Horizon,
+       final Double HorizontalPosition, final Double VerticalPosition, final Double HorizontalArea, final Double VerticalArea) {
       FIRING_VELOCITY = Velocity;
       FIRING_ROTATION = Rotation;
       MASS = Mass;
       MU = Mu;
       TERMINAL = Horizon;
+      HORIZONTAL_AREA = HorizontalArea;
+      VERTICAL_AREA = VerticalArea;
       TRAJECTORY = new InterpolatingDoubleTreeMap();
+      TRAJECTORY.put(HorizontalPosition, VerticalPosition);
     }
     // -------------------------------------------------------------[Methods]---------------------------------------------------------------//
     /**
      * Quickly creates a note preset of this object
-     * @param Velocity Speed of the object upon entering the trajectory     (m/s)
-     * @param Rotation Rotation of the object upon entering the trajectory  (rad)
-     * @param Horizon  Distance for which this object is a projectile       (m)
-     * @return
+     * @param Velocity   Speed of the object upon entering the trajectory                 (m/s)
+     * @param Rotation   Rotation of the object upon entering the trajectory              (rad)
+     * @param Horizon    Distance for which this object is a projectile                   (m)
+     * @param HorizontalPosition Initial horizontal position upon entering the trajectory (m)
+     * @param VerticalPosition   Initial vertical position upon entering the trajectory   (m)
+     * 
+     * @return Solvable Object with note properties
      */
-    public static SolvableObject note(final Double Velocity, final Double Rotation, final Double Horizon) {
-      return new SolvableObject(Velocity, Rotation, NOTE_MASS, NOTE_MU, Horizon);
+    public static SolvableObject note(final Double Velocity, final Double Rotation, final Double Mass, final Double Mu, final Double Horizon,
+      final Double HorizontalPosition, final Double VerticalPosition) { 
+      return new SolvableObject(Velocity, Rotation, NOTE_MASS, NOTE_MU, Horizon, HorizontalPosition, VerticalPosition, (Math.PI * (NOTE_OUTER_RADIUS - NOTE_INNER_RADIUS)) * 
+      (Math.abs(Math.cos(Rotation)) + (1)) * Math.PI * NOTE_OUTER_RADIUS, (Math.PI * (NOTE_OUTER_RADIUS - NOTE_INNER_RADIUS)) * 
+      (Math.abs(Math.sin(Rotation)) + (1)) * Math.PI * NOTE_OUTER_RADIUS);
     }
   }
 
@@ -218,12 +234,6 @@ public class TrajectoryManager extends Thread implements Closeable {
         while(!Thread.currentThread().isInterrupted() && !OBJECT_QUEUE.isEmpty()) {
           final var Object = OBJECT_QUEUE.peek();
           final var Horizon = Object.TERMINAL > HORIZON_MAXIMUM_SAMPLES? HORIZON_MAXIMUM_SAMPLES: Object.TERMINAL;
-          final var HorizontalSurfaceArea =
-            (Math.PI * (Measurements.OBJECT_OUTER_RADIUS - Measurements.OBJECT_INNER_RADIUS)) * 
-            (Math.abs(Math.cos(Object.FIRING_ROTATION)) + (1)) * Math.PI * Measurements.OBJECT_OUTER_RADIUS;             
-          final var VerticalSurfaceArea =
-            (Math.PI * (Measurements.OBJECT_OUTER_RADIUS - Measurements.OBJECT_INNER_RADIUS)) * 
-            (Math.abs(Math.sin(Object.FIRING_ROTATION)) + (1)) * Math.PI * Measurements.OBJECT_OUTER_RADIUS;   
           var HorizontalVelocity = new AtomicReference<Double>(Object.FIRING_VELOCITY * Math.cos(Object.FIRING_ROTATION));       
           var VerticalVelocity = new AtomicReference<Double>(Object.FIRING_VELOCITY * Math.sin(Object.FIRING_ROTATION));    
           HorizonAccuracy = (double) (Horizon) / HORIZON_MAXIMUM_PASSTHROUGH;
@@ -234,13 +244,13 @@ public class TrajectoryManager extends Thread implements Closeable {
             HorizontalVelocity.set(HorizontalVelocity.get() - (
             (drag(
               Math.cos(Object.FIRING_ROTATION) * HorizontalVelocity.get(),
-              HorizontalSurfaceArea,
+              Object.HORIZONTAL_AREA,
               Object.MU
             ) / Object.MASS)) * HorizonAccuracy);
             VerticalVelocity.set(VerticalVelocity.get() - (ENVIRONMENTAL_ACCELERATION + 
             (drag(
               Math.sin(Object.FIRING_ROTATION) * VerticalVelocity.get(),
-              VerticalSurfaceArea,
+              Object.VERTICAL_AREA,
               Object.MU
             ) / Object.MASS)) * HorizonAccuracy);
             Object.TRAJECTORY.put(HorizontalPosition, VerticalPosition);

@@ -2,7 +2,6 @@
 package org.robotalons.crescendo.subsystems.cannon;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.CANSparkMax;
@@ -12,8 +11,8 @@ import com.revrobotics.SparkMaxPIDController;
 
 import org.robotalons.crescendo.subsystems.cannon.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.cannon.Constants.Ports;
+import org.robotalons.lib.motion.trajectory.TrajectoryManager;
 
-import java.util.function.Function;
 
 // ------------------------------------------------------------[Cannon Subsystem]-----------------------------------------------------------//
 /**
@@ -29,9 +28,6 @@ import java.util.function.Function;
  */
 public class CannonSubsystem extends SubsystemBase {
   // --------------------------------------------------------------[Constants]-------------------------------------------------------------- //
-  public static final Function<Rotation2d,Double> OBJECT_HORIZONTAL_AREA_FUNCTION;
-  public static final Function<Rotation2d,Double> OBJECT_VERTICAL_AREA_FUNCTION;
-
   public static final Pair<CANSparkMax,CANSparkMax> FIRING_CONTROLLERS;
   public static final SparkMaxPIDController FIRING_CONTROLLER_PID;
   public static final RelativeEncoder FIRING_ENCODER;
@@ -46,12 +42,6 @@ public class CannonSubsystem extends SubsystemBase {
    * Cannon Subsystem Constructor 
    */
   private CannonSubsystem() {} static {
-    OBJECT_HORIZONTAL_AREA_FUNCTION = (final Rotation2d Theta) -> 
-    (Math.PI * (Measurements.OBJECT_OUTER_RADIUS - Measurements.OBJECT_INNER_RADIUS)) * 
-     (Math.abs(Math.sin(Theta.getRadians())) + 1) * Math.PI * Measurements.OBJECT_OUTER_RADIUS;
-    OBJECT_VERTICAL_AREA_FUNCTION = (final Rotation2d Theta) -> 
-    (Math.PI * (Measurements.OBJECT_OUTER_RADIUS - Measurements.OBJECT_INNER_RADIUS)) * 
-     (Math.abs(Math.cos(Theta.getRadians())) + 1) * Math.PI * Measurements.OBJECT_OUTER_RADIUS;
     
     FIRING_CONTROLLERS = new Pair<CANSparkMax,CANSparkMax>(
       new CANSparkMax(Ports.FIRING_CONTROLLER_LEFT_ID, MotorType.kBrushless), 
@@ -78,6 +68,7 @@ public class CannonSubsystem extends SubsystemBase {
       -(1), 
        (1));
        PIVOT_CONTROLLER_PID.setFeedbackDevice(PIVOT_ENCODER);
+    TrajectoryManager.getInstance();
   }
   
   // ---------------------------------------------------------------[Methods]--------------------------------------------------------------- //
@@ -94,21 +85,6 @@ public class CannonSubsystem extends SubsystemBase {
    */
   public synchronized void close() {
     
-  }
-
-  /**
-   * Calculates the force of drag on a real world object according to the equation:
-   * <pre><code>
-   * F = 1/2 * p * v^2 * a * c 
-   * </code></pre>
-   * With the density of air 1.1839                            (Kg/m^3)
-   * @param Velocity Relative velocity of the object in motion (m/s)
-   * @param Area     Cross-sectional area of a given object    (m^2)
-   * @param Mu       Friction coefficient of the object        (None)
-   * @return The force, in Newtons of the object               (N)
-   */
-  public Double drag(final Double Velocity, final Double Area, final Double Mu) {
-    return (1/2) * Measurements.EARTH_AIR_DENSITY * Math.pow(Velocity,(2)) * Mu * Area;
   }
   // --------------------------------------------------------------[Mutators]--------------------------------------------------------------- //
 
