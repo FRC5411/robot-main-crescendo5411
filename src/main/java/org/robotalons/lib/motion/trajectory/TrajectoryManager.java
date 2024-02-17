@@ -9,6 +9,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Callable;
+import java.util.Optional;
 
 import org.robotalons.crescendo.subsystems.cannon.Constants.Measurements;
 
@@ -29,7 +32,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class TrajectoryManager extends Thread implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   public static final Integer MAXIMUM_WORKERS = (10);
-  private static final List<SolvableObject> CACHE;  
+  private static final List<SolvableObject> INPUT_CACHE;  
+  private static final List<SolvableObject> OUTPUT_CACHE;
   private static final List<TrajectorySolver> WORKERS;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static TrajectoryManager Instance;
@@ -40,7 +44,8 @@ public class TrajectoryManager extends Thread implements Closeable {
   private TrajectoryManager() {
     start();
   } static {
-    CACHE = new ArrayList<>();
+    INPUT_CACHE = new ArrayList<>();
+    OUTPUT_CACHE = new ArrayList<>();
     WORKERS = new ArrayList<>();
     IntStream.rangeClosed((0), MAXIMUM_WORKERS).forEachOrdered((final int Worker) -> {
       WORKERS.add(new TrajectorySolver());
@@ -65,15 +70,15 @@ public class TrajectoryManager extends Thread implements Closeable {
   @Override
   public synchronized void run() {
     while(isAlive()) {
-      synchronized(CACHE) {
-        while(!CACHE.isEmpty()) {
+      synchronized(INPUT_CACHE) {
+        while(!INPUT_CACHE.isEmpty()) {
           if(WORKERS.stream().mapToInt((Worker) -> Worker.OBJECT_QUEUE.size()).sum() == TrajectorySolver.OBJECT_QUEUE_MAXIMUM_ELEMENTS * WORKERS.size()) {
             WORKERS.add(new TrajectorySolver());
           }
           final var Map = new HashMap<TrajectorySolver,Integer>();
           WORKERS.forEach((Worker) -> Map.put(Worker, Worker.OBJECT_QUEUE.size()));
           final var Iterator = Map.keySet().iterator();
-          CACHE.forEach((Object) -> {
+          INPUT_CACHE.forEach((Object) -> {
             final var Solver = Iterator.next();
             Map.values().stream().mapToInt((Value) -> Value).min().ifPresentOrElse(
             (Minimum) -> {
@@ -88,17 +93,32 @@ public class TrajectoryManager extends Thread implements Closeable {
           });
         }
         WORKERS.parallelStream().forEach((Worker) -> {
-          Worker.run();
+          Worker.call().ifPresent(
+          (Object) -> {
+            OUTPUT_CACHE.add(Object);
+          });
         });
       }
     }
   }
 
   /**
-   * Closes this instance and all held resources immediately.
+   * Closes this instance and all held resources.
    */
   @Override
   public synchronized void close() {
+    while(WORKERS.stream().mapToInt((Worker) -> Worker.OBJECT_QUEUE.size()).sum() > (0)) {
+      WORKERS.parallelStream().forEach((Worker) -> {
+        Worker.call().ifPresent(
+          (Object) -> {
+            OUTPUT_CACHE.add(Object);
+          });
+        if(Worker.OBJECT_QUEUE.isEmpty()) {
+          Worker.close();
+        }
+      });
+    }
+    WORKERS.clear();
 
   }
 
@@ -107,8 +127,13 @@ public class TrajectoryManager extends Thread implements Closeable {
    * Submits a Solvable Object to the trajectory solver, which will be added to a thread for evaluation during the next control loop
    * @param Object Object to solve for the trajectory of
    */
-  public synchronized void submit(final SolvableObject Object) {
-    CACHE.add(Object);
+  public synchronized CompletableFuture<SolvableObject> submit(final SolvableObject Object) {
+    INPUT_CACHE.add(Object);
+    return CompletableFuture.supplyAsync(() -> {
+      return OUTPUT_CACHE.stream().filter((Solved) -> {
+        return Solved.equals(Object);
+      }).toList().get((0));
+    });
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
   /**
@@ -155,7 +180,6 @@ public class TrajectoryManager extends Thread implements Closeable {
     public static SolvableObject note(final Double Velocity, final Double Rotation, final Double Horizon) {
       return new SolvableObject(Velocity, Rotation, NOTE_MASS, NOTE_MU, Horizon);
     }
-
   }
 
   /**
@@ -166,7 +190,7 @@ public class TrajectoryManager extends Thread implements Closeable {
    * 
    * @see Thread
    */
-  private static class TrajectorySolver implements Closeable, Runnable {
+  private static class TrajectorySolver implements Closeable, Callable<Optional<SolvableObject>> {
     // ------------------------------------------------------------[Constants]--------------------------------------------------------------//
     public final Queue<SolvableObject> OBJECT_QUEUE;
     public final static Integer OBJECT_QUEUE_MAXIMUM_ELEMENTS = (20);
@@ -189,7 +213,7 @@ public class TrajectoryManager extends Thread implements Closeable {
     // -------------------------------------------------------------[Methods]---------------------------------------------------------------//
 
     @Timeable(limit = 200, unit = TimeUnit.MILLISECONDS)
-    public synchronized void run() {
+    public synchronized Optional<SolvableObject> call() {
       synchronized(OBJECT_QUEUE) {
         while(!Thread.currentThread().isInterrupted() && !OBJECT_QUEUE.isEmpty()) {
           final var Object = OBJECT_QUEUE.peek();
@@ -222,7 +246,10 @@ public class TrajectoryManager extends Thread implements Closeable {
             Object.TRAJECTORY.put(HorizontalPosition, VerticalPosition);
             PrecedingHorizon = HorizonPoint;
           });
+          OBJECT_QUEUE.poll();
+          return Optional.of(Object);
         }
+        return Optional.empty();
       }   
     }
 
@@ -249,10 +276,8 @@ public class TrajectoryManager extends Thread implements Closeable {
       return (1/2) * ENVIRONMENTAL_DENSITY * Math.pow(Velocity,(2)) * Mu * Area;
     }
   }
-  // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
-
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
-    /**
+  /**
    * Retrieves the existing instance of this static utility class
    * @return Utility class's instance
    */
