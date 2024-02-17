@@ -31,7 +31,6 @@ import org.robotalons.lib.utilities.PilotProfile;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.IntStream;
 // ----------------------------------------------------------[Drivebase Subsystem]----------------------------------------------------------//
 /**
  *
@@ -129,25 +128,26 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
       MODULES.forEach(Module::cease);
     }
     final var Timestamps = MODULES.get((0)).getPositionTimestamps();
-    IntStream.range((0), Timestamps.size()).forEachOrdered((DeltaIndex) -> {
-      SwerveModulePosition[] WheelDeltas = MODULES.stream().map(
-        (Module) -> {
-          final var Angle = Module.getPositionDeltas().get(DeltaIndex).angle;
-          return new SwerveModulePosition(
-              Module.getPositionDeltas().get(DeltaIndex).distanceMeters
-                                          - 
-                  CurrentPositions.get(DeltaIndex).distanceMeters,
-            Angle);
-        }).toArray(SwerveModulePosition[]::new);
-      CurrentPositions = List.of(WheelDeltas);  
+    for (Integer Index = (0); Index < Timestamps.size(); Index++) {
+      SwerveModulePosition[] Positions = new SwerveModulePosition[MODULES.size()];
+      SwerveModulePosition[] Deltas = new SwerveModulePosition[MODULES.size()];
+      for (Integer Module = (0); Module < MODULES.size(); Module++) {
+        Positions[Module] = MODULES.get(Module).getPositionDeltas().get(Index);
+        Deltas[Module] =
+            new SwerveModulePosition(
+                Positions[Module].distanceMeters
+                    - CurrentPositions.get(Module).distanceMeters,
+                Positions[Module].angle);
+              CurrentPositions.set(Module,Positions[Module]);
+      }
       if(GYROSCOPE.getConnected()) {
-        CurrentRotation = GYROSCOPE.getOdometryYawRotations()[DeltaIndex];
+        CurrentRotation = GYROSCOPE.getOdometryYawRotations()[Index];
       } else {
-        Twist2d TwistDelta = KINEMATICS.toTwist2d(WheelDeltas);
+        Twist2d TwistDelta = KINEMATICS.toTwist2d(Deltas);
         CurrentRotation = CurrentRotation.plus(new Rotation2d(TwistDelta.dtheta));
       }
-      POSE_ESTIMATOR.updateWithTime(Timestamps.get(DeltaIndex), CurrentRotation, WheelDeltas);
-    });
+      POSE_ESTIMATOR.updateWithTime(Timestamps.get(Index), CurrentRotation, Positions);      
+    }
     Objects.ODOMETRY_LOCK.unlock();
   }
 
