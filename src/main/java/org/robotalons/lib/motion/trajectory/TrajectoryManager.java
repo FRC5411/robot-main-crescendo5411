@@ -6,6 +6,9 @@ import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.robotalons.crescendo.subsystems.cannon.Constants.Measurements;
 
@@ -25,7 +28,9 @@ import java.util.concurrent.ArrayBlockingQueue;
  */
 public class TrajectoryManager extends Thread implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-
+  public static final Integer MAXIMUM_WORKERS = (10);
+  private static final List<SolvableObject> CACHE;  
+  private static final List<TrajectorySolver> WORKERS;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static TrajectoryManager Instance;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
@@ -35,6 +40,12 @@ public class TrajectoryManager extends Thread implements Closeable {
   private TrajectoryManager() {
     start();
   } static {
+    CACHE = new ArrayList<>();
+    WORKERS = new ArrayList<>();
+    IntStream.rangeClosed((0), MAXIMUM_WORKERS).forEachOrdered((final int Worker) -> {
+      WORKERS.add(new TrajectorySolver());
+    });
+
 
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
@@ -54,11 +65,31 @@ public class TrajectoryManager extends Thread implements Closeable {
   @Override
   public synchronized void run() {
     while(isAlive()) {
-
-
-
-      if(isInterrupted()) {
-
+      synchronized(CACHE) {
+        while(!CACHE.isEmpty()) {
+          if(WORKERS.stream().mapToInt((Worker) -> Worker.OBJECT_QUEUE.size()).sum() == TrajectorySolver.OBJECT_QUEUE_MAXIMUM_ELEMENTS * WORKERS.size()) {
+            WORKERS.add(new TrajectorySolver());
+          }
+          final var Map = new HashMap<TrajectorySolver,Integer>();
+          WORKERS.forEach((Worker) -> Map.put(Worker, Worker.OBJECT_QUEUE.size()));
+          final var Iterator = Map.keySet().iterator();
+          CACHE.forEach((Object) -> {
+            final var Solver = Iterator.next();
+            Map.values().stream().mapToInt((Value) -> Value).min().ifPresentOrElse(
+            (Minimum) -> {
+              if(Solver.OBJECT_QUEUE.size() == Minimum) {
+                Solver.OBJECT_QUEUE.offer(Object);
+                Map.replace(Solver, Solver.OBJECT_QUEUE.size());
+              }
+            },
+            () -> {
+              Solver.OBJECT_QUEUE.offer(Object);
+            });
+          });
+        }
+        WORKERS.parallelStream().forEach((Worker) -> {
+          Worker.run();
+        });
       }
     }
   }
@@ -73,11 +104,11 @@ public class TrajectoryManager extends Thread implements Closeable {
 
 
   /**
-   * Submits a game piece to the trajectory solver
+   * Submits a Solvable Object to the trajectory solver, which will be added to a thread for evaluation during the next control loop
    * @param Object Object to solve for the trajectory of
    */
   public synchronized void submit(final SolvableObject Object) {
-
+    CACHE.add(Object);
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
   /**
@@ -137,13 +168,13 @@ public class TrajectoryManager extends Thread implements Closeable {
    */
   private static class TrajectorySolver implements Closeable, Runnable {
     // ------------------------------------------------------------[Constants]--------------------------------------------------------------//
-    private final Queue<SolvableObject> OBJECT_QUEUE;
-    private final Integer OBJECT_QUEUE_MAXIMUM_ELEMENTS = (20);
-    private final Boolean OBJECT_QUEUE_ORDERED = (true);
-    private final Double ENVIRONMENTAL_ACCELERATION = (-9.80665d);
-    private final Double ENVIRONMENTAL_DENSITY = (1.1839d);
-    private final Integer HORIZON_MAXIMUM_SAMPLES = (100);
-    private final Integer HORIZON_MAXIMUM_PASSTHROUGH = (1000);
+    public final Queue<SolvableObject> OBJECT_QUEUE;
+    public final static Integer OBJECT_QUEUE_MAXIMUM_ELEMENTS = (20);
+    private final static Boolean OBJECT_QUEUE_ORDERED = (true);
+    private final static Double ENVIRONMENTAL_ACCELERATION = (-9.80665d);
+    private final static Double ENVIRONMENTAL_DENSITY = (1.1839d);
+    private final static Integer HORIZON_MAXIMUM_SAMPLES = (100);
+    private final static Integer HORIZON_MAXIMUM_PASSTHROUGH = (1000);
     // -------------------------------------------------------------[Fields]----------------------------------------------------------------/][]'
     private volatile Integer PrecedingHorizon = (1);
     private volatile Double PrecedingPosition = (0d);
@@ -214,7 +245,7 @@ public class TrajectoryManager extends Thread implements Closeable {
      * @param Mu       Friction coefficient of the object        (None)
      * @return The force, in Newtons of the object               (N)
      */
-    public Double drag(final Double Velocity, final Double Area, final Double Mu) {
+    private static Double drag(final Double Velocity, final Double Area, final Double Mu) {
       return (1/2) * ENVIRONMENTAL_DENSITY * Math.pow(Velocity,(2)) * Mu * Area;
     }
   }
