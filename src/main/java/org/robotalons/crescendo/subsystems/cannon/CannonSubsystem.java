@@ -45,9 +45,9 @@ public class CannonSubsystem extends TalonSubsystemBase {
   private static final DutyCycleEncoder PIVOT_ABSOLUTE_ENCODER;
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
   private static CannonSubsystem Instance;
-  private static PilotProfile CurrentPilot;
   private static SwerveModuleState CurrentReference;
-  private static FiringMode CurrentMode;
+  private static FiringMode CurrentMode;  
+  private static PilotProfile CurrentPilot;
     // ------------------------------------------------------------[Constructors]----------------------------------------------------------- //
   /** 
    * Cannon Subsystem Constructor 
@@ -90,7 +90,14 @@ public class CannonSubsystem extends TalonSubsystemBase {
   @Override
   public synchronized void periodic() {
     Constants.Objects.ODOMETRY_LOCKER.lock();
-
+    switch (CurrentMode) {
+      case MANUAL:
+        break;
+      case SEMI:
+        break;
+      case AUTO:
+        break;
+    }
     Constants.Objects.ODOMETRY_LOCKER.unlock();
   }
 
@@ -99,7 +106,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
    * Fires the shooter at the best possible target on the field
    */
   public synchronized static void fire() {
-
+    
   }
   
 
@@ -129,7 +136,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
 
   /**
    * Mutates the Cannon controller's current mode of operation and how it should identify and calculate reference 'set-points'
-   * @param Mode Mode of Cannon control
+   * @param Mode Mode of cannon control
    */
   public static synchronized void set(final FiringMode Mode) {
     CurrentMode = Mode;
@@ -138,7 +145,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
   /**
    * Mutates the cannon controller's current 'set-point' or reference state and mutates the cannon controller's current mode of operation
    * and how it should identify and calculate reference 'set-points'
-   * @param Reference cannon's new Goal or 'set-point' reference
+   * @param Reference Cannon's new Goal or 'set-point' reference
    * @param Mode Mode of cannon control
    * @return An optimized version of the reference
    */
