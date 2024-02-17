@@ -100,7 +100,7 @@ public final class Constants {
           .addPreference(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (0.2))
           .addPreference(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (0.2))
           .addPreference(Preferences.ORIENTATION_DEADZONE, () -> (0.2))
-          .addKeybinding(Keybindings.ORIENTATION_TOGGLE, CONTROLLER.y())
+          .addKeybinding(Keybindings.ORIENTATION_TOGGLE, CONTROLLER.povCenter())
           .addKeybinding(Keybindings.INTAKE_TOGGLE, CONTROLLER.leftBumper())
           .addKeybinding(Keybindings.SHOOTER_TOGGLE, CONTROLLER.b())
           .addKeybinding(Keybindings.OUTTAKE_TOGGLE, CONTROLLER.rightBumper());
@@ -120,7 +120,6 @@ public final class Constants {
     public static final class Keybindings {
       public static final String MODULE_LOCKING_TOGGLE = ("LOCKING_ENABLED_TRIGGER");
       public static final String ORIENTATION_TOGGLE = ("ORIENTATION_TOGGLE");
-      public static final String PATHFINDING_FLIP_TOGGLE = ("PATHFINDING_FLIP_TOGGLE");
       public static final String INTAKE_TOGGLE = ("INTAKE_TOGGLE");
       public static final String SHOOTER_TOGGLE = ("SHOOTER_TOGGLE");
       public static final String OUTTAKE_TOGGLE = ("OUTTAKE_TOGGLE");

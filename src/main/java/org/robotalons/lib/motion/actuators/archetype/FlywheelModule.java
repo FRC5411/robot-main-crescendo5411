@@ -1,26 +1,24 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.lib.motion.actuators.archetype;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
-import com.pathplanner.lib.util.PIDConstants;
-
 import org.littletonrobotics.junction.Logger;
 import org.robotalons.lib.motion.actuators.Module;
-import org.robotalons.lib.motion.utilities.OdometryThread;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.DoubleSupplier;
 import java.util.stream.IntStream;
 // ------------------------------------------------------------[Flywheel Module]-------------------------------------------------------------//
 /**
@@ -48,7 +46,7 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
   private final List<Double> TIMESTAMPS;
   private final Lock ODOMETRY_LOCK;
 
-  private final Constants MODULE_CONSTANTS;
+  private final ModuleConfiguration<Controller> MODULE_CONSTANTS;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private Double TranslationalIntegratedPosition;
   private Double RotationalIntegratedPosition;
@@ -58,11 +56,10 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
    * Spark Module Constructor
    * @param Constants Constant values to construct a new module from
    */
-  @SuppressWarnings("unchecked")
-  public FlywheelModule(final Constants Constants) {
+  public FlywheelModule(final ModuleConfiguration<Controller> Constants) {
     super(Constants);
     MODULE_CONSTANTS = Constants;
-    TRANSLATIONAL_CONTROLLER = (Controller) MODULE_CONSTANTS.TRANSLATIONAL_FLYWHEEL;
+    TRANSLATIONAL_CONTROLLER = (Controller) MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER;
     TRANSLATIONAL_PID = new PIDController(
       MODULE_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS.kP,
       MODULE_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS.kI, 
@@ -71,7 +68,7 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
       MODULE_CONSTANTS.TRANSLATIONAL_KS_GAIN,
       MODULE_CONSTANTS.TRANSLATIONAL_KV_GAIN,
       MODULE_CONSTANTS.TRANSLATIONAL_KA_GAIN);
-    ROTATIONAL_CONTROLLER = (Controller) MODULE_CONSTANTS.ROTATIONAL_FLYWHEEL;
+    ROTATIONAL_CONTROLLER = (Controller) MODULE_CONSTANTS.ROTATIONAL_CONTROLLER;
     ROTATIONAL_PID = new PIDController(
       MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kP,
       MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kI, 
@@ -103,7 +100,6 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
     ODOMETRY_LOCK.lock();
     TRANSLATIONAL_PID.enableContinuousInput((-1), (1));
     ROTATIONAL_PID.enableContinuousInput(-Math.PI, Math.PI);
-
     ODOMETRY_LOCK.unlock();
   }
 
@@ -126,8 +122,10 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
   @Override
   public synchronized void periodic() {
     final var DiscretizationTimestamp = discretize();
-    RotationalIntegratedPosition += ROTATIONAL_CONTROLLER.getAngularVelocityRadPerSec() * (DiscretizationTimestamp);
-    TranslationalIntegratedPosition += TRANSLATIONAL_CONTROLLER.getAngularVelocityRadPerSec() * (DiscretizationTimestamp);
+    ROTATIONAL_CONTROLLER.update(DiscretizationTimestamp);
+    TRANSLATIONAL_CONTROLLER.update(DiscretizationTimestamp);
+    RotationalIntegratedPosition += ROTATIONAL_CONTROLLER.getAngularVelocityRPM() * (DiscretizationTimestamp);
+    TranslationalIntegratedPosition += TRANSLATIONAL_CONTROLLER.getAngularVelocityRPM() * (DiscretizationTimestamp);
     ODOMETRY_LOCK.lock();
     update();
     if (RotationalRelativeOffset == (null) && Status.RotationalAbsolutePosition.getRadians() != (0d)) {
@@ -135,16 +133,15 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
     }
     switch(ReferenceMode) {
       case STATE_CONTROL:
-        if(Reference != (null)) {
-          if (Reference.angle != (null)) {
-            ROTATIONAL_PID.calculate(Reference.angle.getRadians());
-          }
-          Reference.speedMetersPerSecond *= Math.cos(Reference.angle.minus(getRelativeRotation()).getRadians());
-          TRANSLATIONAL_CONTROLLER.setInputVoltage(
-            12 * TRANSLATIONAL_PID.calculate(Reference.speedMetersPerSecond) 
-                                        +
-            TRANSLATIONAL_FF.calculate(Reference.speedMetersPerSecond));
+      if(Reference != (null)) {
+        if (Reference.angle != (null)) {
+          setRotationalVoltage(ROTATIONAL_PID.calculate(getRelativeRotation().getRadians(),Reference.angle.getRadians()));
         }
+        var AdjustReferenceVelocity = (Reference.speedMetersPerSecond * Math.cos(ROTATIONAL_PID.getPositionError())) / MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
+        setTranslationalVoltage(     -(TRANSLATIONAL_PID.calculate(AdjustReferenceVelocity))
+                                                            +
+          (TRANSLATIONAL_FF.calculate(Status.TranslationalVelocityRadiansSecond, AdjustReferenceVelocity)));          
+      }
         break;
       case DISABLED:
         cease();
@@ -153,14 +150,15 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
         close();
         break;
     }
-    ODOMETRY_LOCK.unlock();  
     DELTAS.clear();
-    IntStream.range((0), Status.OdometryTimestamps.length).forEach((Index) -> {
+    IntStream.range((0), (Status.OdometryTimestamps.length - 1)).forEach((Index) -> {
       final var Position = Status.OdometryTranslationalPositionsRadians[Index] * CONSTANTS.WHEEL_RADIUS_METERS;
       final var Rotation = Status.OdometryRotationalPositions[Index].plus(
         RotationalRelativeOffset != null? RotationalRelativeOffset: new Rotation2d());
       DELTAS.add(new SwerveModulePosition(Position, Rotation));
     });
+    ODOMETRY_LOCK.unlock();  
+
   }
 
   /**
@@ -187,6 +185,8 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
     Status.TranslationalPositionRadians = TranslationalIntegratedPosition;
     Status.TranslationalVelocityRadiansSecond =
         Units.rotationsPerMinuteToRadiansPerSecond(TRANSLATIONAL_CONTROLLER.getAngularVelocityRPM()) / CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
+    Status.RotationalRelativePosition = new Rotation2d(RotationalIntegratedPosition);
+    Status.RotationalAbsolutePosition = new Rotation2d(RotationalIntegratedPosition);
     Status.TranslationalAppliedVoltage = 
       TRANSLATIONAL_CONTROLLER.getCurrentDrawAmps() * (5);
     Status.TranslationalCurrentAmperage = TRANSLATIONAL_CONTROLLER.getCurrentDrawAmps();
@@ -194,6 +194,7 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
         Units.rotationsPerMinuteToRadiansPerSecond(ROTATIONAL_CONTROLLER.getAngularVelocityRPM()) / CONSTANTS.ROTATIONAL_GEAR_RATIO;
     Status.RotationalAppliedAmperage = ROTATIONAL_CONTROLLER.getCurrentDrawAmps();
     Status.OdometryTimestamps = TIMESTAMP_QUEUE.stream().mapToDouble(Double::valueOf).toArray();
+    MODULE_CONSTANTS.STATUS_PROVIDER.getLock().lock();
     Status.OdometryTranslationalPositionsRadians =
       TRANSLATIONAL_VELOCITY_QUEUE.stream()
         .mapToDouble((Double value) -> Units.rotationsToRadians(value) / CONSTANTS.ROTATIONAL_GEAR_RATIO)
@@ -202,6 +203,7 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
       ROTATIONAL_POSITION_QUEUE.stream()
         .map((Double value) -> Rotation2d.fromRotations(value / CONSTANTS.TRANSLATIONAL_GEAR_RATIO))
         .toArray(Rotation2d[]::new);
+    MODULE_CONSTANTS.STATUS_PROVIDER.getLock().unlock();
     TRANSLATIONAL_VELOCITY_QUEUE.clear();
     ROTATIONAL_POSITION_QUEUE.clear();
     TIMESTAMP_QUEUE.clear();
@@ -213,23 +215,26 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
    */
   @Override
   public synchronized void reset() {
-    RotationalIntegratedPosition = (MODULE_CONSTANTS.TRANSLATIONAL_POSITION_METERS);
-    TranslationalIntegratedPosition = (MODULE_CONSTANTS.ROTATIONAL_ENCODER_OFFSET.getRadians());
+    update();
+    RotationalIntegratedPosition = (0d);
   }
-  // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
-  /**
-   * <p>Describes a given {@link Module}'s measured constants that cannot otherwise be derived through its sensors and hardware.
-   */
-  public static class Constants extends Module.Constants {
-    public OdometryThread<DoubleSupplier> STATUS_PROVIDER;
-    public FlywheelSim TRANSLATIONAL_FLYWHEEL;
-    public FlywheelSim ROTATIONAL_FLYWHEEL;
-    public PIDConstants TRANSLATIONAL_PID_CONSTANTS;
-    public PIDConstants ROTATIONAL_PID_CONSTANTS;  
-    public Integer ABSOLUTE_ENCODER_PORT;      
-    public Double TRANSLATIONAL_KS_GAIN;
-    public Double TRANSLATIONAL_KV_GAIN;
-    public Double TRANSLATIONAL_KA_GAIN;    
+
+  @Override
+  protected synchronized void setTranslationalVoltage(final Double Voltage) {
+    TRANSLATIONAL_CONTROLLER.setInputVoltage(MathUtil.clamp(Voltage, (-12d), (12d)));
+  }
+
+  @Override
+  protected synchronized void setRotationalVoltage(final Double Voltage) {
+    ROTATIONAL_CONTROLLER.setInputVoltage(MathUtil.clamp(Voltage, (-12d), (12d)));
+  }
+  
+
+  // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
+  @Override
+  public SwerveModuleState set(final SwerveModuleState Reference) {
+    this.Reference = Reference;
+    return this.Reference;
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   @Override

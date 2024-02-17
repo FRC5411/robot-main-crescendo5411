@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -37,8 +38,6 @@ public final class RobotContainer {
   
   private RobotContainer() {} static {
     PilotSelectors = new ArrayList<>();
-    AutonomousSelector = new LoggedDashboardChooser<>(("Autonomous Selector"), AutoBuilder.buildAutoChooser());
-    Pathplanner.ROUTINES.forEach((Name, Routine) -> AutonomousSelector.addOption(Name, Routine));
     SubsystemManager.getSubsystems().forEach((Subsystem) -> {
       final var Selector = new SendableChooser<PilotProfile>();
       final var Iterator = Profiles.PILOT_PROFILES.iterator();
@@ -49,6 +48,8 @@ public final class RobotContainer {
       Subsystem.configure(Initial);
       PilotSelectors.add(new LoggedDashboardChooser<PilotProfile>(Subsystem.getName() + " Pilot Selector", Selector));
     });
+    AutonomousSelector = new LoggedDashboardChooser<>(("Autonomous Selector"), AutoBuilder.buildAutoChooser());
+    Pathplanner.ROUTINES.forEach((Name, Routine) -> AutonomousSelector.addOption(Name, Routine));
 
     //TODO: Remove Temporary Intake-Indexer-Shooter Code
     @SuppressWarnings("resource")
@@ -57,15 +58,9 @@ public final class RobotContainer {
     INDEXER.setSecondaryCurrentLimit((30));
     INDEXER.setIdleMode(IdleMode.kCoast);
     @SuppressWarnings("resource")
-    final var LEFT_OUT = new CANSparkMax((31), MotorType.kBrushless);
-    LEFT_OUT.setSmartCurrentLimit((40));
-    LEFT_OUT.setSecondaryCurrentLimit((60));
-    LEFT_OUT.setIdleMode(IdleMode.kCoast);
+    final var LEFT_OUT = new TalonFX(35);
     @SuppressWarnings("resource")
-    final var RIGHT_OUT = new CANSparkMax((32), MotorType.kBrushless);
-    RIGHT_OUT.setSmartCurrentLimit((40));
-    RIGHT_OUT.setSecondaryCurrentLimit((60));
-    RIGHT_OUT.setIdleMode(IdleMode.kCoast);
+    final var RIGHT_OUT = new TalonFX(34);
     @SuppressWarnings("resource")
     final var INTAKE = new CANSparkMax((21), MotorType.kBrushless);
     INTAKE.setSmartCurrentLimit((20));
@@ -75,11 +70,11 @@ public final class RobotContainer {
     RIGHT_OUT.setInverted((true));
 
     Profiles.PILOT_PROFILES.get(0).getKeybinding(Keybindings.SHOOTER_TOGGLE).onTrue(new InstantCommand(() -> {
-      LEFT_OUT.set(0.75d);
+      LEFT_OUT.set(-0.75d);
       RIGHT_OUT.set(0.75d);
     }));
     Profiles.PILOT_PROFILES.get(0).getKeybinding(Keybindings.SHOOTER_TOGGLE).onFalse(new InstantCommand(() -> {
-      LEFT_OUT.set(0.1d);
+      LEFT_OUT.set(-0.1d);
       RIGHT_OUT.set(0.1d);
     }));
     Profiles.PILOT_PROFILES.get(0).getKeybinding(Keybindings.INTAKE_TOGGLE).onTrue(new InstantCommand(() -> {

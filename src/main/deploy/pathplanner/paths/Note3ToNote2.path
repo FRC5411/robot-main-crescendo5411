@@ -8,8 +8,13 @@
       },
       "prevControl": null,
       "nextControl": {
+<<<<<<< HEAD
         "x": 1.8893943242431936,
         "y": 4.645715473249129
+=======
+        "x": 2.1256374581201545,
+        "y": 4.870850710823445
+>>>>>>> Development-Drivebase
       },
       "isLocked": false,
       "linkedName": null
@@ -20,8 +25,13 @@
         "y": 5.587918812201261
       },
       "prevControl": {
+<<<<<<< HEAD
         "x": 1.758791881220126,
         "y": 5.177453991271619
+=======
+        "x": 2.0299703118007426,
+        "y": 5.062136929519395
+>>>>>>> Development-Drivebase
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,8 +42,13 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
+<<<<<<< HEAD
     "maxVelocity": 3.5,
     "maxAcceleration": 3.5,
+=======
+    "maxVelocity": 5.0,
+    "maxAcceleration": 5.0,
+>>>>>>> Development-Drivebase
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
