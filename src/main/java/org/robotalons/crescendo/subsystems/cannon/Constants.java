@@ -36,6 +36,7 @@ public class Constants {
     public static final Integer FIRING_CONTROLLER_RIGHT_ID = (0);
     public static final Integer FIRING_CONTROLLER_LEFT_ID = (1);
     public static final Integer PIVOT_CONTROLLER_ID = (2);
+    public static final Integer PIVOT_ABSOLUTE_ENCODER_ID = (3);
   }
 
   public static final class Objects {

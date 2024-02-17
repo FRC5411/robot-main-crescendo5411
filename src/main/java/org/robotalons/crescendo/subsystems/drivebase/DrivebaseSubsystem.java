@@ -348,10 +348,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
     POSE_ESTIMATOR.resetPosition(GYROSCOPE.getYawRotation(),getModulePositions(),getPose());
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
-  /**
-   * Provides the current pilot of the drivebase
-   * @return Pilot of this subsystem
-   */
   @Override
   public PilotProfile getPilot() {
     return CurrentPilot;
