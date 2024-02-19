@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
@@ -25,7 +26,8 @@ import java.util.concurrent.ArrayBlockingQueue;
  *
  * <h1>TrajectoryManager</h1>
  * 
- * <p>Manages a set of Trajectory Solvers to solve for a list of objects
+ * <p>Manages a set of Trajectory Solvers to solves for the complete trajectories upon a provided target, or the desired
+ * firing rotation or velocity given rotation or velocity.
  * 
  * @see Thread
  */
@@ -127,6 +129,7 @@ public class TrajectoryManager extends Thread implements Closeable {
    * @param Object Object to solve for the trajectory of
    */
   public static synchronized CompletableFuture<SolvableObject> submit(final SolvableObject Object) {
+    //TODO: Check for repeats
     INPUT_CACHE.add(Object);
     return CompletableFuture.supplyAsync(() -> {
       return OUTPUT_CACHE.stream().filter((Solved) -> {
@@ -143,13 +146,14 @@ public class TrajectoryManager extends Thread implements Closeable {
   public static class SolvableObject {
     // ------------------------------------------------------------[Constants]--------------------------------------------------------------//
     public final InterpolatingDoubleTreeMap TRAJECTORY;
-    public final Double FIRING_VELOCITY;
-    public final Double FIRING_ROTATION;
+    public final Optional<Double> FIRING_VELOCITY;
+    public final Optional<Double> FIRING_ROTATION;
     public final Double MASS;
     public final Double MU;    
     public final Double TERMINAL; 
     public final Double HORIZONTAL_AREA;
     public final Double VERTICAL_AREA;
+    public final double INITIAL_POSITION;
 
     public static final Double NOTE_MU = (1.17d);
     public static final Double NOTE_MASS = (2.35301e-1d);
@@ -169,8 +173,8 @@ public class TrajectoryManager extends Thread implements Closeable {
     public SolvableObject(
        final Double Velocity, final Double Rotation, final Double Mass, final Double Mu, final Double Horizon,
        final Double HorizontalPosition, final Double VerticalPosition, final Double HorizontalArea, final Double VerticalArea) {
-      FIRING_VELOCITY = Velocity;
-      FIRING_ROTATION = Rotation;
+      FIRING_VELOCITY = Optional.ofNullable(Velocity);
+      FIRING_ROTATION = Optional.ofNullable(Rotation);
       MASS = Mass;
       MU = Mu;
       TERMINAL = Horizon;
@@ -178,6 +182,7 @@ public class TrajectoryManager extends Thread implements Closeable {
       VERTICAL_AREA = VerticalArea;
       TRAJECTORY = new InterpolatingDoubleTreeMap();
       TRAJECTORY.put(HorizontalPosition, VerticalPosition);
+      INITIAL_POSITION = HorizontalPosition;
     }
     // -------------------------------------------------------------[Methods]---------------------------------------------------------------//
     /**
@@ -190,8 +195,7 @@ public class TrajectoryManager extends Thread implements Closeable {
      * 
      * @return Solvable Object with note properties
      */
-    public static SolvableObject note(final Double Velocity, final Double Rotation, final Double Mass, final Double Mu, final Double Horizon,
-      final Double HorizontalPosition, final Double VerticalPosition) { 
+    public static SolvableObject note(final Double Velocity, final Double Rotation, final Double Horizon, final Double HorizontalPosition, final Double VerticalPosition) { 
       return new SolvableObject(Velocity, Rotation, NOTE_MASS, NOTE_MU, Horizon, HorizontalPosition, VerticalPosition, (Math.PI * (NOTE_OUTER_RADIUS - NOTE_INNER_RADIUS)) * 
       (Math.abs(Math.cos(Rotation)) + (1)) * Math.PI * NOTE_OUTER_RADIUS, (Math.PI * (NOTE_OUTER_RADIUS - NOTE_INNER_RADIUS)) * 
       (Math.abs(Math.sin(Rotation)) + (1)) * Math.PI * NOTE_OUTER_RADIUS);
@@ -200,11 +204,69 @@ public class TrajectoryManager extends Thread implements Closeable {
 
   /**
    *
+   * <h1>RotationSolver</h1>
+   * 
+   * <p>Solves for the specific values of a Rotation of a object in real space.<p>
+   * 
+   * @see Callable
+   */
+  private static class RotationSolver implements Closeable, Callable<Optional<Double>> {
+    // ------------------------------------------------------------[Constants]--------------------------------------------------------------//
+    public final Queue<SolvableObject> OBJECT_QUEUE;
+    public final static Integer OBJECT_QUEUE_MAXIMUM_ELEMENTS = (20);
+    private final static Boolean OBJECT_QUEUE_ORDERED = (true);
+    private final static Integer HORIZON_MAXIMUM_SAMPLES = (100);
+    private final static Integer HORIZON_MAXIMUM_PASSTHROUGH = (1000);
+    // -------------------------------------------------------------[Fields]----------------------------------------------------------------/][]'
+    private volatile Integer PrecedingHorizon = (1);
+    private volatile Double PrecedingPosition = (0d);
+    private volatile Double HorizonAccuracy = (0d);
+    // ----------------------------------------------------------[Constructors]-------------------------------------------------------------//
+    /**
+     * Trajectory Solver Constructor.
+     */
+    public RotationSolver() {
+      OBJECT_QUEUE = new ArrayBlockingQueue<>(OBJECT_QUEUE_MAXIMUM_ELEMENTS, OBJECT_QUEUE_ORDERED);
+    }
+    // -------------------------------------------------------------[Methods]---------------------------------------------------------------//
+    @Timeable(limit = 200, unit = TimeUnit.MILLISECONDS)
+    public synchronized Optional<Double> call() {
+      try{
+        synchronized(OBJECT_QUEUE) {
+          while(!Thread.currentThread().isInterrupted() && !OBJECT_QUEUE.isEmpty()) {
+            final var Object = OBJECT_QUEUE.peek();
+            final var Horizon = Object.TERMINAL > HORIZON_MAXIMUM_SAMPLES? HORIZON_MAXIMUM_SAMPLES: Object.TERMINAL;
+            var HorizontalVelocity = new AtomicReference<Double>(Object.FIRING_VELOCITY.get() * Math.cos(Object.FIRING_ROTATION.get()));       
+            var VerticalVelocity = new AtomicReference<Double>(Object.FIRING_VELOCITY.get() * Math.sin(Object.FIRING_ROTATION.get()));    
+            HorizonAccuracy = (double) (Horizon) / HORIZON_MAXIMUM_PASSTHROUGH;
+            PrecedingPosition = Object.INITIAL_POSITION;
+            IntStream.rangeClosed(PrecedingHorizon, (int) Math.floor(Horizon * (1 / HorizonAccuracy))).forEachOrdered((final int HorizonPoint) -> {
+
+            });
+          }
+        }        
+      } catch (final NoSuchElementException Exception) {
+        return Optional.empty();
+      }
+    }
+
+    /**
+     * Closes this instance and all held resources immediately.
+     */
+    @Override
+    public synchronized void close() {
+      OBJECT_QUEUE.clear();
+    }
+  }
+  
+
+  /**
+   *
    * <h1>TrajectorySolverManager</h1>
    * 
-   * <p>Solves for the specific values of an object in real space.<p>
+   * <p>Solves for the specific values of a Trajectory of a object in real space.<p>
    * 
-   * @see Thread
+   * @see Callable
    */
   private static class TrajectorySolver implements Closeable, Callable<Optional<SolvableObject>> {
     // ------------------------------------------------------------[Constants]--------------------------------------------------------------//
@@ -227,40 +289,47 @@ public class TrajectoryManager extends Thread implements Closeable {
       OBJECT_QUEUE = new ArrayBlockingQueue<>(OBJECT_QUEUE_MAXIMUM_ELEMENTS, OBJECT_QUEUE_ORDERED);
     }
     // -------------------------------------------------------------[Methods]---------------------------------------------------------------//
-
+    /**
+     * Computes for the trajectory of an object, returns an empty optional if unable to be completed.
+     */
     @Timeable(limit = 200, unit = TimeUnit.MILLISECONDS)
     public synchronized Optional<SolvableObject> call() {
-      synchronized(OBJECT_QUEUE) {
-        while(!Thread.currentThread().isInterrupted() && !OBJECT_QUEUE.isEmpty()) {
-          final var Object = OBJECT_QUEUE.peek();
-          final var Horizon = Object.TERMINAL > HORIZON_MAXIMUM_SAMPLES? HORIZON_MAXIMUM_SAMPLES: Object.TERMINAL;
-          var HorizontalVelocity = new AtomicReference<Double>(Object.FIRING_VELOCITY * Math.cos(Object.FIRING_ROTATION));       
-          var VerticalVelocity = new AtomicReference<Double>(Object.FIRING_VELOCITY * Math.sin(Object.FIRING_ROTATION));    
-          HorizonAccuracy = (double) (Horizon) / HORIZON_MAXIMUM_PASSTHROUGH;
-          IntStream.rangeClosed(PrecedingHorizon, (int) Math.floor(Horizon * (1 / HorizonAccuracy))).forEachOrdered((final int HorizonPoint) -> {
-            final var HorizontalPosition = PrecedingPosition + (HorizontalVelocity.get() * HorizonAccuracy);
-            final var VerticalPosition = Object.TRAJECTORY.get(PrecedingPosition) + (HorizontalVelocity.get() * HorizonAccuracy); 
-            PrecedingPosition = HorizontalPosition;    
-            HorizontalVelocity.set(HorizontalVelocity.get() - (
-            (drag(
-              Math.cos(Object.FIRING_ROTATION) * HorizontalVelocity.get(),
-              Object.HORIZONTAL_AREA,
-              Object.MU
-            ) / Object.MASS)) * HorizonAccuracy);
-            VerticalVelocity.set(VerticalVelocity.get() - (ENVIRONMENTAL_ACCELERATION + 
-            (drag(
-              Math.sin(Object.FIRING_ROTATION) * VerticalVelocity.get(),
-              Object.VERTICAL_AREA,
-              Object.MU
-            ) / Object.MASS)) * HorizonAccuracy);
-            Object.TRAJECTORY.put(HorizontalPosition, VerticalPosition);
-            PrecedingHorizon = HorizonPoint;
-          });
-          OBJECT_QUEUE.poll();
-          return Optional.of(Object);
-        }
+      try{
+        synchronized(OBJECT_QUEUE) {
+          while(!Thread.currentThread().isInterrupted() && !OBJECT_QUEUE.isEmpty()) {
+            final var Object = OBJECT_QUEUE.peek();
+            final var Horizon = Object.TERMINAL > HORIZON_MAXIMUM_SAMPLES? HORIZON_MAXIMUM_SAMPLES: Object.TERMINAL;
+            var HorizontalVelocity = new AtomicReference<Double>(Object.FIRING_VELOCITY.get() * Math.cos(Object.FIRING_ROTATION.get()));       
+            var VerticalVelocity = new AtomicReference<Double>(Object.FIRING_VELOCITY.get() * Math.sin(Object.FIRING_ROTATION.get()));    
+            HorizonAccuracy = (double) (Horizon) / HORIZON_MAXIMUM_PASSTHROUGH;
+            PrecedingPosition = Object.INITIAL_POSITION;
+            IntStream.rangeClosed(PrecedingHorizon, (int) Math.floor(Horizon * (1 / HorizonAccuracy))).forEachOrdered((final int HorizonPoint) -> {
+              final var HorizontalPosition = PrecedingPosition + (HorizontalVelocity.get() * HorizonAccuracy);
+              final var VerticalPosition = Object.TRAJECTORY.get(PrecedingPosition) + (HorizontalVelocity.get() * HorizonAccuracy); 
+              PrecedingPosition = HorizontalPosition;    
+              HorizontalVelocity.set(HorizontalVelocity.get() - (
+              (drag(
+                Math.cos(Object.FIRING_ROTATION.get()) * HorizontalVelocity.get(),
+                Object.HORIZONTAL_AREA,
+                Object.MU
+              ) / Object.MASS)) * HorizonAccuracy);
+              VerticalVelocity.set(VerticalVelocity.get() - (ENVIRONMENTAL_ACCELERATION + 
+              (drag(
+                Math.sin(Object.FIRING_ROTATION.get()) * VerticalVelocity.get(),
+                Object.VERTICAL_AREA,
+                Object.MU
+              ) / Object.MASS)) * HorizonAccuracy);
+              Object.TRAJECTORY.put(HorizontalPosition, VerticalPosition);
+              PrecedingHorizon = HorizonPoint;
+            });
+            OBJECT_QUEUE.poll();
+            return Optional.of(Object);
+          }
+          return Optional.empty();
+        }        
+      } catch (final NoSuchElementException Exception) {
         return Optional.empty();
-      }   
+      }
     }
 
     /**

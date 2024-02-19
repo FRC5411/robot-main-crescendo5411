@@ -3,6 +3,7 @@ package org.robotalons.crescendo.subsystems.cannon;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -34,15 +35,17 @@ import org.robotalons.lib.utilities.PilotProfile;
  */
 public class CannonSubsystem extends TalonSubsystemBase {
   // --------------------------------------------------------------[Constants]-------------------------------------------------------------- //
-  public static final Pair<CANSparkMax,CANSparkMax> FIRING_CONTROLLERS;
-  public static final PIDController FIRING_CONTROLLER_PID;
-  public static final RelativeEncoder FIRING_ENCODER;
+  private static final Pair<CANSparkMax,CANSparkMax> FIRING_CONTROLLERS;
+  private static final PIDController FIRING_CONTROLLER_PID;
+  private static final RelativeEncoder FIRING_ENCODER;
 
-  public static final CANSparkMax PIVOT_CONTROLLER;
-  public static final PIDController PIVOT_CONTROLLER_PID;
-  public static final RelativeEncoder PIVOT_ENCODER;
+  private static final CANSparkMax PIVOT_CONTROLLER;
+  private static final PIDController PIVOT_CONTROLLER_PID;
+  private static final RelativeEncoder PIVOT_ENCODER;
 
   private static final DutyCycleEncoder PIVOT_ABSOLUTE_ENCODER;
+
+  private static final TrajectoryManager TRAJECTORY_MANAGER;
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
   private static CannonSubsystem Instance;
   private static SwerveModuleState CurrentReference;
@@ -82,7 +85,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
 
     PIVOT_ABSOLUTE_ENCODER = new DutyCycleEncoder(Ports.PIVOT_ABSOLUTE_ENCODER_ID);
 
-    TrajectoryManager.getInstance();
+    TRAJECTORY_MANAGER = TrajectoryManager.getInstance();
     
   }
   
@@ -106,7 +109,14 @@ public class CannonSubsystem extends TalonSubsystemBase {
    * Fires the shooter at the best possible target on the field
    */
   public synchronized static void fire() {
-    
+    switch (CurrentMode) {
+      case MANUAL:
+        break;
+      case SEMI:
+        break;
+      case AUTO:
+        break;
+    }
   }
   
 
@@ -114,7 +124,10 @@ public class CannonSubsystem extends TalonSubsystemBase {
    * Closes this instance and all held resources immediately 
    */
   public synchronized void close() {
-    
+    FIRING_CONTROLLERS.getFirst().close();
+    FIRING_CONTROLLERS.getSecond().close();
+    PIVOT_CONTROLLER.close();
+    TRAJECTORY_MANAGER.close();
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
   /**
@@ -126,6 +139,22 @@ public class CannonSubsystem extends TalonSubsystemBase {
     AUTO,
   }
   // --------------------------------------------------------------[Mutators]--------------------------------------------------------------- //
+  /**
+   * Mutates the current reference rotation of the cannon as a measurement in radians
+   * @param Reference Desired rotation in radians
+   */
+  private static synchronized void set(final Rotation2d Reference) {
+    PIVOT_CONTROLLER.set(PIVOT_CONTROLLER_PID.calculate(PIVOT_ENCODER.getPosition(), Reference.getRotations()));
+  }
+
+  /**
+   * Mutates the current reference RPM of the cannon
+   * @param Reference Desired velocity in ROM
+   */
+  private static synchronized void set(final Double Reference) {
+    FIRING_CONTROLLERS.getFirst().set(FIRING_CONTROLLER_PID.calculate(FIRING_ENCODER.getVelocity(), Reference));
+  }
+
   /**
    * Mutates the cannon controller's current 'set-point' or reference {@link SwerveModuleState state}
    * @param Reference Cannon's new Goal or 'set-point' reference

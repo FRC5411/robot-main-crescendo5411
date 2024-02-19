@@ -16,6 +16,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Constants {
   // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
   public static final class Measurements {
+    public static final Double ABSOLUTE_ENCODER_OFFSET = (0d);
+
     public static final Double ODOMETRY_FREQUENCY = (250d);
 
     public static final Double PIVOT_GEAR_RATIO = (1d);
@@ -29,6 +31,9 @@ public class Constants {
     public static final Double FIRING_D_GAIN = (1d);
 
     public static final Double CANNON_LENGTH = (1d);
+
+    public static final Double PIVOT_MINIMUM_ROTATION = (0d);
+    public static final Double PIVOT_MAXIMUM_ROTATION = (0d);
 
   }
   
