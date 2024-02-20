@@ -32,11 +32,9 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
     // --------------------------------------------------------------[Constants]-------------------------------------------------------------- //
     private final static CANSparkMax INTAKE_SPARK_MAX;
     private final static CANSparkMax CANNON_SPARK_MAX;
-    private final static CANSparkMax[] MOTORS;
     
     private static final Encoder INTAKE_SPARK_MAX_ENCODER;
     private static final Encoder CANNON_SPARK_MAX_ENCODER;
-    private static final Encoder[] ENCODERS;
 
     private final static DigitalInput INTAKE_BREAKBEAM_INPUT;
     private final static DigitalInput CANNON_BREAKBEAM_INPUT;
@@ -53,16 +51,14 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
         Instance = new IndexerSubsystem();
         HasNote = (false);
 
-        INTAKE_SPARK_MAX = new CANSparkMax(Constants.Ports.INDEXER_INTAKE_SPARK_MAX_ID, MotorType.kBrushless);
-        CANNON_SPARK_MAX = new CANSparkMax(Constants.Ports.INDEXER_CANNON_SPARK_MAX_ID, MotorType.kBrushless);
-        MOTORS = new CANSparkMax[]{INTAKE_SPARK_MAX, CANNON_SPARK_MAX};
+        INTAKE_SPARK_MAX = new CANSparkMax(Constants.INXR.INTAKE_SPARK_MAX_ID, MotorType.kBrushless);
+        CANNON_SPARK_MAX = new CANSparkMax(Constants.INXR.CANNON_SPARK_MAX_ID, MotorType.kBrushless);
 
-        INTAKE_SPARK_MAX_ENCODER = new Encoder(Measurements.K_INDEXER_INTAKE_SPARK_MAX_ENCODER_CHANNELA, Measurements.K_INDEXER_INTAKE_SPARK_MAX_ENCODER_CHANNELB);
-        CANNON_SPARK_MAX_ENCODER = new Encoder(Measurements.K_INDEXER_CANNON_SPARK_MAX_ENCODER_CHANNELA, Measurements.K_INDEXER_CANNON_SPARK_MAX_ENCODER_CHANNELB);
-        ENCODERS = new Encoder[]{INTAKE_SPARK_MAX_ENCODER, CANNON_SPARK_MAX_ENCODER};
+        INTAKE_SPARK_MAX_ENCODER = new Encoder(Constants.INXR.K_INTAKE_SPARK_MAX_ENCODER_CHANNELA, Constants.INXR.K_INTAKE_SPARK_MAX_ENCODER_CHANNELB);
+        CANNON_SPARK_MAX_ENCODER = new Encoder(Constants.INXR.K_CANNON_SPARK_MAX_ENCODER_CHANNELA, Constants.INXR.K_CANNON_SPARK_MAX_ENCODER_CHANNELB);
 
-        INTAKE_BREAKBEAM_INPUT = new DigitalInput(Constants.Ports.INDEXER_INTAKE_BREAKBEAM_INPUT_ID);
-        CANNON_BREAKBEAM_INPUT = new DigitalInput(Constants.Ports.INDEXER_CANNON_BREAKBEAM_INPUT_ID);
+        INTAKE_BREAKBEAM_INPUT = new DigitalInput(Constants.INXR.INDEXER_INTAKE_BREAKBEAM_INPUT_ID);
+        CANNON_BREAKBEAM_INPUT = new DigitalInput(Constants.INXR.INDEXER_CANNON_BREAKBEAM_INPUT_ID);
     }
     
     // ---------------------------------------------------------------[Methods]--------------------------------------------------------------- //
@@ -78,7 +74,7 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
         motor.restoreFactoryDefaults();
         motor.clearFaults();
     
-        motor.setSmartCurrentLimit(Measurements.K_CURRENT_LIMIT);
+        motor.setSmartCurrentLimit(Constants.INXR.K_CURRENT_LIMIT);
     }
     
     /**
@@ -108,22 +104,35 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
     public synchronized void set(final Direction Demand) {
         switch(Demand) {
             case FORWARD_INDEXER:
-//              MOTORS[] spin at Measurements.INDEXER_MOTOR_SPEED for Measurements.INDEXER_MOTOR_DURATION;
+                INTAKE_SPARK_MAX.set(Constants.INXR.INTAKE_SPARK_MAX_SPEED);
+                CANNON_SPARK_MAX.set(Constants.INXR.CANNON_SPARK_MAX_SPEED);
+//              Wait for Constants.INXR.SPARK_MAX_DURATION;
+                INTAKE_SPARK_MAX.set(0);
+                CANNON_SPARK_MAX.set(0);
                 break;
             case FORWARD_CANNON:
                 if (getHoldingNote()) {
-//                  MOTORS[] spin at Measurements.INDEXER_MOTOR_SPEED for Measurements.INDEXER_MOTOR_DURATION;
+                    INTAKE_SPARK_MAX.set(Constants.INXR.INTAKE_SPARK_MAX_SPEED);
+                    CANNON_SPARK_MAX.set(Constants.INXR.CANNON_SPARK_MAX_SPEED);
+//                  Wait for Constants.INXR.SPARK_MAX_DURATION;
+                    INTAKE_SPARK_MAX.set(0);
+                    CANNON_SPARK_MAX.set(0);
 //                  Tell CANNON to continueWithFireSequence;
                 } else {
 //                  Tell CANNON to abortFireSequence;
                 }
                 break;
             case BACKWARD_INDEXER:
-//              MOTORS[] spin at -(Measurements.INDEXER_MOTOR_SPEED) for Measurements.INDEXER_MOTOR_DURATION;
+                INTAKE_SPARK_MAX.set(-Constants.INXR.INTAKE_SPARK_MAX_SPEED)
+                CANNON_SPARK_MAX.set(-Constants.INXR.CANNON_SPARK_MAX_SPEED);
+//              Wait for Constants.INXR.SPARK_MAX_DURATION;
+                INTAKE_SPARK_MAX.set(0);
+                CANNON_SPARK_MAX.set(0);
 //              Tell INTAKE to do intake sequence backwards (negative speed, same time, etc etc);
                 break;
             default:
-//              Stop everything;
+                INTAKE_SPARK_MAX.set(0);
+                CANNON_SPARK_MAX.set(0);
                 break;
         }
     }
