@@ -1,25 +1,23 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.lib.motion.trajectory;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
+
 import java.io.Closeable;
-import java.util.Queue;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Callable;
 import java.util.Optional;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+
+import javax.management.InstanceAlreadyExistsException;
 
 import com.jcabi.aspects.Timeable;
 
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import edu.wpi.first.math.util.Units;
-
-import java.util.concurrent.ArrayBlockingQueue;
+import edu.wpi.first.math.geometry.Rotation2d;
 // -----------------------------------------------------------[Trajectory Manager]----------------------------------------------------------//
 /**
  * 
@@ -33,10 +31,7 @@ import java.util.concurrent.ArrayBlockingQueue;
  */
 public class TrajectoryManager extends Thread implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  public static final Integer MAXIMUM_WORKERS = (10);
-  private static final List<SolvableObject> INPUT_CACHE;  
-  private static final List<SolvableObject> OUTPUT_CACHE;
-  private static final List<TrajectorySolver> WORKERS;
+  private static final List<Solver<?>> SOLVABLE_SOLVERS;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static TrajectoryManager Instance;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
@@ -46,314 +41,240 @@ public class TrajectoryManager extends Thread implements Closeable {
   private TrajectoryManager() {
     start();
   } static {
-    INPUT_CACHE = new ArrayList<>();
-    OUTPUT_CACHE = new ArrayList<>();
-    WORKERS = new ArrayList<>();
-    IntStream.rangeClosed((0), MAXIMUM_WORKERS).forEachOrdered((final int Worker) -> {
-      WORKERS.add(new TrajectorySolver());
-    });
-
-
+    SOLVABLE_SOLVERS = new ArrayList<>();
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
-  /**
-   * Starts the Manager, should not explicitly be called explicitly.
-   */
-  @Override
+  public synchronized void run() {
+
+  }
+
+  public synchronized void close() {
+
+  }
+
   public synchronized void start() {
     super.start();
   }
-
-
-  /**
-   * Operates upon the worker TrajectoryThreads, manages allocations, efficiency, etcetera
-   */
-  @Override
-  public synchronized void run() {
-    while(isAlive()) {
-      synchronized(INPUT_CACHE) {
-        while(!INPUT_CACHE.isEmpty()) {
-          if(WORKERS.stream().mapToInt((Worker) -> Worker.OBJECT_QUEUE.size()).sum() == TrajectorySolver.OBJECT_QUEUE_MAXIMUM_ELEMENTS * WORKERS.size()) {
-            WORKERS.add(new TrajectorySolver());
-          }
-          final var Map = new HashMap<TrajectorySolver,Integer>();
-          WORKERS.forEach((Worker) -> Map.put(Worker, Worker.OBJECT_QUEUE.size()));
-          final var Iterator = Map.keySet().iterator();
-          INPUT_CACHE.forEach((Object) -> {
-            final var Solver = Iterator.next();
-            Map.values().stream().mapToInt((Value) -> Value).min().ifPresentOrElse(
-            (Minimum) -> {
-              if(Solver.OBJECT_QUEUE.size() == Minimum) {
-                Solver.OBJECT_QUEUE.offer(Object);
-                Map.replace(Solver, Solver.OBJECT_QUEUE.size());
-              }
-            },
-            () -> {
-              Solver.OBJECT_QUEUE.offer(Object);
-            });
-          });
-        }
-        WORKERS.parallelStream().forEach((Worker) -> {
-          Worker.call().ifPresent(
-          (Object) -> {
-            OUTPUT_CACHE.add(Object);
-          });
-        });
-      }
-    }
-  }
-
-  /**
-   * Closes this instance and all held resources.
-   */
-  @Override
-  public synchronized void close() {
-    while(WORKERS.stream().mapToInt((Worker) -> Worker.OBJECT_QUEUE.size()).sum() > (0)) {
-      WORKERS.parallelStream().forEach((Worker) -> {
-        Worker.call().ifPresent(
-          (Object) -> {
-            OUTPUT_CACHE.add(Object);
-          });
-        if(Worker.OBJECT_QUEUE.isEmpty()) {
-          Worker.close();
-        }
-      });
-    }
-    WORKERS.clear();
-
-  }
-
-
-  /**
-   * Submits a Solvable Object to the trajectory solver, which will be added to a thread for evaluation during the next control loop
-   * @param Object Object to solve for the trajectory of
-   */
-  public static synchronized CompletableFuture<SolvableObject> submit(final SolvableObject Object) {
-    //TODO: Check for repeats
-    INPUT_CACHE.add(Object);
-    return CompletableFuture.supplyAsync(() -> {
-      return OUTPUT_CACHE.stream().filter((Solved) -> {
-        return Solved.equals(Object);
-      }).toList().get((0));
-    });
-  }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
-  /**
-   * <h2>SolvableObject</h2>
-   * 
-   * Represents an object with the necessary values for a trajectory to be created
-   */
-  public static class SolvableObject {
+  public static class NewtonRaphsonSolver extends Solver<Rotation2d> {
     // ------------------------------------------------------------[Constants]--------------------------------------------------------------//
-    public final InterpolatingDoubleTreeMap TRAJECTORY;
-    public final Optional<Double> FIRING_VELOCITY;
-    public final Optional<Double> FIRING_ROTATION;
-    public final Double MASS;
-    public final Double MU;    
-    public final Double TERMINAL; 
-    public final Double HORIZONTAL_AREA;
-    public final Double VERTICAL_AREA;
-    public final double INITIAL_POSITION;
-
-    public static final Double NOTE_MU = (1.17d);
-    public static final Double NOTE_MASS = (2.35301e-1d);
-    public static final Double NOTE_INNER_RADIUS = Units.inchesToMeters((10d));
-    public static final Double NOTE_OUTER_RADIUS = Units.inchesToMeters((14d));
-    // ----------------------------------------------------------[Constructors]-------------------------------------------------------------//
-    /**
-     * Solvable Object Constructor
-     * @param Velocity   Speed of the object upon entering the trajectory         (m/s)
-     * @param Rotation   Rotation of the object upon entering the trajectory      (rad)
-     * @param Mass       Constant mass of the object                              (kg)
-     * @param Mu         Friction coefficient by the air acting on the object     (None)
-     * @param Horizon    Distance for which this object is a projectile           (m)
-     * @param Vertical   Initial vertical position upon entering the trajectory   (m)
-     * @param Horizontal Initial horizontal position upon entering the trajectory (m)
-     */
-    public SolvableObject(
-       final Double Velocity, final Double Rotation, final Double Mass, final Double Mu, final Double Horizon,
-       final Double HorizontalPosition, final Double VerticalPosition, final Double HorizontalArea, final Double VerticalArea) {
-      FIRING_VELOCITY = Optional.ofNullable(Velocity);
-      FIRING_ROTATION = Optional.ofNullable(Rotation);
-      MASS = Mass;
-      MU = Mu;
-      TERMINAL = Horizon;
-      HORIZONTAL_AREA = HorizontalArea;
-      VERTICAL_AREA = VerticalArea;
-      TRAJECTORY = new InterpolatingDoubleTreeMap();
-      TRAJECTORY.put(HorizontalPosition, VerticalPosition);
-      INITIAL_POSITION = HorizontalPosition;
-    }
+    private final static Double ENVIRONMENTAL_ACCELERATION = (9.80665d); //TODO: May need a negative?
+    // -------------------------------------------------------------[Fields]----------------------------------------------------------------//
+    private volatile Double VelocityConstant;
+    private volatile Double HorizonConstant;
+    private volatile Rotation2d Rotation;
     // -------------------------------------------------------------[Methods]---------------------------------------------------------------//
-    /**
-     * Quickly creates a note preset of this object
-     * @param Velocity   Speed of the object upon entering the trajectory                 (m/s)
-     * @param Rotation   Rotation of the object upon entering the trajectory              (rad)
-     * @param Horizon    Distance for which this object is a projectile                   (m)
-     * @param HorizontalPosition Initial horizontal position upon entering the trajectory (m)
-     * @param VerticalPosition   Initial vertical position upon entering the trajectory   (m)
-     * 
-     * @return Solvable Object with note properties
-     */
-    public static SolvableObject note(final Double Velocity, final Double Rotation, final Double Horizon, final Double HorizontalPosition, final Double VerticalPosition) { 
-      return new SolvableObject(Velocity, Rotation, NOTE_MASS, NOTE_MU, Horizon, HorizontalPosition, VerticalPosition, (Math.PI * (NOTE_OUTER_RADIUS - NOTE_INNER_RADIUS)) * 
-      (Math.abs(Math.cos(Rotation)) + (1)) * Math.PI * NOTE_OUTER_RADIUS, (Math.PI * (NOTE_OUTER_RADIUS - NOTE_INNER_RADIUS)) * 
-      (Math.abs(Math.sin(Rotation)) + (1)) * Math.PI * NOTE_OUTER_RADIUS);
-    }
-  }
-
-  /**
-   *
-   * <h1>RotationSolver</h1>
-   * 
-   * <p>Solves for the specific values of a Rotation of a object in real space.<p>
-   * 
-   * @see Callable
-   */
-  private static class RotationSolver implements Closeable, Callable<Optional<Double>> {
-    // ------------------------------------------------------------[Constants]--------------------------------------------------------------//
-    public final Queue<SolvableObject> OBJECT_QUEUE;
-    public final static Integer OBJECT_QUEUE_MAXIMUM_ELEMENTS = (20);
-    private final static Boolean OBJECT_QUEUE_ORDERED = (true);
-    private final static Integer HORIZON_MAXIMUM_SAMPLES = (100);
-    private final static Integer HORIZON_MAXIMUM_PASSTHROUGH = (1000);
-    // -------------------------------------------------------------[Fields]----------------------------------------------------------------/][]'
-    private volatile Integer PrecedingHorizon = (1);
-    private volatile Double PrecedingPosition = (0d);
-    private volatile Double HorizonAccuracy = (0d);
-    // ----------------------------------------------------------[Constructors]-------------------------------------------------------------//
-    /**
-     * Trajectory Solver Constructor.
-     */
-    public RotationSolver() {
-      OBJECT_QUEUE = new ArrayBlockingQueue<>(OBJECT_QUEUE_MAXIMUM_ELEMENTS, OBJECT_QUEUE_ORDERED);
-    }
-    // -------------------------------------------------------------[Methods]---------------------------------------------------------------//
-    @Timeable(limit = 200, unit = TimeUnit.MILLISECONDS)
-    public synchronized Optional<Double> call() {
-      try{
-        synchronized(OBJECT_QUEUE) {
-          while(!Thread.currentThread().isInterrupted() && !OBJECT_QUEUE.isEmpty()) {
-            final var Object = OBJECT_QUEUE.peek();
-            final var Horizon = Object.TERMINAL > HORIZON_MAXIMUM_SAMPLES? HORIZON_MAXIMUM_SAMPLES: Object.TERMINAL;
-            var HorizontalVelocity = new AtomicReference<Double>(Object.FIRING_VELOCITY.get() * Math.cos(Object.FIRING_ROTATION.get()));       
-            var VerticalVelocity = new AtomicReference<Double>(Object.FIRING_VELOCITY.get() * Math.sin(Object.FIRING_ROTATION.get()));    
-            HorizonAccuracy = (double) (Horizon) / HORIZON_MAXIMUM_PASSTHROUGH;
-            PrecedingPosition = Object.INITIAL_POSITION;
-            IntStream.rangeClosed(PrecedingHorizon, (int) Math.floor(Horizon * (1 / HorizonAccuracy))).forEachOrdered((final int HorizonPoint) -> {
-
-            });
-          }
-        }        
-      } catch (final NoSuchElementException Exception) {
-        return Optional.empty();
+    public synchronized Optional<Rotation2d> solve(final Double Horizon) {
+      if(Math.abs(rotationalTrajectory(Horizon, Reserved.INITIAL_POSITION, Rotation)) > 1e-4) {
+        Rotation = Rotation2d.fromRadians(rootTangent(
+          Rotation.getRadians(),
+          rotationalTrajectory(
+              Reserved.HORIZON, Reserved.INITIAL_VELOCITY, Rotation),
+          rotationalDiscreteDerivative(
+            Reserved.HORIZON, Reserved.INITIAL_VELOCITY, Rotation, Rotation2d.fromRadians(1e-4))));
+      } else {
+        return Optional.of(Rotation);
       }
+      return Optional.empty();
     }
 
     /**
-     * Closes this instance and all held resources immediately.
+     * Calculates the for a point along the object's trajectory
+     * @param Horizon  Current point along the trajectory
+     * @param Velocity Current velocity along the trajectory
+     * @param Rotation Current rotation along the trajectory
+     * @return Next value of trajectory
      */
-    @Override
-    public synchronized void close() {
-      OBJECT_QUEUE.clear();
+    public synchronized Double rotationalTrajectory(final Double Horizon, final Double Velocity, final Rotation2d Rotation) {
+      setHorizon(Horizon, Velocity, Rotation);
+      return +HorizonConstant * Math.tan(Rotation.getRadians())
+        - Math.pow(HorizonConstant, (2)) * VelocityConstant * secantSquared(Rotation)
+        + Reserved.INITIAL_POSITION * Math.sin(Rotation.getRadians())
+        + (Math.tan(Reserved.INITIAL_ROTATION.getRadians()) * Reserved.INITIAL_POSITION) * Math.sin(Reserved.INITIAL_ROTATION.getRadians());
+    }
+
+    /**
+     * Calculates the discrete time derivative of the slope of a given point along the trajectory
+     * @param Horizon       Current point along the trajectory
+     * @param Velocity      Current velocity along the trajectory
+     * @param Rotation      Current rotation along the trajectory
+     * @param DeltaRotation Current change in rotation in the trajectory
+     * @return Time-discrete derivative of the rotation
+     */
+    public synchronized Double rotationalDiscreteDerivative(final Double Horizon, final Double Velocity, final Rotation2d Rotation, final Rotation2d DeltaRotation) {
+      return ( rotationalTrajectory(Reserved.HORIZON, Reserved.INITIAL_VELOCITY, Rotation.plus(DeltaRotation))
+              - rotationalTrajectory(Reserved.HORIZON, Reserved.INITIAL_VELOCITY, Rotation))
+          / DeltaRotation.getRadians();
+    }
+
+    /**
+     * Calculates the derivative (instantaneous rate of change)
+     * @param Horizon  Current point along the trajectory
+     * @param Velocity Current velocity along the trajectory
+     * @param Rotation Current rotation along the trajectory
+     * @return Value of the derivative at this point
+     */
+    private synchronized Double rotationalDerivative(final Double Horizon, final Double Velocity, final Rotation2d Rotation) {
+      setHorizon(Horizon, Velocity, Rotation);
+      return (Math.PI / (180))
+      * (HorizonConstant * secantSquared(Rotation)
+          - (2)
+              * Math.pow(HorizonConstant, (2))
+              * VelocityConstant
+              * secantSquared(Rotation)
+              * Math.tan(Rotation.getRadians())
+          - Reserved.INITIAL_POSITION * Math.cos(Math.toDegrees(Rotation.getRadians())));
+    }
+
+    /**
+     * Provides the tangent line of a given point at the roots of a function
+     * @param X     Value of point along the x axis
+     * @param Y     Value of point along the y axis
+     * @param Slope Slope of this point
+     * @return Tangent line at this point
+     */
+    private static Double rootTangent(final Double X, final Double Y, final Double Slope) {
+      return -(Y / Slope) + X;
+    }
+
+    /**
+     * Provides the value of secant at a given point along the rotation
+     * @param Rotation Current rotation along the trajectory
+     */
+    private static Double secantSquared(final Rotation2d Rotation) {
+      return Math.pow((1) / Math.cos(Rotation.getRadians()),( 2));
+    }
+
+    /**
+     * Mutates the current horizon constant given the current states of this object at a position.
+     * @param Horizon  Current point along the trajectory
+     * @param Velocity Current velocity along the trajectory
+     * @param Rotation Current rotation along the trajectory
+     */
+    private synchronized void setHorizon(final Double Horizon, final Double Velocity, final Rotation2d Rotation) {
+      HorizonConstant =  -(Reserved.HORIZON
+            - Horizon
+            + Reserved.INITIAL_POSITION * Math.cos(Rotation.getRadians()));
+      VelocityConstant = ENVIRONMENTAL_ACCELERATION / (2 * Velocity * Velocity);
     }
   }
-  
+
 
   /**
-   *
-   * <h1>TrajectorySolverManager</h1>
    * 
-   * <p>Solves for the specific values of a Trajectory of a object in real space.<p>
+   * 
+   * <h1>Solver</h1>
+   * 
+   * <p>Represents a solver which solves upon a solvable instance for some type output.</p>
    * 
    * @see Callable
+   * @see Optional
    */
-  private static class TrajectorySolver implements Closeable, Callable<Optional<SolvableObject>> {
+  public static abstract class Solver<SolvableType> implements Callable<Optional<SolvableType>>, Closeable {
     // ------------------------------------------------------------[Constants]--------------------------------------------------------------//
-    public final Queue<SolvableObject> OBJECT_QUEUE;
-    public final static Integer OBJECT_QUEUE_MAXIMUM_ELEMENTS = (20);
-    private final static Boolean OBJECT_QUEUE_ORDERED = (true);
-    private final static Double ENVIRONMENTAL_ACCELERATION = (-9.80665d);
-    private final static Double ENVIRONMENTAL_DENSITY = (1.1839d);
-    private final static Integer HORIZON_MAXIMUM_SAMPLES = (100);
-    private final static Integer HORIZON_MAXIMUM_PASSTHROUGH = (1000);
-    // -------------------------------------------------------------[Fields]----------------------------------------------------------------/][]'
-    private volatile Integer PrecedingHorizon = (1);
-    private volatile Double PrecedingPosition = (0d);
-    private volatile Double HorizonAccuracy = (0d);
+    private static final Integer SOLVING_QUEUE_MAXIMUM_ELEMENTS = (20);
+    private static final Boolean SOLVING_QUEUE_IS_ORDERED = (true);
+    private static final Integer SOLVING_MAXIMUM_INSTANCES = (10);
+    private static final Queue<Solvable<?>> SOLVING_QUEUE = new ArrayBlockingQueue<>(SOLVING_QUEUE_MAXIMUM_ELEMENTS, SOLVING_QUEUE_IS_ORDERED);
+    // -------------------------------------------------------------[Fields]----------------------------------------------------------------//
+    protected volatile Solvable<SolvableType> Reserved = (null);
+    protected volatile Integer Position = (0);
+    private volatile Integer Instances = (0);
     // ----------------------------------------------------------[Constructors]-------------------------------------------------------------//
     /**
-     * Trajectory Solver Constructor.
+     * Solver Constructor.
+     * @throws InstantiationError When attempting to create more valid instances then what is allowed for this type
      */
-    public TrajectorySolver() {
-      OBJECT_QUEUE = new ArrayBlockingQueue<>(OBJECT_QUEUE_MAXIMUM_ELEMENTS, OBJECT_QUEUE_ORDERED);
+    public Solver() throws InstantiationError {
+      if(Instances > SOLVING_MAXIMUM_INSTANCES) {
+        throw new InstantiationError();
+      }
+      Instances++;
     }
     // -------------------------------------------------------------[Methods]---------------------------------------------------------------//
     /**
-     * Computes for the trajectory of an object, returns an empty optional if unable to be completed.
+     * Attempts for the result of a given reserved solvable instance, if it cannot be computed, empty is returned, limited
+     * to 200 milliseconds for upon each run.
      */
     @Timeable(limit = 200, unit = TimeUnit.MILLISECONDS)
-    public synchronized Optional<SolvableObject> call() {
-      try{
-        synchronized(OBJECT_QUEUE) {
-          while(!Thread.currentThread().isInterrupted() && !OBJECT_QUEUE.isEmpty()) {
-            final var Object = OBJECT_QUEUE.peek();
-            final var Horizon = Object.TERMINAL > HORIZON_MAXIMUM_SAMPLES? HORIZON_MAXIMUM_SAMPLES: Object.TERMINAL;
-            var HorizontalVelocity = new AtomicReference<Double>(Object.FIRING_VELOCITY.get() * Math.cos(Object.FIRING_ROTATION.get()));       
-            var VerticalVelocity = new AtomicReference<Double>(Object.FIRING_VELOCITY.get() * Math.sin(Object.FIRING_ROTATION.get()));    
-            HorizonAccuracy = (double) (Horizon) / HORIZON_MAXIMUM_PASSTHROUGH;
-            PrecedingPosition = Object.INITIAL_POSITION;
-            IntStream.rangeClosed(PrecedingHorizon, (int) Math.floor(Horizon * (1 / HorizonAccuracy))).forEachOrdered((final int HorizonPoint) -> {
-              final var HorizontalPosition = PrecedingPosition + (HorizontalVelocity.get() * HorizonAccuracy);
-              final var VerticalPosition = Object.TRAJECTORY.get(PrecedingPosition) + (HorizontalVelocity.get() * HorizonAccuracy); 
-              PrecedingPosition = HorizontalPosition;    
-              HorizontalVelocity.set(HorizontalVelocity.get() - (
-              (drag(
-                Math.cos(Object.FIRING_ROTATION.get()) * HorizontalVelocity.get(),
-                Object.HORIZONTAL_AREA,
-                Object.MU
-              ) / Object.MASS)) * HorizonAccuracy);
-              VerticalVelocity.set(VerticalVelocity.get() - (ENVIRONMENTAL_ACCELERATION + 
-              (drag(
-                Math.sin(Object.FIRING_ROTATION.get()) * VerticalVelocity.get(),
-                Object.VERTICAL_AREA,
-                Object.MU
-              ) / Object.MASS)) * HorizonAccuracy);
-              Object.TRAJECTORY.put(HorizontalPosition, VerticalPosition);
-              PrecedingHorizon = HorizonPoint;
-            });
-            OBJECT_QUEUE.poll();
-            return Optional.of(Object);
+    public synchronized Optional<SolvableType> call() {
+      try {
+        synchronized(SOLVING_QUEUE) {
+          while(!Thread.currentThread().isInterrupted() && !SOLVING_QUEUE.isEmpty()) { 
+            Reserved = reserve();
+            for(; Position < Reserved.HORIZON; Position++) {
+              var Solve = solve((double) Position/(1000));
+              if(Solve.isPresent()) {
+                return Solve;
+              }
+            }
           }
           return Optional.empty();
-        }        
-      } catch (final NoSuchElementException Exception) {
+        }
+      } catch (final NoSuchElementException | InstanceAlreadyExistsException  Exception) {
         return Optional.empty();
       }
     }
+
+    /**
+     * Solves for a given type variable, at a given horizon
+     * @param Horizon The current horizon point
+     * @return Optional representing the solvable type
+     */
+    protected abstract Optional<SolvableType> solve(final Double Horizon);
 
     /**
      * Closes this instance and all held resources immediately.
      */
     @Override
     public synchronized void close() {
-      OBJECT_QUEUE.clear();
+      SOLVING_QUEUE.clear();
     }
 
     /**
-     * Calculates the force of drag on a real world object according to the equation:
-     * <pre><code>
-     * F = 1/2 * p * v^2 * a * c 
-     * </code></pre>
-     * With the density of air 1.1839                            (Kg/m^3)
-     * @param Velocity Relative velocity of the object in motion (m/s)
-     * @param Area     Cross-sectional area of a given object    (m^2)
-     * @param Mu       Friction coefficient of the object        (None)
-     * @return The force, in Newtons of the object               (N)
+     * 
      */
-    private static Double drag(final Double Velocity, final Double Area, final Double Mu) {
-      return (1/2) * ENVIRONMENTAL_DENSITY * Math.pow(Velocity,(2)) * Mu * Area;
+    public synchronized CompletableFuture<SolvableType> submit(final Solvable<SolvableType> Object) {
+      synchronized(SOLVING_QUEUE) {
+        SOLVING_QUEUE.offer(Object);
+      }
+      return CompletableFuture.supplyAsync(
+        () -> {
+
+        }
+      );
     }
+
+    /**
+     * Reserves a solvable instance from the queue
+     * @return A reserved solvable instance from the queue
+     * @throws InstanceAlreadyExistsException When attempting to 
+     */
+    @SuppressWarnings("unchecked")
+    private synchronized Solvable<SolvableType> reserve() throws InstanceAlreadyExistsException {
+      if(Reserved != null) {
+        synchronized(SOLVING_QUEUE) {
+          return (Solvable<SolvableType>) SOLVING_QUEUE.poll();
+        }
+      } else {
+        throw new InstanceAlreadyExistsException();
+      }
+    }
+  }
+
+  /**
+   * Represents a container for an object with a trajectory that has values which are unknown and need to be
+   * solved for.
+   */
+  public static abstract class Solvable<SolvingType> {
+    public Double MU;
+    public Double MASS;    
+    public Double HORIZON;
+    public Double VERTICAL_AREA;
+    public Double INITIAL_POSITION;    
+    public Double INITIAL_VELOCITY;
+    public Rotation2d INITIAL_ROTATION;    
+    public Optional<SolvingType> SOLVING;
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
@@ -365,5 +286,4 @@ public class TrajectoryManager extends Thread implements Closeable {
           Instance = new TrajectoryManager();
       return Instance;
   }
-
 }

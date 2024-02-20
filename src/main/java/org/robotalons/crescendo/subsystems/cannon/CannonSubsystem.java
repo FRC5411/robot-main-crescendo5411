@@ -17,7 +17,7 @@ import org.robotalons.crescendo.Constants.Profiles.Keybindings;
 import org.robotalons.crescendo.subsystems.cannon.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.cannon.Constants.Ports;
 import org.robotalons.lib.TalonSubsystemBase;
-import org.robotalons.lib.motion.trajectory.TrajectoryManager;
+import org.robotalons.lib.motion.trajectory.TrajectoryDo;
 import org.robotalons.lib.utilities.PilotProfile;
 
 
@@ -45,7 +45,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
 
   private static final DutyCycleEncoder PIVOT_ABSOLUTE_ENCODER;
 
-  private static final TrajectoryManager TRAJECTORY_MANAGER;
+  private static final TrajectoryDo TRAJECTORY_MANAGER;
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
   private static CannonSubsystem Instance;
   private static SwerveModuleState CurrentReference;
@@ -85,7 +85,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
 
     PIVOT_ABSOLUTE_ENCODER = new DutyCycleEncoder(Ports.PIVOT_ABSOLUTE_ENCODER_ID);
 
-    TRAJECTORY_MANAGER = TrajectoryManager.getInstance();
+    TRAJECTORY_MANAGER = TrajectoryDo.getInstance();
     
   }
   
