@@ -1,5 +1,6 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.cannon;
+import edu.wpi.first.math.MathUtil;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.PIDController;
@@ -13,6 +14,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 
+import org.littletonrobotics.junction.Logger;
 import org.robotalons.crescendo.Constants.Profiles.Keybindings;
 import org.robotalons.crescendo.subsystems.cannon.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.cannon.Constants.Ports;
@@ -54,7 +56,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
   private CannonSubsystem() {
     super(("Cannon Subsystem"));
   } static {
-    CurrentReference = new SwerveModuleState((0d), new Rotation2d((Measurements.PIVOT_MAXIMUM_ROTATION + Measurements.PIVOT_MINIMUM_ROTATION)/2));
+    CurrentReference = new SwerveModuleState(-(0d), new Rotation2d((Measurements.PIVOT_MAXIMUM_ROTATION + Measurements.PIVOT_MINIMUM_ROTATION)/2));
     CurrentMode = FiringMode.MANUAL;
     FIRING_CONTROLLERS = new Pair<CANSparkMax,CANSparkMax>(
       new CANSparkMax(Ports.FIRING_CONTROLLER_LEFT_ID, MotorType.kBrushless), 
@@ -75,6 +77,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
       Measurements.PIVOT_P_GAIN, 
       Measurements.PIVOT_I_GAIN, 
       Measurements.PIVOT_D_GAIN);
+    PIVOT_CONTROLLER.setInverted((true));
     PIVOT_CONTROLLER_PID.enableContinuousInput(Measurements.PIVOT_MINIMUM_ROTATION, Measurements.PIVOT_MAXIMUM_ROTATION);
 
     PIVOT_ABSOLUTE_ENCODER = new DutyCycleEncoder(Ports.PIVOT_ABSOLUTE_ENCODER_ID);    
@@ -93,6 +96,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
       case AUTO:
         break;
     }
+    Logger.recordOutput(("Cannon/Reference"), CurrentReference);
     Constants.Objects.ODOMETRY_LOCKER.unlock();
   }
 
@@ -136,7 +140,9 @@ public class CannonSubsystem extends TalonSubsystemBase {
    * @param Reference Desired rotation in radians
    */
   private static synchronized void set(final Rotation2d Reference) {
-    PIVOT_CONTROLLER.set(PIVOT_CONTROLLER_PID.calculate(PIVOT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.ABSOLUTE_ENCODER_OFFSET, Reference.getRotations()));
+    PIVOT_CONTROLLER.set(
+      PIVOT_CONTROLLER_PID.calculate(PIVOT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.ABSOLUTE_ENCODER_OFFSET,
+                                    MathUtil.clamp(Reference.getRotations(),Measurements.PIVOT_MINIMUM_ROTATION,Measurements.PIVOT_MAXIMUM_ROTATION)));
   }
 
   /**
@@ -199,18 +205,18 @@ public class CannonSubsystem extends TalonSubsystemBase {
     } catch(final NullPointerException Ignored) {}
     try {
       CurrentPilot.getKeybinding(Keybindings.CANNON_PIVOT_UP)
-        .onTrue(new InstantCommand(
+        .whileTrue(new InstantCommand(
           () -> {
-            CurrentReference.angle.plus(Rotation2d.fromDegrees((0.01)));
+            CurrentReference.angle.plus(Rotation2d.fromDegrees((0.1)));
           },
           CannonSubsystem.getInstance()
         ));
     } catch(final NullPointerException Ignored) {}
     try {
       CurrentPilot.getKeybinding(Keybindings.CANNON_PIVOT_DOWN)
-        .onTrue(new InstantCommand(
+        .whileTrue(new InstantCommand(
           () -> {
-            CurrentReference.angle.plus(Rotation2d.fromDegrees((-0.01)));
+            CurrentReference.angle.plus(Rotation2d.fromDegrees((-0.1)));
           },
           CannonSubsystem.getInstance()
         ));

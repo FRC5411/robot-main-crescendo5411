@@ -202,14 +202,14 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     }
     switch(ReferenceMode) {
       case STATE_CONTROL:
-        if(Reference != (null)) {
-          if (Reference.angle != (null)) {
-            ROTATIONAL_PID.setReference(Reference.angle.getRadians(), ControlType.kPosition);
-          }
-          Reference.speedMetersPerSecond *= Math.cos(Reference.angle.minus(getRelativeRotation()).getRadians());
-          TRANSLATIONAL_PID.setReference(Reference.speedMetersPerSecond, ControlType.kVelocity, (0), 
-            -TRANSLATIONAL_FF.calculate(Reference.speedMetersPerSecond), ArbFFUnits.kVoltage);
-        }
+        // if(Reference != (null)) {
+        //   if (Reference.angle != (null)) {
+        //     ROTATIONAL_PID.setReference(Reference.angle.getRadians(), ControlType.kPosition);
+        //   }
+        //   Reference.speedMetersPerSecond *= Math.cos(Reference.angle.minus(getRelativeRotation()).getRadians());
+        //   TRANSLATIONAL_PID.setReference(Reference.speedMetersPerSecond, ControlType.kVelocity, (0), 
+        //     -TRANSLATIONAL_FF.calculate(Reference.speedMetersPerSecond), ArbFFUnits.kVoltage);
+        // }
         break;
       case DISABLED:
         cease();

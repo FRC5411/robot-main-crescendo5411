@@ -101,9 +101,9 @@ public final class Constants {
           .addPreference(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (0.2))
           .addPreference(Preferences.ORIENTATION_DEADZONE, () -> (0.2))
           .addKeybinding(Keybindings.ORIENTATION_TOGGLE, CONTROLLER.y())
-          .addKeybinding(Keybindings.INTAKE_TOGGLE, CONTROLLER.leftBumper())
+          .addKeybinding(Keybindings.CANNON_PIVOT_DOWN, CONTROLLER.leftBumper())
           .addKeybinding(Keybindings.CANNON_TOGGLE, CONTROLLER.b())
-          .addKeybinding(Keybindings.OUTTAKE_TOGGLE, CONTROLLER.rightBumper());
+          .addKeybinding(Keybindings.CANNON_PIVOT_UP, CONTROLLER.rightBumper());
       }
     }
 
