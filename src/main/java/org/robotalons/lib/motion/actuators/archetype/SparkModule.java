@@ -182,7 +182,6 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
 
   @Override
   public synchronized void periodic() {
-    ODOMETRY_LOCK.lock();
     update();
     if (RotationalRelativeOffset == (null) && Status.RotationalAbsolutePosition.getRadians() != (0d)) {
       RotationalRelativeOffset = Status.RotationalAbsolutePosition.minus(Status.RotationalRelativePosition);
@@ -214,7 +213,6 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
         (RotationalRelativeOffset != (null))? (RotationalRelativeOffset): (new Rotation2d()));
       DELTAS.add(new SwerveModulePosition(Position, Rotation));
     });
-    ODOMETRY_LOCK.unlock(); 
   }
 
   @Override
@@ -232,6 +230,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
    */
   @Override
   public synchronized void update() {
+    ODOMETRY_LOCK.lock();
     synchronized(Status) {
       Status.TranslationalPositionRadians =
         Units.rotationsToRadians(TRANSLATIONAL_ENCODER.getPosition()) / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
@@ -254,7 +253,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       Status.RotationalAppliedAmperage = MODULE_CONSTANTS.ROTATIONAL_CONTROLLER.getOutputCurrent();
       Status.RotationalTemperatureCelsius = 
         ROTATIONAL_CONTROLLER.getMotorTemperature();
-
+      
       Status.OdometryTimestamps = TIMESTAMP_QUEUE.stream().mapToDouble(Double::valueOf).toArray();
       Status.OdometryTranslationalPositionsRadians =
         TRANSLATIONAL_VELOCITY_QUEUE.stream()
@@ -265,11 +264,11 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
           .map((Double value) -> Rotation2d.fromRotations(value / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO))
           .toArray(Rotation2d[]::new);
     }
-
     TRANSLATIONAL_VELOCITY_QUEUE.clear();
     ROTATIONAL_POSITION_QUEUE.clear();
     TIMESTAMP_QUEUE.clear();
     Logger.processInputs("RealInputs/" + "MODULE (" + Integer.toString(MODULE_CONSTANTS.NUMBER) + ')', Status);
+    ODOMETRY_LOCK.unlock();
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   @Override
