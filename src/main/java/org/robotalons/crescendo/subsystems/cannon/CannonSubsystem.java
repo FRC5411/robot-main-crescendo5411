@@ -17,7 +17,6 @@ import org.robotalons.crescendo.Constants.Profiles.Keybindings;
 import org.robotalons.crescendo.subsystems.cannon.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.cannon.Constants.Ports;
 import org.robotalons.lib.TalonSubsystemBase;
-import org.robotalons.lib.motion.trajectory.TrajectoryDo;
 import org.robotalons.lib.utilities.PilotProfile;
 
 
@@ -41,11 +40,8 @@ public class CannonSubsystem extends TalonSubsystemBase {
 
   private static final CANSparkMax PIVOT_CONTROLLER;
   private static final PIDController PIVOT_CONTROLLER_PID;
-  private static final RelativeEncoder PIVOT_ENCODER;
 
   private static final DutyCycleEncoder PIVOT_ABSOLUTE_ENCODER;
-
-  private static final TrajectoryDo TRAJECTORY_MANAGER;
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
   private static CannonSubsystem Instance;
   private static SwerveModuleState CurrentReference;
@@ -58,9 +54,8 @@ public class CannonSubsystem extends TalonSubsystemBase {
   private CannonSubsystem() {
     super(("Cannon Subsystem"));
   } static {
-    CurrentReference = new SwerveModuleState();
+    CurrentReference = new SwerveModuleState((0d), new Rotation2d((Measurements.PIVOT_MAXIMUM_ROTATION + Measurements.PIVOT_MINIMUM_ROTATION)/2));
     CurrentMode = FiringMode.MANUAL;
-
     FIRING_CONTROLLERS = new Pair<CANSparkMax,CANSparkMax>(
       new CANSparkMax(Ports.FIRING_CONTROLLER_LEFT_ID, MotorType.kBrushless), 
       new CANSparkMax(Ports.FIRING_CONTROLLER_RIGHT_ID, MotorType.kBrushless));
@@ -80,13 +75,9 @@ public class CannonSubsystem extends TalonSubsystemBase {
       Measurements.PIVOT_P_GAIN, 
       Measurements.PIVOT_I_GAIN, 
       Measurements.PIVOT_D_GAIN);
-    PIVOT_ENCODER = PIVOT_CONTROLLER.getEncoder();
-    PIVOT_CONTROLLER_PID.enableContinuousInput((-0), (Math.PI / 2));
+    PIVOT_CONTROLLER_PID.enableContinuousInput(Measurements.PIVOT_MINIMUM_ROTATION, Measurements.PIVOT_MAXIMUM_ROTATION);
 
-    PIVOT_ABSOLUTE_ENCODER = new DutyCycleEncoder(Ports.PIVOT_ABSOLUTE_ENCODER_ID);
-
-    TRAJECTORY_MANAGER = TrajectoryDo.getInstance();
-    
+    PIVOT_ABSOLUTE_ENCODER = new DutyCycleEncoder(Ports.PIVOT_ABSOLUTE_ENCODER_ID);    
   }
   
   // ---------------------------------------------------------------[Methods]--------------------------------------------------------------- //
@@ -95,6 +86,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
     Constants.Objects.ODOMETRY_LOCKER.lock();
     switch (CurrentMode) {
       case MANUAL:
+        set(CurrentReference.angle);
         break;
       case SEMI:
         break;
@@ -111,6 +103,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
   public synchronized static void fire() {
     switch (CurrentMode) {
       case MANUAL:
+        set(CurrentReference.speedMetersPerSecond);
         break;
       case SEMI:
         break;
@@ -127,7 +120,6 @@ public class CannonSubsystem extends TalonSubsystemBase {
     FIRING_CONTROLLERS.getFirst().close();
     FIRING_CONTROLLERS.getSecond().close();
     PIVOT_CONTROLLER.close();
-    TRAJECTORY_MANAGER.close();
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
   /**
@@ -144,7 +136,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
    * @param Reference Desired rotation in radians
    */
   private static synchronized void set(final Rotation2d Reference) {
-    PIVOT_CONTROLLER.set(PIVOT_CONTROLLER_PID.calculate(PIVOT_ENCODER.getPosition(), Reference.getRotations()));
+    PIVOT_CONTROLLER.set(PIVOT_CONTROLLER_PID.calculate(PIVOT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.ABSOLUTE_ENCODER_OFFSET, Reference.getRotations()));
   }
 
   /**
@@ -199,9 +191,27 @@ public class CannonSubsystem extends TalonSubsystemBase {
   public void configure(final PilotProfile Profile) {
     CurrentPilot = Profile;
     try {
-      CurrentPilot.getKeybinding(Keybindings.SHOOTER_TOGGLE)
+      CurrentPilot.getKeybinding(Keybindings.CANNON_TOGGLE)
         .onTrue(new InstantCommand(
           CannonSubsystem::fire,
+          CannonSubsystem.getInstance()
+        ));
+    } catch(final NullPointerException Ignored) {}
+    try {
+      CurrentPilot.getKeybinding(Keybindings.CANNON_PIVOT_UP)
+        .onTrue(new InstantCommand(
+          () -> {
+            CurrentReference.angle.plus(Rotation2d.fromDegrees((0.01)));
+          },
+          CannonSubsystem.getInstance()
+        ));
+    } catch(final NullPointerException Ignored) {}
+    try {
+      CurrentPilot.getKeybinding(Keybindings.CANNON_PIVOT_DOWN)
+        .onTrue(new InstantCommand(
+          () -> {
+            CurrentReference.angle.plus(Rotation2d.fromDegrees((-0.01)));
+          },
           CannonSubsystem.getInstance()
         ));
     } catch(final NullPointerException Ignored) {}

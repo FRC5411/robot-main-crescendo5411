@@ -102,7 +102,7 @@ public final class Constants {
           .addPreference(Preferences.ORIENTATION_DEADZONE, () -> (0.2))
           .addKeybinding(Keybindings.ORIENTATION_TOGGLE, CONTROLLER.y())
           .addKeybinding(Keybindings.INTAKE_TOGGLE, CONTROLLER.leftBumper())
-          .addKeybinding(Keybindings.SHOOTER_TOGGLE, CONTROLLER.b())
+          .addKeybinding(Keybindings.CANNON_TOGGLE, CONTROLLER.b())
           .addKeybinding(Keybindings.OUTTAKE_TOGGLE, CONTROLLER.rightBumper());
       }
     }
@@ -122,8 +122,10 @@ public final class Constants {
       public static final String ORIENTATION_TOGGLE = ("ORIENTATION_TOGGLE");
       public static final String PATHFINDING_FLIP_TOGGLE = ("PATHFINDING_FLIP_TOGGLE");
       public static final String INTAKE_TOGGLE = ("INTAKE_TOGGLE");
-      public static final String SHOOTER_TOGGLE = ("SHOOTER_TOGGLE");
+      public static final String CANNON_TOGGLE = ("CANNON_TOGGLE");
       public static final String OUTTAKE_TOGGLE = ("OUTTAKE_TOGGLE");
+      public static final String CANNON_PIVOT_UP = ("CANNON_PIVOT_UP");
+      public static final String CANNON_PIVOT_DOWN = ("CANNON_PIVOT_DOWN");
     }
   }
 }

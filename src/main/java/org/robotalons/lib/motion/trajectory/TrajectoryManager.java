@@ -45,9 +45,16 @@ public class TrajectoryManager extends Thread implements Closeable {
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   public synchronized void run() {
+    SOLVABLE_SOLVERS.parallelStream().forEach((Solver) -> {
+      Solver.call().ifPresentOrElse(
+      (Result) -> {
 
+      }, 
+      () -> {
+
+      });
+    });
   }
-
   public synchronized void close() {
 
   }
@@ -71,7 +78,7 @@ public class TrajectoryManager extends Thread implements Closeable {
           rotationalTrajectory(
               Reserved.HORIZON, Reserved.INITIAL_VELOCITY, Rotation),
           rotationalDiscreteDerivative(
-            Reserved.HORIZON, Reserved.INITIAL_VELOCITY, Rotation, Rotation2d.fromRadians(1e-4))));
+            Reserved.HORIZON, Reserved.INITIAL_VELOCITY, Rotation, Rotation2d.fromRadians((1e-4)))));
       } else {
         return Optional.of(Rotation);
       }
@@ -123,7 +130,7 @@ public class TrajectoryManager extends Thread implements Closeable {
               * VelocityConstant
               * secantSquared(Rotation)
               * Math.tan(Rotation.getRadians())
-          - Reserved.INITIAL_POSITION * Math.cos(Math.toDegrees(Rotation.getRadians())));
+          - Reserved.INITIAL_POSITION);
     }
 
     /**
@@ -170,12 +177,13 @@ public class TrajectoryManager extends Thread implements Closeable {
    * @see Callable
    * @see Optional
    */
-  public static abstract class Solver<SolvableType> implements Callable<Optional<SolvableType>>, Closeable {
+  public static abstract class Solver<SolvableType> implements Callable<Optional<Solvable<SolvableType>>>, Closeable {
     // ------------------------------------------------------------[Constants]--------------------------------------------------------------//
     private static final Integer SOLVING_QUEUE_MAXIMUM_ELEMENTS = (20);
     private static final Boolean SOLVING_QUEUE_IS_ORDERED = (true);
     private static final Integer SOLVING_MAXIMUM_INSTANCES = (10);
     private static final Queue<Solvable<?>> SOLVING_QUEUE = new ArrayBlockingQueue<>(SOLVING_QUEUE_MAXIMUM_ELEMENTS, SOLVING_QUEUE_IS_ORDERED);
+    private static final Queue<Solvable<?>> OUTPUT_QUEUE = new ArrayBlockingQueue<>((300), SOLVING_QUEUE_IS_ORDERED);
     // -------------------------------------------------------------[Fields]----------------------------------------------------------------//
     protected volatile Solvable<SolvableType> Reserved = (null);
     protected volatile Integer Position = (0);
@@ -197,15 +205,16 @@ public class TrajectoryManager extends Thread implements Closeable {
      * to 200 milliseconds for upon each run.
      */
     @Timeable(limit = 200, unit = TimeUnit.MILLISECONDS)
-    public synchronized Optional<SolvableType> call() {
+    public synchronized Optional<Solvable<SolvableType>> call() {
       try {
         synchronized(SOLVING_QUEUE) {
           while(!Thread.currentThread().isInterrupted() && !SOLVING_QUEUE.isEmpty()) { 
             Reserved = reserve();
             for(; Position < Reserved.HORIZON; Position++) {
-              var Solve = solve((double) Position/(1000));
-              if(Solve.isPresent()) {
-                return Solve;
+              var Solved = solve((double) Position / (1000));
+              if(Solved.isPresent()) {
+                Reserved.SOLVING = Solved;
+                return Optional.of(Reserved);
               }
             }
           }
@@ -231,19 +240,20 @@ public class TrajectoryManager extends Thread implements Closeable {
       SOLVING_QUEUE.clear();
     }
 
-    /**
-     * 
-     */
-    public synchronized CompletableFuture<SolvableType> submit(final Solvable<SolvableType> Object) {
-      synchronized(SOLVING_QUEUE) {
-        SOLVING_QUEUE.offer(Object);
-      }
-      return CompletableFuture.supplyAsync(
-        () -> {
-
-        }
-      );
-    }
+    // /**
+    //  * 
+    //  */
+    // public synchronized CompletableFuture<SolvableType> submit(final Solvable<SolvableType> Object) {
+    //   synchronized(SOLVING_QUEUE) {
+    //     var Iterator = OUTPUT_QUEUE.iterator();
+    //     SOLVING_QUEUE.offer(Object);
+    //   }
+    //   return CompletableFuture.supplyAsync(
+    //     () -> {
+    //       SOLVING_QUEUE.stream().filter(null);
+    //     }
+    //   );
+    // }
 
     /**
      * Reserves a solvable instance from the queue
@@ -271,10 +281,19 @@ public class TrajectoryManager extends Thread implements Closeable {
     public Double MASS;    
     public Double HORIZON;
     public Double VERTICAL_AREA;
+    public Double HORIZONTAL_AREA;
     public Double INITIAL_POSITION;    
     public Double INITIAL_VELOCITY;
     public Rotation2d INITIAL_ROTATION;    
     public Optional<SolvingType> SOLVING;
+
+
+    public Boolean equals(final Solvable<SolvingType> Other) {
+      return MU == Other.MU 
+      && MASS == Other.MASS && HORIZON == Other.HORIZON && HORIZONTAL_AREA == Other.HORIZONTAL_AREA  
+      && VERTICAL_AREA == Other.VERTICAL_AREA && INITIAL_POSITION == Other.INITIAL_POSITION 
+      && INITIAL_ROTATION == Other.INITIAL_ROTATION && INITIAL_VELOCITY == Other.INITIAL_VELOCITY;
+    }
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
