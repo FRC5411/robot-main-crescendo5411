@@ -57,14 +57,14 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
     public IndexerSubsystem() {} static {
         Instance = new IndexerSubsystem();
 
-        INTAKE_SPARK_MAX = new CANSparkMax(Constants.INXR.INTAKE_SPARK_MAX_ID, MotorType.kBrushless);
-        CANNON_SPARK_MAX = new CANSparkMax(Constants.INXR.CANNON_SPARK_MAX_ID, MotorType.kBrushless);
+        INTAKE_SPARK_MAX = new CANSparkMax(Constants.INDEXER.INTAKE_SPARK_MAX_ID, MotorType.kBrushless);
+        CANNON_SPARK_MAX = new CANSparkMax(Constants.INDEXER.CANNON_SPARK_MAX_ID, MotorType.kBrushless);
 
-        INTAKE_SPARK_MAX_ENCODER = new Encoder(Constants.INXR.K_INTAKE_SPARK_MAX_ENCODER_CHANNELA, Constants.INXR.K_INTAKE_SPARK_MAX_ENCODER_CHANNELB);
-        CANNON_SPARK_MAX_ENCODER = new Encoder(Constants.INXR.K_CANNON_SPARK_MAX_ENCODER_CHANNELA, Constants.INXR.K_CANNON_SPARK_MAX_ENCODER_CHANNELB);
+        INTAKE_SPARK_MAX_ENCODER = new Encoder(Constants.INDEXER.K_INTAKE_SPARK_MAX_ENCODER_CHANNELA, Constants.INDEXER.K_INTAKE_SPARK_MAX_ENCODER_CHANNELB);
+        CANNON_SPARK_MAX_ENCODER = new Encoder(Constants.INDEXER.K_CANNON_SPARK_MAX_ENCODER_CHANNELA, Constants.INDEXER.K_CANNON_SPARK_MAX_ENCODER_CHANNELB);
 
-        INTAKE_BREAKBEAM_INPUT = new DigitalInput(Constants.INXR.INDEXER_INTAKE_BREAKBEAM_INPUT_ID);
-        CANNON_BREAKBEAM_INPUT = new DigitalInput(Constants.INXR.INDEXER_CANNON_BREAKBEAM_INPUT_ID);
+        INTAKE_BREAKBEAM_INPUT = new DigitalInput(Constants.INDEXER.INDEXER_INTAKE_BREAKBEAM_INPUT_ID);
+        CANNON_BREAKBEAM_INPUT = new DigitalInput(Constants.INDEXER.INDEXER_CANNON_BREAKBEAM_INPUT_ID);
 
         HasNote = (false);
         IntakeBeamIntact = (false);
@@ -111,7 +111,7 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
         motor.restoreFactoryDefaults();
         motor.clearFaults();
     
-        motor.setSmartCurrentLimit(Constants.INXR.K_CURRENT_LIMIT);
+        motor.setSmartCurrentLimit(Constants.INDEXER.K_CURRENT_LIMIT);
     }
     
     /**
@@ -142,14 +142,14 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
     public synchronized void set(final Direction Demand) {
         switch(Demand) {
             case FORWARD_INDEXER:
-                INTAKE_SPARK_MAX.set(Constants.INXR.INTAKE_SPARK_MAX_SPEED);
-                CANNON_SPARK_MAX.set(Constants.INXR.CANNON_SPARK_MAX_SPEED);
+                INTAKE_SPARK_MAX.set(Constants.INDEXER.INTAKE_SPARK_MAX_SPEED);
+                CANNON_SPARK_MAX.set(Constants.INDEXER.CANNON_SPARK_MAX_SPEED);
                 passingForwardIndexer = (true);
                 break;
             case FORWARD_CANNON:
                 if (getHoldingNote()) {
-                    INTAKE_SPARK_MAX.set(Constants.INXR.INTAKE_SPARK_MAX_SPEED);
-                    CANNON_SPARK_MAX.set(Constants.INXR.CANNON_SPARK_MAX_SPEED);
+                    INTAKE_SPARK_MAX.set(Constants.INDEXER.INTAKE_SPARK_MAX_SPEED);
+                    CANNON_SPARK_MAX.set(Constants.INDEXER.CANNON_SPARK_MAX_SPEED);
                     passingForwardCannon = (true);
                 } else {
                     INTAKE_SPARK_MAX.set(0);
@@ -161,8 +161,8 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
             case BACKWARD_INTAKE:
                 if (getHoldingNote())
                 {
-                    INTAKE_SPARK_MAX.set(Constants.INXR.INTAKE_SPARK_MAX_SPEED);
-                    CANNON_SPARK_MAX.set(Constants.INXR.CANNON_SPARK_MAX_SPEED);
+                    INTAKE_SPARK_MAX.set(Constants.INDEXER.INTAKE_SPARK_MAX_SPEED);
+                    CANNON_SPARK_MAX.set(Constants.INDEXER.CANNON_SPARK_MAX_SPEED);
                     passingBackwardIntake = (true);
                 }
                 else {
