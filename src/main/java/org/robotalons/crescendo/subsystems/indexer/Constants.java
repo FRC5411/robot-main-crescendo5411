@@ -20,7 +20,6 @@ public final class Constants {
     //MEASUREMENTS
     public static final Double INTAKE_SPARK_MAX_SPEED = (1d);
     public static final Double CANNON_SPARK_MAX_SPEED = (1d);
-    public static final Double SPARK_MAX_DURATION = (1d);
     public static final Integer K_CURRENT_LIMIT = (60);
 
     //PORTS

@@ -41,7 +41,14 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
 
     // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
     private static IndexerSubsystem Instance;
+
     private static Boolean HasNote;
+    private static Boolean IntakeBeamIntact;
+    private static Boolean CannonBeamIntact;
+
+    private static Boolean passingForwardIndexer;
+    private static Boolean passingForwardCannon;
+    private static Boolean passingBackwardIntake;
 
     // ------------------------------------------------------------[Constructors]------------------------------------------------------------- //
     /**
@@ -49,7 +56,6 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
      */
     public IndexerSubsystem() {} static {
         Instance = new IndexerSubsystem();
-        HasNote = (false);
 
         INTAKE_SPARK_MAX = new CANSparkMax(Constants.INXR.INTAKE_SPARK_MAX_ID, MotorType.kBrushless);
         CANNON_SPARK_MAX = new CANSparkMax(Constants.INXR.CANNON_SPARK_MAX_ID, MotorType.kBrushless);
@@ -59,13 +65,44 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
 
         INTAKE_BREAKBEAM_INPUT = new DigitalInput(Constants.INXR.INDEXER_INTAKE_BREAKBEAM_INPUT_ID);
         CANNON_BREAKBEAM_INPUT = new DigitalInput(Constants.INXR.INDEXER_CANNON_BREAKBEAM_INPUT_ID);
+
+        HasNote = (false);
+        IntakeBeamIntact = (false);
+        CannonBeamIntact = (false);
+
+        passingNoteForwardIndexer = (false);
+        passingNoteForwardCannon = (false);
+        passingNoteBackwardIntake = (false);
     }
     
     // ---------------------------------------------------------------[Methods]--------------------------------------------------------------- //
     @Override
     public synchronized void periodic() {
         Constants.Objects.ODOMETRY_LOCKER.lock();
+        
+        IntakeBeamIntact = INTAKE_BREAKBEAM_INPUT.get();
+        CannonBeamIntact = CANNON_BREAKBEAM_INPUT.get();
         HasNote = setHasNote();
+
+        if (passingNoteForwardIndexer || (passingNoteForwardCannon || passingNoteBackwardIntake))
+        {
+            if (passingForwardIndexer && HasNote) {
+                INTAKE_SPARK_MAX.set(0);
+                CANNON_SPARK_MAX.set(0);
+                setPassingVars(false);
+            } else if (passingForwardCannon && CannonBeamIntact) {
+                INTAKE_SPARK_MAX.set(0);
+                CANNON_SPARK_MAX.set(0);
+                setPassingVars(false);
+//              Tell CANNON to continueWithFireSequence;
+            } else if (passingBackwardIntake && !IntakeBeamIntact) {
+                INTAKE_SPARK_MAX.set(0);
+                CANNON_SPARK_MAX.set(0);
+                setPassingVars(false);
+//              Tell INTAKE to do intake sequence backwards (negative speed, same time, etc etc);
+            }
+        }
+
         Constants.Objects.ODOMETRY_LOCKER.lock();
     }
 
@@ -88,11 +125,12 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
     // --------------------------------------------------------------[Internal]--------------------------------------------------------------- //
     /**
      * Describes the relationship of a relevant game piece to the position its going to be sent to.
+     * Formatted as DIRECTION_DESTINATION
      */
     public enum Direction { //INTAKE    INDEXER    CANNON
         FORWARD_INDEXER,    //   O--------->                (called by INTAKE system to complete a pickup)
         FORWARD_CANNON,     //             O--------->      (called by CANNON system in order to put a Note in firing position)
-        BACKWARD_INDEXER,   //   <---------O                (called manually (e.g. Note jammed in singulator))
+        BACKWARD_INTAKE,    //   <---------O                (called manually (e.g. Note jammed in singulator))
     }
 
     // --------------------------------------------------------------[Mutators]--------------------------------------------------------------- //
@@ -106,39 +144,43 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
             case FORWARD_INDEXER:
                 INTAKE_SPARK_MAX.set(Constants.INXR.INTAKE_SPARK_MAX_SPEED);
                 CANNON_SPARK_MAX.set(Constants.INXR.CANNON_SPARK_MAX_SPEED);
-//              Wait for Constants.INXR.SPARK_MAX_DURATION;
-                INTAKE_SPARK_MAX.set(0);
-                CANNON_SPARK_MAX.set(0);
+                passingForwardIndexer = (true);
                 break;
             case FORWARD_CANNON:
                 if (getHoldingNote()) {
                     INTAKE_SPARK_MAX.set(Constants.INXR.INTAKE_SPARK_MAX_SPEED);
                     CANNON_SPARK_MAX.set(Constants.INXR.CANNON_SPARK_MAX_SPEED);
-//                  Wait for Constants.INXR.SPARK_MAX_DURATION;
+                    passingForwardCannon = (true);
+                } else {
                     INTAKE_SPARK_MAX.set(0);
                     CANNON_SPARK_MAX.set(0);
-//                  Tell CANNON to continueWithFireSequence;
-                } else {
+                    setPassingVars(false);
 //                  Tell CANNON to abortFireSequence;
                 }
                 break;
-            case BACKWARD_INDEXER:
-                INTAKE_SPARK_MAX.set(-Constants.INXR.INTAKE_SPARK_MAX_SPEED)
-                CANNON_SPARK_MAX.set(-Constants.INXR.CANNON_SPARK_MAX_SPEED);
-//              Wait for Constants.INXR.SPARK_MAX_DURATION;
-                INTAKE_SPARK_MAX.set(0);
-                CANNON_SPARK_MAX.set(0);
-//              Tell INTAKE to do intake sequence backwards (negative speed, same time, etc etc);
+            case BACKWARD_INTAKE:
+                if (getHoldingNote())
+                {
+                    INTAKE_SPARK_MAX.set(Constants.INXR.INTAKE_SPARK_MAX_SPEED);
+                    CANNON_SPARK_MAX.set(Constants.INXR.CANNON_SPARK_MAX_SPEED);
+                    passingBackwardIntake = (true);
+                }
+                else {
+                    INTAKE_SPARK_MAX.set(0);
+                    CANNON_SPARK_MAX.set(0);
+                    setPassingVars(false);
+                }
                 break;
             default:
                 INTAKE_SPARK_MAX.set(0);
                 CANNON_SPARK_MAX.set(0);
+                setPassingVars(false);
                 break;
         }
     }
 
     /**
-     * Sets the value of HasNote to either true or false.
+     * Sets the value of HasNote to either true or false. HasNote is only true when a Note is HELD STILL in the Indexer.
      * True: both Beam Break sensors read a 0 (beam disconnected)
      * False: either Beam Break reads a 1 (beam connects)
      * 
@@ -146,7 +188,14 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
      */
     public synchronized Boolean setHasNote()
     {
-        return !(INTAKE_BREAKBEAM_INPUT.get() || CANNON_BREAKBEAM_INPUT.get());
+        return !(IntakeBeamIntact || CannonBeamIntact);
+    }
+
+    public synchronized void setPassingVars(Boolean newPassing)
+    {
+        passingForwardIndexer = newPassing;
+        passingForwardCannon = newPassing;
+        passingBackwardIntake = newPassing;
     }
 
 
