@@ -207,7 +207,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
       CurrentPilot.getKeybinding(Keybindings.CANNON_PIVOT_UP)
         .whileTrue(new InstantCommand(
           () -> {
-            CurrentReference.angle.plus(Rotation2d.fromDegrees((0.1)));
+            CurrentReference.angle.plus(Rotation2d.fromDegrees((1)));
           },
           CannonSubsystem.getInstance()
         ));
@@ -216,7 +216,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
       CurrentPilot.getKeybinding(Keybindings.CANNON_PIVOT_DOWN)
         .whileTrue(new InstantCommand(
           () -> {
-            CurrentReference.angle.plus(Rotation2d.fromDegrees((-0.1)));
+            CurrentReference.angle.plus(Rotation2d.fromDegrees((-1)));
           },
           CannonSubsystem.getInstance()
         ));

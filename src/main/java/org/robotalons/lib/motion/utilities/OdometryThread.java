@@ -16,7 +16,7 @@ import java.util.Queue;
  * @see Closeable
  * 
  */
-public interface OdometryThread<SignalType> extends Runnable, Closeable {
+public sealed interface OdometryThread<SignalType> extends Runnable, Closeable permits CTREOdometryThread, REVOdometryThread {
   // ---------------------------------------------------------------[Abstract]--------------------------------------------------------------//
   /**
    * Registers a new signal updated at a frequency with the frequency manager.
