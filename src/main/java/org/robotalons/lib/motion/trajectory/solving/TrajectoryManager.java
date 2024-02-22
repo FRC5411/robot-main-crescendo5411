@@ -25,7 +25,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class TrajectoryManager extends Thread implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private static final List<TrajectorySolver> ACTIVE_SOLVERS;
-  private static final Queue<Double> OUTPUT_QUEUE;
+  private static final Queue<TrajectoryObject> OUTPUT_QUEUE;
 
   private static final Integer OUTPUT_QUEUE_MAXIMUM_ELEMENTS = (300);
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
@@ -41,23 +41,35 @@ public class TrajectoryManager extends Thread implements Closeable {
     OUTPUT_QUEUE = new ArrayBlockingQueue<>(OUTPUT_QUEUE_MAXIMUM_ELEMENTS);
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
+  @Override
   public synchronized void run() {
-    ACTIVE_SOLVERS.parallelStream().forEach((Solver) -> 
-      Solver.call().ifPresent(OUTPUT_QUEUE::offer));
-    
+    while(this.isAlive()) {
+      ACTIVE_SOLVERS.parallelStream().forEach((Solver) -> 
+        Solver.call().ifPresent(OUTPUT_QUEUE::offer));  
+    }
   }
 
+  /**
+   * Closes this instance and all held resources immediately.
+   */
+  @Override
   public synchronized void close() {
-
+    ACTIVE_SOLVERS.parallelStream().forEach(TrajectorySolver::close);
   }
 
-  public synchronized void start() {
-    super.start();
+  /**
+   * Submits a task object into the task queue
+   * @param Object Task to be submitted, an unoptimized object instance
+   * @return Completable result future, which supplies the optimized rotation as a result on completion
+   */
+  public CompletableFuture<Rotation2d> submit(final TrajectoryObject Object) {
+    return CompletableFuture.supplyAsync(() -> {
+        final var Result = OUTPUT_QUEUE.stream().dropWhile((Solved) -> !Solved.equals(Object)).distinct().findFirst().get();
+        OUTPUT_QUEUE.remove(Result);
+        return Result.OPTIMIZED_ROTATION;
+      }
+    );
   }
-
-  // public synchronized CompletableFuture<Double> submit(final TrajectoryObject Object) {
-    
-  // }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Retrieves the existing instance of this static utility class

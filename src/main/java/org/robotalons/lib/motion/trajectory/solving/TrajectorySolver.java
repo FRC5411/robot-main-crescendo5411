@@ -2,13 +2,11 @@
 package org.robotalons.lib.motion.trajectory.solving;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import com.jcabi.aspects.Timeable;
@@ -24,7 +22,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
  * @see Callable
  * @see Closeable
  */
-public class TrajectorySolver implements Callable<Optional<Double>>, Closeable{
+public class TrajectorySolver implements Callable<Optional<TrajectoryObject>>, Closeable{
   // ------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private static final Integer SOLVING_QUEUE_MAXIMUM_ELEMENTS = (20);
   private static final Boolean SOLVING_QUEUE_IS_ORDERED = (true);
@@ -60,34 +58,34 @@ public class TrajectorySolver implements Callable<Optional<Double>>, Closeable{
    * @return Optimized initial firing angle in radians
    */
   @Timeable(limit = 200, unit = TimeUnit.MILLISECONDS)
-  public synchronized Optional<Double> call() {
+  public synchronized Optional<TrajectoryObject> call() {
     try {
       synchronized(SOLVING_QUEUE) {
         while(!Thread.currentThread().isInterrupted() && !SOLVING_QUEUE.isEmpty()) { 
           if(Reserved == (null)) {
             synchronized(SOLVING_QUEUE) {
               Reserved = SOLVING_QUEUE.poll();
+              Position = Reserved.OFFSET_LENGTH * Reserved.INITIAL_ROTATION.getCos();
             }              
             Rotation = Reserved.INITIAL_ROTATION;
           }
+          final var Distance = Reserved.HORIZON - Position;
           for(                                          ; 
                                             Iteration < Reserved.ITERATIONS 
                                                         && 
-            Math.abs(rotationalTrajectory(Reserved.HORIZON, Reserved.INITIAL_VELOCITY, Rotation)) > STANDARD_DELTA;
-                              Iteration++, Position += (Reserved.HORIZON / Reserved.ITERATIONS)
+            Math.abs(rotationalTrajectory(Distance, Reserved.INITIAL_VELOCITY, Rotation)) > STANDARD_DELTA;
+                              Iteration++, Position = Iteration * (Reserved.HORIZON / Reserved.ITERATIONS) + (Reserved.OFFSET_LENGTH * Reserved.INITIAL_ROTATION.getCos())
           ) {
             Rotation = new Rotation2d(
               rootTangent(
-                Rotation.getRadians(),
-                rotationalTrajectory(Reserved.HORIZON, Reserved.INITIAL_VELOCITY, Rotation),
-                rotationalDiscreteDerivative(Reserved.HORIZON, Reserved.INITIAL_VELOCITY, Rotation, new Rotation2d(STANDARD_DELTA))
+                Rotation.getRadians(), //TODO: Position?
+                rotationalTrajectory(Distance, Reserved.INITIAL_VELOCITY, Rotation),
+                rotationalDiscreteDerivative(Distance, Reserved.INITIAL_VELOCITY, Rotation, new Rotation2d(STANDARD_DELTA))
               )
             );
           }
-          Reserved = (null);
-        }
-        if(Thread.currentThread().isInterrupted() || Reserved == (null)) {
-          return Optional.of(Reserved == (null)? Rotation.getRadians(): (null));
+          Reserved.OPTIMIZED_ROTATION = Rotation;
+          return Optional.of(Reserved);
         }
         return Optional.empty();
       }
@@ -98,23 +96,12 @@ public class TrajectorySolver implements Callable<Optional<Double>>, Closeable{
   }
 
   /**
-   * Closes this instance and all held resources immediately, but does not render the class unusable hence forth and can be re-instantiated.
-   * @throws IOException When an Input Output operation has thrown an exception.
+   * Closes this instance and all held resources immediately.
    */
-  public void close() throws IOException {
+  public void close() {
     Reserved = (null);
     SOLVING_QUEUE.clear();
   }
-
-  // /**
-  //  * Submits a task object into the task queue
-  //  * @param Object Task to be submitted
-  //  * @return Completable result future
-  //  */
-  // public CompletableFuture<Double> submit(final TrajectoryObject Object) {
-  //   CompletableFuture.runAsync(null);
-
-  // }
   // ------------------------------------------------------------[Math Operations]-------------------------------------------------------------// 
   /**
    * Calculates the rotational trajectory at a given point along the horizon
@@ -125,9 +112,10 @@ public class TrajectorySolver implements Callable<Optional<Double>>, Closeable{
    */
   public synchronized Double rotationalTrajectory(final Double Distance, final Double Velocity, final Rotation2d Rotation) {
     set(Distance, Velocity, Rotation);
-    return + HorizonConstant * Math.tan(Rotation.getRadians())
+    return + HorizonConstant * Rotation.getTan()
     - Math.pow(HorizonConstant, (2)) * VelocityConstant * secantSquared(Rotation)
-    + Reserved.OFFSET_LENGTH * Math.sin(Rotation.getRadians());
+    + Reserved.OFFSET_LENGTH * Rotation.getSin()
+    + Reserved.VERTICAL;
   }
 
   /**
@@ -158,8 +146,8 @@ public class TrajectorySolver implements Callable<Optional<Double>>, Closeable{
               * Math.pow(HorizonConstant, (2))
               * VelocityConstant
               * secantSquared(Rotation)
-              * Math.tan(Rotation.getRadians())
-          - Reserved.OFFSET_LENGTH * Math.cos(Rotation.getRadians()));
+              * Rotation.getTan()
+          - Reserved.OFFSET_LENGTH * Rotation.getCos());
   }
 
   /**
@@ -178,7 +166,7 @@ public class TrajectorySolver implements Callable<Optional<Double>>, Closeable{
    * @param Rotation Current rotation along the trajectory
    */
   private static Double secantSquared(final Rotation2d Rotation) {
-    return Math.pow((1) / Math.cos(Rotation.getRadians()),(2));
+    return Math.pow((1) / Rotation.getCos(),(2));
   }
   
   /**
@@ -188,7 +176,7 @@ public class TrajectorySolver implements Callable<Optional<Double>>, Closeable{
    * @param Rotation Current rotation along the trajectory
    */
   public synchronized void set(final Double Distance, final Double Velocity, final Rotation2d Rotation) {
-    HorizonConstant = -(Reserved.HORIZON - Distance + Reserved.OFFSET_LENGTH * Math.cos(Rotation.getRadians()));
+    HorizonConstant = -(Reserved.HORIZON - Distance + Reserved.OFFSET_LENGTH * Rotation.getCos());
     VelocityConstant = STANDARD_ACCELERATION / ((2) * Velocity * Velocity);
   } 
   

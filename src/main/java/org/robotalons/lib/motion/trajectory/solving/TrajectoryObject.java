@@ -14,10 +14,12 @@ public class TrajectoryObject {
   public Double MU;
   public Double MASS;  
   public Double HORIZON;
+  public Double VERTICAL;
   public Integer ITERATIONS;
   public Double VERTICAL_AREA;
   public Double HORIZONTAL_AREA;
   public Double OFFSET_LENGTH;    
   public Double INITIAL_VELOCITY;
   public Rotation2d INITIAL_ROTATION;
+  public Rotation2d OPTIMIZED_ROTATION;
 }
