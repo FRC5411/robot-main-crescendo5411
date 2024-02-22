@@ -2,15 +2,14 @@
 package org.robotalons.lib.motion.trajectory.solving;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
-
-
-import edu.wpi.first.math.geometry.Rotation2d;
 // -----------------------------------------------------------[Trajectory Manager]----------------------------------------------------------//
 /**
  * 

@@ -10,13 +10,11 @@ import edu.wpi.first.wpilibj.RobotBase;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.pathplanner.lib.util.PIDConstants;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
 import org.littletonrobotics.junction.Logger;
 import org.robotalons.lib.motion.actuators.Module;

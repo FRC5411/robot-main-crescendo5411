@@ -3,17 +3,12 @@ package org.robotalons.crescendo;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.robotalons.crescendo.Constants.Pathplanner;
 import org.robotalons.crescendo.Constants.Profiles;
-import org.robotalons.crescendo.Constants.Profiles.Keybindings;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
 import org.robotalons.lib.utilities.PilotProfile;
 

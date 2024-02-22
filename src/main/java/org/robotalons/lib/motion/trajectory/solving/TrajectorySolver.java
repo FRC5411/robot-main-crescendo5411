@@ -1,6 +1,10 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.lib.motion.trajectory.solving;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
+import edu.wpi.first.math.geometry.Rotation2d;
+
+import com.jcabi.aspects.Timeable;
+
 import java.io.Closeable;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -8,9 +12,6 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-
-import com.jcabi.aspects.Timeable;
-import edu.wpi.first.math.geometry.Rotation2d;
 // -----------------------------------------------------------[Trajectory Solver]----------------------------------------------------------//
 /**
  * 

@@ -1,10 +1,10 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.cannon;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
+import edu.wpi.first.math.util.Units;
+
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import edu.wpi.first.math.util.Units;
 // ---------------------------------------------------------------[Constants]---------------------------------------------------------------//
 /**
  *
