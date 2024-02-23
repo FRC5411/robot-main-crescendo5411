@@ -5,6 +5,7 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -19,7 +20,6 @@ import org.robotalons.crescendo.subsystems.cannon.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.cannon.Constants.Ports;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.utilities.PilotProfile;
-
 
 // ------------------------------------------------------------[Cannon Subsystem]-----------------------------------------------------------//
 /**
@@ -39,6 +39,8 @@ public class CannonSubsystem extends TalonSubsystemBase {
   private static final PIDController FIRING_CONTROLLER_PID;
   private static final RelativeEncoder FIRING_ENCODER;
 
+  private static final DigitalOutput INDEXER_SENSOR;
+ 
   private static final CANSparkMax PIVOT_CONTROLLER;
   private static final PIDController PIVOT_CONTROLLER_PID;
 
@@ -52,10 +54,10 @@ public class CannonSubsystem extends TalonSubsystemBase {
   /** 
    * Cannon Subsystem Constructor 
    */
-  private CannonSubsystem() {
+  private CannonSubsystem() { 
     super(("Cannon Subsystem"));
   } static {
-    CurrentReference = new SwerveModuleState(-(0d), new Rotation2d((Measurements.PIVOT_MAXIMUM_ROTATION + Measurements.PIVOT_MINIMUM_ROTATION)/2));
+    CurrentReference = new SwerveModuleState((0d), new Rotation2d((Measurements.PIVOT_MAXIMUM_ROTATION + Measurements.PIVOT_MINIMUM_ROTATION)/2));
     CurrentMode = FiringMode.MANUAL;
     FIRING_CONTROLLERS = new Pair<CANSparkMax,CANSparkMax>(
       new CANSparkMax(Ports.FIRING_CONTROLLER_LEFT_ID, MotorType.kBrushless), 
@@ -70,13 +72,15 @@ public class CannonSubsystem extends TalonSubsystemBase {
     FIRING_CONTROLLERS.getSecond().setInverted((true));
     FIRING_CONTROLLERS.getSecond().follow(FIRING_CONTROLLERS.getFirst());
 
+    INDEXER_SENSOR = new DigitalOutput(Ports.INDEXER_SENSOR_ID);
+
     PIVOT_CONTROLLER = new CANSparkMax(Ports.PIVOT_CONTROLLER_ID, MotorType.kBrushless);
     PIVOT_CONTROLLER.setSmartCurrentLimit((40));
     PIVOT_CONTROLLER_PID = new PIDController(
       Measurements.PIVOT_P_GAIN, 
       Measurements.PIVOT_I_GAIN, 
       Measurements.PIVOT_D_GAIN);
-    PIVOT_CONTROLLER.setInverted((true));
+    PIVOT_CONTROLLER.setInverted(Measurements.PIVOT_INVERTED);
     PIVOT_CONTROLLER_PID.enableContinuousInput(Measurements.PIVOT_MINIMUM_ROTATION, Measurements.PIVOT_MAXIMUM_ROTATION);
 
     PIVOT_ABSOLUTE_ENCODER = new DutyCycleEncoder(Ports.PIVOT_ABSOLUTE_ENCODER_ID);    
@@ -96,6 +100,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
         break;
     }
     Logger.recordOutput(("Cannon/Reference"), CurrentReference);
+    Logger.recordOutput(("Cannon/Carrying"), INDEXER_SENSOR.get());
     Constants.Objects.ODOMETRY_LOCKER.unlock();
   }
 

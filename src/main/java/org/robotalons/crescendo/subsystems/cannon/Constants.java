@@ -34,6 +34,8 @@ public class Constants {
 
     public static final Double CANNON_LENGTH = (1d);
 
+    public static final Boolean PIVOT_INVERTED = (true);
+
     public static final Double PIVOT_MINIMUM_ROTATION = Units.degreesToRadians((9));
     public static final Double PIVOT_MAXIMUM_ROTATION = Units.degreesToRadians((60));
 
@@ -44,6 +46,7 @@ public class Constants {
     public static final Integer FIRING_CONTROLLER_LEFT_ID = (35);
     public static final Integer PIVOT_CONTROLLER_ID = (32);
     public static final Integer PIVOT_ABSOLUTE_ENCODER_ID = (9);
+    public static final Integer INDEXER_SENSOR_ID = (8);
   }
 
   public static final class Objects {
