@@ -26,9 +26,9 @@ public abstract class Module implements Closeable {
   protected final Constants CONSTANTS;  
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   protected ModuleStatusContainerAutoLogged Status = new ModuleStatusContainerAutoLogged();  
-  protected Rotation2d RotationalAbsoluteOffset = new Rotation2d();
-  protected Rotation2d RotationalRelativeOffset = new Rotation2d();
-  protected SwerveModuleState Reference = new SwerveModuleState();
+  protected Rotation2d RotationalAbsoluteOffset = (null);
+  protected Rotation2d RotationalRelativeOffset = (null);
+  protected SwerveModuleState Reference = (null);
   protected ReferenceType ReferenceMode = ReferenceType.STATE_CONTROL;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
@@ -65,6 +65,15 @@ public abstract class Module implements Closeable {
    * Commands, and which will be handled here.
    */
   public abstract void periodic();
+
+  /**
+   * Updates the characterization voltages of this module's translation controller according
+   * to the values of voltage provided
+   * @param Voltage Applied voltage to the translation actuator of this module
+   */
+  public synchronized void characterize(final Double Voltage) {
+    setTranslationalVoltage(Voltage);
+  }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
   /**
    * <p>Describes a given {@link Module}'s measured constants that cannot otherwise be derived through its sensors and hardware.
@@ -121,11 +130,25 @@ public abstract class Module implements Closeable {
     return this.Reference;
   }
 
+  /**
+   * Mutates the module's current applied voltage to the translational controller
+   * @param Voltage Next applied voltage
+   */
+  protected abstract void setTranslationalVoltage(final Double Voltage);
 
   /**
-   * Zeroes the azimuth relatively offset from the position of the absolute encoders.
+   * Mutates the module's current applied voltage to the rotational controller
+   * @param Voltage next applied voltage
    */
-  public abstract void reset();
+  protected abstract void setRotationalVoltage(final Double Voltage);
+
+  /**
+   * Zeroes the rotational relative to offset from the position of the absolute encoders.
+   */
+  public synchronized void reset() {
+    update();
+    RotationalRelativeOffset = Status.RotationalAbsolutePosition.minus(Status.RotationalRelativePosition);
+  }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Provides the deltas, or captured data points from odometry from the most recent {@link #periodic()} cycle.
@@ -162,7 +185,7 @@ public abstract class Module implements Closeable {
    * @return Reference module state
    */
   public SwerveModuleState getOptimized() {
-    return SwerveModuleState.optimize(Reference, Status.RotationalRelativePosition);
+    return Reference;
   }
 
   /**
@@ -194,7 +217,7 @@ public abstract class Module implements Closeable {
    * @return Linear position in meters
    */
   public Double getLinearVelocity() {
-    return Status.TranslationalVelocityRadiansSecond * CONSTANTS.WHEEL_RADIUS_METERS;
+    return Status.TranslationalVelocityRadiansSecond * CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
   }
 
   /**
@@ -211,7 +234,7 @@ public abstract class Module implements Closeable {
    */
   public SwerveModuleState getObserved() {
     return new SwerveModuleState(
-      getLinearVelocity(), 
-      getRelativeRotation());
+      Status.TranslationalVelocityRadiansSecond * CONSTANTS.WHEEL_RADIUS_METERS, 
+      Status.RotationalRelativePosition);
   }
 }

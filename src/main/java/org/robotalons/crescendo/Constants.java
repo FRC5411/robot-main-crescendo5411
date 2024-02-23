@@ -120,7 +120,6 @@ public final class Constants {
     public static final class Keybindings {
       public static final String MODULE_LOCKING_TOGGLE = ("LOCKING_ENABLED_TRIGGER");
       public static final String ORIENTATION_TOGGLE = ("ORIENTATION_TOGGLE");
-      public static final String PATHFINDING_FLIP_TOGGLE = ("PATHFINDING_FLIP_TOGGLE");
       public static final String INTAKE_TOGGLE = ("INTAKE_TOGGLE");
       public static final String CANNON_TOGGLE = ("CANNON_TOGGLE");
       public static final String OUTTAKE_TOGGLE = ("OUTTAKE_TOGGLE");

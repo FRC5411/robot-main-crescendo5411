@@ -77,7 +77,7 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   }
 
   public synchronized void start() {
-    if (!TIMESTAMPS.isEmpty()) {
+    if (TIMESTAMPS.isEmpty()) {
       NOTIFIER.startPeriodic((1d)/ Frequency);
     }
   }
@@ -94,7 +94,7 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   public synchronized void run() {
     ODOMETRY_LOCK.lock();
     try {
-      var SignalIterator = SIGNALS.iterator();
+      final var SignalIterator = SIGNALS.iterator();
       final var RealTimestamp = Logger.getRealTimestamp() / (1e6);
       QUEUES.forEach((Queue) -> Queue.offer(SignalIterator.next().getAsDouble()));
       TIMESTAMPS.forEach((Timestamp) -> Timestamp.offer(RealTimestamp));
@@ -102,13 +102,6 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
       ODOMETRY_LOCK.unlock();
     }
   }
-  // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
-  public synchronized void set(final Double Frequency) {
-    REVOdometryThread.Frequency = Frequency;
-    NOTIFIER.stop();
-    NOTIFIER.startPeriodic(Frequency);
-  }
-  // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Creates a new instance of the existing utility class
    * @return Utility class's instance
@@ -124,8 +117,22 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   @Override
   public Double getFrequency() {
     return Frequency;
-  }
+  }  
+  // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
   
+  @Override
+  public synchronized void set(final Double Frequency) {
+    ODOMETRY_LOCK.lock();
+    REVOdometryThread.Frequency = Frequency;
+    NOTIFIER.stop();
+    NOTIFIER.startPeriodic(Frequency);
+    ODOMETRY_LOCK.unlock();
+  }
+  // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
+  @Override
+  public Lock getLock() {
+    return ODOMETRY_LOCK;
+  }
   /**
    * Retrieves the existing instance of this static utility class
    * @return Utility class's instance

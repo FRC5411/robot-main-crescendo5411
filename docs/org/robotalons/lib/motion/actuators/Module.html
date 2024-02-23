@@ -252,10 +252,23 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">This method is called periodically by the <code>CommandScheduler</code>.</div>
 </div>
+<<<<<<< HEAD
+<<<<<<< HEAD
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#reset()" class="member-name-link">reset</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Zeroes the azimuth relatively offset from the position of the absolute encoders.</div>
+=======
+=======
+>>>>>>> Development-Drivebase
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reset()" class="member-name-link">reset</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Zeroes the rotational relative to offset from the position of the absolute encoders.</div>
+<<<<<<< HEAD
+>>>>>>> Development-Drivebase
+=======
+>>>>>>> Development-Drivebase
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.kinematics.SwerveModuleState</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#set(edu.wpi.first.math.kinematics.SwerveModuleState)" class="member-name-link">set</a><wbr>(edu.wpi.first.math.kinematics.SwerveModuleState&nbsp;Reference)</code></div>
@@ -274,6 +287,25 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Mutates the module controller's current mode of operation and how it should identify and calculate reference 'set-points'</div>
 </div>
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> Development-Drivebase
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#setRotationalVoltage(java.lang.Double)" class="member-name-link">setRotationalVoltage</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&nbsp;Voltage)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Mutates the module's current applied voltage to the rotational controller</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#setTranslationalVoltage(java.lang.Double)" class="member-name-link">setTranslationalVoltage</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&nbsp;Voltage)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Mutates the module's current applied voltage to the translational controller</div>
+</div>
+<<<<<<< HEAD
+>>>>>>> Development-Drivebase
+=======
+>>>>>>> Development-Drivebase
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
@@ -441,10 +473,45 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 </section>
 </li>
 <li>
+<<<<<<< HEAD
+<<<<<<< HEAD
 <section class="detail" id="reset()">
 <h3>reset</h3>
 <div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">reset</span>()</div>
 <div class="block">Zeroes the azimuth relatively offset from the position of the absolute encoders.</div>
+=======
+=======
+>>>>>>> Development-Drivebase
+<section class="detail" id="setTranslationalVoltage(java.lang.Double)">
+<h3>setTranslationalVoltage</h3>
+<div class="member-signature"><span class="modifiers">protected abstract</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setTranslationalVoltage</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&nbsp;Voltage)</span></div>
+<div class="block">Mutates the module's current applied voltage to the translational controller</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>Voltage</code> - Next applied voltage</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="setRotationalVoltage(java.lang.Double)">
+<h3>setRotationalVoltage</h3>
+<div class="member-signature"><span class="modifiers">protected abstract</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setRotationalVoltage</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&nbsp;Voltage)</span></div>
+<div class="block">Mutates the module's current applied voltage to the rotational controller</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>Voltage</code> - next applied voltage</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="reset()">
+<h3>reset</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">reset</span>()</div>
+<div class="block">Zeroes the rotational relative to offset from the position of the absolute encoders.</div>
+<<<<<<< HEAD
+>>>>>>> Development-Drivebase
+=======
+>>>>>>> Development-Drivebase
 </section>
 </li>
 <li>

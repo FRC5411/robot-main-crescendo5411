@@ -44,7 +44,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
    * Phoenix Odometry Thread Constructor.
    * @param OdometryLocker Appropriate Reentrance Locker for Odometry
    */
-  private CTREOdometryThread(Lock OdometryLocker) {
+  private CTREOdometryThread(final Lock OdometryLocker) {
     ODOMETRY_LOCK = OdometryLocker;
     setName(("CTREOdometryThread"));
     setDaemon((true));
@@ -61,7 +61,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
   public synchronized void start() {
-    if (!TIMESTAMPS.isEmpty()) {
+    if (TIMESTAMPS.isEmpty()) {
       super.start();
     }
   }
@@ -72,10 +72,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
     SIGNALS_LOCK.lock();
     ODOMETRY_LOCK.lock();
     try {
-      List<StatusSignal<Double>> UniqueSignals = new ArrayList<>();
-      System.arraycopy(Signals.toArray(StatusSignal[]::new), (0), UniqueSignals.toArray(StatusSignal[]::new), (0), Signals.size());
-      UniqueSignals.add(Signal);
-      Signals = UniqueSignals;
+      Signals.add(Signal);
       QUEUES.add(Queue);
     } finally {
       SIGNALS_LOCK.unlock();
@@ -86,8 +83,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
 
   public synchronized void close() throws IOException {
     QUEUES.clear();
-    Signals.clear();    
-    FlexibleCAN = (false);
+    Signals.clear();
     try {
       super.join();
     } catch (final InterruptedException Exception) {
@@ -138,7 +134,21 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
         ODOMETRY_LOCK.unlock();
       }
     }
+  }  
+
+  /**
+   * Creates a new instance of the existing utility class
+   * @return Utility class's instance
+   */
+  public static synchronized CTREOdometryThread create(final Lock OdometryLocker) {
+    if (!java.util.Objects.isNull(Instance)) {
+      return Instance;
+    }
+    Instance = new CTREOdometryThread(OdometryLocker);
+    return Instance;
   }
+
+
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
   /**
    * Mutates the current status of the can bus to determine if it supports flexible data rates.
@@ -148,27 +158,21 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
     FlexibleCAN = IsFlexible;
   }
 
+  @Override
   public synchronized void set(final Double Frequency) {
     CTREOdometryThread.Frequency = Frequency;
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
-  /**
-   * Creates a new instance of the existing utility class
-   * @return Utility class's instance
-   */
-  public static synchronized CTREOdometryThread create(Lock OdometryLock) {
-    if (!java.util.Objects.isNull(Instance)) {
-      return Instance;
-    }
-    Instance = new CTREOdometryThread(OdometryLock);
-    return Instance;
+  @Override
+  public Lock getLock() {
+    return ODOMETRY_LOCK;
   }
 
   @Override
   public Double getFrequency() {
     return Frequency;
-  }
-
+  }  
+  
   /**
    * Retrieves the existing instance of this static utility class
    * @return Utility class's instance

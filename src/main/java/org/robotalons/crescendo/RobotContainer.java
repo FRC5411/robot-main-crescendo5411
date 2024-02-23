@@ -32,8 +32,6 @@ public final class RobotContainer {
   
   private RobotContainer() {} static {
     PilotSelectors = new ArrayList<>();
-    AutonomousSelector = new LoggedDashboardChooser<>(("Autonomous Selector"), AutoBuilder.buildAutoChooser());
-    Pathplanner.ROUTINES.forEach((Name, Routine) -> AutonomousSelector.addOption(Name, Routine));
     SubsystemManager.getSubsystems().forEach((Subsystem) -> {
       final var Selector = new SendableChooser<PilotProfile>();
       final var Iterator = Profiles.PILOT_PROFILES.iterator();
@@ -44,6 +42,8 @@ public final class RobotContainer {
       Subsystem.configure(Initial);
       PilotSelectors.add(new LoggedDashboardChooser<PilotProfile>(Subsystem.getName() + " Pilot Selector", Selector));
     });
+    AutonomousSelector = new LoggedDashboardChooser<>(("Autonomous Selector"), AutoBuilder.buildAutoChooser());
+    Pathplanner.ROUTINES.forEach((Name, Routine) -> AutonomousSelector.addOption(Name, Routine));
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
