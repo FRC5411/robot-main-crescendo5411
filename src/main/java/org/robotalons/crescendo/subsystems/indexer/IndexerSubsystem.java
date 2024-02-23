@@ -42,10 +42,10 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
     public IndexerSubsystem() {} static {
         Instance = new IndexerSubsystem();
 
-        TO_CANNON_MOTOR = new CANSparkMax(Constants.INDEXER.TO_CANNON_MOTOR_ID, MotorType.kBrushless);
+        TO_CANNON_MOTOR = new CANSparkMax(SubsysConstants.INDEXER.TO_CANNON_MOTOR_ID, MotorType.kBrushless);
 
-        INTAKE_BREAKBEAM_INPUT = new DigitalInput(Constants.INDEXER.INTAKE_BREAKBEAM_INPUT_ID);
-        CANNON_BREAKBEAM_INPUT = new DigitalInput(Constants.INDEXER.CANNON_BREAKBEAM_INPUT_ID);
+        INTAKE_BREAKBEAM_INPUT = new DigitalInput(SubsysConstants.INDEXER.INTAKE_BREAKBEAM_INPUT_ID);
+        CANNON_BREAKBEAM_INPUT = new DigitalInput(SubsysConstants.INDEXER.CANNON_BREAKBEAM_INPUT_ID);
 
         IntakeBeamSeesNote = (false);
         CannonBeamSeesNote = (false);
@@ -54,7 +54,7 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
     // ---------------------------------------------------------------[Methods]--------------------------------------------------------------- //
     @Override
     public synchronized void periodic() {
-        Constants.INDEXER.ODOMETRY_LOCKER.lock();
+        SubsysConstants.INDEXER.ODOMETRY_LOCKER.lock();
         
         boolean newIntakeBeamSeesNote = !(INTAKE_BREAKBEAM_INPUT.get());
         boolean newCannonBeamSeesNote = !(CANNON_BREAKBEAM_INPUT.get());
@@ -62,10 +62,10 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
         if (IntakeBeamSeesNote != newIntakeBeamSeesNote) {
             IntakeBeamSeesNote = newIntakeBeamSeesNote;
             if (IntakeBeamSeesNote) {
-                TO_CANNON_MOTOR.set(Constants.INDEXER.TO_CANNON_MOTOR_SPEED);
+                TO_CANNON_MOTOR.set(SubsysConstants.INDEXER.TO_CANNON_MOTOR_SPEED);
                 //INDEX_LED.set(off);
             } else {
-                TO_CANNON_MOTOR.set(Constants.INDEXER.TO_CANNON_MOTOR_SPEED);
+                TO_CANNON_MOTOR.set(SubsysConstants.INDEXER.TO_CANNON_MOTOR_SPEED);
                 //INDEX_LED.set(off);
                 //IntakeSubsystem.INTAKE_MOTOR.set(0);
             }
@@ -83,7 +83,7 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
             }
         }
 
-        Constants.INDEXER.ODOMETRY_LOCKER.lock();
+        SubsysConstants.INDEXER.ODOMETRY_LOCKER.lock();
     }
 
     public synchronized static void config(CANSparkMax motor){
@@ -91,7 +91,7 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
         motor.restoreFactoryDefaults();
         motor.clearFaults();
     
-        motor.setSmartCurrentLimit(Constants.INDEXER.K_CURRENT_LIMIT);
+        motor.setSmartCurrentLimit(SubsysConstants.INDEXER.K_CURRENT_LIMIT);
     }
     
     /**

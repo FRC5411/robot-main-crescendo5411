@@ -15,7 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @see IndexerSubsystem
  */
-public final class Constants {
+public final class SubsysConstants {
   public class DRIVEBASE {
     //MEASUREMENTS
     
