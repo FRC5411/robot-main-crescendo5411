@@ -51,13 +51,19 @@ public interface OdometryThread<SignalType> extends Runnable, Closeable {
 
   /**
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> Development-Drivebase
    * Provides the odometry lock of this thread
    * @return Lock which prevents method reentrance
    */
   Lock getLock();
 
   /**
+<<<<<<< HEAD
+>>>>>>> Development-Drivebase
+=======
 >>>>>>> Development-Drivebase
    * Provides the frequency of this thread
    * @return Frequency as a double

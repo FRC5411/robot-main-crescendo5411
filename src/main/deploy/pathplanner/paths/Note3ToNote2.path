@@ -9,8 +9,13 @@
       "prevControl": null,
       "nextControl": {
 <<<<<<< HEAD
+<<<<<<< HEAD
         "x": 1.8893943242431936,
         "y": 4.645715473249129
+=======
+        "x": 2.1256374581201545,
+        "y": 4.870850710823445
+>>>>>>> Development-Drivebase
 =======
         "x": 2.1256374581201545,
         "y": 4.870850710823445
@@ -26,8 +31,13 @@
       },
       "prevControl": {
 <<<<<<< HEAD
+<<<<<<< HEAD
         "x": 1.758791881220126,
         "y": 5.177453991271619
+=======
+        "x": 2.0299703118007426,
+        "y": 5.062136929519395
+>>>>>>> Development-Drivebase
 =======
         "x": 2.0299703118007426,
         "y": 5.062136929519395
@@ -43,8 +53,13 @@
   "eventMarkers": [],
   "globalConstraints": {
 <<<<<<< HEAD
+<<<<<<< HEAD
     "maxVelocity": 3.5,
     "maxAcceleration": 3.5,
+=======
+    "maxVelocity": 5.0,
+    "maxAcceleration": 5.0,
+>>>>>>> Development-Drivebase
 =======
     "maxVelocity": 5.0,
     "maxAcceleration": 5.0,

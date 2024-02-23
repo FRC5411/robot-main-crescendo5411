@@ -5,8 +5,13 @@
   "pathFolders": [],
   "autoFolders": [],
 <<<<<<< HEAD
+<<<<<<< HEAD
   "defaultMaxVel": 3.5,
   "defaultMaxAccel": 3.5,
+=======
+  "defaultMaxVel": 5.0,
+  "defaultMaxAccel": 5.0,
+>>>>>>> Development-Drivebase
 =======
   "defaultMaxVel": 5.0,
   "defaultMaxAccel": 5.0,

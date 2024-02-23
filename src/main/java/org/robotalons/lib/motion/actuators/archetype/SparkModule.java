@@ -182,7 +182,6 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
 
   @Override
   public synchronized void periodic() {
-    ODOMETRY_LOCK.lock();
     update();
     if (RotationalRelativeOffset == (null) && Status.RotationalAbsolutePosition.getRadians() != (0d)) {
       RotationalRelativeOffset = Status.RotationalAbsolutePosition.minus(Status.RotationalRelativePosition);
@@ -197,7 +196,8 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
           setTranslationalVoltage(     
                                 -(TRANSLATIONAL_PID.calculate(AdjustReferenceVelocity))
                                                               +
-            (TRANSLATIONAL_FF.calculate(Status.TranslationalVelocityRadiansSecond, AdjustReferenceVelocity)));          
+            (TRANSLATIONAL_FF.calculate(Status.TranslationalVelocityRadiansSecond, AdjustReferenceVelocity))
+          );          
         }
         break;
       case DISABLED:
@@ -214,7 +214,6 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
         (RotationalRelativeOffset != (null))? (RotationalRelativeOffset): (new Rotation2d()));
       DELTAS.add(new SwerveModulePosition(Position, Rotation));
     });
-    ODOMETRY_LOCK.unlock(); 
   }
 
   @Override
@@ -232,6 +231,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
    */
   @Override
   public synchronized void update() {
+    ODOMETRY_LOCK.lock();
     synchronized(Status) {
       Status.TranslationalPositionRadians =
         Units.rotationsToRadians(TRANSLATIONAL_ENCODER.getPosition()) / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
@@ -255,21 +255,29 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       Status.RotationalTemperatureCelsius = 
         ROTATIONAL_CONTROLLER.getMotorTemperature();
 
-      Status.OdometryTimestamps = TIMESTAMP_QUEUE.stream().mapToDouble(Double::valueOf).toArray();
-      Status.OdometryTranslationalPositionsRadians =
-        TRANSLATIONAL_VELOCITY_QUEUE.stream()
-          .mapToDouble((Double value) -> Units.rotationsToRadians(value) / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO)
-          .toArray();
-      Status.OdometryRotationalPositions =
-        ROTATIONAL_POSITION_QUEUE.stream()
-          .map((Double value) -> Rotation2d.fromRotations(value / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO))
-          .toArray(Rotation2d[]::new);
+      synchronized(TIMESTAMP_QUEUE) {
+        Status.OdometryTimestamps = 
+          TIMESTAMP_QUEUE.stream()
+            .mapToDouble(Double::valueOf).toArray();
+        TIMESTAMP_QUEUE.clear();
+      }
+      synchronized(TRANSLATIONAL_VELOCITY_QUEUE) {
+        Status.OdometryTranslationalPositionsRadians =
+          TRANSLATIONAL_VELOCITY_QUEUE.stream()
+            .mapToDouble((Double value) -> Units.rotationsToRadians(value) / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO)
+            .toArray();    
+        TRANSLATIONAL_VELOCITY_QUEUE.clear();    
+      }
+      synchronized(ROTATIONAL_POSITION_QUEUE) {
+        Status.OdometryRotationalPositions =
+          ROTATIONAL_POSITION_QUEUE.stream()
+            .map((Double value) -> Rotation2d.fromRotations(value / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO))
+            .toArray(Rotation2d[]::new);    
+        ROTATIONAL_POSITION_QUEUE.clear();  
+      }
     }
-
-    TRANSLATIONAL_VELOCITY_QUEUE.clear();
-    ROTATIONAL_POSITION_QUEUE.clear();
-    TIMESTAMP_QUEUE.clear();
     Logger.processInputs("RealInputs/" + "MODULE (" + Integer.toString(MODULE_CONSTANTS.NUMBER) + ')', Status);
+    ODOMETRY_LOCK.unlock();
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   @Override

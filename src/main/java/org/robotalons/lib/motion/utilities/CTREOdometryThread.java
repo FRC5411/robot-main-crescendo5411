@@ -44,7 +44,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
    * Phoenix Odometry Thread Constructor.
    * @param OdometryLocker Appropriate Reentrance Locker for Odometry
    */
-  private CTREOdometryThread(Lock OdometryLocker) {
+  private CTREOdometryThread(final Lock OdometryLocker) {
     ODOMETRY_LOCK = OdometryLocker;
     setName(("CTREOdometryThread"));
     setDaemon((true));
@@ -140,11 +140,11 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
    * Creates a new instance of the existing utility class
    * @return Utility class's instance
    */
-  public static synchronized CTREOdometryThread create(Lock OdometryLock) {
+  public static synchronized CTREOdometryThread create(final Lock OdometryLocker) {
     if (!java.util.Objects.isNull(Instance)) {
       return Instance;
     }
-    Instance = new CTREOdometryThread(OdometryLock);
+    Instance = new CTREOdometryThread(OdometryLocker);
     return Instance;
   }
 
@@ -158,6 +158,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
     FlexibleCAN = IsFlexible;
   }
 
+  @Override
   public synchronized void set(final Double Frequency) {
     CTREOdometryThread.Frequency = Frequency;
   }

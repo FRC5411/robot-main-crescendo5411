@@ -73,7 +73,7 @@ public final class Constants {
         public static final Integer LINEAR_CONTROLLER_ID = (11);
         public static final Integer ROTATIONAL_CONTROLLER_ID = (15);
         public static final Integer ABSOLUTE_ENCODER_ID = (3);
-        public static final Double ROTATIONAL_P_GAIN = (0.075d);
+        public static final Double ROTATIONAL_P_GAIN = (2.81d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
         public static final Double ROTATIONAL_D_GAIN = (0.00001d);
         public static final Double ROTATIONAL_ENCODER_OFFSET = (0.403320d);

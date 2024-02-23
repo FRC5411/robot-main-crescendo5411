@@ -119,6 +119,8 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
     return Frequency;
   }  
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
+  
+  @Override
   public synchronized void set(final Double Frequency) {
     ODOMETRY_LOCK.lock();
     REVOdometryThread.Frequency = Frequency;
