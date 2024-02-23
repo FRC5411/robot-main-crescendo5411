@@ -32,31 +32,27 @@ public final class Constants {
   
   public class INDEXER {
     //MEASUREMENTS
-    public static final Double INTAKE_SPARK_MAX_SPEED = (1d);
-    public static final Double CANNON_SPARK_MAX_SPEED = (1d);
+    public static final Double TO_CANNON_MOTOR_SPEED = (1d);
     public static final Integer K_CURRENT_LIMIT = (60);
 
     //PORTS
-    public static final Integer INTAKE_SPARK_MAX_ID = (0);
-    public static final Integer CANNON_SPARK_MAX_ID = (1);
-    public static final Integer INTAKE_BREAKBEAM_INPUT_ID = (2);
-    public static final Integer CANNON_BREAKBEAM_INPUT_ID = (3);
+    public static final Integer TO_CANNON_MOTOR_ID = (0);
+    public static final Integer INTAKE_BREAKBEAM_INPUT_ID = (1);
+    public static final Integer CANNON_BREAKBEAM_INPUT_ID = (2);
     
     //OBJECTS
     public static final Lock ODOMETRY_LOCKER = new ReentrantLock();
 
     //DEVICES
-    public static final Integer K_INTAKE_SPARK_MAX_ENCODER_CHANNELA = (0);
-    public static final Integer K_INTAKE_SPARK_MAX_ENCODER_CHANNELB = (1);
-    public static final Integer K_CANNON_SPARK_MAX_ENCODER_CHANNELA = (2);
-    public static final Integer K_CANNON_SPARK_MAX_ENCODER_CHANNELB = (3);
+    public static final Integer K_TO_CANNON_MOTOR_ENCODER_CHANNELA = (0);
+    public static final Integer K_TO_CANNON_MOTOR_ENCODER_CHANNELB = (1);
   }
   
   public class INTAKE {
     //MEASUREMENTS
     public static final Double MOTOR_SPEED = (0.45);
-    public static final Double OTB_MOTOR_ONE_SPEED = (0);
-    public static final Double OTB_MOTOR_TWO_SPEED = (0);
+    public static final Double OTB_MOTOR_ONE_SPEED = (0.0);
+    public static final Double OTB_MOTOR_TWO_SPEED = (0.0);
     public static final Integer K_CURRENT_LIMIT = (25);
 
     //PORTS
