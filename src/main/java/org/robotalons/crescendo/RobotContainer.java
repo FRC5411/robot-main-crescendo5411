@@ -48,6 +48,7 @@ public final class RobotContainer {
       Subsystem.configure(Initial);
       PilotSelectors.add(new LoggedDashboardChooser<PilotProfile>(Subsystem.getName() + " Pilot Selector", Selector));
     });
+    SubsystemManager.getInstance();
     AutonomousSelector = new LoggedDashboardChooser<>(("Autonomous Selector"), AutoBuilder.buildAutoChooser());
     Pathplanner.ROUTINES.forEach((Name, Routine) -> AutonomousSelector.addOption(Name, Routine));
 
