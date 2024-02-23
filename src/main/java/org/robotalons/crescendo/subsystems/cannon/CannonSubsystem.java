@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.CANSparkMax;
@@ -57,7 +58,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
   private CannonSubsystem() { 
     super(("Cannon Subsystem"));
   } static {
-    CurrentReference = new SwerveModuleState((0d), new Rotation2d((Measurements.PIVOT_MAXIMUM_ROTATION + Measurements.PIVOT_MINIMUM_ROTATION)/2));
+    CurrentReference = new SwerveModuleState((0d), new Rotation2d(Math.PI/2));
     CurrentMode = FiringMode.MANUAL;
     FIRING_CONTROLLERS = new Pair<CANSparkMax,CANSparkMax>(
       new CANSparkMax(Ports.FIRING_CONTROLLER_LEFT_ID, MotorType.kBrushless), 
@@ -69,7 +70,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
       Measurements.FIRING_P_GAIN, 
       Measurements.FIRING_I_GAIN, 
       Measurements.FIRING_D_GAIN);
-    FIRING_CONTROLLERS.getSecond().setInverted((true));
+    FIRING_CONTROLLERS.getSecond().setInverted((false));
     FIRING_CONTROLLERS.getSecond().follow(FIRING_CONTROLLERS.getFirst());
 
     INDEXER_SENSOR = new DigitalOutput(Ports.INDEXER_SENSOR_ID);
@@ -144,6 +145,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
    * @param Reference Desired rotation in radians
    */
   private static synchronized void set(final Rotation2d Reference) {
+    CurrentReference.angle = Reference;
     PIVOT_CONTROLLER.set(
       PIVOT_CONTROLLER_PID.calculate(PIVOT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.ABSOLUTE_ENCODER_OFFSET,
                                     MathUtil.clamp(Reference.getRotations(),Measurements.PIVOT_MINIMUM_ROTATION,Measurements.PIVOT_MAXIMUM_ROTATION)));
@@ -154,6 +156,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
    * @param Reference Desired velocity in ROM
    */
   private static synchronized void set(final Double Reference) {
+    CurrentReference.speedMetersPerSecond = Reference;
     FIRING_CONTROLLERS.getFirst().set(FIRING_CONTROLLER_PID.calculate(FIRING_ENCODER.getVelocity(), Reference));
   }
 
@@ -185,6 +188,9 @@ public class CannonSubsystem extends TalonSubsystemBase {
     set(Reference);
   }
 
+  public static synchronized void setRotation(final Rotation2d Reference) {
+    CurrentReference.angle = Reference;
+  }
 
   // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
   /**
@@ -201,7 +207,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
   public void configure(final PilotProfile Profile) {
     CurrentPilot = Profile;
     try {
-      CurrentPilot.getKeybinding(Keybindings.CANNON_TOGGLE)
+      CurrentPilot.getKeybinding(Keybindings.CANNON_TOGGLE) //TODO: While True
         .onTrue(new InstantCommand(
           CannonSubsystem::fire,
           CannonSubsystem.getInstance()
@@ -211,19 +217,20 @@ public class CannonSubsystem extends TalonSubsystemBase {
       CurrentPilot.getKeybinding(Keybindings.CANNON_PIVOT_UP)
         .whileTrue(new InstantCommand(
           () -> {
-            CurrentReference.angle.plus(Rotation2d.fromDegrees((1)));
+            set(CurrentReference.angle.plus(Rotation2d.fromDegrees((1))));
           },
           CannonSubsystem.getInstance()
-        ));
+        ).repeatedly());
     } catch(final NullPointerException Ignored) {}
     try {
       CurrentPilot.getKeybinding(Keybindings.CANNON_PIVOT_DOWN)
         .whileTrue(new InstantCommand(
           () -> {
-            CurrentReference.angle.plus(Rotation2d.fromDegrees((-1)));
+            set(CurrentReference.angle.plus(Rotation2d.fromDegrees((-1))));
           },
           CannonSubsystem.getInstance()
-        ));
+        ).repeatedly());
+
     } catch(final NullPointerException Ignored) {}
   }
 

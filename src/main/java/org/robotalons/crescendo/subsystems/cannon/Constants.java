@@ -34,7 +34,7 @@ public class Constants {
 
     public static final Double CANNON_LENGTH = (1d);
 
-    public static final Boolean PIVOT_INVERTED = (true);
+    public static final Boolean PIVOT_INVERTED = (false);
 
     public static final Double PIVOT_MINIMUM_ROTATION = Units.degreesToRadians((9));
     public static final Double PIVOT_MAXIMUM_ROTATION = Units.degreesToRadians((60));
