@@ -44,27 +44,15 @@ public final class RobotContainer {
    */
   private static void configurePilotKeybinds() {
     
-    // Single Arm Right Movement // 
+    // Double Arm Right Movement // 
     operatorController.rightTrigger()
-    .onTrue(new InstantCommand(() -> climbSS.set(1, Measurements.CONTROLLER_ARM_SPEED)))
-    .onFalse(new InstantCommand(() -> climbSS.set(1, 0.0)));
+    .onTrue(new InstantCommand(() -> climbSS.set(Measurements.CONTROLLER_ARM_SPEED)))
+    .onFalse(new InstantCommand(() -> climbSS.set(0.0)));
 
-    // Single Arm Left Movement // 
+    // Double Arm Left Movement // 
     operatorController.leftTrigger()
-    .onTrue(new InstantCommand(() -> climbSS.set(0, Measurements.CONTROLLER_ARM_SPEED)))
-    .onFalse(new InstantCommand(() -> climbSS.set(0, 0.0)));
-
-    // Single Arm Right Movement // 
-    operatorController.rightBumper()
-    .onTrue(new InstantCommand(() -> climbSS.set(1, -Measurements.CONTROLLER_ARM_SPEED)))
-    .onFalse(new InstantCommand(() -> climbSS.set(1, 0.0)));
-
-    // Single Arm Left Movement // 
-    operatorController.leftBumper()
-    .onTrue(new InstantCommand(() -> climbSS.set(0, -Measurements.CONTROLLER_ARM_SPEED)));
-
-    operatorController.leftBumper()
-    .onFalse(new InstantCommand(() -> climbSS.set(0, 0.0)));
+    .onTrue(new InstantCommand(() -> climbSS.set(Measurements.CONTROLLER_ARM_SPEED)))
+    .onFalse(new InstantCommand(() -> climbSS.set(0.0)));
   
   }  
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
