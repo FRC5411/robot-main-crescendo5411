@@ -3,7 +3,6 @@ package org.robotalons.lib.vision;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Num;
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
@@ -12,8 +11,6 @@ import edu.wpi.first.math.numbers.N5;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
-import org.photonvision.common.hardware.VisionLEDMode;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -59,9 +56,14 @@ public abstract class Camera implements Closeable {
   public abstract void update();
 
   /**
-   * Forces the camera to take a snapshot of it's current processed feed.
+   * Forces the camera to take a preprocessed snapshot of it's current processed feed.
    */
-  public abstract void snapshot();
+  public abstract void preSnapshot();
+
+  /**
+   * Forces the camera to take a preprocessed snapshot of it's current processed feed.
+   */
+  public abstract void postSnapshot();
 
   /**
    * Requests raw object metadata from the raw network table instance of the camera
@@ -80,18 +82,6 @@ public abstract class Camera implements Closeable {
    */
   public abstract void close() throws IOException;
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
-  /**
-   * Mutates the underlying VisionMode state of the relevant camera
-   * @param Mode New vision mode of camera
-   */
-  public abstract void set(final VisionLEDMode Mode) throws UnsupportedOperationException;
-
-  /**
-   * Mutates the underlying PipelineMode state of the relevant camera
-   * @param Mode New pipeline mode of camera
-   */
-  public abstract void set(final Integer Mode) throws UnsupportedOperationException;
- 
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Provides the robot relative position to a given object based on the estimated position of this camera and a transformation to a known object
@@ -136,11 +126,6 @@ public abstract class Camera implements Closeable {
   public abstract Optional<Matrix<N5, N1>> getCoefficientMatrix();
 
   /**
-   * Returns the resolution of the camera as a pair of integers representing with width, and length
-   * @return Pair of integers representing video resolution
-   */
-  public abstract Pair<Integer,Integer> getImageResolution();
-  /**
    * Provides the robot relative position timestamps of each delta from the last update control cycle up to the current query.
    * @return List of robot relative snapshot time deltas
    */
@@ -160,9 +145,7 @@ public abstract class Camera implements Closeable {
    * Provides the robot relative (minus offset) position immediately.
    * @return Current estimated Pose of the robot at this moment
    */
-  public Pose3d getRobotPosition(){
-    return CAMERASTATUS.RobotPose;
-  };
+  public abstract Optional<Pose3d> getRobotPosition();
 
   /**
    * Provides the offset of this camera relative to the center of the robot.

@@ -8,7 +8,6 @@ import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.Num;
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -20,7 +19,6 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.common.hardware.VisionLEDMode;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.robotalons.lib.vision.Camera;
 
@@ -79,13 +77,18 @@ public final class VisionCamera extends Camera {
   public void update() {
     POSE_ESTIMATOR = new PhotonPoseEstimator(
       FIELD_LAYOUT, 
-      PoseStrategy.CLOSEST_TO_REFERENCE_POSE, 
+      PoseStrategy.CLOSEST_TO_LAST_POSE, 
       CAMERA,
       RELATIVE);
   }
 
   @Override
-  public void snapshot() {
+  public void preSnapshot() {
+    CAMERA.takeInputSnapshot();
+  }
+
+  @Override
+  public void postSnapshot() {
     CAMERA.takeOutputSnapshot();
   }
 
@@ -96,16 +99,6 @@ public final class VisionCamera extends Camera {
     POSES_LIST.clear();
     CAMERA.close();
     COUNTER = 0;
-  }
-
-  @Override
-  public void set(VisionLEDMode Mode){
-    throw new UnsupportedOperationException("Unimplemented method 'set'");
-  }
-
-  @Override
-  public void set(Integer Mode) {
-    throw new UnsupportedOperationException("Unimplemented method 'set'");
   }
 
   @Override
@@ -144,7 +137,7 @@ public final class VisionCamera extends Camera {
 
     return MatBuilder.fill(() -> 6, Nat.N1(), data);
   }
-
+ 
   private double getSD(double[] nums){
     double mean = 0, sumSquareDiff = 0;
 
@@ -170,11 +163,6 @@ public final class VisionCamera extends Camera {
   @Override
   public Optional<Matrix<N5, N1>> getCoefficientMatrix() {
     return CAMERA.getDistCoeffs();
-  }
-
-  @Override
-  public Pair<Integer, Integer> getImageResolution() {
-    throw new UnsupportedOperationException("Unimplemented method 'getImageResolution'");
   }
 
   @Override
@@ -218,25 +206,32 @@ public final class VisionCamera extends Camera {
   }
 
   @Override
-  public Pose3d getRobotPosition() {
+  public Optional<Pose3d> getRobotPosition() {
+
 
     if(COUNTER == 0){
-      EstimatedRobotPose CURRENT_POSE = POSE_ESTIMATOR.update().get();
+      Optional<EstimatedRobotPose> CURRENT_POSE = POSE_ESTIMATOR.update();
+
+      if(CURRENT_POSE.isEmpty()){
+        return Optional.of(null);
+      }
+
+      EstimatedRobotPose POSE = CURRENT_POSE.get();
       
-      Pose3d CONVERTED = CURRENT_POSE.estimatedPose;
+      Pose3d CONVERTED = POSE.estimatedPose;
       POSES_LIST.add(CONVERTED);
 
-      double time = CURRENT_POSE.timestampSeconds;
+      double time = POSE.timestampSeconds;
       TIMESTAMP_LIST.add(time);
 
       COUNTER ++;
 
-      return CONVERTED;
+      return Optional.of(CONVERTED);
     }
 
     else{
       Pose3d PREV_POSE = POSES_LIST.get(COUNTER);
-      POSE_ESTIMATOR.setReferencePose(PREV_POSE);
+      POSE_ESTIMATOR.setLastPose(PREV_POSE);
 
       EstimatedRobotPose CURRENT_POSE = POSE_ESTIMATOR.update().get();
       
@@ -248,29 +243,30 @@ public final class VisionCamera extends Camera {
 
       COUNTER ++;
 
-      return CONVERTED;
+      return Optional.of(CONVERTED);
     }
   }
 
   @Override
   public Pose3d getObjectFieldPose(){
-    final var Robot = getRobotPosition();
-    final var Target = getOptimalTarget();
+    Pose3d ROBOT = getRobotPosition().get();
+    Transform3d TARGET = getOptimalTarget();
+
     return new Pose3d(
-      (Target.getX() + Robot.getX()),
-      (Target.getY() + Robot.getY()),
-      Target.getZ(),
+      (TARGET.getX() + ROBOT.getX()),
+      (TARGET.getY() + ROBOT.getY()),
+      TARGET.getZ(),
       new Rotation3d()
-    );
+      );
   }
 
   @Override
-  public Pose3d getObjectFieldPose(Transform3d Target){
-    final Pose3d Robot = getRobotPosition();
+  public Pose3d getObjectFieldPose(Transform3d TARGET){
+    Pose3d ROBOT = getRobotPosition().get();
     return new Pose3d(
-      (Target.getX() + Robot.getX()),
-      (Target.getY() + Robot.getY()),
-      Target.getZ(),
+      (TARGET.getX() + ROBOT.getX()),
+      (TARGET.getY() + ROBOT.getY()),
+      TARGET.getZ(),
       new Rotation3d()
     );
   }

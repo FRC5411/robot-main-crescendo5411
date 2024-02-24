@@ -24,23 +24,23 @@ import java.util.List;
  */
 public final class VisionSubsystem extends SubsystemBase implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  public static final List<Camera> CAMERAS;
-  public static final PhotonCamera SOURCE;
-  public static final PhotonCamera SPEAKER_FRONT;
-  public static final PhotonCamera SPEAKER_REAR;
-  public static final PhotonCamera INTAKE;
+  public static List<Camera> CAMERAS;
+  public static PhotonCamera SOURCE;
+  public static PhotonCamera SPEAKER_FRONT;
+  public static PhotonCamera SPEAKER_REAR;
+  public static PhotonCamera INTAKE;
 
-  public static final VisionCamera SOURCE_CAMERA;
-  public static final VisionCamera SPEAKER_FRONT_CAMERA;
-  public static final VisionCamera SPEAKER_REAR_CAMERA;
-  public static final VisionCamera INTAKE_CAMERA;
+  public static VisionCamera SOURCE_CAMERA;
+  public static VisionCamera SPEAKER_FRONT_CAMERA;
+  public static VisionCamera SPEAKER_REAR_CAMERA;
+  public static VisionCamera INTAKE_CAMERA;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static VisionSubsystem Instance;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Vision Subsystem Constructor.
    */
-  public VisionSubsystem(){} static {
+  public VisionSubsystem(){
     SOURCE = new PhotonCamera("Camera_1");
     SPEAKER_FRONT = new PhotonCamera("Camera_2");
     SPEAKER_REAR = new PhotonCamera("Camera_3");
@@ -102,14 +102,30 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    * @param CAMERA_ID that gets the specific camera.
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public static void snapshot(Integer CAMERA_ID) throws IllegalArgumentException{
+  public static void preSnapshot(Integer CAMERA_ID) throws IllegalArgumentException{
 
     if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
-      throw new IllegalArgumentException("Camera ID for method 'snapshot' should not be greater than 4, less than 1, or not an integer");
+      throw new IllegalArgumentException("Camera ID for method 'preSnapshot' should not be greater than 4, less than 1, or not an integer");
     }
 
     Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
-    CAMERA.snapshot();
+    CAMERA.preSnapshot();
+  }
+
+  /**
+   * Takes snapshot from specified Camera integer.
+   * 1 - Source Camera, 2 - Speaker Front Camera, 3- Speaker Rear Camera, 4 - OD Camera.
+   * @param CAMERA_ID that gets the specific camera.
+   * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
+   */
+  public static void postSnapshot(Integer CAMERA_ID) throws IllegalArgumentException{
+
+    if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
+      throw new IllegalArgumentException("Camera ID for method 'postSnapshot' should not be greater than 4, less than 1, or not an integer");
+    }
+
+    Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
+    CAMERA.postSnapshot();
   }
 
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
@@ -149,8 +165,9 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
     Camera CAMERA1 = CAMERAS.get(CAMERA1_ID - 1);
     Camera CAMERA2 = CAMERAS.get(CAMERA2_ID - 1);
 
-    Pose3d CAMERA1_POSE = CAMERA1.getRobotPosition();
-    Pose3d CAMERA2_POSE = CAMERA2.getRobotPosition();
+    //TODO: Fix how optional typcast, will  effect the rest of the pose estimation and average
+    Pose3d CAMERA1_POSE = CAMERA1.getRobotPosition().get();
+    Pose3d CAMERA2_POSE = CAMERA2.getRobotPosition().get();
 
     double avgX = (CAMERA1_POSE.getX() + CAMERA2_POSE.getX()) / 2;
     double avgY = (CAMERA1_POSE.getY() + CAMERA2_POSE.getY()) / 2;
