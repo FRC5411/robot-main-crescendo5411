@@ -24,12 +24,13 @@ public final class ClimbSubsystem extends SubsystemBase implements Closeable {
   private static ClimbModule LEFT_ARM;
   private static ClimbModule RIGHT_ARM;
   private static final ClimbModule[] MOTORS;
-  
+
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
   private static ClimbSubsystem Instance;
   // ------------------------------------------------------------[Constructors]------------------------------------------------------------- //
+  
   /**
-   * Indexer Subsystem Constructor
+   * Climb Subsystem Constructor
    */
   public ClimbSubsystem() {} static {
     LEFT_ARM = new ClimbModule(0, Measurements.K_LEFT_FORWARD_CHANNELA, Measurements.K_LEFT_FORWARD_CHANNELB);
@@ -75,8 +76,14 @@ public final class ClimbSubsystem extends SubsystemBase implements Closeable {
    * 0 - Left Arm, 1 - Right Arm
    * @param NUM Desired Motor that wants to be called
    * @param DEMAND Desired demand on the motor
-   */
-  public synchronized void set(final Integer NUM, final Double DEMAND){
+   * @throws IllegalArgumentException when number is not 0 or 1
+   */ 
+  public synchronized void set(final Integer NUM, final Double DEMAND) throws IllegalArgumentException{
+    
+    if(!(NUM == 1 || NUM == 0)){
+      throw new IllegalArgumentException("Parameter 'NUM' was not 0 or 1, causing method 'set' to throw error");
+    }
+
     ClimbModule MOTOR = MOTORS[NUM];
     MOTOR.set(DEMAND);
   }
@@ -96,9 +103,14 @@ public final class ClimbSubsystem extends SubsystemBase implements Closeable {
    * 0 - Left Arm, 1 - Right Arm
    * @param NUM Picks Motors
    * @return Velocity of Motor
+   * @throws IllegalArgumentException when number is not 0 or 1
    */
   // TODO: Doulble Check
-  public static synchronized Double getVelocity(Integer NUM){
+  public static synchronized Double getVelocity(Integer NUM) throws IllegalArgumentException{
+    if(!(NUM == 1 || NUM == 0)){
+      throw new IllegalArgumentException("Parameter 'NUM' was not 0 or 1, causing method 'set' to throw error");
+    }
+
     ClimbModule MOTOR = MOTORS[NUM];
     return MOTOR.getVelocity();
   }
@@ -108,8 +120,14 @@ public final class ClimbSubsystem extends SubsystemBase implements Closeable {
    * 0 - Left Arm, 1 - Right Arm
    * @param NUM Picks Motors
    * @return Posistion of Motor
+   * @throws IllegalArgumentException when number is not 0 or 1
    */
-  public static synchronized Double getPosistion(Integer NUM){
+  public static synchronized Double getPosistion(Integer NUM) throws IllegalArgumentException{
+
+    if(!(NUM == 1 || NUM == 0)){
+      throw new IllegalArgumentException("Parameter 'NUM' was not 0 or 1, causing method 'set' to throw error");
+    }
+
     ClimbModule MOTOR = MOTORS[NUM];
     return MOTOR.getPosistion();
   }
@@ -119,8 +137,14 @@ public final class ClimbSubsystem extends SubsystemBase implements Closeable {
    * 0 - Left Arm, 1 - Right Arm
    * @param NUM Picks Motors
    * @return Temperature of Motor
+   * @throws IllegalArgumentException when number is not 0 or 1
    */
-  public static synchronized Double getTemperature(Integer NUM){
+  public static synchronized Double getTemperature(Integer NUM) throws IllegalAccessException{
+
+    if(!(NUM == 1 || NUM == 0)){
+      throw new IllegalArgumentException("Parameter 'NUM' was not 0 or 1, causing method 'set' to throw error");
+    }
+
     ClimbModule MOTOR = MOTORS[NUM];
     return MOTOR.getTemperature();
   }
