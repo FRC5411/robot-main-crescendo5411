@@ -79,7 +79,7 @@ public final class Constants {
         public static final Double ROTATIONAL_ENCODER_OFFSET = (0.403320d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
-        public static final Double LINEAR_P_GAIN = (0.0005d);
+        public static final Double LINEAR_P_GAIN = (0.2d);
         public static final Double LINEAR_I_GAIN = (0d);
         public static final Double LINEAR_D_GAIN = (0d);
         public static final Double LINEAR_KS_GAIN = (0d);
@@ -138,7 +138,7 @@ public final class Constants {
         public static final Double ROTATIONAL_ENCODER_OFFSET = (0.298340d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
-        public static final Double LINEAR_P_GAIN = (0.0005d);
+        public static final Double LINEAR_P_GAIN = (0.2d);
         public static final Double LINEAR_I_GAIN = (0d);
         public static final Double LINEAR_D_GAIN = (0d);
         public static final Double LINEAR_KS_GAIN = (0d);
@@ -197,7 +197,7 @@ public final class Constants {
         public static final Double ROTATIONAL_ENCODER_OFFSET = (-0.164795d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
-        public static final Double LINEAR_P_GAIN = (0.0005d);
+        public static final Double LINEAR_P_GAIN = (0.2d);
         public static final Double LINEAR_I_GAIN = (0d);
         public static final Double LINEAR_D_GAIN = (0d);
         public static final Double LINEAR_KS_GAIN = (0d);
@@ -256,7 +256,7 @@ public final class Constants {
         public static final Double ROTATIONAL_ENCODER_OFFSET = (-0.412842d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
-        public static final Double LINEAR_P_GAIN = (0.0005d);
+        public static final Double LINEAR_P_GAIN = (0.2d);
         public static final Double LINEAR_I_GAIN = (0d);
         public static final Double LINEAR_D_GAIN = (0d);
         public static final Double LINEAR_KS_GAIN = (0d);

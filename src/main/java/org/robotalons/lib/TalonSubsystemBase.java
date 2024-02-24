@@ -3,7 +3,7 @@ package org.robotalons.lib;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import org.robotalons.lib.utilities.PilotProfile;
+import org.robotalons.lib.utilities.Operator;
 
 import java.io.Closeable;
 // ----------------------------------------------------------[Talon Subsystem Base]---------------------------------------------------------//
@@ -29,9 +29,9 @@ public abstract class TalonSubsystemBase extends SubsystemBase implements Closea
   // --------------------------------------------------------------[Methods]----------------------------------------------------------------//
   /**
    * Configures a pilot's hardware to operate this subsystem
-   * @param Profile the next pilot of this subsystem instance
+   * @param Operator the next operator of this subsystem instance
    */
-  public abstract void configure(final PilotProfile Profile);
+  public abstract void configure(final Operator Operator);
   
   /**
    * Closes this instance and all held resources immediately.
@@ -39,8 +39,8 @@ public abstract class TalonSubsystemBase extends SubsystemBase implements Closea
   public abstract void close();  
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
-   * Provides the current pilot of this subsystem.
-   * @return Subsystem Pilot
+   * Provides the current operator of this subsystem.
+   * @return Subsystem operator
    */
-  public abstract PilotProfile getPilot();
+  public abstract Operator getOperator();
 }
