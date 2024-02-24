@@ -84,6 +84,12 @@ public final class ClimbModule extends Climb {
     }
 
     @Override
+    public void calculateAppliedVoltage(){
+        double VOLTAGE = MOTOR_FF.calculate(getPosistion(), Measurements.K_HOLD_PARRALLEL_GROUND);
+        MOTOR.set(VOLTAGE);
+    }
+
+    @Override
     public synchronized Double getTemperature() {
         return MOTOR.getMotorTemperature();
     }

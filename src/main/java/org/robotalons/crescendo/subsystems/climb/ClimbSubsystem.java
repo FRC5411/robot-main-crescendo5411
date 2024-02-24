@@ -3,6 +3,7 @@ package org.robotalons.crescendo.subsystems.climb;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.io.Closeable;
 import java.io.IOException;
+
 import org.robotalons.crescendo.subsystems.climb.Constants.Measurements;
 
 
@@ -105,14 +106,14 @@ public final class ClimbSubsystem extends SubsystemBase implements Closeable {
    * @return Velocity of Motor
    * @throws IllegalArgumentException when number is not 0 or 1
    */
-  // TODO: Doulble Check
+
+  // TODO: Doulble Check Velocity 
   public static synchronized Double getVelocity(Integer NUM) throws IllegalArgumentException{
     if(!(NUM == 1 || NUM == 0)){
       throw new IllegalArgumentException("Parameter 'NUM' was not 0 or 1, causing method 'set' to throw error");
     }
 
-    ClimbModule MOTOR = MOTORS[NUM];
-    return MOTOR.getVelocity();
+    return MOTORS[NUM].getVelocity();
   }
 
    /**
@@ -128,8 +129,7 @@ public final class ClimbSubsystem extends SubsystemBase implements Closeable {
       throw new IllegalArgumentException("Parameter 'NUM' was not 0 or 1, causing method 'set' to throw error");
     }
 
-    ClimbModule MOTOR = MOTORS[NUM];
-    return MOTOR.getPosistion();
+    return MOTORS[NUM].getPosistion();
   }
 
    /**

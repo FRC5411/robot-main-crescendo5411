@@ -49,6 +49,9 @@ public class Constants {
     public static final float K_FORWARD_ARM_LIMIT = (90);
     public static final float K_REVERSE_ARM_LIMIT = (-90);
 
+    //TODO: Find the gear ratio
+    public static final Double K_GEARRATIO = (1/1.0);
+
     //TODO: Fix the channels
     public static final Integer K_RIGHT_FORWARD_CHANNELA = (0);
     public static final Integer K_RIGHT_FORWARD_CHANNELB = (1);
@@ -56,9 +59,9 @@ public class Constants {
     public static final Integer K_LEFT_FORWARD_CHANNELA = (2);
     public static final Integer K_LEFT_FORWARD_CHANNELB = (3);
 
-    //TODO: Find the gear ratio
-    public static final Double K_GEARRATIO = (1/1.0);
-
+    //TODO: Fix FF
+    public static final Double K_HOLD_PARRALLEL_GROUND = (100d);
+    public static final Double K_HOLD_STRAIGHT = (100d);
 
   }
 
