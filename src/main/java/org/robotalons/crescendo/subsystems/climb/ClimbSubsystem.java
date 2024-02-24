@@ -23,7 +23,7 @@ public final class ClimbSubsystem extends SubsystemBase implements Closeable {
   // --------------------------------------------------------------[Constants]-------------------------------------------------------------- //
   private static ClimbModule LEFT_ARM;
   private static ClimbModule RIGHT_ARM;
-  private static final ClimbModule[] MOTORS;
+  private static ClimbModule[] MOTORS;
 
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
   private static ClimbSubsystem Instance;
@@ -32,7 +32,7 @@ public final class ClimbSubsystem extends SubsystemBase implements Closeable {
   /**
    * Climb Subsystem Constructor
    */
-  public ClimbSubsystem() {} static {
+  public ClimbSubsystem() {
     LEFT_ARM = new ClimbModule(0, Measurements.K_LEFT_FORWARD_CHANNELA, Measurements.K_LEFT_FORWARD_CHANNELB);
     RIGHT_ARM = new ClimbModule(1, Measurements.K_RIGHT_FORWARD_CHANNELA, Measurements.K_RIGHT_FORWARD_CHANNELB);
 

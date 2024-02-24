@@ -55,6 +55,11 @@ public abstract class Climb implements Closeable {
      */    
     public abstract void set(Double DEMAND);
 
+  /**
+    * Calculates voltage needed for feedforward
+   */    
+    public abstract void calculateAppliedVoltage();
+
 
     // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
     
