@@ -51,8 +51,14 @@ public final class RobotContainer {
 
     // Double Arm Left Movement // 
     operatorController.leftTrigger()
-    .onTrue(new InstantCommand(() -> climbSS.set(Measurements.CONTROLLER_ARM_SPEED)))
+    .onTrue(new InstantCommand(() -> climbSS.set(-Measurements.CONTROLLER_ARM_SPEED)))
     .onFalse(new InstantCommand(() -> climbSS.set(0.0)));
+
+    // PID setpoint // 
+    operatorController.a()
+    .onTrue(new InstantCommand(() -> climbSS.pidSet(100d)))
+    .onFalse(new InstantCommand(() -> climbSS.set(0d)));
+
   
   }  
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
