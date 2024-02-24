@@ -4,21 +4,21 @@
 
 package org.robotalons.crescendo.subsystems.climb;
 
-import java.io.IOException;
-
-import org.robotalons.crescendo.subsystems.climb.Constants.Measurements;
-import org.robotalons.lib.climb.Climb;
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.wpilibj.Encoder;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
-import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.MotorFeedbackSensor;
+import com.revrobotics.SparkMaxPIDController;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.wpilibj.Encoder;
+import org.robotalons.crescendo.subsystems.climb.Constants.Measurements;
+import org.robotalons.lib.climb.Climb;
+
+import java.io.IOException;
 
 /** Add your docs here. */
 public final class ClimbModule extends Climb {

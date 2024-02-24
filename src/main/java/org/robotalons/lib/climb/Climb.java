@@ -4,10 +4,10 @@
 
 package org.robotalons.lib.climb;
 
-import java.io.Closeable;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
+import java.io.Closeable;
 
 // -----------------------------------------------------------------[Climb]----------------------------------------------------------------//
 /**

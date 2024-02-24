@@ -1,10 +1,11 @@
 // ----------------------------------------------------------------[Package]---------------------------------------------------------------- //
 package org.robotalons.crescendo.subsystems.climb;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import java.io.Closeable;
-import java.io.IOException;
 
 import org.robotalons.crescendo.subsystems.climb.Constants.Measurements;
+
+import java.io.Closeable;
+import java.io.IOException;
 
 
 // ---------------------------------------------------------------[Libraries]--------------------------------------------------------------- //
