@@ -4,8 +4,28 @@
   "holonomicMode": true,
   "pathFolders": [],
   "autoFolders": [],
+<<<<<<< HEAD
   "defaultMaxVel": 5.0,
   "defaultMaxAccel": 5.0,
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+  "defaultMaxVel": 3.5,
+  "defaultMaxAccel": 3.5,
+=======
+  "defaultMaxVel": 5.0,
+  "defaultMaxAccel": 5.0,
+>>>>>>> Development-Drivebase
+=======
+  "defaultMaxVel": 5.0,
+  "defaultMaxAccel": 5.0,
+>>>>>>> Development-Drivebase
+=======
+  "defaultMaxVel": 5.0,
+  "defaultMaxAccel": 5.0,
+>>>>>>> origin/Development-Drivebase
+>>>>>>> 6530e4d07114f44726dc2ed3abd2363fe0a27742
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "maxModuleSpeed": 4.6

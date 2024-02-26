@@ -8,8 +8,28 @@
       },
       "prevControl": null,
       "nextControl": {
+<<<<<<< HEAD
         "x": 2.1256374581201545,
         "y": 4.870850710823445
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+        "x": 1.8893943242431936,
+        "y": 4.645715473249129
+=======
+        "x": 2.1256374581201545,
+        "y": 4.870850710823445
+>>>>>>> Development-Drivebase
+=======
+        "x": 2.1256374581201545,
+        "y": 4.870850710823445
+>>>>>>> Development-Drivebase
+=======
+        "x": 2.1256374581201545,
+        "y": 4.870850710823445
+>>>>>>> origin/Development-Drivebase
+>>>>>>> 6530e4d07114f44726dc2ed3abd2363fe0a27742
       },
       "isLocked": false,
       "linkedName": null
@@ -20,8 +40,28 @@
         "y": 5.587918812201261
       },
       "prevControl": {
+<<<<<<< HEAD
         "x": 2.0299703118007426,
         "y": 5.062136929519395
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+        "x": 1.758791881220126,
+        "y": 5.177453991271619
+=======
+        "x": 2.0299703118007426,
+        "y": 5.062136929519395
+>>>>>>> Development-Drivebase
+=======
+        "x": 2.0299703118007426,
+        "y": 5.062136929519395
+>>>>>>> Development-Drivebase
+=======
+        "x": 2.0299703118007426,
+        "y": 5.062136929519395
+>>>>>>> origin/Development-Drivebase
+>>>>>>> 6530e4d07114f44726dc2ed3abd2363fe0a27742
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,8 +72,28 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
+<<<<<<< HEAD
     "maxVelocity": 5.0,
     "maxAcceleration": 5.0,
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+=======
+    "maxVelocity": 5.0,
+    "maxAcceleration": 5.0,
+>>>>>>> Development-Drivebase
+=======
+    "maxVelocity": 5.0,
+    "maxAcceleration": 5.0,
+>>>>>>> Development-Drivebase
+=======
+    "maxVelocity": 5.0,
+    "maxAcceleration": 5.0,
+>>>>>>> origin/Development-Drivebase
+>>>>>>> 6530e4d07114f44726dc2ed3abd2363fe0a27742
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

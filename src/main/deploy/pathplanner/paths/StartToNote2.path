@@ -32,8 +32,28 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
+<<<<<<< HEAD
     "maxVelocity": 5.0,
     "maxAcceleration": 5.0,
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+=======
+    "maxVelocity": 5.0,
+    "maxAcceleration": 5.0,
+>>>>>>> Development-Drivebase
+=======
+    "maxVelocity": 5.0,
+    "maxAcceleration": 5.0,
+>>>>>>> Development-Drivebase
+=======
+    "maxVelocity": 5.0,
+    "maxAcceleration": 5.0,
+>>>>>>> origin/Development-Drivebase
+>>>>>>> 6530e4d07114f44726dc2ed3abd2363fe0a27742
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

@@ -50,12 +50,33 @@ public interface OdometryThread<SignalType> extends Runnable, Closeable {
   void set(final Double Frequency);
 
   /**
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> Development-Drivebase
+=======
+>>>>>>> origin/Development-Drivebase
+>>>>>>> 6530e4d07114f44726dc2ed3abd2363fe0a27742
    * Provides the odometry lock of this thread
    * @return Lock which prevents method reentrance
    */
   Lock getLock();
 
   /**
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> Development-Drivebase
+=======
+>>>>>>> Development-Drivebase
+=======
+>>>>>>> origin/Development-Drivebase
+>>>>>>> 6530e4d07114f44726dc2ed3abd2363fe0a27742
    * Provides the frequency of this thread
    * @return Frequency as a double
    */

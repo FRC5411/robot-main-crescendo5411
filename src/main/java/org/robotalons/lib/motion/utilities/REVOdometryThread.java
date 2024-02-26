@@ -102,7 +102,7 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
       ODOMETRY_LOCK.unlock();
     }
   }
-
+  
   /**
    * Creates a new instance of the existing utility class
    * @return Utility class's instance
