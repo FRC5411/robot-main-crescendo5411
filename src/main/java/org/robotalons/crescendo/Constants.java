@@ -8,9 +8,11 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import org.robotalons.crescendo.Robot.RobotType;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
+import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
+import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.REVOdometryThread;
-import org.robotalons.lib.utilities.PilotProfile;
+import org.robotalons.lib.utilities.Operator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,28 +84,51 @@ public final class Constants {
 
   public static final class Profiles { 
 
-    public static final List<PilotProfile> PILOT_PROFILES = new ArrayList<PilotProfile>();
+    public static final List<Operator> OPERATORS = new ArrayList<Operator>();
+    public static final Map<TalonSubsystemBase,Operator> DEFAULT = new HashMap<TalonSubsystemBase, Operator>();
     static {
-      PILOT_PROFILES.add(Pilots.Example.PROFILE);
+      OPERATORS.add(Operators.Primary.PROFILE);
+      OPERATORS.add(Operators.Secondary.PROFILE);
+
+      DEFAULT.put(DrivebaseSubsystem.getInstance(),OPERATORS.get((0)));
     }
 
-    public static final class Pilots {
+    public static final class Operators {
       
-      public static final class Example {
-        public static final Integer CONTROLLER_PORT = (0);
-        public static final CommandXboxController CONTROLLER = new CommandXboxController(CONTROLLER_PORT);
-        public static final PilotProfile PROFILE = new PilotProfile(("John Doe"))
-          .addPreference(Preferences.TRANSLATIONAL_X_INPUT, () -> -CONTROLLER.getRawAxis((1)))
-          .addPreference(Preferences.TRANSLATIONAL_Y_INPUT, () -> -CONTROLLER.getRawAxis((0)))
-          .addPreference(Preferences.ORIENTATION_INPUT, () -> CONTROLLER.getRawAxis((4)))
+      public static final class Primary {
+        private static final String NAME = ("ARMAAN K.");
+        private static final Integer INPUT_PORT = (0);
+        private static final CommandXboxController INPUT_METHOD = new CommandXboxController(INPUT_PORT);
+        public static final Operator PROFILE = new Operator(NAME)
+          .addPreference(Preferences.TRANSLATIONAL_X_INPUT, () -> -INPUT_METHOD.getRawAxis((1)))
+          .addPreference(Preferences.TRANSLATIONAL_Y_INPUT, () -> -INPUT_METHOD.getRawAxis((0)))
+          .addPreference(Preferences.ORIENTATION_INPUT, () -> INPUT_METHOD.getRawAxis((4)))
           .addPreference(Preferences.SQUARED_INPUT, () -> (true))
           .addPreference(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (0.2))
           .addPreference(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (0.2))
           .addPreference(Preferences.ORIENTATION_DEADZONE, () -> (0.2))
-          .addKeybinding(Keybindings.ORIENTATION_TOGGLE, CONTROLLER.y())
-          .addKeybinding(Keybindings.CANNON_PIVOT_DOWN, CONTROLLER.leftBumper())
-          .addKeybinding(Keybindings.CANNON_TOGGLE, CONTROLLER.b())
-          .addKeybinding(Keybindings.CANNON_PIVOT_UP, CONTROLLER.rightBumper());
+          .addKeybinding(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.povCenter())
+          .addKeybinding(Keybindings.INTAKE_TOGGLE, INPUT_METHOD.leftBumper())
+          .addKeybinding(Keybindings.CANNON_TOGGLE, INPUT_METHOD.b())
+          .addKeybinding(Keybindings.OUTTAKE_TOGGLE, INPUT_METHOD.rightBumper());
+      }
+
+      public static final class Secondary {
+        private static final String NAME = ("ALEX P.");
+        private static final Integer INPUT_PORT = (1);
+        private static final CommandXboxController INPUT_METHOD = new CommandXboxController(INPUT_PORT);
+        public static final Operator PROFILE = new Operator(NAME)
+          .addPreference(Preferences.TRANSLATIONAL_X_INPUT, () -> -INPUT_METHOD.getRawAxis((1)))
+          .addPreference(Preferences.TRANSLATIONAL_Y_INPUT, () -> -INPUT_METHOD.getRawAxis((0)))
+          .addPreference(Preferences.ORIENTATION_INPUT, () -> INPUT_METHOD.getRawAxis((4)))
+          .addPreference(Preferences.SQUARED_INPUT, () -> (true))
+          .addPreference(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (0.2))
+          .addPreference(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (0.2))
+          .addPreference(Preferences.ORIENTATION_DEADZONE, () -> (0.2))
+          .addKeybinding(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.povCenter())
+          .addKeybinding(Keybindings.INTAKE_TOGGLE, INPUT_METHOD.leftBumper())
+          .addKeybinding(Keybindings.CANNON_TOGGLE, INPUT_METHOD.b())
+          .addKeybinding(Keybindings.OUTTAKE_TOGGLE, INPUT_METHOD.rightBumper());
       }
     }
 

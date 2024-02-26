@@ -54,8 +54,8 @@ public class PigeonGyroscope extends Gyroscope {
   @Override
   public synchronized void update() {
     Status.Connected = YAW_VELOCITY.refresh().getStatus() == StatusCode.OK;
-    Status.YawRotation = Rotation2d.fromDegrees(YAW_ROTATION.getValueAsDouble());
-    Status.YawVelocityRadiansSecond = Units.degreesToRadians(YAW_VELOCITY.getValueAsDouble());
+    Status.YawRotation = Rotation2d.fromDegrees(YAW_ROTATION.getValue());
+    Status.YawVelocityRadiansSecond = Units.degreesToRadians(YAW_VELOCITY.getValue());
     Status.PositionDeltas =
         YAW_ROTATION_QUEUE.stream()
             .map(Rotation2d::fromDegrees)

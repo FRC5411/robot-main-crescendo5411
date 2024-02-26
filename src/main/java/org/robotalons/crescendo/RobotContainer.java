@@ -10,7 +10,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.robotalons.crescendo.Constants.Pathplanner;
 import org.robotalons.crescendo.Constants.Profiles;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
-import org.robotalons.lib.utilities.PilotProfile;
+import org.robotalons.lib.utilities.Operator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,26 +24,26 @@ import java.util.List;
  */
 public final class RobotContainer {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  public static final List<LoggedDashboardChooser<PilotProfile>> PilotSelectors;
-  public static final LoggedDashboardChooser<Command> AutonomousSelector;
+  public static final List<LoggedDashboardChooser<Operator>> SubsystemOperators;
+  public static final LoggedDashboardChooser<Command> Autonomous;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static RobotContainer Instance = (null);
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   
   private RobotContainer() {} static {
-    PilotSelectors = new ArrayList<>();
+    SubsystemOperators = new ArrayList<>();
     SubsystemManager.getSubsystems().forEach((Subsystem) -> {
-      final var Selector = new SendableChooser<PilotProfile>();
-      final var Iterator = Profiles.PILOT_PROFILES.iterator();
-      final var Initial = Iterator.next();
-      Iterator.forEachRemaining((Profile) -> Selector.addOption(Profile.getName(), Profile));
-      Selector.setDefaultOption(Initial.getName(), Initial);
+      final var Selector = new SendableChooser<Operator>();
+      final var Default = Profiles.DEFAULT.get(Subsystem);
+      Profiles.OPERATORS.forEach((Profile) -> Selector.addOption(Profile.getName(), Profile));
+      Selector.setDefaultOption(Default.getName(), Default);
       Selector.onChange(Subsystem::configure);
-      Subsystem.configure(Initial);
-      PilotSelectors.add(new LoggedDashboardChooser<PilotProfile>(Subsystem.getName() + " Pilot Selector", Selector));
+      Subsystem.configure(Default);
+      SubsystemOperators.add(new LoggedDashboardChooser<Operator>(Subsystem.getName() + " Pilot Selector", Selector));
     });
-    AutonomousSelector = new LoggedDashboardChooser<>(("Autonomous Selector"), AutoBuilder.buildAutoChooser());
-    Pathplanner.ROUTINES.forEach((Name, Routine) -> AutonomousSelector.addOption(Name, Routine));
+    SubsystemManager.getInstance();
+    Autonomous = new LoggedDashboardChooser<>(("Autonomous Selector"), AutoBuilder.buildAutoChooser());
+    Pathplanner.ROUTINES.forEach((Name, Routine) -> Autonomous.addOption(Name, Routine));
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**

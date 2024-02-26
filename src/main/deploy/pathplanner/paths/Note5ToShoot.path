@@ -34,6 +34,7 @@
   "globalConstraints": {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "maxVelocity": 3.5,
     "maxAcceleration": 3.5,
 =======
@@ -44,6 +45,10 @@
     "maxVelocity": 5.0,
     "maxAcceleration": 5.0,
 >>>>>>> Development-Drivebase
+=======
+    "maxVelocity": 5.0,
+    "maxAcceleration": 5.0,
+>>>>>>> origin/Development-Drivebase
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

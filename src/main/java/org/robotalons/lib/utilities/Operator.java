@@ -8,17 +8,17 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
-// -----------------------------------------------------------[Pilot Profile Class]---------------------------------------------------------//
+// ----------------------------------------------------------------[Operator]--------------------------------------------------------------//
 /**
  * 
  * 
- * <h1> PilotProfile </h1>
+ * <h1>Operator</h1>
  * 
  * <p> Represents a robot driver's personalized preferences and keybindings that can be used to control the robot to their desires. </p>
  * 
  * @author Cody Washington (@Jelatinone) 
  */
-public final class PilotProfile implements Sendable {
+public final class Operator implements Sendable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private final Map<String,Supplier<Object>> PREFERENCES = new HashMap<>();  
   private final Map<String,Trigger> KEYBINDINGS = new HashMap<>();
@@ -28,52 +28,51 @@ public final class PilotProfile implements Sendable {
    * Constructor.
    * @param Name Pilot's name to reference against other pilot profiles
    */
-  public PilotProfile(final String Name) {
+  public Operator(final String Name) {
     PILOT_NAME = Name;
   }  
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
-
   @Override
   public void initSendable(final SendableBuilder Builder) {
     Builder.addStringProperty(PILOT_NAME, this::getName, (String) -> {});
-    PREFERENCES.forEach((Attribute,Value) -> Builder.addStringProperty(Attribute, Value::toString, (null)));
-    KEYBINDINGS.forEach((Attribute,Value) -> Builder.addStringProperty(Attribute, Value::toString, (null)));
+    PREFERENCES.forEach((Attribute, Value) -> Builder.addStringProperty(Attribute, Value::toString, (null)));
+    KEYBINDINGS.forEach((Attribute, Value) -> Builder.addStringProperty(Attribute, Value::toString, (null)));
   }
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
   /**
    * Adds a new keybinding to the pilot's keybinding mapping
-   * @param KeybindingName      Name of keybinding
-   * @param KeybindingRetriever Keybinding Trigger
+   * @param Keybinding      Name of keybinding
+   * @param Trigger Keybinding Trigger
    */
-  public PilotProfile addKeybinding(final String KeybindingName, final Trigger KeybindingRetriever) {
-    KEYBINDINGS.put(KeybindingName, KeybindingRetriever);
+  public Operator addKeybinding(final String Keybinding, final Trigger Trigger) {
+    KEYBINDINGS.put(Keybinding, Trigger);
     return this;
   }
   /**
    * Add a new preference to the pilot's preference mapping
-   * @param ValueName Name of preference
+   * @param Preference Name of preference
    * @param Value Value of preference, can be any object
    */
-  public PilotProfile addPreference(final String ValueName, final Supplier<Object> Value) {
-    PREFERENCES.put(ValueName, Value);
+  public Operator addPreference(final String Preference, final Supplier<Object> Value) {
+    PREFERENCES.put(Preference, Value);
     return this;
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Retrieves a keybinding from the pilot's keybinding mapping
-   * @param KeybindingName Name of keybinding
+   * @param Keybinding Name of keybinding
    * @return A trigger from the pilot's keybinding map
    */
-  public Trigger getKeybinding(final String KeybindingName) {
-    return KEYBINDINGS.get(KeybindingName);
+  public Trigger getKeybinding(final String Keybinding) {
+    return KEYBINDINGS.get(Keybinding);
   }
   /**
    * Retrieves a preference from the pilot's preference mapping
-   * @param ValueName Name of preference
+   * @param Preference Name of preference
    * @return An object from the pilot's keybinding map
    */
-  public Object getPreference(final String ValueName) {
-    return PREFERENCES.get(ValueName).get();
+  public Object getPreference(final String Preference) {
+    return PREFERENCES.get(Preference).get();
   }
 
   /**

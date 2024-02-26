@@ -52,9 +52,12 @@ public sealed interface OdometryThread<SignalType> extends Runnable, Closeable p
   /**
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> Development-Drivebase
+=======
+>>>>>>> origin/Development-Drivebase
    * Provides the odometry lock of this thread
    * @return Lock which prevents method reentrance
    */
@@ -62,9 +65,12 @@ public sealed interface OdometryThread<SignalType> extends Runnable, Closeable p
 
   /**
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> Development-Drivebase
 =======
 >>>>>>> Development-Drivebase
+=======
+>>>>>>> origin/Development-Drivebase
    * Provides the frequency of this thread
    * @return Frequency as a double
    */
