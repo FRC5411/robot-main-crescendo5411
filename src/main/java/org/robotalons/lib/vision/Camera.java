@@ -27,8 +27,8 @@ import java.util.Optional;
  */
 public abstract class Camera implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  protected final CameraStatusContainer CAMERASTATUS = new CameraStatusContainer();
-  protected final TargetStatusContainer TARGETSTATUS = new TargetStatusContainer();
+  protected final CameraStatusContainer CAMERA_STATUS = new CameraStatusContainer();
+  protected final TargetStatusContainer TARGET_STATUS = new TargetStatusContainer();
   protected final NetworkTable INSTANCE;
   protected final Transform3d OFFSET;
   protected final String IDENTITY;
@@ -47,8 +47,8 @@ public abstract class Camera implements Closeable {
   // ---------------------------------------------------------------[Abstract]--------------------------------------------------------------//
   /**
    * This method is called periodically by the {@link CommandScheduler}. Useful for updating
-   * subsystem-specific stte that you don't want to offload to a {@link Command}. Teams should try
-   * to be consistent within their own codebases about which responsibilities will be handled by
+   * subsystem-specific state that you don't want to offload to a {@link Command}. Teams should try
+   * to be consistent within their own codebase about which responsibilities will be handled by
    * Commands, and which will be handled here.
    */
   public abstract void periodic();
@@ -129,7 +129,7 @@ public abstract class Camera implements Closeable {
    * @return List of robot relative snapshot time deltas
    */
   public double[] getRobotPositionTimestamps(){
-    return CAMERASTATUS.timestamps;
+    return CAMERA_STATUS.Timestamps;
   }
 
   /**
@@ -137,7 +137,7 @@ public abstract class Camera implements Closeable {
    * @return List of Poses of the robot since the last control cycle
    */
   public Pose3d[] getRobotPositionDeltas(){
-    return CAMERASTATUS.deltas;
+    return CAMERA_STATUS.Deltas;
   };
 
   /**
@@ -159,7 +159,7 @@ public abstract class Camera implements Closeable {
    * @return List of robot-relative target transformations
    */
   public Transform3d[] getTargets(){
-    return TARGETSTATUS.Targets;
+    return TARGET_STATUS.Targets;
   }
 
   /**
@@ -167,7 +167,7 @@ public abstract class Camera implements Closeable {
    * @return List of robot-relative target transformations
    */
   public boolean hasTargets(){
-    return TARGETSTATUS.HasTargets;
+    return TARGET_STATUS.HasTargets;
   }
 
 
@@ -176,15 +176,15 @@ public abstract class Camera implements Closeable {
    * @return Robot-relative best target transformation
    */
   public Transform3d getOptimalTarget(){
-    return TARGETSTATUS.BestTargetTransform;
+    return TARGET_STATUS.OptimalTransform;
   }
 
   /**
-   * Provides the number of targest that is deteced within the view of the camera
+   * Provides the number of targets that is detected within the view of the camera
    * @return Number of targets detected by camera
    */
   public int getNumTargets(){
-    return TARGETSTATUS.NumTargets;
+    return TARGET_STATUS.TotalTargets;
   }
 
   /**
@@ -192,7 +192,7 @@ public abstract class Camera implements Closeable {
    * @return String representation of the camera's name
    */
   public String getName() {
-    return CAMERASTATUS.Name;
+    return CAMERA_STATUS.Name;
   }
 
   /**
@@ -200,7 +200,7 @@ public abstract class Camera implements Closeable {
    * @return Double representation of the latency to retrieve information
    */
   public Double getLatency() {
-    return CAMERASTATUS.Latency;
+    return CAMERA_STATUS.Latency;
   }
 
   /**
@@ -208,6 +208,6 @@ public abstract class Camera implements Closeable {
    * @return Boolean representing Connectivity
    */
   public Boolean getConnected() {
-    return CAMERASTATUS.Connected;
+    return CAMERA_STATUS.Connected;
   }
 }

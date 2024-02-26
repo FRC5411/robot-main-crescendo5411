@@ -19,6 +19,6 @@ public class CameraStatusContainer {
   public double Latency = (0d);
   //TODO: Return robot pose, un edit this and change the abstract method once drivebase pose estimation implemented
   // public Pose3d RobotPose = new Pose3d(0, 0, 0, null);
-  public Pose3d[] deltas = new Pose3d[]{};
-  public double[] timestamps = new double[]{};
+  public Pose3d[] Deltas = new Pose3d[]{};
+  public double[] Timestamps = new double[]{};
 }

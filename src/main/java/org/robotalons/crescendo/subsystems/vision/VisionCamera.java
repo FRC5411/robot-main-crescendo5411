@@ -1,7 +1,6 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.vision;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
-
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
@@ -99,6 +98,7 @@ public final class VisionCamera extends Camera {
     CAMERA.close();
     COUNTER = 0;
   }
+  // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
 
   @Override
   public Matrix<Num, N1> getStandardDeviations() {
@@ -125,19 +125,19 @@ public final class VisionCamera extends Camera {
       yaw[i] = POSE.getRotation().getZ();
     }
 
-    double sdX = getSD(x);
-    double sdY = getSD(y);
-    double sdZ = getSD(z);
-    double sdPitch = getSD(pitch);
-    double sdRoll = getSD(roll);
-    double sdYaw = getSD(yaw);
+    double sdX = getStandardDeviation(x);
+    double sdY = getStandardDeviation(y);
+    double sdZ = getStandardDeviation(z);
+    double sdPitch = getStandardDeviation(pitch);
+    double sdRoll = getStandardDeviation(roll);
+    double sdYaw = getStandardDeviation(yaw);
 
     double[] data = new double[]{sdX, sdY, sdZ, sdPitch, sdRoll, sdYaw};
 
     return MatBuilder.fill(() -> 6, Nat.N1(), data);
   }
  
-  private double getSD(double[] nums){
+  private double getStandardDeviation(double[] nums){
     double mean = 0, sumSquareDiff = 0;
 
 
@@ -329,9 +329,4 @@ public final class VisionCamera extends Camera {
   public String getName(){
     return CAMERA.getName();
   }
-  // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
-
-  // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
-
-  // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
 }
