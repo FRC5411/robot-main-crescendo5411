@@ -208,15 +208,13 @@ public final class VisionCamera extends Camera {
   @Override
   public Optional<Pose3d> getRobotPosition() {
 
+    if(POSE_ESTIMATOR.update().isEmpty()){
+      return Optional.of(null);
+    }
+
 
     if(COUNTER == 0){
-      Optional<EstimatedRobotPose> CURRENT_POSE = POSE_ESTIMATOR.update();
-
-      if(CURRENT_POSE.isEmpty()){
-        return Optional.of(null);
-      }
-
-      EstimatedRobotPose POSE = CURRENT_POSE.get();
+      EstimatedRobotPose POSE = POSE_ESTIMATOR.update().get();
       
       Pose3d CONVERTED = POSE.estimatedPose;
       POSES_LIST.add(CONVERTED);
@@ -245,30 +243,41 @@ public final class VisionCamera extends Camera {
 
       return Optional.of(CONVERTED);
     }
+
   }
 
   @Override
-  public Pose3d getObjectFieldPose(){
-    Pose3d ROBOT = getRobotPosition().get();
+  public Optional<Pose3d> getObjectFieldPose(){
+    Optional<Pose3d> ROBOT = getRobotPosition();
+    
+    if(ROBOT.isEmpty()){
+      return Optional.of(null);
+    }
+
     Transform3d TARGET = getOptimalTarget();
 
-    return new Pose3d(
-      (TARGET.getX() + ROBOT.getX()),
-      (TARGET.getY() + ROBOT.getY()),
+    return Optional.of(new Pose3d(
+      (TARGET.getX() + ROBOT.get().getX()),
+      (TARGET.getY() + ROBOT.get().getY()),
       TARGET.getZ(),
       new Rotation3d()
-      );
+      ));
   }
 
   @Override
-  public Pose3d getObjectFieldPose(Transform3d TARGET){
-    Pose3d ROBOT = getRobotPosition().get();
-    return new Pose3d(
-      (TARGET.getX() + ROBOT.getX()),
-      (TARGET.getY() + ROBOT.getY()),
+  public Optional<Pose3d> getObjectFieldPose(Transform3d TARGET){
+    Optional<Pose3d> ROBOT = getRobotPosition();
+
+    if(ROBOT.isEmpty()){
+      return Optional.of(null);
+    }
+
+    return Optional.of(new Pose3d(
+      (TARGET.getX() + ROBOT.get().getX()),
+      (TARGET.getY() + ROBOT.get().getY()),
       TARGET.getZ(),
       new Rotation3d()
-    );
+    ));
   }
 
   @Override

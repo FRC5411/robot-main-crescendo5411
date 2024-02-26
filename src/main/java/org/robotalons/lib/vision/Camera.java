@@ -88,18 +88,14 @@ public abstract class Camera implements Closeable {
    * @param Target Transformation to a given target anywhere on the field
    * @return Position of the object relative to the field
    */
-  public Pose3d getObjectFieldPose(final Transform3d Target){
-    return TARGETSTATUS.BestTargetPose;
-  }
+  public abstract Optional<Pose3d> getObjectFieldPose(final Transform3d Target);
 
   /**
    * Provides the robot relative position to a given object based on the estimated position of this camera and a transformation assuming that
    * the desired object is the optimal target of this camera.
    * @return Position of the object relative to the field
    */
-  public Pose3d getObjectFieldPose(){
-    return TARGETSTATUS.BestTargetPose;
-  };
+  public abstract Optional<Pose3d> getObjectFieldPose();
 
   /**
    * Provides the april tag with the id that we asked for in Pose3d
