@@ -171,7 +171,7 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
     Optional<Pose3d> PRE_POSE2 = CAMERA2.getRobotPosition();
 
     if(PRE_POSE1.isEmpty() || PRE_POSE2.isEmpty()){
-      return Optional.of(null);
+      return Optional.empty();
     }
 
     Pose3d CAMERA1_POSE = CAMERA1.getRobotPosition().get();

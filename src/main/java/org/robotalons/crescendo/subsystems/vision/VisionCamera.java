@@ -210,7 +210,7 @@ public final class VisionCamera extends Camera {
 
     // TODO: Eventually over here the robot should take the drivebase pose estimation
     if(POSE_ESTIMATOR.update().isEmpty()){
-      return Optional.of(null);
+      return Optional.empty();
     }
 
 
@@ -253,7 +253,7 @@ public final class VisionCamera extends Camera {
     
     // TODO: Eventually over here the robot should take the drivebase pose estimation
     if(ROBOT.isEmpty()){
-      return Optional.of(null);
+      return Optional.empty();
     }
 
     Transform3d TARGET = getOptimalTarget();
@@ -272,7 +272,7 @@ public final class VisionCamera extends Camera {
 
     // TODO: Eventually over here the robot should take the drivebase pose estimation
     if(ROBOT.isEmpty()){
-      return Optional.of(null);
+      return Optional.empty();
     }
 
     return Optional.of(new Pose3d(
