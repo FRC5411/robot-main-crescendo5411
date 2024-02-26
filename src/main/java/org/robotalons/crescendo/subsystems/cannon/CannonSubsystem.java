@@ -8,7 +8,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.CANSparkMax;
@@ -20,6 +19,7 @@ import org.robotalons.crescendo.Constants.Profiles.Keybindings;
 import org.robotalons.crescendo.subsystems.cannon.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.cannon.Constants.Ports;
 import org.robotalons.lib.TalonSubsystemBase;
+import org.robotalons.lib.motion.trajectory.solving.TrajectoryObject;
 import org.robotalons.lib.utilities.PilotProfile;
 
 // ------------------------------------------------------------[Cannon Subsystem]-----------------------------------------------------------//
@@ -105,6 +105,17 @@ public class CannonSubsystem extends TalonSubsystemBase {
     Constants.Objects.ODOMETRY_LOCKER.unlock();
   }
 
+  /**
+   * Quickly creates a Trajectory Object within note specifications
+   * @param Velocity  Initial Velocity
+   * @param Rotation  Initial Rotation
+   * @param Distance  How far lengthwise the object must travel
+   * @param Height    How far heightwise the object must travel
+   * @return Note preset with the parameters
+   */
+  public static TrajectoryObject object(final Double Velocity, final Double Distance, final Double Height, final Rotation2d Rotation) {
+    return TrajectoryObject.note(Velocity, Rotation, Measurements.CANNON_LENGTH, Distance, Height, (2000));
+  }
 
   /**
    * Fires the shooter at the best possible target on the field
@@ -207,8 +218,8 @@ public class CannonSubsystem extends TalonSubsystemBase {
   public void configure(final PilotProfile Profile) {
     CurrentPilot = Profile;
     try {
-      CurrentPilot.getKeybinding(Keybindings.CANNON_TOGGLE) //TODO: While True
-        .onTrue(new InstantCommand(
+      CurrentPilot.getKeybinding(Keybindings.CANNON_TOGGLE)
+        .whileTrue(new InstantCommand(
           CannonSubsystem::fire,
           CannonSubsystem.getInstance()
         ));

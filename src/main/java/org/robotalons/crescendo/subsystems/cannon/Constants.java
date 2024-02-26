@@ -38,7 +38,6 @@ public class Constants {
 
     public static final Double PIVOT_MINIMUM_ROTATION = Units.degreesToRadians((9));
     public static final Double PIVOT_MAXIMUM_ROTATION = Units.degreesToRadians((60));
-
   }
   
   public static final class Ports {
