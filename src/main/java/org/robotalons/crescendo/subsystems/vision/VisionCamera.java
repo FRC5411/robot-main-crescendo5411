@@ -208,6 +208,7 @@ public final class VisionCamera extends Camera {
   @Override
   public Optional<Pose3d> getRobotPosition() {
 
+    // TODO: Eventually over here the robot should take the drivebase pose estimation
     if(POSE_ESTIMATOR.update().isEmpty()){
       return Optional.of(null);
     }
@@ -247,9 +248,10 @@ public final class VisionCamera extends Camera {
   }
 
   @Override
-  public Optional<Pose3d> getObjectFieldPose(){
+  public Optional<Pose3d> getObjectFieldPose() {
     Optional<Pose3d> ROBOT = getRobotPosition();
     
+    // TODO: Eventually over here the robot should take the drivebase pose estimation
     if(ROBOT.isEmpty()){
       return Optional.of(null);
     }
@@ -265,9 +267,10 @@ public final class VisionCamera extends Camera {
   }
 
   @Override
-  public Optional<Pose3d> getObjectFieldPose(Transform3d TARGET){
+  public Optional<Pose3d> getObjectFieldPose(Transform3d TARGET) {
     Optional<Pose3d> ROBOT = getRobotPosition();
 
+    // TODO: Eventually over here the robot should take the drivebase pose estimation
     if(ROBOT.isEmpty()){
       return Optional.of(null);
     }

@@ -11,6 +11,7 @@ import org.robotalons.lib.vision.Camera;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 // ------------------------------------------------------------[Vision Subsystem]----------------------------------------------------------//
 /**
  *
@@ -152,7 +153,7 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    * @return New approximation of Pose3d from robot. 
    * @throws IllegalArgumentException when Camera 1 ID or Camera 2 ID is greater than 4, less than 1, or not an integer
    */
-  public static Pose3d getApproximatedRobotPose(Integer CAMERA1_ID, Integer CAMERA2_ID) throws IllegalArgumentException{
+  public static Optional<Pose3d> getApproximatedRobotPose(Integer CAMERA1_ID, Integer CAMERA2_ID) throws IllegalArgumentException{
 
     if(CAMERA1_ID > 4 || CAMERA1_ID < 1 ||  Math.floor(CAMERA1_ID) != CAMERA1_ID){
       throw new IllegalArgumentException("Camera 1 ID for method 'getApproximatedRobotPose' should not be greater than 4, less than 1, or not an integer");
@@ -165,7 +166,14 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
     Camera CAMERA1 = CAMERAS.get(CAMERA1_ID - 1);
     Camera CAMERA2 = CAMERAS.get(CAMERA2_ID - 1);
 
-    //TODO: Fix how optional typcast, will  effect the rest of the pose estimation and average
+    //TODO: Eventually over here, make it so that if none of the cameras detect objects just take drivebase estimated pose
+    Optional<Pose3d> PRE_POSE1 = CAMERA1.getRobotPosition();
+    Optional<Pose3d> PRE_POSE2 = CAMERA2.getRobotPosition();
+
+    if(PRE_POSE1.isEmpty() || PRE_POSE2.isEmpty()){
+      return Optional.of(null);
+    }
+
     Pose3d CAMERA1_POSE = CAMERA1.getRobotPosition().get();
     Pose3d CAMERA2_POSE = CAMERA2.getRobotPosition().get();
 
@@ -178,7 +186,7 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
     double avgYaw = (CAMERA1_POSE.getRotation().getZ() + CAMERA2_POSE.getRotation().getZ()) / 2;
 
 
-    return new Pose3d(avgX, avgY, avgZ, new Rotation3d(avgPitch, avgRoll, avgYaw));
+    return Optional.of(new Pose3d(avgX, avgY, avgZ, new Rotation3d(avgPitch, avgRoll, avgYaw)));
   }
 
   /**
@@ -220,7 +228,7 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    * @param Target Transformation to a given target anywhere on the field.
    * @return Position of the object relative to the field.
    */
-  public Pose3d getObjectFieldPose(Transform3d Target){
+  public Optional<Pose3d> getObjectFieldPose(Transform3d Target){
     return INTAKE_CAMERA.getObjectFieldPose(Target);
   }
 
@@ -229,7 +237,7 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    * the desired object is the optimal target of this camera.
    * @return Position of the object relative to the field.
    */
-  public Pose3d getObjectFieldPose(){
+  public Optional<Pose3d> getObjectFieldPose(){
     return INTAKE_CAMERA.getObjectFieldPose();
   }
 
