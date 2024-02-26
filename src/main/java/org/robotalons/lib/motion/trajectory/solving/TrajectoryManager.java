@@ -5,11 +5,13 @@ package org.robotalons.lib.motion.trajectory.solving;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 // -----------------------------------------------------------[Trajectory Manager]----------------------------------------------------------//
 /**
  * 
@@ -38,22 +40,43 @@ public class TrajectoryManager extends Thread implements Closeable {
   } static {
     ACTIVE_SOLVERS = new ArrayList<>();
     OUTPUT_QUEUE = new ArrayBlockingQueue<>(OUTPUT_QUEUE_MAXIMUM_ELEMENTS);
+    ACTIVE_SOLVERS.add(new TrajectorySolver());
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
   public synchronized void run() {
+    final var MultipleEmpty = new AtomicBoolean();
     while(this.isAlive()) {
-      ACTIVE_SOLVERS.parallelStream().forEach((Solver) -> 
-        Solver.call().ifPresent(OUTPUT_QUEUE::offer));  
+      ACTIVE_SOLVERS.parallelStream().forEach((final TrajectorySolver Solver) -> {
+        synchronized(Solver) {
+          Solver.call().ifPresent(OUTPUT_QUEUE::offer);
+          if (Solver.getQueueLength() == (0)) {
+            MultipleEmpty.set(!MultipleEmpty.get());
+            if(!MultipleEmpty.get()) {
+              try {
+                Solver.close();
+              } catch (final IOException Ignored) {}
+            }
+          }          
+        }
+      });  
+      MultipleEmpty.set((false));
     }
   }
 
   /**
-   * Closes this instance and all held resources immediately.
+   * Closes this instance and all held resources immediately, does not ensure the execution of remaining elements within the queue.
    */
   @Override
   public synchronized void close() {
-    ACTIVE_SOLVERS.parallelStream().forEach(TrajectorySolver::close);
+    try {
+      super.join();
+    } catch (final InterruptedException Ignored) {}
+    ACTIVE_SOLVERS.parallelStream().forEach((final TrajectorySolver Solver) -> {
+      try {
+        Solver.close();
+      } catch (final IOException Ignored) {}
+    });
   }
 
   /**
@@ -62,6 +85,12 @@ public class TrajectoryManager extends Thread implements Closeable {
    * @return Completable result future, which supplies the optimized rotation as a result on completion
    */
   public CompletableFuture<Rotation2d> submit(final TrajectoryObject Object) {
+    if(
+                                                                        ACTIVE_SOLVERS.isEmpty() 
+                                                                                    ^ 
+      ACTIVE_SOLVERS.parallelStream().mapToInt(TrajectorySolver::getQueueLength).sum() / ACTIVE_SOLVERS.size() > TrajectorySolver.SOLVING_QUEUE_MAXIMUM_ELEMENTS)  {
+        ACTIVE_SOLVERS.add(new TrajectorySolver());
+    }
     return CompletableFuture.supplyAsync(() -> {
         final var Result = OUTPUT_QUEUE.stream().dropWhile((Solved) -> !Solved.equals(Object)).distinct().findFirst().get();
         OUTPUT_QUEUE.remove(Result);

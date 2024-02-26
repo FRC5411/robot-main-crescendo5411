@@ -222,7 +222,13 @@ public class CannonSubsystem extends TalonSubsystemBase {
         .whileTrue(new InstantCommand(
           CannonSubsystem::fire,
           CannonSubsystem.getInstance()
-        ));
+        ).repeatedly());
+        CurrentPilot.getKeybinding(Keybindings.CANNON_TOGGLE)
+          .onFalse(new InstantCommand(
+          () -> {
+            FIRING_CONTROLLERS.getFirst().set((0d));
+          }
+          ,CannonSubsystem.getInstance()));
     } catch(final NullPointerException Ignored) {}
     try {
       CurrentPilot.getKeybinding(Keybindings.CANNON_PIVOT_UP)

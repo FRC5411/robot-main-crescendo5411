@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import com.jcabi.aspects.Timeable;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Queue;
@@ -25,12 +26,12 @@ import java.util.concurrent.TimeUnit;
  */
 public class TrajectorySolver implements Callable<Optional<TrajectoryObject>>, Closeable{
   // ------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  private static final Integer SOLVING_QUEUE_MAXIMUM_ELEMENTS = (20);
+  public static final Integer SOLVING_QUEUE_MAXIMUM_ELEMENTS = (20);
   private static final Boolean SOLVING_QUEUE_IS_ORDERED = (true);
   private static final Integer SOLVING_MAXIMUM_INSTANCES = (10);
   private static final Queue<TrajectoryObject> SOLVING_QUEUE = new ArrayBlockingQueue<>(SOLVING_QUEUE_MAXIMUM_ELEMENTS, SOLVING_QUEUE_IS_ORDERED);
 
-  private final static Double STANDARD_ACCELERATION = (-9.80665d);
+  private final static Double STANDARD_ACCELERATION = (-9.80665d); //TODO: Flip Sign?
   private final static Double STANDARD_DELTA = (1e-4);
   // -------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static volatile Integer Instances = (0);
@@ -97,9 +98,13 @@ public class TrajectorySolver implements Callable<Optional<TrajectoryObject>>, C
   }
 
   /**
-   * Closes this instance and all held resources immediately.
+   * Closes this instance and all held resources immediately, does not guarantee execution of remaining elements within queue
+   * @throws IOException When trying to close an instance that still has elements within the queue
    */
-  public void close() {
+  public void close() throws IOException {
+    if(!SOLVING_QUEUE.isEmpty()) {
+      throw new IOException();
+    }
     Reserved = (null);
     SOLVING_QUEUE.clear();
   }
@@ -111,7 +116,7 @@ public class TrajectorySolver implements Callable<Optional<TrajectoryObject>>, C
    * @param Rotation Current rotation along the trajectory
    * @return Trajectory at this point along the horizontal axis
    */
-  public synchronized Double rotationalTrajectory(final Double Distance, final Double Velocity, final Rotation2d Rotation) {
+  private synchronized Double rotationalTrajectory(final Double Distance, final Double Velocity, final Rotation2d Rotation) {
     set(Distance, Velocity, Rotation);
     return + HorizonConstant * Rotation.getTan()
     - Math.pow(HorizonConstant, (2)) * VelocityConstant * secantSquared(Rotation)
@@ -127,7 +132,7 @@ public class TrajectorySolver implements Callable<Optional<TrajectoryObject>>, C
    * @param Delta    Change in distance, i.e. the instantaneous change in distance to take the derivative of
    * @return Derivative at this point along the horizon
    */
-  public synchronized Double rotationalDiscreteDerivative(final Double Distance, final Double Velocity, final Rotation2d Rotation, final Rotation2d Delta) {
+  private synchronized Double rotationalDiscreteDerivative(final Double Distance, final Double Velocity, final Rotation2d Rotation, final Rotation2d Delta) {
     set(Distance, Velocity, Rotation);
     return (rotationalTrajectory(Distance, Velocity, Rotation.plus(Delta)) - rotationalTrajectory(Distance, Velocity, Rotation)) / Delta.getRadians();
   }
@@ -139,7 +144,8 @@ public class TrajectorySolver implements Callable<Optional<TrajectoryObject>>, C
    * @param Rotation Current rotation along the trajectory
    * @return Derivative at this point along the horizon
    */
-  public synchronized Double rotationalContinuousDerivative(final Double Distance, final Double Velocity, final Rotation2d Rotation) {
+  @SuppressWarnings("unused")
+  private synchronized Double rotationalContinuousDerivative(final Double Distance, final Double Velocity, final Rotation2d Rotation) {
     set(Distance, Velocity, Rotation);
     return (Math.PI / (180))
       * (HorizonConstant * secantSquared(Rotation)
@@ -176,9 +182,19 @@ public class TrajectorySolver implements Callable<Optional<TrajectoryObject>>, C
    * @param Velocity Current velocity along the trajectory
    * @param Rotation Current rotation along the trajectory
    */
-  public synchronized void set(final Double Distance, final Double Velocity, final Rotation2d Rotation) {
+  private synchronized void set(final Double Distance, final Double Velocity, final Rotation2d Rotation) {
     HorizonConstant = -(Reserved.HORIZON - Distance + Reserved.OFFSET_LENGTH * Rotation.getCos());
     VelocityConstant = STANDARD_ACCELERATION / ((2) * Velocity * Velocity);
   } 
+
+  // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
+
+  /**
+   * Provides the length of the queue, as an integer; inclusive of the last index
+   * @return Number of elements within the queue
+   */
+  public Integer getQueueLength() {
+    return SOLVING_QUEUE.size();
+  }
   
 }
