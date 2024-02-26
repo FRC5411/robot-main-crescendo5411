@@ -28,7 +28,7 @@ public final class Constants {
   public static final class Subsystems {
     public static final Boolean IS_REAL_ROBOT = RobotBase.isReal();
     public static final Set<Subsystem> SUBSYSTEMS = Set.of(
-      
+        
     );
   }
 
@@ -55,7 +55,4 @@ public final class Constants {
     
     );
   }
-  public static final double highAngle = 0;
-  public static final double idleAngle = 0;
-  public static final double lowAngle = 0;
 }

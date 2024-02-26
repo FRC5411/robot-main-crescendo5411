@@ -21,7 +21,7 @@ public final class RobotContainer {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   public static final LoggedDashboardChooser<Command> CommandSelector;
   private static CommandXboxController operatorController;
-  private static ClimbSubsystem climbSS = new ClimbSubsystem();
+  private static ClimbSubsystem climbSubsystem = new ClimbSubsystem();
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static RobotContainer Instance = (null);
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
@@ -46,18 +46,18 @@ public final class RobotContainer {
     
     // Double Arm Right Movement // 
     operatorController.rightTrigger()
-    .onTrue(new InstantCommand(() -> climbSS.set(Measurements.CONTROLLER_ARM_SPEED)))
-    .onFalse(new InstantCommand(() -> climbSS.set(0.0)));
+    .onTrue(new InstantCommand(() -> climbSubsystem.set(Measurements.CONTROLLER_ARM_SPEED)))
+    .onFalse(new InstantCommand(() -> climbSubsystem.set(0.0)));
 
     // Double Arm Left Movement // 
     operatorController.leftTrigger()
-    .onTrue(new InstantCommand(() -> climbSS.set(-Measurements.CONTROLLER_ARM_SPEED)))
-    .onFalse(new InstantCommand(() -> climbSS.set(0.0)));
+    .onTrue(new InstantCommand(() -> climbSubsystem.set(-Measurements.CONTROLLER_ARM_SPEED)))
+    .onFalse(new InstantCommand(() -> climbSubsystem.set(0.0)));
 
     // PID setpoint // 
     operatorController.a()
-    .onTrue(new InstantCommand(() -> climbSS.pidSet(100d)))
-    .onFalse(new InstantCommand(() -> climbSS.set(0d)));
+    .onTrue(new InstantCommand(() -> climbSubsystem.pidSet(100d)))
+    .onFalse(new InstantCommand(() -> climbSubsystem.set(0d)));
 
   
   }  
