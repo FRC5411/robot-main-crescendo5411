@@ -1,5 +1,6 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems;
+// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.util.Units;
 
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
@@ -14,7 +15,7 @@ import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
  * @see DrivebaseSubsystem
  */
 public class Constants {
-// ------------------------------------------------------------[Internal]-------------------------------------------------------------//
+  // -------------------------------------------------------------[Internal]---------------------------------------------------------------//
   public static final class Measurements {
     public static final Double ROBOT_LENGTH_METERS = Units.inchesToMeters((29));        
     public static final Double ROBOT_WIDTH_METERS = Units.inchesToMeters((29));

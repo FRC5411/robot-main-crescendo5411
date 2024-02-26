@@ -208,12 +208,14 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
         break;
     }
     DELTAS.clear();
-    IntStream.range((0), (Status.OdometryTimestamps.length - (1))).forEach((Index) -> {
-      final var Position = Status.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
-      final var Rotation = Status.OdometryRotationalPositions[Index].plus(
-        (RotationalRelativeOffset != (null))? (RotationalRelativeOffset): (new Rotation2d()));
-      DELTAS.add(new SwerveModulePosition(Position, Rotation));
-    });
+    synchronized(Status) {
+      IntStream.range((0), (Status.OdometryTimestamps.length - (1))).forEach((Index) -> {
+        final var Position = Status.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
+        final var Rotation = Status.OdometryRotationalPositions[Index].plus(
+          (RotationalRelativeOffset != (null))? (RotationalRelativeOffset): (new Rotation2d()));
+        DELTAS.add(new SwerveModulePosition(Position, Rotation));
+      });      
+    }
   }
 
   @Override
