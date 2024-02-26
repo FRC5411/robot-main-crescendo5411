@@ -123,7 +123,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
 
     ROTATIONAL_ENCODER.setPosition(
       (RobotBase.isReal())?
-        (-RotationalAbsoluteOffset.plus(Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble())).getRotations()):
+        (-RotationalAbsoluteOffset.plus(Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().getValue())).getRotations()):
         (0d)
     );
     ROTATIONAL_ENCODER.setAverageDepth((2));
@@ -174,7 +174,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     ROTATIONAL_ENCODER.setPosition(
       (RobotBase.isReal())?
         Rotation2d.fromRotations(
-          ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble()
+          ABSOLUTE_ENCODER.getAbsolutePosition().getValue()
         ).getRotations():
       (0d)
     );
@@ -246,7 +246,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
         TRANSLATIONAL_CONTROLLER.getMotorTemperature();
 
       Status.RotationalAbsolutePosition = 
-        Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble()).minus(RotationalAbsoluteOffset);
+        Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().getValue()).minus(RotationalAbsoluteOffset);
       Status.RotationalRelativePosition =
         Rotation2d.fromRotations(ROTATIONAL_ENCODER.getPosition() / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO);
       Status.RotationalVelocityRadiansSecond =
