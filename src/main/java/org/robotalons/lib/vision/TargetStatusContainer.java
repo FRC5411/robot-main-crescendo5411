@@ -15,7 +15,8 @@ import org.littletonrobotics.junction.AutoLog;
  */
 @AutoLog
 public class TargetStatusContainer {
-  public Pose3d BestTargetPose = new Pose3d(0, 0, 0, null);
+  //TODO: Return robot pose, un edit this and change the abstract method once drivebase pose estimation implemented
+  // public Pose3d BestTargetPose = new Pose3d(0, 0, 0, null);
   public Transform3d BestTargetTransform = new Transform3d(0, 0, 0, null);
   public Transform3d[] Targets = new Transform3d[]{};
   public boolean HasTargets = (false);

@@ -2,8 +2,6 @@
 package org.robotalons.crescendo.subsystems.vision;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
@@ -20,9 +18,12 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonTrackedTarget;
+
+import org.robotalons.crescendo.subsystems.vision.Constants.Measurements;
 import org.robotalons.lib.vision.Camera;
 
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -46,8 +47,6 @@ public final class VisionCamera extends Camera {
   private List<Pose3d> POSES_LIST;
   private int COUNTER;
 
-  
-  private final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
 
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
@@ -57,7 +56,7 @@ public final class VisionCamera extends Camera {
     RELATIVE = Relative;
 
     POSE_ESTIMATOR = new PhotonPoseEstimator(
-      FIELD_LAYOUT, 
+      Measurements.FIELD_LAYOUT, 
       PoseStrategy.CLOSEST_TO_REFERENCE_POSE, 
       CAMERA,
       RELATIVE);
@@ -76,7 +75,7 @@ public final class VisionCamera extends Camera {
   @Override
   public void update() {
     POSE_ESTIMATOR = new PhotonPoseEstimator(
-      FIELD_LAYOUT, 
+      Measurements.FIELD_LAYOUT, 
       PoseStrategy.CLOSEST_TO_LAST_POSE, 
       CAMERA,
       RELATIVE);
@@ -297,7 +296,7 @@ public final class VisionCamera extends Camera {
 
   @Override
   public Pose3d getAprilTagPose(Integer FIDICUAL_ID) {
-    return FIELD_LAYOUT.getTagPose(FIDICUAL_ID).get();
+    return Measurements.FIELD_LAYOUT.getTagPose(FIDICUAL_ID).get();
   }
 
   @Override
