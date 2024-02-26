@@ -46,9 +46,11 @@ public final class ClimbSubsystem extends SubsystemBase implements Closeable {
 
   private static ArmFeedforward LEFT_FF;
   private static ArmFeedforward RIGHT_FF; 
+  private static ArmFeedforward[] FFS;
   
   private static SparkMaxPIDController LEFT_PID;
   private static SparkMaxPIDController RIGHT_PID;
+  private static SparkMaxPIDController[] PIDS;
 
   private static Double K_GEARRATIO;
   private static Double K_TICKS_2_RAD;
@@ -84,6 +86,8 @@ public final class ClimbSubsystem extends SubsystemBase implements Closeable {
 
     MOTORS = new CANSparkMax[]{LEFT_ARM, RIGHT_ARM};
     ENCODERS = new Encoder[]{LEFT_ENCODER, RIGHT_ENCODER};
+    PIDS = new SparkMaxPIDController[]{LEFT_PID, RIGHT_PID};
+    FFS = new ArmFeedforward[]{LEFT_FF, RIGHT_FF};
 
     configPID();
     config();
@@ -233,7 +237,7 @@ public final class ClimbSubsystem extends SubsystemBase implements Closeable {
   // TODO: Doulble Check Velocity 
   public static synchronized Double getVelocity(Integer NUM) throws IllegalArgumentException{
     if(!(NUM == 1 || NUM == 0)){
-      throw new IllegalArgumentException("Parameter 'NUM' was not 0 or 1, causing method 'set' to throw error");
+      throw new IllegalArgumentException("Parameter 'NUM' was not 0 or 1, causing method 'getVelocity' to throw error");
     }
 
     return ENCODERS[NUM].getDistancePerPulse();
@@ -249,7 +253,7 @@ public final class ClimbSubsystem extends SubsystemBase implements Closeable {
   public static synchronized Double getPosistion(Integer NUM) throws IllegalArgumentException{
 
     if(!(NUM == 1 || NUM == 0)){
-      throw new IllegalArgumentException("Parameter 'NUM' was not 0 or 1, causing method 'set' to throw error");
+      throw new IllegalArgumentException("Parameter 'NUM' was not 0 or 1, causing method 'getPosistion' to throw error");
     }
 
     return ENCODERS[NUM].getDistance() * K_TICKS_2_RAD / K_GEARRATIO;
@@ -265,7 +269,7 @@ public final class ClimbSubsystem extends SubsystemBase implements Closeable {
   public static synchronized Double getTemperature(Integer NUM) throws IllegalArgumentException{
 
     if(!(NUM == 1 || NUM == 0)){
-      throw new IllegalArgumentException("Parameter 'NUM' was not 0 or 1, causing method 'set' to throw error");
+      throw new IllegalArgumentException("Parameter 'NUM' was not 0 or 1, causing method 'getTemperature' to throw error");
     }
 
     return MOTORS[NUM].getMotorTemperature();
@@ -281,10 +285,42 @@ public final class ClimbSubsystem extends SubsystemBase implements Closeable {
   public static synchronized Double getVoltage(Integer NUM) throws IllegalArgumentException{
 
     if(!(NUM == 1 || NUM == 0)){
-      throw new IllegalArgumentException("Parameter 'NUM' was not 0 or 1, causing method 'set' to throw error");
+      throw new IllegalArgumentException("Parameter 'NUM' was not 0 or 1, causing method 'getVoltage' to throw error");
     }
 
     return MOTORS[NUM].getBusVoltage();
+  }
+
+   /**
+   * Returns the motors' PID constants for the specified motors
+   * 0 - Left Arm, 1 - Right Arm
+   * @param NUM Picks Motors
+   * @return PID Constants of Motor
+   * @throws IllegalArgumentException when number is not 0 or 1
+   */
+  public static synchronized Double[] getPIDConstants(Integer NUM) throws IllegalArgumentException{
+
+    if(!(NUM == 1 || NUM == 0)){
+      throw new IllegalArgumentException("Parameter 'NUM' was not 0 or 1, causing method 'getPIDConstants' to throw error");
+    }
+
+    return new Double[]{PIDS[NUM].getP(), PIDS[NUM].getI(), PIDS[NUM].getD()};
+  }
+
+   /**
+   * Returns the motors' FeedForward constants for the specified motors
+   * 0 - Left Arm, 1 - Right Arm
+   * @param NUM Picks Motors
+   * @return FeedForward Constants of Motor
+   * @throws IllegalArgumentException when number is not 0 or 1
+   */
+  public static synchronized Double[] getFFConstants(Integer NUM) throws IllegalArgumentException{
+
+    if(!(NUM == 1 || NUM == 0)){
+      throw new IllegalArgumentException("Parameter 'NUM' was not 0 or 1, causing method 'getFFConstants' to throw error");
+    }
+
+    return new Double[]{FFS[NUM].ka, FFS[NUM].kg, FFS[NUM].ks, FFS[NUM].kv};
   }
 
 
