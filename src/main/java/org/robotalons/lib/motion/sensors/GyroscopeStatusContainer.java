@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 import org.littletonrobotics.junction.AutoLog;
 
-// -------------------------------------------------------[Gyroscope Status Container]-------------------------------------------------------//
+// -------------------------------------------------------[Gyroscope Status Container]------------------------------------------------------//
 /**
  *
  *

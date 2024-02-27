@@ -375,10 +375,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
     POSE_ESTIMATOR.resetPosition(GYROSCOPE.getYawRotation(),getModulePositions(),getPose());
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
-  /**
-   * Provides the current pilot of the drivebase
-   * @return Pilot of this subsystem
-   */
   @Override
   public Operator getOperator() {
     return CurrentOperator;
@@ -407,15 +403,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
   public static List<Module> getModules() {
     return MODULES;
   }
-
-  /**
-   * Provides the kinematics chassis speeds of the current module measurements
-   * @return Drivebase kinematics objects
-   */
-  public static ChassisSpeeds getSpeeds() {
-    return KINEMATICS.toChassisSpeeds(getModuleMeasurements());
-  }
-
+  
   /**
    * Provides the current position of the drivebase in space
    * @return Pose2d of Robot drivebase

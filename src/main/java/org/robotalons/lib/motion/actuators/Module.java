@@ -24,8 +24,8 @@ import java.util.Objects;
 public abstract class Module implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   protected final Constants CONSTANTS;  
+  protected final ModuleStatusContainerAutoLogged STATUS = new ModuleStatusContainerAutoLogged();  
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  protected ModuleStatusContainerAutoLogged Status = new ModuleStatusContainerAutoLogged();  
   protected Rotation2d RotationalAbsoluteOffset = (null);
   protected Rotation2d RotationalRelativeOffset = (null);
   protected SwerveModuleState Reference = (null);
@@ -147,7 +147,7 @@ public abstract class Module implements Closeable {
    */
   public synchronized void reset() {
     update();
-    RotationalRelativeOffset = Status.RotationalAbsolutePosition.minus(Status.RotationalRelativePosition);
+    RotationalRelativeOffset = STATUS.RotationalAbsolutePosition.minus(STATUS.RotationalRelativePosition);
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
@@ -176,8 +176,8 @@ public abstract class Module implements Closeable {
    */
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(
-      Status.TranslationalPositionRadians * CONSTANTS.WHEEL_RADIUS_METERS,
-      Status.RotationalRelativePosition);
+      STATUS.TranslationalPositionRadians * CONSTANTS.WHEEL_RADIUS_METERS,
+      STATUS.RotationalRelativePosition);
   }
 
   /**
@@ -201,7 +201,7 @@ public abstract class Module implements Closeable {
    * @return Rotational axis heading as a relative {@link Rotation2d} object
    */
   public Rotation2d getRelativeRotation() {
-    return Status.RotationalRelativePosition.plus(RotationalRelativeOffset);
+    return STATUS.RotationalRelativePosition.plus(RotationalRelativeOffset);
   }
 
   /**
@@ -209,7 +209,7 @@ public abstract class Module implements Closeable {
    * @return Rotational axis heading as an absolute {@link Rotation2d} object
    */
   public Rotation2d getAbsoluteRotation() {
-    return Status.RotationalAbsolutePosition.plus(RotationalAbsoluteOffset);
+    return STATUS.RotationalAbsolutePosition.plus(RotationalAbsoluteOffset);
   }
 
   /**
@@ -217,7 +217,7 @@ public abstract class Module implements Closeable {
    * @return Linear position in meters
    */
   public Double getLinearVelocity() {
-    return Status.TranslationalVelocityRadiansSecond * CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
+    return STATUS.TranslationalVelocityRadiansSecond * CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
   }
 
   /**
@@ -225,7 +225,7 @@ public abstract class Module implements Closeable {
    * @return Linear velocity in meters per second
    */
   public Double getLinearPosition() {
-    return Status.TranslationalPositionRadians * CONSTANTS.WHEEL_RADIUS_METERS;
+    return STATUS.TranslationalPositionRadians * CONSTANTS.WHEEL_RADIUS_METERS;
   }
 
   /**
@@ -234,7 +234,7 @@ public abstract class Module implements Closeable {
    */
   public SwerveModuleState getObserved() {
     return new SwerveModuleState(
-      Status.TranslationalVelocityRadiansSecond * CONSTANTS.WHEEL_RADIUS_METERS, 
-      Status.RotationalRelativePosition);
+      STATUS.TranslationalVelocityRadiansSecond * CONSTANTS.WHEEL_RADIUS_METERS, 
+      STATUS.RotationalRelativePosition);
   }
 }

@@ -128,8 +128,8 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
     TranslationalIntegratedPosition += TRANSLATIONAL_CONTROLLER.getAngularVelocityRPM() * (DiscretizationTimestamp);
     ODOMETRY_LOCK.lock();
     update();
-    if (RotationalRelativeOffset == (null) && Status.RotationalAbsolutePosition.getRadians() != (0d)) {
-      RotationalRelativeOffset = Status.RotationalAbsolutePosition.minus(Status.RotationalRelativePosition);
+    if (RotationalRelativeOffset == (null) && STATUS.RotationalAbsolutePosition.getRadians() != (0d)) {
+      RotationalRelativeOffset = STATUS.RotationalAbsolutePosition.minus(STATUS.RotationalRelativePosition);
     }
     switch(ReferenceMode) {
       case STATE_CONTROL:
@@ -140,7 +140,7 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
         var AdjustReferenceVelocity = (Reference.speedMetersPerSecond * Math.cos(ROTATIONAL_PID.getPositionError())) / MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
         setTranslationalVoltage(     -(TRANSLATIONAL_PID.calculate(AdjustReferenceVelocity))
                                                             +
-          (TRANSLATIONAL_FF.calculate(Status.TranslationalVelocityRadiansSecond, AdjustReferenceVelocity)));          
+          (TRANSLATIONAL_FF.calculate(STATUS.TranslationalVelocityRadiansSecond, AdjustReferenceVelocity)));          
       }
         break;
       case DISABLED:
@@ -151,9 +151,9 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
         break;
     }
     DELTAS.clear();
-    IntStream.range((0), (Status.OdometryTimestamps.length - 1)).forEach((Index) -> {
-      final var Position = Status.OdometryTranslationalPositionsRadians[Index] * CONSTANTS.WHEEL_RADIUS_METERS;
-      final var Rotation = Status.OdometryRotationalPositions[Index].plus(
+    IntStream.range((0), (STATUS.OdometryTimestamps.length - 1)).forEach((Index) -> {
+      final var Position = STATUS.OdometryTranslationalPositionsRadians[Index] * CONSTANTS.WHEEL_RADIUS_METERS;
+      final var Rotation = STATUS.OdometryRotationalPositions[Index].plus(
         RotationalRelativeOffset != null? RotationalRelativeOffset: new Rotation2d());
       DELTAS.add(new SwerveModulePosition(Position, Rotation));
     });
@@ -182,24 +182,24 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
    */
   @Override
   public synchronized void update() {
-    Status.TranslationalPositionRadians = TranslationalIntegratedPosition;
-    Status.TranslationalVelocityRadiansSecond =
+    STATUS.TranslationalPositionRadians = TranslationalIntegratedPosition;
+    STATUS.TranslationalVelocityRadiansSecond =
         Units.rotationsPerMinuteToRadiansPerSecond(TRANSLATIONAL_CONTROLLER.getAngularVelocityRPM()) / CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
-    Status.RotationalRelativePosition = new Rotation2d(RotationalIntegratedPosition);
-    Status.RotationalAbsolutePosition = new Rotation2d(RotationalIntegratedPosition);
-    Status.TranslationalAppliedVoltage = 
+    STATUS.RotationalRelativePosition = new Rotation2d(RotationalIntegratedPosition);
+    STATUS.RotationalAbsolutePosition = new Rotation2d(RotationalIntegratedPosition);
+    STATUS.TranslationalAppliedVoltage = 
       TRANSLATIONAL_CONTROLLER.getCurrentDrawAmps() * (5);
-    Status.TranslationalCurrentAmperage = TRANSLATIONAL_CONTROLLER.getCurrentDrawAmps();
-    Status.RotationalVelocityRadiansSecond =
+    STATUS.TranslationalCurrentAmperage = TRANSLATIONAL_CONTROLLER.getCurrentDrawAmps();
+    STATUS.RotationalVelocityRadiansSecond =
         Units.rotationsPerMinuteToRadiansPerSecond(ROTATIONAL_CONTROLLER.getAngularVelocityRPM()) / CONSTANTS.ROTATIONAL_GEAR_RATIO;
-    Status.RotationalAppliedAmperage = ROTATIONAL_CONTROLLER.getCurrentDrawAmps();
-    Status.OdometryTimestamps = TIMESTAMP_QUEUE.stream().mapToDouble(Double::valueOf).toArray();
+    STATUS.RotationalAppliedAmperage = ROTATIONAL_CONTROLLER.getCurrentDrawAmps();
+    STATUS.OdometryTimestamps = TIMESTAMP_QUEUE.stream().mapToDouble(Double::valueOf).toArray();
     MODULE_CONSTANTS.STATUS_PROVIDER.getLock().lock();
-    Status.OdometryTranslationalPositionsRadians =
+    STATUS.OdometryTranslationalPositionsRadians =
       TRANSLATIONAL_VELOCITY_QUEUE.stream()
         .mapToDouble((Double value) -> Units.rotationsToRadians(value) / CONSTANTS.ROTATIONAL_GEAR_RATIO)
         .toArray();
-    Status.OdometryRotationalPositions =
+    STATUS.OdometryRotationalPositions =
       ROTATIONAL_POSITION_QUEUE.stream()
         .map((Double value) -> Rotation2d.fromRotations(value / CONSTANTS.TRANSLATIONAL_GEAR_RATIO))
         .toArray(Rotation2d[]::new);
@@ -207,7 +207,7 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
     TRANSLATIONAL_VELOCITY_QUEUE.clear();
     ROTATIONAL_POSITION_QUEUE.clear();
     TIMESTAMP_QUEUE.clear();
-    Logger.processInputs("RealInputs/" + "MODULE (" + Integer.toString(CONSTANTS.NUMBER) + ')', Status);
+    Logger.processInputs("RealInputs/" + "MODULE (" + Integer.toString(CONSTANTS.NUMBER) + ')', STATUS);
   }
 
   /**

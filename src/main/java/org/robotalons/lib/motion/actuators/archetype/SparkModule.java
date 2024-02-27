@@ -183,8 +183,8 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
   @Override
   public synchronized void periodic() {
     update();
-    if (RotationalRelativeOffset == (null) && Status.RotationalAbsolutePosition.getRadians() != (0d)) {
-      RotationalRelativeOffset = Status.RotationalAbsolutePosition.minus(Status.RotationalRelativePosition);
+    if (RotationalRelativeOffset == (null) && STATUS.RotationalAbsolutePosition.getRadians() != (0d)) {
+      RotationalRelativeOffset = STATUS.RotationalAbsolutePosition.minus(STATUS.RotationalRelativePosition);
     }
     switch(ReferenceMode) {
       case STATE_CONTROL:
@@ -196,7 +196,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
           setTranslationalVoltage(     
                                 -(TRANSLATIONAL_PID.calculate(AdjustReferenceVelocity))
                                                               +
-            (TRANSLATIONAL_FF.calculate(Status.TranslationalVelocityRadiansSecond, AdjustReferenceVelocity))
+            (TRANSLATIONAL_FF.calculate(STATUS.TranslationalVelocityRadiansSecond, AdjustReferenceVelocity))
           );          
         }
         break;
@@ -208,10 +208,10 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
         break;
     }
     DELTAS.clear();
-    synchronized(Status) {
-      IntStream.range((0), (Status.OdometryTimestamps.length - (1))).forEach((Index) -> {
-        final var Position = Status.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
-        final var Rotation = Status.OdometryRotationalPositions[Index].plus(
+    synchronized(STATUS) {
+      IntStream.range((0), (STATUS.OdometryTimestamps.length - (1))).forEach((Index) -> {
+        final var Position = STATUS.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
+        final var Rotation = STATUS.OdometryRotationalPositions[Index].plus(
           (RotationalRelativeOffset != (null))? (RotationalRelativeOffset): (new Rotation2d()));
         DELTAS.add(new SwerveModulePosition(Position, Rotation));
       });      
@@ -234,51 +234,51 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
   @Override
   public synchronized void update() {
     ODOMETRY_LOCK.lock();
-    synchronized(Status) {
-      Status.TranslationalPositionRadians =
+    synchronized(STATUS) {
+      STATUS.TranslationalPositionRadians =
         Units.rotationsToRadians(TRANSLATIONAL_ENCODER.getPosition()) / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
-      Status.TranslationalVelocityRadiansSecond =
+      STATUS.TranslationalVelocityRadiansSecond =
           Units.rotationsPerMinuteToRadiansPerSecond(TRANSLATIONAL_ENCODER.getVelocity()) / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
-      Status.TranslationalAppliedVoltage = 
+      STATUS.TranslationalAppliedVoltage = 
         MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER.getAppliedOutput() * MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER.getBusVoltage();
-      Status.TranslationalCurrentAmperage = MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER.getOutputCurrent();
-      Status.TranslationTemperatureCelsius =
+      STATUS.TranslationalCurrentAmperage = MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER.getOutputCurrent();
+      STATUS.TranslationTemperatureCelsius =
         TRANSLATIONAL_CONTROLLER.getMotorTemperature();
 
-      Status.RotationalAbsolutePosition = 
+      STATUS.RotationalAbsolutePosition = 
         Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().getValue()).minus(RotationalAbsoluteOffset);
-      Status.RotationalRelativePosition =
+      STATUS.RotationalRelativePosition =
         Rotation2d.fromRotations(ROTATIONAL_ENCODER.getPosition() / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO);
-      Status.RotationalVelocityRadiansSecond =
+      STATUS.RotationalVelocityRadiansSecond =
           Units.rotationsPerMinuteToRadiansPerSecond(ROTATIONAL_ENCODER.getVelocity()) / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO;
-      Status.RotationalAppliedVoltage = 
+      STATUS.RotationalAppliedVoltage = 
         MODULE_CONSTANTS.ROTATIONAL_CONTROLLER.getAppliedOutput() * MODULE_CONSTANTS.ROTATIONAL_CONTROLLER.getBusVoltage();
-      Status.RotationalAppliedAmperage = MODULE_CONSTANTS.ROTATIONAL_CONTROLLER.getOutputCurrent();
-      Status.RotationalTemperatureCelsius = 
+      STATUS.RotationalAppliedAmperage = MODULE_CONSTANTS.ROTATIONAL_CONTROLLER.getOutputCurrent();
+      STATUS.RotationalTemperatureCelsius = 
         ROTATIONAL_CONTROLLER.getMotorTemperature();
 
       synchronized(TIMESTAMP_QUEUE) {
-        Status.OdometryTimestamps = 
+        STATUS.OdometryTimestamps = 
           TIMESTAMP_QUEUE.stream()
             .mapToDouble(Double::valueOf).toArray();
         TIMESTAMP_QUEUE.clear();
       }
       synchronized(TRANSLATIONAL_VELOCITY_QUEUE) {
-        Status.OdometryTranslationalPositionsRadians =
+        STATUS.OdometryTranslationalPositionsRadians =
           TRANSLATIONAL_VELOCITY_QUEUE.stream()
             .mapToDouble((Double value) -> Units.rotationsToRadians(value) / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO)
             .toArray();    
         TRANSLATIONAL_VELOCITY_QUEUE.clear();    
       }
       synchronized(ROTATIONAL_POSITION_QUEUE) {
-        Status.OdometryRotationalPositions =
+        STATUS.OdometryRotationalPositions =
           ROTATIONAL_POSITION_QUEUE.stream()
             .map((Double value) -> Rotation2d.fromRotations(value / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO))
             .toArray(Rotation2d[]::new);    
         ROTATIONAL_POSITION_QUEUE.clear();  
       }
     }
-    Logger.processInputs("RealInputs/" + "MODULE (" + Integer.toString(MODULE_CONSTANTS.NUMBER) + ')', Status);
+    Logger.processInputs("RealInputs/" + "MODULE (" + Integer.toString(MODULE_CONSTANTS.NUMBER) + ')', STATUS);
     ODOMETRY_LOCK.unlock();
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//

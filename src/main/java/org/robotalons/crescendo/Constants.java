@@ -109,7 +109,7 @@ public final class Constants {
           .addPreference(Preferences.ORIENTATION_DEADZONE, () -> (0.2))
           .addKeybinding(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.povCenter())
           .addKeybinding(Keybindings.INTAKE_TOGGLE, INPUT_METHOD.leftBumper())
-          .addKeybinding(Keybindings.SHOOTER_TOGGLE, INPUT_METHOD.b())
+          .addKeybinding(Keybindings.CANNON_TOGGLE, INPUT_METHOD.b())
           .addKeybinding(Keybindings.OUTTAKE_TOGGLE, INPUT_METHOD.rightBumper());
       }
 
@@ -127,7 +127,7 @@ public final class Constants {
           .addPreference(Preferences.ORIENTATION_DEADZONE, () -> (0.2))
           .addKeybinding(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.povCenter())
           .addKeybinding(Keybindings.INTAKE_TOGGLE, INPUT_METHOD.leftBumper())
-          .addKeybinding(Keybindings.SHOOTER_TOGGLE, INPUT_METHOD.b())
+          .addKeybinding(Keybindings.CANNON_TOGGLE, INPUT_METHOD.b())
           .addKeybinding(Keybindings.OUTTAKE_TOGGLE, INPUT_METHOD.rightBumper());
       }
     }
@@ -146,8 +146,10 @@ public final class Constants {
       public static final String MODULE_LOCKING_TOGGLE = ("LOCKING_ENABLED_TRIGGER");
       public static final String ORIENTATION_TOGGLE = ("ORIENTATION_TOGGLE");
       public static final String INTAKE_TOGGLE = ("INTAKE_TOGGLE");
-      public static final String SHOOTER_TOGGLE = ("SHOOTER_TOGGLE");
+      public static final String CANNON_TOGGLE = ("CANNON_TOGGLE");
       public static final String OUTTAKE_TOGGLE = ("OUTTAKE_TOGGLE");
+      public static final String CANNON_PIVOT_UP = ("CANNON_PIVOT_UP");
+      public static final String CANNON_PIVOT_DOWN = ("CANNON_PIVOT_DOWN");
     }
   }
 }
