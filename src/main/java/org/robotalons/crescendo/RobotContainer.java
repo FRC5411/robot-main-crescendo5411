@@ -1,14 +1,9 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.robotalons.crescendo.subsystems.climb.ClimbSubsystem;
-import org.robotalons.crescendo.subsystems.climb.Constants.Measurements;
 // -------------------------------------------------------------[Robot Container]-----------------------------------------------------------//
 /**
  *
@@ -20,47 +15,15 @@ import org.robotalons.crescendo.subsystems.climb.Constants.Measurements;
 public final class RobotContainer {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   public static final LoggedDashboardChooser<Command> CommandSelector;
-  private static CommandXboxController operatorController;
-  private static ClimbSubsystem climbSubsystem = new ClimbSubsystem();
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static RobotContainer Instance = (null);
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private RobotContainer() {} static {
     CommandSelector = new LoggedDashboardChooser<>(("Autonomous Command Selector"), AutoBuilder.buildAutoChooser());
-    operatorController = new CommandXboxController(1);
-    configureDefaultCommands();
-    configurePilotKeybinds();
+
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
-  /**
-   * Configures subsystem default commands
-   */
-  public static void configureDefaultCommands() {
-    
-  }
 
-  /**
-   * Configures the bindings, and preferences for each subsystem driver
-   */
-  private static void configurePilotKeybinds() {
-    
-    // Double Arm Right Movement // 
-    operatorController.rightTrigger()
-    .onTrue(new InstantCommand(() -> climbSubsystem.set(Measurements.CONTROLLER_ARM_SPEED)))
-    .onFalse(new InstantCommand(() -> climbSubsystem.set(0.0)));
-
-    // Double Arm Left Movement // 
-    operatorController.leftTrigger()
-    .onTrue(new InstantCommand(() -> climbSubsystem.set(-Measurements.CONTROLLER_ARM_SPEED)))
-    .onFalse(new InstantCommand(() -> climbSubsystem.set(0.0)));
-
-    // PID setpoint // 
-    operatorController.a()
-    .onTrue(new InstantCommand(() -> climbSubsystem.pidSet(100d)))
-    .onFalse(new InstantCommand(() -> climbSubsystem.set(0d)));
-
-  
-  }  
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Retrieves the existing instance of this static utility class

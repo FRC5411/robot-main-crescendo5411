@@ -4,6 +4,8 @@ package org.robotalons.crescendo.subsystems.climb;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 // ---------------------------------------------------------------[Constants]---------------------------------------------------------------//
 /**
  *
@@ -17,13 +19,6 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Constants {
   // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
   public static final class Measurements {
-    public static final Double INITIAL_PRESET = (0d);
-    public static final Double HIGH_PRESET = (0d);
-    public static final Double MID_PRESET = (0d);
-    public static final Double LOW_PRESET = (0d);
-
-    public static final Double CONTROLLER_ARM_SPEED = (0.4);
-
     public static final Double LEFT_ARM_P = (0.001d);
     public static final Double LEFT_ARM_I = (0d);
     public static final Double LEFT_ARM_D = (0d);
@@ -42,25 +37,20 @@ public class Constants {
     public static final Double RIGHT_ARM_KA = (0d);
     public static final Double RIGHT_ARM_KG = (0d);
 
-    public static final Double K_TICKS_2_RAD = (2.0 * Math.PI /4096.0);
+    public static final Double LEFT_ENCODER_OFFSET = (0d);
+    public static final Double RIGHT_ENCODER_OFFSET = (0d);
 
-    public static final Integer K_CURRENT_LIMIT = (60);
+    public static final Double TICK_CONVERSION_FACTOR = (2.0 * Math.PI /4096.0);
 
-    public static final float K_FORWARD_ARM_LIMIT = (90);
-    public static final float K_REVERSE_ARM_LIMIT = (-90);
+    public static final Integer CURRENT_LIMIT = (60);
 
-    public static final Double K_GEARRATIO = (1/244.5);
+    public static final float FORWARD_ARM_LIMIT = (90);
+    public static final float REVERSE_ARM_LIMIT = (-90);
 
-    //TODO: Fix the channels
-    public static final Integer K_RIGHT_FORWARD_CHANNELA = (0);
-    public static final Integer K_RIGHT_FORWARD_CHANNELB = (1);
+    public static final Double GEAR_RATIO = (1/244.5);
 
-    public static final Integer K_LEFT_FORWARD_CHANNELA = (2);
-    public static final Integer K_LEFT_FORWARD_CHANNELB = (3);
-
-    //TODO: Fix FF
-    public static final Double K_HOLD_PARRALLEL_GROUND = (100d);
-    public static final Double K_HOLD_STRAIGHT = (100d);
+    public static final Rotation2d HOLD_PARRALLEL_GROUND = Rotation2d.fromDegrees((90));
+    public static final Rotation2d HOLD_STRAIGHT = Rotation2d.fromDegrees((45));
 
   }
 
@@ -68,6 +58,8 @@ public class Constants {
     //TODO: Find out Motor IDS
     public static final Integer LEFT_ARM_CONTROLLER_ID = 0; 
     public static final Integer RIGHT_ARM_CONTROLLER_ID = 1;
+    public static final Integer LEFT_ENCODER_ID = (2);
+    public static final Integer RIGHT_ENCODER_ID = (3);    
   }
 
   public static final class Objects {
