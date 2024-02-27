@@ -8,7 +8,6 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import org.robotalons.crescendo.Robot.RobotType;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
-import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.REVOdometryThread;
@@ -90,7 +89,9 @@ public final class Constants {
       OPERATORS.add(Operators.Primary.PROFILE);
       OPERATORS.add(Operators.Secondary.PROFILE);
 
-      DEFAULT.put(DrivebaseSubsystem.getInstance(),OPERATORS.get((0)));
+      SubsystemManager.getSubsystems().forEach((Subsystem) -> {
+        DEFAULT.put(Subsystem, OPERATORS.get((0)));
+      });
     }
 
     public static final class Operators {

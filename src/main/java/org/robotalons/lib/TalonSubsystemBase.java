@@ -31,16 +31,22 @@ public abstract class TalonSubsystemBase extends SubsystemBase implements Closea
    * Configures a pilot's hardware to operate this subsystem
    * @param Operator the next operator of this subsystem instance
    */
-  public abstract void configure(final Operator Operator);
+  public void configure(final Operator Operator) {
+
+  }
   
   /**
    * Closes this instance and all held resources immediately.
    */
-  public abstract void close();  
+  public void close() {
+
+  } 
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Provides the current operator of this subsystem.
    * @return Subsystem operator
    */
-  public abstract Operator getOperator();
+  public Operator getOperator() {
+    return null;
+  }
 }

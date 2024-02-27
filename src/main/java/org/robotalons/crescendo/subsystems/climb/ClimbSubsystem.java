@@ -1,5 +1,6 @@
 // ----------------------------------------------------------------[Package]---------------------------------------------------------------- //
 package org.robotalons.crescendo.subsystems.climb;
+// ---------------------------------------------------------------[Libraries]--------------------------------------------------------------- //
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -15,14 +16,7 @@ import org.littletonrobotics.junction.Logger;
 import org.robotalons.crescendo.subsystems.climb.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.climb.Constants.Objects;
 import org.robotalons.crescendo.subsystems.climb.Constants.Ports;
-
-import java.io.Closeable;
-import java.io.IOException;
-
-
-// ---------------------------------------------------------------[Libraries]--------------------------------------------------------------- //
-
-
+import org.robotalons.lib.TalonSubsystemBase;
 // ------------------------------------------------------------[Climb Subsystem]------------------------------------------------------------ //
 /**
  *
@@ -33,7 +27,7 @@ import java.io.IOException;
  * @see SubsystemBase
  * @see {@link org.robotalons.crescendo.RobotContainer RobotContainer} 
  */
-public final class ClimbSubsystem extends SubsystemBase implements Closeable {
+public final class ClimbSubsystem extends TalonSubsystemBase {
   // --------------------------------------------------------------[Constants]-------------------------------------------------------------- //
   private static final CANSparkMax LEFT_ARM;
   private static final CANSparkMax RIGHT_ARM;
@@ -55,7 +49,9 @@ public final class ClimbSubsystem extends SubsystemBase implements Closeable {
   /**
    * Climb Subsystem Constructor
    */
-  public ClimbSubsystem() {} static {
+  public ClimbSubsystem() {
+    super(("Climb Subsystem"));
+  } static {
     LEFT_ARM = new CANSparkMax(Ports.LEFT_ARM_CONTROLLER_ID, MotorType.kBrushless);
     RIGHT_ARM = new CANSparkMax(Ports.RIGHT_ARM_CONTROLLER_ID, MotorType.kBrushless);
     
@@ -111,11 +107,8 @@ public final class ClimbSubsystem extends SubsystemBase implements Closeable {
     Objects.ODOMETRY_LOCKER.unlock();
   }
   
-  /**
-   * Closes this instance and all held resources immediately 
-   * @throws IOException 
-   */
-  public synchronized void close() throws IOException {
+  @Override
+  public synchronized void close() {
     LEFT_ARM.close();
     RIGHT_ARM.close();
   }

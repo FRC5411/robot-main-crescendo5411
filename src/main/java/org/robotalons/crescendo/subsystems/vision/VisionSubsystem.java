@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.photonvision.PhotonCamera;
 import org.robotalons.crescendo.subsystems.vision.Constants.Ports;
 import org.robotalons.lib.TalonSubsystemBase;
-import org.robotalons.lib.utilities.Operator;
 import org.robotalons.lib.vision.Camera;
 
 import java.io.IOException;
@@ -93,9 +92,6 @@ public final class VisionSubsystem extends TalonSubsystemBase {
     CAMERAS.forEach(Camera::update);
   }
 
-  /**
-   * Closes Vision Subsystem.
-   */
   @Override
   public void close() {
     try {
@@ -138,11 +134,6 @@ public final class VisionSubsystem extends TalonSubsystemBase {
     CAMERA.postSnapshot();
   }
 
-  @Override
-  public synchronized void configure(final Operator Operator) {
-    //This subsystem has no Operator
-  }
-
   /**
    * Provides the matrix of standard deviations of a given camera object
    * @param Camera ID of the camera as an integer
@@ -160,11 +151,6 @@ public final class VisionSubsystem extends TalonSubsystemBase {
         Instance = new VisionSubsystem();
       }
       return Instance;
-  }
-
-  @Override
-  public synchronized Operator getOperator() {
-    return (null);
   }
 
   /**
