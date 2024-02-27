@@ -1,15 +1,10 @@
-<<<<<<< HEAD
 org.robotalons.lib
 org.robotalons.lib.motion.actuators
 org.robotalons.lib.motion.actuators.archetype
 org.robotalons.lib.motion.pathfinding
 org.robotalons.lib.motion.sensors
 org.robotalons.lib.motion.sensors.archetype
-org.robotalons.lib.motion.utilities
-org.robotalons.lib.utilities
-=======
-org.robotalons.lib.motion.pathfinding
+org.robotalons.lib.motion.trajectory.solving
 org.robotalons.lib.motion.utilities
 org.robotalons.lib.utilities
 org.robotalons.lib.vision
->>>>>>> Development-Vision
