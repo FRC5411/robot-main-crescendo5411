@@ -4,7 +4,6 @@ package org.robotalons.crescendo.subsystems.vision;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.Num;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -24,7 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-// ---------------------------------------------------------[Photon Vision Module]--------------------------------------------------------//
+// --------------------------------------------------------------[Vision Camera]--------------------------------------------------------//
 /**
  *
  *
@@ -99,7 +98,7 @@ public final class VisionCamera extends Camera {
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
 
   @Override
-  public Matrix<Num, N1> getStandardDeviations() {
+  public Matrix<N3, N1> getStandardDeviations() {
     Pose3d POSE = new Pose3d();
     int length = POSES_LIST.size();
 
@@ -125,14 +124,16 @@ public final class VisionCamera extends Camera {
 
     double sdX = getStandardDeviation(x);
     double sdY = getStandardDeviation(y);
-    double sdZ = getStandardDeviation(z);
-    double sdPitch = getStandardDeviation(pitch);
-    double sdRoll = getStandardDeviation(roll);
+    // double sdZ = getStandardDeviation(z);
+    // double sdPitch = getStandardDeviation(pitch);
+    // double sdRoll = getStandardDeviation(roll);
     double sdYaw = getStandardDeviation(yaw);
 
-    double[] data = new double[]{sdX, sdY, sdZ, sdPitch, sdRoll, sdYaw};
+    //TODO: We only need X, Y, and Heading
+    //double[] data = new double[]{sdX, sdY, sdZ, sdPitch, sdRoll, sdYaw}; 
+    double[] data = new double[]{sdX,sdY,sdYaw};
 
-    return MatBuilder.fill(() -> 6, Nat.N1(), data);
+    return MatBuilder.fill(() -> 3, Nat.N1(), data);
   }
  
   private double getStandardDeviation(double[] nums){

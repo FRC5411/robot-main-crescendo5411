@@ -1,14 +1,19 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.vision;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.photonvision.PhotonCamera;
+import org.robotalons.crescendo.subsystems.vision.Constants.Ports;
+import org.robotalons.lib.TalonSubsystemBase;
+import org.robotalons.lib.utilities.Operator;
 import org.robotalons.lib.vision.Camera;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +28,7 @@ import java.util.Optional;
  * @see SubsystemBase
  * @see org.robotalons.crescendo.RobotContainer RobotContainer
  */
-public final class VisionSubsystem extends SubsystemBase implements Closeable {
+public final class VisionSubsystem extends TalonSubsystemBase {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   public static List<Camera> CAMERAS;
   public static PhotonCamera SOURCE;
@@ -41,11 +46,14 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
   /**
    * Vision Subsystem Constructor.
    */
-  public VisionSubsystem(){
-    SOURCE = new PhotonCamera("Camera_1");
-    SPEAKER_FRONT = new PhotonCamera("Camera_2");
-    SPEAKER_REAR = new PhotonCamera("Camera_3");
-    INTAKE = new PhotonCamera("Camera_4(OD)");
+  public VisionSubsystem() {
+    super(("Vision Subsystem"));
+
+    //TODO: Double Check Names and Positions
+    SOURCE = new PhotonCamera(Ports.SOURCE_CAMERA_NAME);
+    SPEAKER_FRONT = new PhotonCamera(Ports.REAR_LEFT_CAMERA_NAME);
+    SPEAKER_REAR = new PhotonCamera(Ports.REAR_RIGHT_CAMERA_NAME);
+    INTAKE = new PhotonCamera(Ports.FRONT_RIGHT_CAMERA_NAME);
 
     SOURCE_CAMERA = new VisionCamera(
       SOURCE, 
@@ -129,16 +137,34 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
     Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
     CAMERA.postSnapshot();
   }
+
+  @Override
+  public synchronized void configure(final Operator Operator) {
+    //This subsystem has no Operator
+  }
+
+  /**
+   * Provides the matrix of standard deviations of a given camera object
+   * @param Camera ID of the camera as an integer
+   */
+  public synchronized Matrix<N3,N1> getStandardDeviations(final Integer Camera) {
+    return CAMERAS.get(Camera).getStandardDeviations();
+  }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Retrieves the existing instance of this static utility class.
    * @return Utility class's instance
    */
-  public static synchronized VisionSubsystem getInstance() {
+  public static synchronized TalonSubsystemBase getInstance() {
       if (java.util.Objects.isNull(Instance)) {
         Instance = new VisionSubsystem();
       }
       return Instance;
+  }
+
+  @Override
+  public synchronized Operator getOperator() {
+    return (null);
   }
 
   /**

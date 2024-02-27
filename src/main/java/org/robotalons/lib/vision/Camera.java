@@ -2,7 +2,6 @@
 package org.robotalons.lib.vision;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Num;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
@@ -107,7 +106,7 @@ public abstract class Camera implements Closeable {
    * Provides the confidence or standard deviation of the cameras evaluations of estimations
    * @return Matrix of standard deviations of estimation
    */
-  public abstract Matrix<Num,N1> getStandardDeviations();
+  public abstract Matrix<N3,N1> getStandardDeviations();
 
   /**
    * Provides the matrix of this camera's hardware data, distortion, etc.
