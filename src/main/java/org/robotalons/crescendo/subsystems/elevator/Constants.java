@@ -10,10 +10,17 @@ public class Constants {
     }
     public class Measurements{
         public static final Integer CURRENT_LIMIT = (60);
+        public static final Double GEAR_RATIO = (0.0);
+        public static final Double BASE_HEIGHT = (0.0);
         public class Feedforward{
             public static final Double KS = (0.0);
             public static final Double KG = (0.0);
             public static final Double KV = (0.0);
+        }
+        public class PID {
+            public static final Double KP = (0.0);
+            public static final Double KI = (0.0);
+            public static final Double KD = (0.0);
         }
     }
 }
