@@ -20,8 +20,7 @@ import org.robotalons.crescendo.subsystems.cannon.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.cannon.Constants.Ports;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.trajectory.solving.TrajectoryObject;
-import org.robotalons.lib.utilities.PilotProfile;
-
+import org.robotalons.lib.utilities.Operator;
 // ------------------------------------------------------------[Cannon Subsystem]-----------------------------------------------------------//
 /**
  *
@@ -50,7 +49,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
   private static CannonSubsystem Instance;
   private static SwerveModuleState CurrentReference;
   private static FiringMode CurrentMode;  
-  private static PilotProfile CurrentPilot;
+  private static Operator CurrentPilot;
     // ------------------------------------------------------------[Constructors]----------------------------------------------------------- //
   /** 
    * Cannon Subsystem Constructor 
@@ -215,7 +214,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
   }
 
   @Override
-  public void configure(final PilotProfile Profile) {
+  public void configure(final Operator Profile) {
     CurrentPilot = Profile;
     try {
       CurrentPilot.getKeybinding(Keybindings.CANNON_TOGGLE)
@@ -253,7 +252,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
 
 
   @Override
-  public PilotProfile getPilot() {
+  public Operator getOperator() {
     return CurrentPilot;
   }
 }
