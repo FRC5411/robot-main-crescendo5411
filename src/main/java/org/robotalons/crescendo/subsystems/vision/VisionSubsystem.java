@@ -89,13 +89,14 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    * Closes Vision Subsystem.
    */
   @Override
-  public void close() {
+  public void close() throws IOException {
     try {
       SOURCE_CAMERA.close();
       SPEAKER_FRONT_CAMERA.close();
       SPEAKER_REAR_CAMERA.close();
       INTAKE_CAMERA.close();
     } catch (final IOException Exception) {}
+
   }
 
   /**
@@ -149,29 +150,48 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    * @return New approximation of Pose3d from robot. 
    * @throws IllegalArgumentException when Camera 1 ID or Camera 2 ID is greater than 4, less than 1, or not an integer
    */
-  public static Optional<Pose3d> getApproximatedRobotPose(Integer CAMERA1_ID, Integer CAMERA2_ID) throws IllegalArgumentException{
+  public static Optional<Pose3d> getApproximatedRobotPose(){   
+    Camera CAMERA1 = CAMERAS.get(0);
+    Camera CAMERA2 = CAMERAS.get(1);
+    Camera CAMERA3 = CAMERAS.get(2);
+    Camera[] CAMERA_2_USE = new Camera[2];
 
-    if(CAMERAS.size() < CAMERA1_ID || CAMERA2_ID < 0) {
-      throw new IllegalArgumentException("Camera 1 ID for method 'getApproximatedRobotPose' should not be greater than 4, less than 1, or not an integer");
-    }
-
-    if(CAMERAS.size() < CAMERA1_ID || CAMERA2_ID < 0) {
-      throw new IllegalArgumentException("Camera 2 ID for method 'getApproximatedRobotPose' should not be greater than 4, less than 1, or not an integer");
-    }
-    
-    Camera CAMERA1 = CAMERAS.get(CAMERA1_ID - 1);
-    Camera CAMERA2 = CAMERAS.get(CAMERA2_ID - 1);
-
-    //TODO: Eventually over here, make it so that if none of the cameras detect objects just take drivebase estimated pose
     Optional<Pose3d> PRE_POSE1 = CAMERA1.getRobotPosition();
     Optional<Pose3d> PRE_POSE2 = CAMERA2.getRobotPosition();
+    Optional<Pose3d> PRE_POSE3 = CAMERA2.getRobotPosition();
 
-    if(PRE_POSE1.isEmpty() || PRE_POSE2.isEmpty()){
-      return Optional.empty();
+    if(PRE_POSE1.isEmpty()){
+      
+      if(PRE_POSE2.isEmpty() || PRE_POSE3.isEmpty()){
+        return Optional.empty();}
+      
+        else{
+        CAMERA_2_USE[0] = CAMERA2;
+        CAMERA_2_USE[1] = CAMERA3;}
     }
 
-    Pose3d CAMERA1_POSE = CAMERA1.getRobotPosition().get();
-    Pose3d CAMERA2_POSE = CAMERA2.getRobotPosition().get();
+    else if(PRE_POSE2.isEmpty()){
+      
+      if(PRE_POSE1.isEmpty() || PRE_POSE3.isEmpty()){
+        return Optional.empty();}
+      
+        else{
+        CAMERA_2_USE[0] = CAMERA1;
+        CAMERA_2_USE[1] = CAMERA3;}
+    }
+
+    else if(PRE_POSE3.isEmpty()){
+      
+      if(PRE_POSE1.isEmpty() || PRE_POSE2.isEmpty()){
+        return Optional.empty();}
+      
+        else{
+        CAMERA_2_USE[0] = CAMERA1;
+        CAMERA_2_USE[1] = CAMERA2;}
+    }
+
+    Pose3d CAMERA1_POSE = CAMERA_2_USE[0].getRobotPosition().get();
+    Pose3d CAMERA2_POSE = CAMERA_2_USE[1].getRobotPosition().get();
 
     double avgX = (CAMERA1_POSE.getX() + CAMERA2_POSE.getX()) / 2;
     double avgY = (CAMERA1_POSE.getY() + CAMERA2_POSE.getY()) / 2;
@@ -291,7 +311,7 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
       throw new IllegalArgumentException("Camera ID for method 'hasTargets' should not be greater than 4, less than 1, or not an integer");
     }
 
-    Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
+    Camera CAMERA =CAMERAS.get(CAMERA_ID - 1);
     return CAMERA.hasTargets();
   }
 
