@@ -1,7 +1,11 @@
 name: Gradle Build
 
 on:
+<<<<<<< HEAD
   [push, fork]
+=======
+  [push, pull_request, fork]
+>>>>>>> Development-Vision
 
 jobs:
   build:
@@ -10,6 +14,14 @@ jobs:
     container: wpilib/roborio-cross-ubuntu:2024-22.04
     steps:
     - uses: actions/checkout@v3
+<<<<<<< HEAD
+=======
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+>>>>>>> Development-Vision
     - name: Grant execute permission
       run: chmod +x gradlew
     - name: Build with Gradle
