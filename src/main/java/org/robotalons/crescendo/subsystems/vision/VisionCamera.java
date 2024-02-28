@@ -322,7 +322,8 @@ public final class VisionCamera extends Camera {
 
   @Override
   public Optional<Transform3d> getOptimalTarget() {
-    return Optional.ofNullable(CAMERA.getLatestResult().getBestTarget().getBestCameraToTarget());
+    final var BestResult = CAMERA.getLatestResult().getBestTarget();
+    return Optional.ofNullable(BestResult == null? null: BestResult.getBestCameraToTarget());
   }
 
   @Override
