@@ -4,7 +4,6 @@ package org.robotalons.crescendo.subsystems.vision;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.Num;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -12,6 +11,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.numbers.N5;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -73,11 +73,23 @@ public final class VisionCamera extends Camera {
 
   @Override
   public void update() {
-    POSE_ESTIMATOR = new PhotonPoseEstimator(
-      Measurements.FIELD_LAYOUT, 
-      PoseStrategy.CLOSEST_TO_LAST_POSE, 
-      CAMERA,
-      RELATIVE);
+    // Record Information about Camera performance
+    Logger.recordOutput(IDENTITY + "/Connected", getConnected());
+    Logger.recordOutput(IDENTITY + "/Latency", getLatency());
+
+    // Record Information about Robot Poses
+    getRobotPosition().ifPresent((Pose) -> Logger.recordOutput(IDENTITY + "/RobotPose", Pose));
+    Logger.recordOutput(IDENTITY + "/Deltas", getRobotPositionDeltas());
+    Logger.recordOutput(IDENTITY + "/Timestamps", getRobotPositionTimestamps());
+    
+    // Record Information about Target Poses
+    getOptimalTarget().ifPresent((BestTarget) -> Logger.recordOutput(IDENTITY + "/BestTargetTransform", BestTarget));
+    getObjectFieldPose().ifPresent((TargetPose) -> Logger.recordOutput(IDENTITY + "/TargetPose", TargetPose));
+    getTargets().ifPresent((Targets) -> Logger.recordOutput(IDENTITY + "/Targets", Targets));
+    Logger.recordOutput(IDENTITY + "/HasTargets", hasTargets());
+    Logger.recordOutput(IDENTITY + "/NumTargets", getNumTargets());
+
+    
   }
 
   @Override
@@ -101,7 +113,7 @@ public final class VisionCamera extends Camera {
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
 
   @Override
-  public Matrix<Num, N1> getStandardDeviations() {
+  public Matrix<N3, N1> getStandardDeviations() {
     Pose3d POSE = new Pose3d();
     int length = POSES_LIST.size();
 
@@ -248,18 +260,17 @@ public final class VisionCamera extends Camera {
   @Override
   public Optional<Pose3d> getObjectFieldPose() {
     Optional<Pose3d> ROBOT = getRobotPosition();
+    Optional<Transform3d> TARGET = getOptimalTarget();
     
 
-    if(ROBOT.isEmpty() || getOptimalTarget().isEmpty()){
+    if(ROBOT.isEmpty() || TARGET.isEmpty()){
       return Optional.empty();
     }
 
-    Transform3d TARGET = getOptimalTarget().get();
-
     return Optional.of(new Pose3d(
-      (TARGET.getX() + ROBOT.get().getX()),
-      (TARGET.getY() + ROBOT.get().getY()),
-      TARGET.getZ(),
+      (TARGET.get().getX() + ROBOT.get().getX()),
+      (TARGET.get().getY() + ROBOT.get().getY()),
+      TARGET.get().getZ(),
       new Rotation3d()
       ));
   }

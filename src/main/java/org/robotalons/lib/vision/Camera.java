@@ -2,21 +2,17 @@
 package org.robotalons.lib.vision;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Num;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.numbers.N5;
-
 import edu.wpi.first.networktables.NetworkTable;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import java.io.Closeable;
 import java.io.IOException;
-
 import java.util.Optional;
 // -----------------------------------------------------------------[Camera]----------------------------------------------------------------//
 /**
@@ -91,14 +87,18 @@ public abstract class Camera implements Closeable {
    * @param Target Transformation to a given target anywhere on the field
    * @return Position of the object relative to the field
    */
-  public abstract Optional<Pose3d> getObjectFieldPose(final Transform3d Target);
+  public Optional<Pose3d> getObjectFieldPose(final Transform3d Target){
+    return Optional.ofNullable(TARGET_STATUS.BestTargetPose);
+  }
 
   /**
    * Provides the robot relative position to a given object based on the estimated position of this camera and a transformation assuming that
    * the desired object is the optimal target of this camera.
    * @return Position of the object relative to the field
    */
-  public abstract Optional<Pose3d> getObjectFieldPose();
+  public Optional<Pose3d> getObjectFieldPose(){
+    return Optional.ofNullable(TARGET_STATUS.BestTargetPose);
+  }
 
   /**
    * Provides the april tag with the id that we asked for in Pose3d
@@ -110,7 +110,7 @@ public abstract class Camera implements Closeable {
    * Provides the confidence or standard deviation of the cameras evaluations of estimations
    * @return Matrix of standard deviations of estimation
    */
-  public abstract Matrix<Num,N1> getStandardDeviations();
+  public abstract Matrix<N3,N1> getStandardDeviations();
 
   /**
    * Provides the matrix of this camera's hardware data, distortion, etc.
@@ -158,7 +158,9 @@ public abstract class Camera implements Closeable {
    * Provides a list of robot-relative transformations to the best target within view of the camera
    * @return List of robot-relative target transformations
    */
-  public abstract Optional<Transform3d[]> getTargets();
+  public Optional<Transform3d[]> getTargets(){
+    return Optional.ofNullable(TARGET_STATUS.Targets);
+  }
 
   /**
    * Provides a boolean representation of if the module has an april tag / object detected
@@ -173,7 +175,9 @@ public abstract class Camera implements Closeable {
    * Provides the robot-relative transformation to the best target within view of the camera
    * @return Robot-relative best target transformation
    */
-  public abstract Optional<Transform3d> getOptimalTarget();
+  public Optional<Transform3d> getOptimalTarget(){
+    return Optional.ofNullable(TARGET_STATUS.OptimalTransform);
+  }
 
   /**
    * Provides the number of targets that is detected within the view of the camera

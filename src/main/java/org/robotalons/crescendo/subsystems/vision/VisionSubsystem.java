@@ -124,7 +124,7 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    */
   public void postSnapshot(Integer CAMERA_ID) throws IllegalArgumentException{
 
-    if(CAMERAS.size() < CAMERA_ID || CAMERA_ID < 0) {
+    if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
       throw new IllegalArgumentException("Camera ID for method 'postSnapshot' should not be greater than 4, less than 1, or not an integer");
     }
 
@@ -215,7 +215,7 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    */
   public double[] getRobotPositionTimestamps(Integer CAMERA_ID) throws IllegalArgumentException{
 
-    if(CAMERAS.size() < CAMERA_ID || CAMERA_ID < 0) {
+    if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
       throw new IllegalArgumentException("Camera ID for method 'getRobotPositionTimestamps' should not be greater than 4, less than 1, or not an integer");
     }
 
@@ -232,7 +232,7 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    */
   public Pose3d[] getRobotPositionDeltas(Integer CAMERA_ID) throws IllegalArgumentException{
 
-    if(CAMERAS.size() < CAMERA_ID || CAMERA_ID < 0) {
+    if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
       throw new IllegalArgumentException("Camera ID for method 'snapshot' should not be greater than 4, less than 1, or not an integer");
     }
 
@@ -267,28 +267,21 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    */
   public Optional<Transform3d[]> getTargets(Integer CAMERA_ID) throws IllegalArgumentException{
 
-    if(CAMERAS.size() < CAMERA_ID || CAMERA_ID < 0) {
+    if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
       throw new IllegalArgumentException("Camera ID for method 'getTargets' should not be greater than 4, less than 1, or not an integer");
     }
 
     Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
 
-    if(CAMERA.getTargets().isEmpty()){
-      return Optional.empty();
-    }
-
-    return Optional.of(CAMERA.getTargets().get());
+    return CAMERA.getTargets();
   }
 
   /**
    * Provides the april tag with the id that we asked for in Pose3d from the specified camera.
-   * 1 - Source Camera, 2 - Speaker Front Camera, 3- Speaker Rear Camera, 4 - OD Camera.
    * Fiducial ID : (1-16)
-   * @param CAMERA_ID that gets the specific camera.
    * @param APRILTAG_ID that gets the specific fiducial marker ID.
    * @return Position of the tag relative to the field.
-   * @throws IllegalArgumentException when CAMERA_ID is not 4 or not an integer. 
-   * @throws IllegalArgumentException when APRILTAG_ID is greater than 16, less than 0, or not an integer. 
+
    */
   public Pose3d getAprilTagPose(Integer APRILTAG_ID){
     return SOURCE_CAMERA.getAprilTagPose(APRILTAG_ID);
@@ -343,11 +336,7 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
 
     Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
 
-    if(CAMERA.getOptimalTarget().isEmpty()){
-      return Optional.empty();
-    }
-
-    return Optional.of(CAMERA.getOptimalTarget().get());
+    return CAMERA.getOptimalTarget();
   }
 
 
