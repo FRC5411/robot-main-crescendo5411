@@ -50,7 +50,8 @@ public class CannonSubsystem extends TalonSubsystemBase {
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
   private static CannonSubsystem Instance;
   private static SwerveModuleState CurrentReference;
-  private static FiringMode CurrentMode;  
+  private static FiringMode CurrentFiringMode;  
+  private static TargetingMode CurrentTargetingMode;
   private static Operator CurrentPilot;
     // ------------------------------------------------------------[Constructors]----------------------------------------------------------- //
   /** 
@@ -60,7 +61,8 @@ public class CannonSubsystem extends TalonSubsystemBase {
     super(("Cannon Subsystem"));
   } static {
     CurrentReference = new SwerveModuleState((0d), new Rotation2d(Math.PI/2));
-    CurrentMode = FiringMode.MANUAL;
+    CurrentFiringMode = FiringMode.MANUAL;
+    CurrentTargetingMode = TargetingMode.SPEAKER;
     FIRING_CONTROLLERS = new Pair<CANSparkMax,CANSparkMax>(
       new CANSparkMax(Ports.FIRING_CONTROLLER_LEFT_ID, MotorType.kBrushless), 
       new CANSparkMax(Ports.FIRING_CONTROLLER_RIGHT_ID, MotorType.kBrushless));
@@ -92,9 +94,9 @@ public class CannonSubsystem extends TalonSubsystemBase {
   @Override
   public synchronized void periodic() {
     Constants.Objects.ODOMETRY_LOCKER.lock();
-    switch (CurrentMode) {
+    switch (CurrentFiringMode) {
       case MANUAL:
-        set(CurrentReference.angle);
+        set(Measurements.PIVOT_FIRING_MAP.inverseInterpolate(Measurements.PIVOT_MAXIMUM_RANGE_METERS, getDistance(), Measurements.PIVOT_MINIMUM_RANGE_METERS));
         break;
       case SEMI:
         break;
@@ -114,15 +116,16 @@ public class CannonSubsystem extends TalonSubsystemBase {
    * @param Height    How far heightwise the object must travel
    * @return Note preset with the parameters
    */
-  public static TrajectoryObject object(final Double Velocity, final Double Distance, final Double Height, final Rotation2d Rotation) {
+  @SuppressWarnings("unused")
+  private static TrajectoryObject object(final Double Velocity, final Double Distance, final Double Height, final Rotation2d Rotation) {
     return TrajectoryObject.note(Velocity, Rotation, Measurements.CANNON_LENGTH, Distance, Height, (2000));
   }
 
   /**
    * Fires the shooter at the best possible target on the field
    */
-  public synchronized static void fire() {
-    switch (CurrentMode) {
+  public static synchronized void fire() {
+    switch (CurrentFiringMode) {
       case MANUAL:
         set(CurrentReference.speedMetersPerSecond);
         break;
@@ -150,6 +153,15 @@ public class CannonSubsystem extends TalonSubsystemBase {
     MANUAL,    
     SEMI,
     AUTO,
+  }
+
+  /**
+   * Controls the primary target given the current distance of targets
+   */
+  public enum TargetingMode {
+    SPEAKER,
+    SOURCE,
+    AMP,
   }
   // --------------------------------------------------------------[Mutators]--------------------------------------------------------------- //
   /**
@@ -185,7 +197,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
    * @param Mode Mode of cannon control
    */
   public static synchronized void set(final FiringMode Mode) {
-    CurrentMode = Mode;
+    CurrentFiringMode = Mode;
   }
 
   /**
@@ -202,17 +214,6 @@ public class CannonSubsystem extends TalonSubsystemBase {
 
   public static synchronized void setRotation(final Rotation2d Reference) {
     CurrentReference.angle = Reference;
-  }
-
-  // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
-  /**
-   * Retrieves the existing instance of this static utility class
-   * @return Utility class's instance
-   */
-  public static synchronized CannonSubsystem getInstance() {
-      if (java.util.Objects.isNull(Instance))
-          Instance = new CannonSubsystem();
-      return Instance;
   }
 
   @Override
@@ -251,7 +252,33 @@ public class CannonSubsystem extends TalonSubsystemBase {
 
     } catch(final NullPointerException Ignored) {}
   }
+  // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
+  /**
+   * Retrieves the existing instance of this static utility class
+   * @return Utility class's instance
+   */
+  public static synchronized CannonSubsystem getInstance() {
+      if (java.util.Objects.isNull(Instance))
+          Instance = new CannonSubsystem();
+      return Instance;
+  }
 
+  /**
+   * Provides the current distance from the primary targeting mode given the current TargetingMode 
+   * @return Distance from the primary target, in meters.
+   */
+  public static synchronized Double getDistance() {
+    switch(CurrentTargetingMode) {
+      case SPEAKER:
+        return 0d;
+      case AMP:
+        return 0d;
+      case SOURCE:
+        return 0d;
+      default:
+        return 0d;
+    }
+  }
 
   @Override
   public Operator getOperator() {

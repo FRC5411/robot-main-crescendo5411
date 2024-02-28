@@ -171,8 +171,8 @@ public abstract class Camera implements Closeable {
    * Provides the robot-relative transformation to the best target within view of the camera
    * @return Robot-relative best target transformation
    */
-  public Transform3d getOptimalTarget(){
-    return TARGET_STATUS.OptimalTransform;
+  public Optional<Transform3d> getOptimalTarget(){
+    return Optional.ofNullable(TARGET_STATUS.OptimalTransform);
   }
 
   /**

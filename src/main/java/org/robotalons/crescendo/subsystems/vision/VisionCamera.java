@@ -1,6 +1,7 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.vision;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
@@ -11,10 +12,12 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.numbers.N5;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.estimation.TargetModel;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.robotalons.crescendo.subsystems.vision.Constants.Measurements;
 import org.robotalons.lib.vision.Camera;
@@ -38,14 +41,18 @@ public final class VisionCamera extends Camera {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private final PhotonCamera CAMERA;
   private final Transform3d RELATIVE;
-  private PhotonPoseEstimator POSE_ESTIMATOR;
-  private List<Double> TIMESTAMP_LIST;
-  private List<Pose3d> POSES_LIST;
-  private int COUNTER;
-
+  private final PhotonPoseEstimator POSE_ESTIMATOR;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-
+  private List<Double> Timestamps;
+  private List<Pose3d> Poses;
+  private Integer Counter;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
+  /**
+   * Vision Camera Constructor.
+   * @param Camera     Source Camera object to pull data from
+   * @param Relative   Position of this robot relative to the center of the robot in two-dimensional space
+   * @param Identifier Reference name to identify this camera by, may repeat
+   */
   public VisionCamera(final PhotonCamera Camera, final Transform3d Relative, final String Identifier) {
     super(Camera.getCameraTable(), Relative, Identifier);
     CAMERA = Camera;
@@ -56,25 +63,31 @@ public final class VisionCamera extends Camera {
       PoseStrategy.CLOSEST_TO_REFERENCE_POSE, 
       CAMERA,
       RELATIVE);
+    POSE_ESTIMATOR.setRobotToCameraTransform(OFFSET);
+    POSE_ESTIMATOR.setPrimaryStrategy(PoseStrategy.CLOSEST_TO_LAST_POSE);
+    POSE_ESTIMATOR.setMultiTagFallbackStrategy(PoseStrategy.AVERAGE_BEST_TARGETS);  
+    POSE_ESTIMATOR.setFieldTags(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
+    POSE_ESTIMATOR.setTagModel(TargetModel.kAprilTag36h11);
 
-    TIMESTAMP_LIST = new ArrayList<>();
-    POSES_LIST = new ArrayList<>();
+    Timestamps = new ArrayList<>();
+    Poses = new ArrayList<>();
 
-    COUNTER = 0;
+    Counter = (0);
   }
 
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
 
   @Override
-  public void periodic(){}
+  public void periodic(){
+    getRobotPosition().ifPresent((Pose) -> POSE_ESTIMATOR.setLastPose(Pose));
+  }
 
   @Override
   public void update() {
-    POSE_ESTIMATOR = new PhotonPoseEstimator(
-      Measurements.FIELD_LAYOUT, 
-      PoseStrategy.CLOSEST_TO_LAST_POSE, 
-      CAMERA,
-      RELATIVE);
+    Logger.recordOutput(IDENTITY + "/Timestamps", getRobotPositionTimestamps());
+    Logger.recordOutput(IDENTITY + "/TargetCount", getNumTargets());
+    Logger.recordOutput(IDENTITY + "/TargetPositions", getTargets());
+    getOptimalTarget().ifPresent((Optimal) -> Logger.recordOutput(IDENTITY + "/TargetPositionOptimal", Optimal));
   }
 
   @Override
@@ -89,18 +102,17 @@ public final class VisionCamera extends Camera {
 
   @Override
   public void close() throws IOException {
-    POSE_ESTIMATOR = null;
-    TIMESTAMP_LIST.clear();
-    POSES_LIST.clear();
+    Timestamps.clear();
+    Poses.clear();
     CAMERA.close();
-    COUNTER = 0;
+    Counter = (0);
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
 
   @Override
   public Matrix<N3, N1> getStandardDeviations() {
     Pose3d POSE = new Pose3d();
-    int length = POSES_LIST.size();
+    int length = Poses.size();
 
     double[] x = new double[length];
     double[] y = new double[length];
@@ -111,8 +123,8 @@ public final class VisionCamera extends Camera {
 
 
     // Return Standard Deviation of x, y, x, pitch, roll, yaw
-    for(int i = 0; i < POSES_LIST.size(); i++){
-      POSE = POSES_LIST.get(i);
+    for(int i = 0; i < Poses.size(); i++){
+      POSE = Poses.get(i);
 
       x[i] = POSE.getX();
       y[i] = POSE.getY();
@@ -165,10 +177,10 @@ public final class VisionCamera extends Camera {
 
   @Override
   public double[] getRobotPositionTimestamps() {
-    double[] timestamps = new double[TIMESTAMP_LIST.size()];
+    double[] timestamps = new double[Timestamps.size()];
 
     for(int i = 0; i < timestamps.length; i++){
-      timestamps[i] = TIMESTAMP_LIST.get(i);
+      timestamps[i] = Timestamps.get(i);
     }
 
     return timestamps;
@@ -177,16 +189,16 @@ public final class VisionCamera extends Camera {
   @Override
   public Pose3d[] getRobotPositionDeltas() {
 
-    Pose3d[] DELTAS_LIST = new Pose3d[POSES_LIST.size() - 1];
+    Pose3d[] DELTAS_LIST = new Pose3d[Poses.size() - 1];
     
-    Pose3d PREV_POSE = POSES_LIST.get(0);
-    Pose3d CURRENT_POSE = POSES_LIST.get(1);
+    Pose3d PREV_POSE = Poses.get(0);
+    Pose3d CURRENT_POSE = Poses.get(1);
 
     Pose3d DELTA = new Pose3d();
 
-    for(int i =  0; i < POSES_LIST.size(); i++){
-      PREV_POSE = POSES_LIST.get(i);
-      CURRENT_POSE = POSES_LIST.get(i+1);
+    for(int i =  0; i < Poses.size(); i++){
+      PREV_POSE = Poses.get(i);
+      CURRENT_POSE = Poses.get(i+1);
 
       double D_X = CURRENT_POSE.getX() - PREV_POSE.getX();
       double D_Y = CURRENT_POSE.getY() - PREV_POSE.getY();
@@ -212,33 +224,33 @@ public final class VisionCamera extends Camera {
     }
 
 
-    if(COUNTER == 0){
+    if(Counter == 0){
       EstimatedRobotPose POSE = POSE_ESTIMATOR.update().get();
       
       Pose3d CONVERTED = POSE.estimatedPose;
-      POSES_LIST.add(CONVERTED);
+      Poses.add(CONVERTED);
 
       double time = POSE.timestampSeconds;
-      TIMESTAMP_LIST.add(time);
+      Timestamps.add(time);
 
-      COUNTER ++;
+      Counter ++;
 
       return Optional.of(CONVERTED);
     }
 
     else{
-      Pose3d PREV_POSE = POSES_LIST.get(COUNTER);
+      Pose3d PREV_POSE = Poses.get(Counter);
       POSE_ESTIMATOR.setLastPose(PREV_POSE);
 
       EstimatedRobotPose CURRENT_POSE = POSE_ESTIMATOR.update().get();
       
       Pose3d CONVERTED = CURRENT_POSE.estimatedPose;
-      POSES_LIST.add(CONVERTED);
+      Poses.add(CONVERTED);
 
       double time = CURRENT_POSE.timestampSeconds;
-      TIMESTAMP_LIST.add(time);
+      Timestamps.add(time);
 
-      COUNTER ++;
+      Counter ++;
 
       return Optional.of(CONVERTED);
     }
@@ -254,14 +266,13 @@ public final class VisionCamera extends Camera {
       return Optional.empty();
     }
 
-    Transform3d TARGET = getOptimalTarget();
-
-    return Optional.of(new Pose3d(
-      (TARGET.getX() + ROBOT.get().getX()),
-      (TARGET.getY() + ROBOT.get().getY()),
-      TARGET.getZ(),
+    var TARGET = getOptimalTarget();
+    return TARGET.isPresent()? Optional.of(new Pose3d(
+      (TARGET.get().getX() + ROBOT.get().getX()),
+      (TARGET.get().getY() + ROBOT.get().getY()),
+      TARGET.get().getZ(),
       new Rotation3d()
-      ));
+      )): Optional.empty();
   }
 
   @Override
@@ -283,7 +294,7 @@ public final class VisionCamera extends Camera {
 
   @Override
   public Transform3d[] getTargets() {
-    ArrayList<Transform3d> targets = (ArrayList<Transform3d>) CAMERA.getLatestResult().getTargets().stream().map(PhotonTrackedTarget::getBestCameraToTarget).toList();
+    List<Transform3d> targets =  CAMERA.getLatestResult().getTargets().stream().map(PhotonTrackedTarget::getBestCameraToTarget).toList();
     Transform3d[] transforms = new Transform3d[targets.size()];
 
     for(int i = 0; i < transforms.length; i++){
@@ -310,8 +321,8 @@ public final class VisionCamera extends Camera {
 
 
   @Override
-  public Transform3d getOptimalTarget() {
-    return CAMERA.getLatestResult().getBestTarget().getBestCameraToTarget();
+  public Optional<Transform3d> getOptimalTarget() {
+    return Optional.ofNullable(CAMERA.getLatestResult().getBestTarget().getBestCameraToTarget());
   }
 
   @Override

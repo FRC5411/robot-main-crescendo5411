@@ -29,16 +29,16 @@ import java.util.Optional;
  */
 public final class VisionSubsystem extends TalonSubsystemBase {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  public static List<Camera> CAMERAS;
-  public static PhotonCamera SOURCE;
-  public static PhotonCamera SPEAKER_FRONT;
-  public static PhotonCamera SPEAKER_REAR;
-  public static PhotonCamera INTAKE;
+  public static final List<Camera> CAMERAS;
+  public static final PhotonCamera SOURCE;
+  public static final PhotonCamera SPEAKER_FRONT;
+  public static final PhotonCamera SPEAKER_REAR;
+  public static final PhotonCamera INTAKE;
 
-  public static VisionCamera SOURCE_CAMERA;
-  public static VisionCamera SPEAKER_FRONT_CAMERA;
-  public static VisionCamera SPEAKER_REAR_CAMERA;
-  public static VisionCamera INTAKE_CAMERA;
+  public static final VisionCamera SOURCE_CAMERA;
+  public static final VisionCamera SPEAKER_FRONT_CAMERA;
+  public static final VisionCamera SPEAKER_REAR_CAMERA;
+  public static final VisionCamera INTAKE_CAMERA;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static VisionSubsystem Instance;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
@@ -47,6 +47,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    */
   public VisionSubsystem() {
     super(("Vision Subsystem"));
+  } static {
 
     //TODO: Double Check Names and Positions
     SOURCE = new PhotonCamera(Ports.SOURCE_CAMERA_NAME);
@@ -138,7 +139,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * Provides the matrix of standard deviations of a given camera object
    * @param Camera ID of the camera as an integer
    */
-  public synchronized Matrix<N3,N1> getStandardDeviations(final Integer Camera) {
+  public static synchronized Matrix<N3,N1> getStandardDeviations(final Integer Camera) {
     return CAMERAS.get(Camera).getStandardDeviations();
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
@@ -204,7 +205,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @return List of robot relative snapshot time deltas of specific camera called.
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public double[] getRobotPositionTimestamps(Integer CAMERA_ID) throws IllegalArgumentException{
+  public static double[] getRobotPositionTimestamps(Integer CAMERA_ID) throws IllegalArgumentException{
 
     if(CAMERAS.size() < CAMERA_ID || CAMERA_ID < 0) {
       throw new IllegalArgumentException("Camera ID for method 'getRobotPositionTimestamps' should not be greater than 4, less than 1, or not an integer");
@@ -221,7 +222,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @return List of Poses of the robot since the last control cycle.
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public Pose3d[] getRobotPositionDeltas(Integer CAMERA_ID) throws IllegalArgumentException{
+  public static Pose3d[] getRobotPositionDeltas(Integer CAMERA_ID) throws IllegalArgumentException{
 
     if(CAMERAS.size() < CAMERA_ID || CAMERA_ID < 0) {
       throw new IllegalArgumentException("Camera ID for method 'snapshot' should not be greater than 4, less than 1, or not an integer");
@@ -236,7 +237,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @param Target Transformation to a given target anywhere on the field.
    * @return Position of the object relative to the field.
    */
-  public Optional<Pose3d> getObjectFieldPose(Transform3d Target){
+  public static Optional<Pose3d> getObjectFieldPose(Transform3d Target){
     return INTAKE_CAMERA.getObjectFieldPose(Target);
   }
 
@@ -245,7 +246,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * the desired object is the optimal target of this camera.
    * @return Position of the object relative to the field.
    */
-  public Optional<Pose3d> getObjectFieldPose(){
+  public static Optional<Pose3d> getObjectFieldPose(){
     return INTAKE_CAMERA.getObjectFieldPose();
   }
 
@@ -256,7 +257,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @return List of robot-relative target transformations.
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public Transform3d[] getTargets(Integer CAMERA_ID) throws IllegalArgumentException{
+  public static Transform3d[] getTargets(Integer CAMERA_ID) throws IllegalArgumentException{
 
     if(CAMERAS.size() < CAMERA_ID || CAMERA_ID < 0) {
       throw new IllegalArgumentException("Camera ID for method 'getTargets' should not be greater than 4, less than 1, or not an integer");
@@ -276,7 +277,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @throws IllegalArgumentException when CAMERA_ID is not 4 or not an integer. 
    * @throws IllegalArgumentException when APRILTAG_ID is greater than 16, less than 0, or not an integer. 
    */
-  public Pose3d getAprilTagPose(Integer CAMERA_ID, Integer APRILTAG_ID) throws IllegalArgumentException{
+  public static Pose3d getAprilTagPose(Integer CAMERA_ID, Integer APRILTAG_ID) throws IllegalArgumentException{
 
     if(CAMERAS.size() < CAMERA_ID || CAMERA_ID < 0) {
       throw new IllegalArgumentException("Camera ID for method 'getAprilTagPose' should not be greater than 4, less than 1, or not an integer");
@@ -297,7 +298,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @return Boolean if Camera has Target or not
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public boolean hasTargets(Integer CAMERA_ID) throws IllegalArgumentException{
+  public static Boolean hasTargets(Integer CAMERA_ID) throws IllegalArgumentException{
 
     if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
       throw new IllegalArgumentException("Camera ID for method 'hasTargets' should not be greater than 4, less than 1, or not an integer");
@@ -314,7 +315,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @return Number of Targets found by camera
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public int getNumTargets(Integer CAMERA_ID) throws IllegalArgumentException{
+  public static Integer getNumTargets(Integer CAMERA_ID) throws IllegalArgumentException{
 
     if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
       throw new IllegalArgumentException("Camera ID for method 'hasTargets' should not be greater than 4, less than 1, or not an integer");
@@ -331,7 +332,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @return Robot-relative best target transformation
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public Transform3d getOptimalTarget(Integer CAMERA_ID) throws IllegalArgumentException{
+  public static Optional<Transform3d> getOptimalTarget(Integer CAMERA_ID) throws IllegalArgumentException{
 
     if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
       throw new IllegalArgumentException("Camera ID for method 'getOptimalTarget' should not be greater than 4, less than 1, or not an integer");

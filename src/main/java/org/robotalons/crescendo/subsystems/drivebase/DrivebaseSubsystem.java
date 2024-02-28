@@ -21,6 +21,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.robotalons.crescendo.Constants.Profiles.Keybindings;
 import org.robotalons.crescendo.Constants.Profiles.Preferences;
+import org.robotalons.crescendo.subsystems.SubsystemManager;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Devices;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Objects;
@@ -127,26 +128,28 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
     if (DriverStation.isDisabled()) {
       MODULES.forEach(Module::cease);
     }
-    final var Timestamps = MODULES.get((0)).getPositionTimestamps();
-    for (Integer Index = (0); Index < Timestamps.size(); Index++) {
-      SwerveModulePosition[] Positions = new SwerveModulePosition[MODULES.size()];
-      SwerveModulePosition[] Deltas = new SwerveModulePosition[MODULES.size()];
-      for (Integer Module = (0); Module < MODULES.size(); Module++) {
-        Positions[Module] = MODULES.get(Module).getPositionDeltas().get(Index);
-        Deltas[Module] =
-            new SwerveModulePosition(
-                Positions[Module].distanceMeters
-                    - CurrentPositions.get(Module).distanceMeters,
-                Positions[Module].angle);
-              CurrentPositions.set(Module,Positions[Module]);
-      }
-      if(GYROSCOPE.getConnected()) {
-        CurrentRotation = GYROSCOPE.getOdometryYawRotations()[Index];
-      } else {
-        Twist2d TwistDelta = KINEMATICS.toTwist2d(Deltas);
-        CurrentRotation = CurrentRotation.plus(new Rotation2d(TwistDelta.dtheta));
-      }
-      POSE_ESTIMATOR.updateWithTime(Timestamps.get(Index), CurrentRotation, Positions);      
+    synchronized(MODULES) {
+      final var Timestamps = MODULES.get((0)).getPositionTimestamps();
+      for (Integer Index = (0); Index < Timestamps.size(); Index++) {
+        SwerveModulePosition[] Positions = new SwerveModulePosition[MODULES.size()];
+        SwerveModulePosition[] Deltas = new SwerveModulePosition[MODULES.size()];
+        for (Integer Module = (0); Module < MODULES.size(); Module++) {
+          Positions[Module] = MODULES.get(Module).getPositionDeltas().get(Index);
+          Deltas[Module] =
+              new SwerveModulePosition(
+                  Positions[Module].distanceMeters
+                      - CurrentPositions.get(Module).distanceMeters,
+                  Positions[Module].angle);
+                CurrentPositions.set(Module,Positions[Module]);
+        }
+        if(GYROSCOPE.getConnected()) {
+          CurrentRotation = GYROSCOPE.getOdometryYawRotations()[Index];
+        } else {
+          Twist2d TwistDelta = KINEMATICS.toTwist2d(Deltas);
+          CurrentRotation = CurrentRotation.plus(new Rotation2d(TwistDelta.dtheta));
+        }
+        POSE_ESTIMATOR.updateWithTime(Timestamps.get(Index), CurrentRotation, Positions);      
+      }      
     }
     Objects.ODOMETRY_LOCK.unlock();
   }
@@ -327,7 +330,19 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
       case CANNON_ORIENTED:
         //TODO: AUTOMATION TEAM (CANNON ORIENTATION DRIVEBASE)   
       case OBJECT_ORIENTED:
-        //TODO: AUTOMATION TEAM (OBJECT ORIENTATION DRIVEBASE)   
+        SubsystemManager.getOptimalTarget((2)).ifPresentOrElse((Optimal) -> {
+          set(ChassisSpeeds.fromFieldRelativeSpeeds(
+            -Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
+            -Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
+            -Rotation.getRadians() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY, 
+            Optimal.getRotation().toRotation2d() //TODO: Object Cycling?
+          ));      
+        }, () -> {
+          toggleOrientationType();
+          set(Translation, Rotation);
+        });
+
+        break;
       case ROBOT_ORIENTED:
         set(new ChassisSpeeds(
           -Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 

@@ -1,6 +1,10 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.cannon;
-// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
+import edu.wpi.first.math.InterpolatingMatrixTreeMap;
+import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.util.Units;
 
 import java.util.concurrent.locks.Lock;
@@ -38,6 +42,16 @@ public class Constants {
 
     public static final Double PIVOT_MINIMUM_ROTATION = Units.degreesToRadians((9));
     public static final Double PIVOT_MAXIMUM_ROTATION = Units.degreesToRadians((60));
+
+    public static final Double PIVOT_MAXIMUM_RANGE_METERS = (100d);
+    public static final Double PIVOT_MINIMUM_RANGE_METERS = (0d);
+
+    public static final InterpolatingMatrixTreeMap<Double,N2,N1> PIVOT_FIRING_MAP = new InterpolatingMatrixTreeMap<>();
+
+    static {
+      //TODO: AUTOMATION TEAM (FIND DATA POINTS)
+      PIVOT_FIRING_MAP.put(ABSOLUTE_ENCODER_OFFSET, MatBuilder.fill(Nat.N2(), Nat.N1(), 0d, 0d));
+    }
   }
   
   public static final class Ports {

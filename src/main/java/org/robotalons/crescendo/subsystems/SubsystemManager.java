@@ -2,6 +2,7 @@
 package org.robotalons.crescendo.subsystems;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -23,6 +24,7 @@ import org.robotalons.lib.motion.pathfinding.LocalADStarAK;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 // -----------------------------------------------------------[Subsystem Manager]---------------------------------------------------------------//
 /**
  *
@@ -106,6 +108,15 @@ public final class SubsystemManager extends SubsystemBase {
     Pathfinding.setStartPosition(DrivebaseSubsystem.getPose().getTranslation());
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
+  /**
+   * Provides the transform in three-dimensional space to the optimal target of a given camera
+   * @param Port Which port to pull data from, ranging from 0, up to 4
+   * @return Transformation in three-dimensional space camera relative
+   */
+  public static Optional<Transform3d> getOptimalTarget(final Integer Port) {
+    return VisionSubsystem.getOptimalTarget(Port);
+  }
+
   /**
    * Provides the current chassis speeds
    * @return Chassis speeds of Robot drivebase
