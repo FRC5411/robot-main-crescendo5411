@@ -207,7 +207,6 @@ public final class VisionCamera extends Camera {
   @Override
   public Optional<Pose3d> getRobotPosition() {
 
-    // TODO: Eventually over here the robot should take the drivebase pose estimation
     if(POSE_ESTIMATOR.update().isEmpty()){
       return Optional.empty();
     }
@@ -250,12 +249,12 @@ public final class VisionCamera extends Camera {
   public Optional<Pose3d> getObjectFieldPose() {
     Optional<Pose3d> ROBOT = getRobotPosition();
     
-    // TODO: Eventually over here the robot should take the drivebase pose estimation
-    if(ROBOT.isEmpty()){
+
+    if(ROBOT.isEmpty() || getOptimalTarget().isEmpty()){
       return Optional.empty();
     }
 
-    Transform3d TARGET = getOptimalTarget();
+    Transform3d TARGET = getOptimalTarget().get();
 
     return Optional.of(new Pose3d(
       (TARGET.getX() + ROBOT.get().getX()),
@@ -269,7 +268,6 @@ public final class VisionCamera extends Camera {
   public Optional<Pose3d> getObjectFieldPose(Transform3d TARGET) {
     Optional<Pose3d> ROBOT = getRobotPosition();
 
-    // TODO: Eventually over here the robot should take the drivebase pose estimation
     if(ROBOT.isEmpty()){
       return Optional.empty();
     }
@@ -283,7 +281,12 @@ public final class VisionCamera extends Camera {
   }
 
   @Override
-  public Transform3d[] getTargets() {
+  public Optional<Transform3d[]> getTargets() {
+
+    if(CAMERA.getLatestResult().getTargets().isEmpty()){
+      return Optional.empty();
+    }
+    
     ArrayList<Transform3d> targets = (ArrayList<Transform3d>) CAMERA.getLatestResult().getTargets().stream().map(PhotonTrackedTarget::getBestCameraToTarget).toList();
     Transform3d[] transforms = new Transform3d[targets.size()];
 
@@ -291,7 +294,7 @@ public final class VisionCamera extends Camera {
       transforms[i] = targets.get(i);
     }
 
-    return transforms;
+    return Optional.of(transforms);
   }
 
   @Override
@@ -311,8 +314,11 @@ public final class VisionCamera extends Camera {
 
 
   @Override
-  public Transform3d getOptimalTarget() {
-    return CAMERA.getLatestResult().getBestTarget().getBestCameraToTarget();
+  public Optional<Transform3d> getOptimalTarget() {
+    if(CAMERA.getLatestResult().getBestTarget() == null){
+      return Optional.empty();
+    }
+    return Optional.of(CAMERA.getLatestResult().getBestTarget().getBestCameraToTarget());
   }
 
   @Override

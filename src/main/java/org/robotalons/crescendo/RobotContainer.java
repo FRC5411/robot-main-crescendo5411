@@ -2,10 +2,13 @@
 package org.robotalons.crescendo;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
 // -------------------------------------------------------------[Robot Container]-----------------------------------------------------------//
 /**
  *
@@ -17,11 +20,15 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public final class RobotContainer {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   public static final LoggedDashboardChooser<Command> CommandSelector;
+  public static final CommandXboxController controller;
+  public static final VisionSubsystem subsystem;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static RobotContainer Instance = (null);
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private RobotContainer() {} static {
     CommandSelector = new LoggedDashboardChooser<>(("Autonomous Command Selector"), AutoBuilder.buildAutoChooser());
+    subsystem = new VisionSubsystem();
+    controller = new CommandXboxController(0);
     configureDefaultCommands();
     configurePilotKeybinds();
   }
@@ -30,7 +37,10 @@ public final class RobotContainer {
    * Configures subsystem default commands
    */
   public static void configureDefaultCommands() {
-    
+    controller.a().onTrue(new InstantCommand(() -> subsystem.postSnapshot(1)));
+    controller.b().onTrue(new InstantCommand(() -> subsystem.getApproximatedRobotPose()));
+    controller.x().onTrue(new InstantCommand(() -> subsystem.getObjectFieldPose()));
+    controller.y().onTrue(new InstantCommand(() -> subsystem.getOptimalTarget(1)));
   }
 
   /**

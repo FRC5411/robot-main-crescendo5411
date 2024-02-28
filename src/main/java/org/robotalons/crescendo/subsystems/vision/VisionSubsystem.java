@@ -26,6 +26,7 @@ import java.util.Optional;
 public final class VisionSubsystem extends SubsystemBase implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   public static List<Camera> CAMERAS;
+
   public static PhotonCamera SOURCE;
   public static PhotonCamera SPEAKER_FRONT;
   public static PhotonCamera SPEAKER_REAR;
@@ -105,7 +106,7 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    * @param CAMERA_ID that gets the specific camera.
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public static void preSnapshot(Integer CAMERA_ID) throws IllegalArgumentException{
+  public void preSnapshot(Integer CAMERA_ID) throws IllegalArgumentException{
 
     if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
       throw new IllegalArgumentException("Camera ID for method 'preSnapshot' should not be greater than 4, less than 1, or not an integer");
@@ -121,7 +122,7 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    * @param CAMERA_ID that gets the specific camera.
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public static void postSnapshot(Integer CAMERA_ID) throws IllegalArgumentException{
+  public void postSnapshot(Integer CAMERA_ID) throws IllegalArgumentException{
 
     if(CAMERAS.size() < CAMERA_ID || CAMERA_ID < 0) {
       throw new IllegalArgumentException("Camera ID for method 'postSnapshot' should not be greater than 4, less than 1, or not an integer");
@@ -135,7 +136,7 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    * Retrieves the existing instance of this static utility class.
    * @return Utility class's instance
    */
-  public static synchronized VisionSubsystem getInstance() {
+  public synchronized VisionSubsystem getInstance() {
       if (java.util.Objects.isNull(Instance)) {
         Instance = new VisionSubsystem();
       }
@@ -150,7 +151,7 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    * @return New approximation of Pose3d from robot. 
    * @throws IllegalArgumentException when Camera 1 ID or Camera 2 ID is greater than 4, less than 1, or not an integer
    */
-  public static Optional<Pose3d> getApproximatedRobotPose(){   
+  public Optional<Pose3d> getApproximatedRobotPose(){   
     Camera CAMERA1 = CAMERAS.get(0);
     Camera CAMERA2 = CAMERAS.get(1);
     Camera CAMERA3 = CAMERAS.get(2);
@@ -264,14 +265,19 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    * @return List of robot-relative target transformations.
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public Transform3d[] getTargets(Integer CAMERA_ID) throws IllegalArgumentException{
+  public Optional<Transform3d[]> getTargets(Integer CAMERA_ID) throws IllegalArgumentException{
 
     if(CAMERAS.size() < CAMERA_ID || CAMERA_ID < 0) {
       throw new IllegalArgumentException("Camera ID for method 'getTargets' should not be greater than 4, less than 1, or not an integer");
     }
 
     Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
-    return CAMERA.getTargets();
+
+    if(CAMERA.getTargets().isEmpty()){
+      return Optional.empty();
+    }
+
+    return Optional.of(CAMERA.getTargets().get());
   }
 
   /**
@@ -284,18 +290,8 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    * @throws IllegalArgumentException when CAMERA_ID is not 4 or not an integer. 
    * @throws IllegalArgumentException when APRILTAG_ID is greater than 16, less than 0, or not an integer. 
    */
-  public Pose3d getAprilTagPose(Integer CAMERA_ID, Integer APRILTAG_ID) throws IllegalArgumentException{
-
-    if(CAMERAS.size() < CAMERA_ID || CAMERA_ID < 0) {
-      throw new IllegalArgumentException("Camera ID for method 'getAprilTagPose' should not be greater than 4, less than 1, or not an integer");
-    }
-
-    if(APRILTAG_ID > 16 || APRILTAG_ID < 0){
-      throw new IllegalArgumentException("Fiducial ID for method 'getAprilTagPose' should not be greater than 16, less than 0, or not an integer");
-    }
-
-    Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
-    return CAMERA.getAprilTagPose(APRILTAG_ID);
+  public Pose3d getAprilTagPose(Integer APRILTAG_ID){
+    return SOURCE_CAMERA.getAprilTagPose(APRILTAG_ID);
   }
 
   /**
@@ -311,7 +307,7 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
       throw new IllegalArgumentException("Camera ID for method 'hasTargets' should not be greater than 4, less than 1, or not an integer");
     }
 
-    Camera CAMERA =CAMERAS.get(CAMERA_ID - 1);
+    Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
     return CAMERA.hasTargets();
   }
 
@@ -339,18 +335,20 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    * @return Robot-relative best target transformation
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public Transform3d getOptimalTarget(Integer CAMERA_ID) throws IllegalArgumentException{
+  public Optional<Transform3d> getOptimalTarget(Integer CAMERA_ID) throws IllegalArgumentException{
 
     if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
       throw new IllegalArgumentException("Camera ID for method 'getOptimalTarget' should not be greater than 4, less than 1, or not an integer");
     }
 
     Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
-    return CAMERA.getOptimalTarget();
+
+    if(CAMERA.getOptimalTarget().isEmpty()){
+      return Optional.empty();
+    }
+
+    return Optional.of(CAMERA.getOptimalTarget().get());
   }
-
-
-  
 
 
 }

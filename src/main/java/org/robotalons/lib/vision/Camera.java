@@ -158,9 +158,7 @@ public abstract class Camera implements Closeable {
    * Provides a list of robot-relative transformations to the best target within view of the camera
    * @return List of robot-relative target transformations
    */
-  public Transform3d[] getTargets(){
-    return TARGET_STATUS.Targets;
-  }
+  public abstract Optional<Transform3d[]> getTargets();
 
   /**
    * Provides a boolean representation of if the module has an april tag / object detected
@@ -175,9 +173,7 @@ public abstract class Camera implements Closeable {
    * Provides the robot-relative transformation to the best target within view of the camera
    * @return Robot-relative best target transformation
    */
-  public Transform3d getOptimalTarget(){
-    return TARGET_STATUS.OptimalTransform;
-  }
+  public abstract Optional<Transform3d> getOptimalTarget();
 
   /**
    * Provides the number of targets that is detected within the view of the camera
