@@ -257,13 +257,14 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @return List of robot-relative target transformations.
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public static Transform3d[] getTargets(Integer CAMERA_ID) throws IllegalArgumentException{
+  public Optional<Transform3d[]> getTargets(Integer CAMERA_ID) throws IllegalArgumentException{
 
-    if(CAMERAS.size() < CAMERA_ID || CAMERA_ID < 0) {
+    if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
       throw new IllegalArgumentException("Camera ID for method 'getTargets' should not be greater than 4, less than 1, or not an integer");
     }
 
     Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
+
     return CAMERA.getTargets();
   }
 

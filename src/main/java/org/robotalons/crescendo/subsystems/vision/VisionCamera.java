@@ -84,10 +84,20 @@ public final class VisionCamera extends Camera {
 
   @Override
   public void update() {
+    Logger.recordOutput(IDENTITY + "/Connected", getConnected());
+    Logger.recordOutput(IDENTITY + "/Latency", getLatency());
+
+    // Record Information about Robot Poses
+    getRobotPosition().ifPresent((Pose) -> Logger.recordOutput(IDENTITY + "/RobotPose", Pose));
+    Logger.recordOutput(IDENTITY + "/Deltas", getRobotPositionDeltas());
     Logger.recordOutput(IDENTITY + "/Timestamps", getRobotPositionTimestamps());
-    Logger.recordOutput(IDENTITY + "/TargetCount", getNumTargets());
-    Logger.recordOutput(IDENTITY + "/TargetPositions", getTargets());
-    getOptimalTarget().ifPresent((Optimal) -> Logger.recordOutput(IDENTITY + "/TargetPositionOptimal", Optimal));
+    
+    // Record Information about Target Poses
+    getOptimalTarget().ifPresent((BestTarget) -> Logger.recordOutput(IDENTITY + "/BestTargetTransform", BestTarget));
+    getObjectFieldPose().ifPresent((TargetPose) -> Logger.recordOutput(IDENTITY + "/TargetPose", TargetPose));
+    getTargets().ifPresent((Targets) -> Logger.recordOutput(IDENTITY + "/Targets", Targets));
+    Logger.recordOutput(IDENTITY + "/HasTargets", hasTargets());
+    Logger.recordOutput(IDENTITY + "/NumTargets", getNumTargets());
   }
 
   @Override
@@ -293,15 +303,20 @@ public final class VisionCamera extends Camera {
   }
 
   @Override
-  public Transform3d[] getTargets() {
-    List<Transform3d> targets =  CAMERA.getLatestResult().getTargets().stream().map(PhotonTrackedTarget::getBestCameraToTarget).toList();
+  public Optional<Transform3d[]> getTargets() {
+
+    if(CAMERA.getLatestResult().getTargets().isEmpty()){
+      return Optional.empty();
+    }
+    
+    ArrayList<Transform3d> targets = (ArrayList<Transform3d>) CAMERA.getLatestResult().getTargets().stream().map(PhotonTrackedTarget::getBestCameraToTarget).toList();
     Transform3d[] transforms = new Transform3d[targets.size()];
 
     for(int i = 0; i < transforms.length; i++){
       transforms[i] = targets.get(i);
     }
 
-    return transforms;
+    return Optional.of(transforms);
   }
 
   @Override
