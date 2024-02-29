@@ -11,6 +11,8 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import org.robotalons.crescendo.subsystems.indexer.SubsysConstants.INDEXER;
+
 // ------------------------------------------------------------[Indexer Subsystem]---------------------------------------------------------- //
 /**
  *
@@ -42,10 +44,10 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
     public IndexerSubsystem() {} static {
         Instance = new IndexerSubsystem();
 
-        TO_CANNON_MOTOR = new CANSparkMax(SubsysConstants.INDEXER.TO_CANNON_MOTOR_ID, MotorType.kBrushless);
+        TO_CANNON_MOTOR = new CANSparkMax(INDEXER.TO_CANNON_MOTOR_ID, MotorType.kBrushless);
 
-        INTAKE_BREAKBEAM_INPUT = new DigitalInput(SubsysConstants.INDEXER.INTAKE_BREAKBEAM_INPUT_ID);
-        CANNON_BREAKBEAM_INPUT = new DigitalInput(SubsysConstants.INDEXER.CANNON_BREAKBEAM_INPUT_ID);
+        INTAKE_BREAKBEAM_INPUT = new DigitalInput(INDEXER.INTAKE_BREAKBEAM_INPUT_ID);
+        CANNON_BREAKBEAM_INPUT = new DigitalInput(INDEXER.CANNON_BREAKBEAM_INPUT_ID);
 
         IntakeBeamSeesNote = (false);
         CannonBeamSeesNote = (false);
@@ -54,7 +56,7 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
     // ---------------------------------------------------------------[Methods]--------------------------------------------------------------- //
     @Override
     public synchronized void periodic() {
-        SubsysConstants.INDEXER.ODOMETRY_LOCKER.lock();
+        INDEXER.ODOMETRY_LOCKER.lock();
         
         boolean newIntakeBeamSeesNote = !(INTAKE_BREAKBEAM_INPUT.get());
         boolean newCannonBeamSeesNote = !(CANNON_BREAKBEAM_INPUT.get());
@@ -62,10 +64,10 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
         if (IntakeBeamSeesNote != newIntakeBeamSeesNote) {
             IntakeBeamSeesNote = newIntakeBeamSeesNote;
             if (IntakeBeamSeesNote) {
-                TO_CANNON_MOTOR.set(SubsysConstants.INDEXER.TO_CANNON_MOTOR_SPEED);
+                TO_CANNON_MOTOR.set(INDEXER.TO_CANNON_MOTOR_SPEED);
                 //INDEX_LED.set(off);
             } else {
-                TO_CANNON_MOTOR.set(SubsysConstants.INDEXER.TO_CANNON_MOTOR_SPEED);
+                TO_CANNON_MOTOR.set(INDEXER.TO_CANNON_MOTOR_SPEED);
                 //INDEX_LED.set(off);
                 //IntakeSubsystem.INTAKE_MOTOR.set(0);
             }
@@ -83,7 +85,7 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
             }
         }
 
-        SubsysConstants.INDEXER.ODOMETRY_LOCKER.lock();
+        INDEXER.ODOMETRY_LOCKER.lock();
     }
 
     public synchronized static void config(CANSparkMax motor){
@@ -91,7 +93,7 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
         motor.restoreFactoryDefaults();
         motor.clearFaults();
     
-        motor.setSmartCurrentLimit(SubsysConstants.INDEXER.K_CURRENT_LIMIT);
+        motor.setSmartCurrentLimit(INDEXER.K_CURRENT_LIMIT);
     }
     
     /**
@@ -105,7 +107,21 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
     
 
     // --------------------------------------------------------------[Mutators]--------------------------------------------------------------- //
-    
+    /**
+     * Called by the Cannon subsystem before firing a Note.
+     * Serves the dual purpose of checking for the presence of a Note and passing any Note up to the Cannon.
+     * 
+     * @return Boolean value of whether it is safe for Cannon to proceed with firing sequence (Note is present and clear of TO_CANNON_MOTOR)
+     */
+    public static synchronized Boolean PassToCannon() {
+        boolean safeToFire = false;
+        if (CannonBeamSeesNote) {
+            TO_CANNON_MOTOR.set(INDEXER.TO_CANNON_MOTOR_SPEED);
+            while (CannonBeamSeesNote) {} //placeholder while I learn of a better way to delay
+            safeToFire = true;
+        }
+        return safeToFire;
+    }
 
     // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
     /**
