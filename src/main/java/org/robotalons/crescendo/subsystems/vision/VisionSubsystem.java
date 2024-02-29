@@ -144,11 +144,8 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
   }
 
   /**
-   * Retrieves the Pose3d of the robot that is averaged from the two camera estimations.
-   * 1 - Source Camera, 2 - Speaker Front Camera, 3- Speaker Rear Camera, 4 - OD Camera.
-   * @param CAMERA1_ID that gets the first camera.
-   * @param CAMERA2_ID that gets the second camera.
-   * @return New approximation of Pose3d from robot. 
+   * Retrieves the Pose3d of the robot that is averaged from two camera estimations.
+   * @return New approximation of Pose3d from robot, will return empty if couldnt find two cameras with targets. 
    * @throws IllegalArgumentException when Camera 1 ID or Camera 2 ID is greater than 4, less than 1, or not an integer
    */
   public Optional<Pose3d> getApproximatedRobotPose(){   
@@ -204,6 +201,74 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
 
 
     return Optional.of(new Pose3d(avgX, avgY, avgZ, new Rotation3d(avgPitch, avgRoll, avgYaw)));
+  }
+
+/**
+   * Retrieves the Pose3d of the robot that is averaged from the two camera estimations.
+   * 1 - Source Camera, 2 - Speaker Front Camera, 3- Speaker Rear Camera, 4 - OD Camera.
+   * @param CAMERA1_ID that gets the first camera.
+   * @param CAMERA2_ID that gets the second camera.
+   * @return New approximation of Pose3d from robot. 
+   * @throws IllegalArgumentException when Camera 1 ID or Camera 2 ID is greater than 4, less than 1, or not an integer
+   */
+  public Optional<Pose3d> getApproximatedRobotPose(Integer CAMERA1_ID, Integer CAMERA2_ID){   
+    if(CAMERA1_ID > 4 || CAMERA1_ID < 1 ||  Math.floor(CAMERA1_ID) != CAMERA1_ID){
+      throw new IllegalArgumentException("Camera ID for method 'getApproximatedRobotPose' should not be greater than 4, less than 1, or not an integer");
+    }
+    
+    if(CAMERA2_ID > 4 || CAMERA2_ID < 1 ||  Math.floor(CAMERA2_ID) != CAMERA2_ID){
+      throw new IllegalArgumentException("Camera ID for method 'getApproximatedRobotPose' should not be greater than 4, less than 1, or not an integer");
+    }
+    
+    Camera CAMERA1 = CAMERAS.get(CAMERA1_ID - 1);
+    Camera CAMERA2 = CAMERAS.get(CAMERA2_ID - 1);
+
+    Optional<Pose3d> PRE_POSE1 = CAMERA1.getRobotPosition();
+    Optional<Pose3d> PRE_POSE2 = CAMERA2.getRobotPosition();
+    
+    if(PRE_POSE1.isEmpty() || PRE_POSE2.isEmpty()){
+      return Optional.empty();
+    }
+
+    Pose3d CAMERA1_POSE = PRE_POSE1.get();
+    Pose3d CAMERA2_POSE = PRE_POSE2.get();
+
+    double avgX = (CAMERA1_POSE.getX() + CAMERA2_POSE.getX()) / 2;
+    double avgY = (CAMERA1_POSE.getY() + CAMERA2_POSE.getY()) / 2;
+    double avgZ = (CAMERA1_POSE.getZ() + CAMERA2_POSE.getZ()) / 2;
+
+    double avgPitch = (CAMERA1_POSE.getRotation().getX() + CAMERA2_POSE.getRotation().getX()) / 2;
+    double avgRoll = (CAMERA1_POSE.getRotation().getY() + CAMERA2_POSE.getRotation().getY()) / 2;
+    double avgYaw = (CAMERA1_POSE.getRotation().getZ() + CAMERA2_POSE.getRotation().getZ()) / 2;
+
+
+    return Optional.of(new Pose3d(avgX, avgY, avgZ, new Rotation3d(avgPitch, avgRoll, avgYaw)));
+  }
+
+/**
+   * Retrieves the Pose3d of the robot that is averaged from the two camera estimations.
+   * 1 - Source Camera, 2 - Speaker Front Camera, 3- Speaker Rear Camera, 4 - OD Camera.
+   * @param CAMERA1_ID that gets the first camera.
+   * @return New approximation of Pose3d from robot. 
+   * @throws IllegalArgumentException when Camera 1 ID or Camera 2 ID is greater than 4, less than 1, or not an integer
+   */
+  public Optional<Pose3d> getApproximatedRobotPose(Integer CAMERA_ID){   
+    if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
+      throw new IllegalArgumentException("Camera ID for method 'getApproximatedRobotPose' should not be greater than 4, less than 1, or not an integer");
+    }
+    
+    Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
+
+    Optional<Pose3d> PRE_POSE1 = CAMERA.getRobotPosition();
+    
+    if(PRE_POSE1.isEmpty()){
+      return Optional.empty();
+    }
+
+    Pose3d POSE = PRE_POSE1.get();
+
+
+    return Optional.of(POSE);
   }
 
   /**
@@ -338,6 +403,5 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
 
     return CAMERA.getOptimalTarget();
   }
-
 
 }
