@@ -104,6 +104,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
         break;
     }
     Logger.recordOutput(("Cannon/Reference"), CurrentReference);
+    Logger.recordMetadata(("Cannon/Rotation"), );
     Logger.recordOutput(("Cannon/Carrying"), INDEXER_SENSOR.get());
     Constants.Objects.ODOMETRY_LOCKER.unlock();
   }

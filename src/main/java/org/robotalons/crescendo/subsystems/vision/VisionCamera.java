@@ -13,6 +13,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.numbers.N5;
 
 import org.littletonrobotics.junction.Logger;
+
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -76,10 +77,10 @@ public final class VisionCamera extends Camera {
   }
 
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
-
   @Override
   public void periodic(){
     getRobotPosition().ifPresent((Pose) -> POSE_ESTIMATOR.setLastPose(Pose));
+    update();
   }
 
   @Override

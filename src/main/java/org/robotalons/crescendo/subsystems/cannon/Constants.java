@@ -41,7 +41,7 @@ public class Constants {
     public static final Boolean PIVOT_INVERTED = (false);
 
     public static final Double PIVOT_MINIMUM_ROTATION = Units.degreesToRadians((9));
-    public static final Double PIVOT_MAXIMUM_ROTATION = Units.degreesToRadians((60));
+    public static final Double PIVOT_MAXIMUM_ROTATION = Units.degreesToRadians((70));
 
     public static final Double PIVOT_MAXIMUM_RANGE_METERS = (100d);
     public static final Double PIVOT_MINIMUM_RANGE_METERS = (0d);

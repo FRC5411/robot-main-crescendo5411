@@ -80,7 +80,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
     );
 
     CAMERAS = List.of(
-      SOURCE_CAMERA,
+      SOURCE_CAMERA, 
       SPEAKER_FRONT_CAMERA,
       SPEAKER_REAR_CAMERA,
       INTAKE_CAMERA
@@ -90,7 +90,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
   public synchronized void periodic() {
-    CAMERAS.forEach(Camera::update);
+    CAMERAS.forEach(Camera::periodic);
   }
 
   @Override
