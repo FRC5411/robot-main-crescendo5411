@@ -23,6 +23,8 @@ public final class Operator implements Sendable {
   private final Map<String,Supplier<Object>> PREFERENCES = new HashMap<>();  
   private final Map<String,Trigger> KEYBINDINGS = new HashMap<>();
   private final String PILOT_NAME;
+  // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
+  private SendableBuilder CurrentBuilder;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Constructor.
@@ -34,18 +36,24 @@ public final class Operator implements Sendable {
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
   public void initSendable(final SendableBuilder Builder) {
+    CurrentBuilder = Builder;
     Builder.addStringProperty(PILOT_NAME, this::getName, (String) -> {});
-    PREFERENCES.forEach((Attribute, Value) -> Builder.addStringProperty(Attribute, Value::toString, (null)));
-    KEYBINDINGS.forEach((Attribute, Value) -> Builder.addStringProperty(Attribute, Value::toString, (null)));
+    PREFERENCES.forEach((Attribute, Value) -> Builder.addStringProperty(Attribute, Value::toString, (String) -> {}));
+    KEYBINDINGS.forEach((Attribute, Value) -> Builder.addStringProperty(Attribute, Value::toString, (String) -> {}));
+    Builder.update();
   }
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
   /**
    * Adds a new keybinding to the pilot's keybinding mapping
-   * @param Keybinding      Name of keybinding
-   * @param Trigger Keybinding Trigger
+   * @param Keybinding Name of keybinding
+   * @param Trigger    Keybinding Trigger
    */
   public Operator addKeybinding(final String Keybinding, final Trigger Trigger) {
     KEYBINDINGS.put(Keybinding, Trigger);
+    if(CurrentBuilder != null) {
+      CurrentBuilder.addStringProperty(Keybinding, Trigger::toString, (String) -> {});
+      CurrentBuilder.update();
+    }
     return this;
   }
   /**
@@ -55,6 +63,10 @@ public final class Operator implements Sendable {
    */
   public Operator addPreference(final String Preference, final Supplier<Object> Value) {
     PREFERENCES.put(Preference, Value);
+    if(CurrentBuilder != null) {
+      CurrentBuilder.addStringProperty(Preference, () -> Value.get().toString(), (String) -> {});
+      CurrentBuilder.update();
+    }
     return this;
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//

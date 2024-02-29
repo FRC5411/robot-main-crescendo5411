@@ -202,9 +202,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
         CurrentMode = OrientationMode.OBJECT_ORIENTED;
         break;
       case OBJECT_ORIENTED:
-        CurrentMode = OrientationMode.CANNON_ORIENTED;
-        break;
-      case CANNON_ORIENTED:
         CurrentMode = OrientationMode.ROBOT_ORIENTED;
         break;
     }
@@ -295,7 +292,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
     OBJECT_ORIENTED,    
     ROBOT_ORIENTED,
     FIELD_ORIENTED,
-    CANNON_ORIENTED,
   }
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
   /**
@@ -327,18 +323,15 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
    */
   public static synchronized void set(final Translation2d Translation, final Rotation2d Rotation) {
     switch(CurrentMode) {
-      case CANNON_ORIENTED:
-        //TODO: AUTOMATION TEAM (CANNON ORIENTATION DRIVEBASE)   
       case OBJECT_ORIENTED:
         SubsystemManager.getOptimalTarget((2)).ifPresentOrElse((Optimal) -> {
-          set(ChassisSpeeds.fromFieldRelativeSpeeds(
+          set(new ChassisSpeeds(
             -Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
             -Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
-            -Rotation.getRadians() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY, 
-            Optimal.getRotation().toRotation2d() //TODO: Object Cycling?
-          ));      
+            (-180 + Optimal.getRotation().toRotation2d().getRadians() * (GYROSCOPE.getYawRotation().getRadians() > Math.PI? -1: 1)) * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY
+          ));         
         }, () -> {
-          toggleOrientationType();
+          CurrentMode = OrientationMode.ROBOT_ORIENTED;
           set(Translation, Rotation);
         });
 

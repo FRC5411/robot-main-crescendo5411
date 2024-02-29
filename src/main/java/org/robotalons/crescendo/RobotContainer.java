@@ -2,6 +2,7 @@
 package org.robotalons.crescendo;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -41,6 +42,7 @@ public final class RobotContainer {
       Subsystem.configure(Default);
       SubsystemOperators.add(new LoggedDashboardChooser<Operator>(Subsystem.getName() + " Pilot Selector", Selector));
     });
+    Profiles.OPERATORS.forEach((Profile) -> SmartDashboard.putData(Profile.getName(), Profile));
     SubsystemManager.getInstance();
     Autonomous = new LoggedDashboardChooser<>(("Autonomous Selector"), AutoBuilder.buildAutoChooser());
     Pathplanner.ROUTINES.forEach((Name, Routine) -> Autonomous.addOption(Name, Routine));
