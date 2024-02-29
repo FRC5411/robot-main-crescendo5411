@@ -17,12 +17,10 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonTrackedTarget;
-
 import org.robotalons.crescendo.subsystems.vision.Constants.Measurements;
 import org.robotalons.lib.vision.Camera;
 
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

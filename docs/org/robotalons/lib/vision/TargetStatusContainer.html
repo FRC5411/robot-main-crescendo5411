@@ -73,7 +73,7 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">TargetStatusContainer</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
-<div class="block"><p>Loggable input reference to a specific singular unit which assists in posistion of targets.</div>
+<div class="block"><p>Loggable input reference to a specific singular unit which assists in position of targets.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -89,17 +89,17 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code>edu.wpi.first.math.geometry.Pose3d</code></div>
 <div class="col-second even-row-color"><code><a href="#BestTargetPose" class="member-name-link">BestTargetPose</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>edu.wpi.first.math.geometry.Transform3d</code></div>
-<div class="col-second odd-row-color"><code><a href="#BestTargetTransform" class="member-name-link">BestTargetTransform</a></code></div>
+<div class="col-first odd-row-color"><code>boolean</code></div>
+<div class="col-second odd-row-color"><code><a href="#HasTargets" class="member-name-link">HasTargets</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>boolean</code></div>
-<div class="col-second even-row-color"><code><a href="#HasTargets" class="member-name-link">HasTargets</a></code></div>
+<div class="col-first even-row-color"><code>edu.wpi.first.math.geometry.Transform3d</code></div>
+<div class="col-second even-row-color"><code><a href="#OptimalTransform" class="member-name-link">OptimalTransform</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>int</code></div>
-<div class="col-second odd-row-color"><code><a href="#NumTargets" class="member-name-link">NumTargets</a></code></div>
+<div class="col-first odd-row-color"><code>edu.wpi.first.math.geometry.Transform3d[]</code></div>
+<div class="col-second odd-row-color"><code><a href="#Targets" class="member-name-link">Targets</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>edu.wpi.first.math.geometry.Transform3d[]</code></div>
-<div class="col-second even-row-color"><code><a href="#Targets" class="member-name-link">Targets</a></code></div>
+<div class="col-first even-row-color"><code>int</code></div>
+<div class="col-second even-row-color"><code><a href="#TotalTargets" class="member-name-link">TotalTargets</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
@@ -142,9 +142,9 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="BestTargetTransform">
-<h3>BestTargetTransform</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Transform3d</span>&nbsp;<span class="element-name">BestTargetTransform</span></div>
+<section class="detail" id="OptimalTransform">
+<h3>OptimalTransform</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Transform3d</span>&nbsp;<span class="element-name">OptimalTransform</span></div>
 </section>
 </li>
 <li>
@@ -160,9 +160,9 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="NumTargets">
-<h3>NumTargets</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">NumTargets</span></div>
+<section class="detail" id="TotalTargets">
+<h3>TotalTargets</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">TotalTargets</span></div>
 </section>
 </li>
 </ul>

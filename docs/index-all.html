@@ -65,8 +65,6 @@ loadScripts(document, 'script');</script>
 <dl class="index">
 <dt><a href="org/robotalons/lib/vision/TargetStatusContainer.html#BestTargetPose" class="member-name-link">BestTargetPose</a> - Variable in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/TargetStatusContainer.html" title="class in org.robotalons.lib.vision">TargetStatusContainer</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/robotalons/lib/vision/TargetStatusContainer.html#BestTargetTransform" class="member-name-link">BestTargetTransform</a> - Variable in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/TargetStatusContainer.html" title="class in org.robotalons.lib.vision">TargetStatusContainer</a></dt>
-<dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:C">C</h2>
 <dl class="index">
@@ -78,7 +76,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Camera Constructor</div>
 </dd>
-<dt><a href="org/robotalons/lib/vision/Camera.html#CAMERASTATUS" class="member-name-link">CAMERASTATUS</a> - Variable in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/Camera.html" title="class in org.robotalons.lib.vision">Camera</a></dt>
+<dt><a href="org/robotalons/lib/vision/Camera.html#CAMERA_STATUS" class="member-name-link">CAMERA_STATUS</a> - Variable in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/Camera.html" title="class in org.robotalons.lib.vision">Camera</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/robotalons/lib/vision/CameraStatusContainer.html" class="type-name-link" title="class in org.robotalons.lib.vision">CameraStatusContainer</a> - Class in <a href="org/robotalons/lib/vision/package-summary.html">org.robotalons.lib.vision</a></dt>
 <dd>
@@ -115,7 +113,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:D">D</h2>
 <dl class="index">
-<dt><a href="org/robotalons/lib/vision/CameraStatusContainer.html#deltas" class="member-name-link">deltas</a> - Variable in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/CameraStatusContainer.html" title="class in org.robotalons.lib.vision">CameraStatusContainer</a></dt>
+<dt><a href="org/robotalons/lib/vision/CameraStatusContainer.html#Deltas" class="member-name-link">Deltas</a> - Variable in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/CameraStatusContainer.html" title="class in org.robotalons.lib.vision">CameraStatusContainer</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:G">G</h2>
@@ -166,7 +164,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="org/robotalons/lib/vision/Camera.html#getNumTargets()" class="member-name-link">getNumTargets()</a> - Method in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/Camera.html" title="class in org.robotalons.lib.vision">Camera</a></dt>
 <dd>
-<div class="block">Provides the number of targest that is deteced within the view of the camera</div>
+<div class="block">Provides the number of targets that is detected within the view of the camera</div>
 </dd>
 <dt><a href="org/robotalons/lib/vision/Camera.html#getObjectFieldPose()" class="member-name-link">getObjectFieldPose()</a> - Method in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/Camera.html" title="class in org.robotalons.lib.vision">Camera</a></dt>
 <dd>
@@ -245,8 +243,6 @@ loadScripts(document, 'script');</script>
 <dl class="index">
 <dt><a href="org/robotalons/lib/vision/CameraStatusContainer.html#Name" class="member-name-link">Name</a> - Variable in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/CameraStatusContainer.html" title="class in org.robotalons.lib.vision">CameraStatusContainer</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/robotalons/lib/vision/TargetStatusContainer.html#NumTargets" class="member-name-link">NumTargets</a> - Variable in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/TargetStatusContainer.html" title="class in org.robotalons.lib.vision">TargetStatusContainer</a></dt>
-<dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:O">O</h2>
 <dl class="index">
@@ -255,6 +251,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Provides an interface for asynchronously reading high-frequency measurements to a set of queues.</div>
 </dd>
 <dt><a href="org/robotalons/lib/vision/Camera.html#OFFSET" class="member-name-link">OFFSET</a> - Variable in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/Camera.html" title="class in org.robotalons.lib.vision">Camera</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/robotalons/lib/vision/TargetStatusContainer.html#OptimalTransform" class="member-name-link">OptimalTransform</a> - Variable in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/TargetStatusContainer.html" title="class in org.robotalons.lib.vision">TargetStatusContainer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/robotalons/lib/motion/pathfinding/package-summary.html">org.robotalons.lib.motion.pathfinding</a> - package org.robotalons.lib.motion.pathfinding</dt>
 <dd>&nbsp;</dd>
@@ -346,17 +344,19 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:T">T</h2>
 <dl class="index">
-<dt><a href="org/robotalons/lib/vision/TargetStatusContainer.html#Targets" class="member-name-link">Targets</a> - Variable in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/TargetStatusContainer.html" title="class in org.robotalons.lib.vision">TargetStatusContainer</a></dt>
+<dt><a href="org/robotalons/lib/vision/Camera.html#TARGET_STATUS" class="member-name-link">TARGET_STATUS</a> - Variable in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/Camera.html" title="class in org.robotalons.lib.vision">Camera</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/robotalons/lib/vision/Camera.html#TARGETSTATUS" class="member-name-link">TARGETSTATUS</a> - Variable in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/Camera.html" title="class in org.robotalons.lib.vision">Camera</a></dt>
+<dt><a href="org/robotalons/lib/vision/TargetStatusContainer.html#Targets" class="member-name-link">Targets</a> - Variable in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/TargetStatusContainer.html" title="class in org.robotalons.lib.vision">TargetStatusContainer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/robotalons/lib/vision/TargetStatusContainer.html" class="type-name-link" title="class in org.robotalons.lib.vision">TargetStatusContainer</a> - Class in <a href="org/robotalons/lib/vision/package-summary.html">org.robotalons.lib.vision</a></dt>
 <dd>
-<div class="block">Loggable input reference to a specific singular unit which assists in posistion of targets.</div>
+<div class="block">Loggable input reference to a specific singular unit which assists in position of targets.</div>
 </dd>
 <dt><a href="org/robotalons/lib/vision/TargetStatusContainer.html#%3Cinit%3E()" class="member-name-link">TargetStatusContainer()</a> - Constructor for class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/TargetStatusContainer.html" title="class in org.robotalons.lib.vision">TargetStatusContainer</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/robotalons/lib/vision/CameraStatusContainer.html#timestamps" class="member-name-link">timestamps</a> - Variable in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/CameraStatusContainer.html" title="class in org.robotalons.lib.vision">CameraStatusContainer</a></dt>
+<dt><a href="org/robotalons/lib/vision/CameraStatusContainer.html#Timestamps" class="member-name-link">Timestamps</a> - Variable in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/CameraStatusContainer.html" title="class in org.robotalons.lib.vision">CameraStatusContainer</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/robotalons/lib/vision/TargetStatusContainer.html#TotalTargets" class="member-name-link">TotalTargets</a> - Variable in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/TargetStatusContainer.html" title="class in org.robotalons.lib.vision">TargetStatusContainer</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:U">U</h2>
