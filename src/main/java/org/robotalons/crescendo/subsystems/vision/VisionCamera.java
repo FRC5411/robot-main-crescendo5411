@@ -1,7 +1,6 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.vision;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
@@ -17,7 +16,6 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.estimation.TargetModel;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.robotalons.crescendo.subsystems.vision.Constants.Measurements;
 import org.robotalons.lib.vision.Camera;
@@ -26,7 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-// --------------------------------------------------------------[Vision Camera]--------------------------------------------------------//
+// ---------------------------------------------------------[Photon Vision Module]--------------------------------------------------------//
 /**
  *
  *
@@ -41,18 +39,14 @@ public final class VisionCamera extends Camera {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private final PhotonCamera CAMERA;
   private final Transform3d RELATIVE;
-  private final PhotonPoseEstimator POSE_ESTIMATOR;
+  private PhotonPoseEstimator POSE_ESTIMATOR;
+  private List<Double> TIMESTAMP_LIST;
+  private List<Pose3d> POSES_LIST;
+  private int COUNTER;
+
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  private List<Double> Timestamps;
-  private List<Pose3d> Poses;
-  private Integer Counter;
+
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
-  /**
-   * Vision Camera Constructor.
-   * @param Camera     Source Camera object to pull data from
-   * @param Relative   Position of this robot relative to the center of the robot in two-dimensional space
-   * @param Identifier Reference name to identify this camera by, may repeat
-   */
   public VisionCamera(final PhotonCamera Camera, final Transform3d Relative, final String Identifier) {
     super(Camera.getCameraTable(), Relative, Identifier);
     CAMERA = Camera;
@@ -63,27 +57,21 @@ public final class VisionCamera extends Camera {
       PoseStrategy.CLOSEST_TO_REFERENCE_POSE, 
       CAMERA,
       RELATIVE);
-    POSE_ESTIMATOR.setRobotToCameraTransform(OFFSET);
-    POSE_ESTIMATOR.setPrimaryStrategy(PoseStrategy.CLOSEST_TO_LAST_POSE);
-    POSE_ESTIMATOR.setMultiTagFallbackStrategy(PoseStrategy.AVERAGE_BEST_TARGETS);  
-    POSE_ESTIMATOR.setFieldTags(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField());
-    POSE_ESTIMATOR.setTagModel(TargetModel.kAprilTag36h11);
 
-    Timestamps = new ArrayList<>();
-    Poses = new ArrayList<>();
+    TIMESTAMP_LIST = new ArrayList<>();
+    POSES_LIST = new ArrayList<>();
 
-    Counter = (0);
+    COUNTER = 0;
   }
 
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
 
   @Override
-  public void periodic(){
-    getRobotPosition().ifPresent((Pose) -> POSE_ESTIMATOR.setLastPose(Pose));
-  }
+  public void periodic(){}
 
   @Override
   public void update() {
+    // Record Information about Camera performance
     Logger.recordOutput(IDENTITY + "/Connected", getConnected());
     Logger.recordOutput(IDENTITY + "/Latency", getLatency());
 
@@ -98,6 +86,8 @@ public final class VisionCamera extends Camera {
     getTargets().ifPresent((Targets) -> Logger.recordOutput(IDENTITY + "/Targets", Targets));
     Logger.recordOutput(IDENTITY + "/HasTargets", hasTargets());
     Logger.recordOutput(IDENTITY + "/NumTargets", getNumTargets());
+
+    
   }
 
   @Override
@@ -112,50 +102,39 @@ public final class VisionCamera extends Camera {
 
   @Override
   public void close() throws IOException {
-    Timestamps.clear();
-    Poses.clear();
+    POSE_ESTIMATOR = null;
+    TIMESTAMP_LIST.clear();
+    POSES_LIST.clear();
     CAMERA.close();
-    Counter = (0);
+    COUNTER = 0;
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
 
   @Override
   public Matrix<N3, N1> getStandardDeviations() {
     Pose3d POSE = new Pose3d();
-    int length = Poses.size();
+    int length = POSES_LIST.size();
 
     double[] x = new double[length];
     double[] y = new double[length];
-    double[] z = new double[length];
-    double[] pitch = new double[length];
-    double[] roll = new double[length];
-    double[] yaw = new double[length];  
-
+    double[] z = new double[length];  
 
     // Return Standard Deviation of x, y, x, pitch, roll, yaw
-    for(int i = 0; i < Poses.size(); i++){
-      POSE = Poses.get(i);
+    for(int i = 0; i < POSES_LIST.size(); i++){
+      POSE = POSES_LIST.get(i);
 
       x[i] = POSE.getX();
       y[i] = POSE.getY();
       z[i] = POSE.getZ();
-      pitch[i] = POSE.getRotation().getX();
-      roll[i] = POSE.getRotation().getY();
-      yaw[i] = POSE.getRotation().getZ();
     }
 
     double sdX = getStandardDeviation(x);
     double sdY = getStandardDeviation(y);
-    // double sdZ = getStandardDeviation(z);
-    // double sdPitch = getStandardDeviation(pitch);
-    // double sdRoll = getStandardDeviation(roll);
-    double sdYaw = getStandardDeviation(yaw);
+    double sdZ = getStandardDeviation(z);
 
-    //TODO: We only need X, Y, and Heading
-    //double[] data = new double[]{sdX, sdY, sdZ, sdPitch, sdRoll, sdYaw}; 
-    double[] data = new double[]{sdX,sdY,sdYaw};
+    double[] data = new double[]{sdX, sdY, sdZ};
 
-    return MatBuilder.fill(() -> 3, Nat.N1(), data);
+    return MatBuilder.fill(() -> 6, Nat.N1(), data);
   }
  
   private double getStandardDeviation(double[] nums){
@@ -187,10 +166,10 @@ public final class VisionCamera extends Camera {
 
   @Override
   public double[] getRobotPositionTimestamps() {
-    double[] timestamps = new double[Timestamps.size()];
+    double[] timestamps = new double[TIMESTAMP_LIST.size()];
 
     for(int i = 0; i < timestamps.length; i++){
-      timestamps[i] = Timestamps.get(i);
+      timestamps[i] = TIMESTAMP_LIST.get(i);
     }
 
     return timestamps;
@@ -199,16 +178,16 @@ public final class VisionCamera extends Camera {
   @Override
   public Pose3d[] getRobotPositionDeltas() {
 
-    Pose3d[] DELTAS_LIST = new Pose3d[Poses.size() - 1];
+    Pose3d[] DELTAS_LIST = new Pose3d[POSES_LIST.size() - 1];
     
-    Pose3d PREV_POSE = Poses.get(0);
-    Pose3d CURRENT_POSE = Poses.get(1);
+    Pose3d PREV_POSE = POSES_LIST.get(0);
+    Pose3d CURRENT_POSE = POSES_LIST.get(1);
 
     Pose3d DELTA = new Pose3d();
 
-    for(int i =  0; i < Poses.size(); i++){
-      PREV_POSE = Poses.get(i);
-      CURRENT_POSE = Poses.get(i+1);
+    for(int i =  0; i < POSES_LIST.size(); i++){
+      PREV_POSE = POSES_LIST.get(i);
+      CURRENT_POSE = POSES_LIST.get(i+1);
 
       double D_X = CURRENT_POSE.getX() - PREV_POSE.getX();
       double D_Y = CURRENT_POSE.getY() - PREV_POSE.getY();
@@ -228,39 +207,38 @@ public final class VisionCamera extends Camera {
   @Override
   public Optional<Pose3d> getRobotPosition() {
 
-    // TODO: Eventually over here the robot should take the drivebase pose estimation
     if(POSE_ESTIMATOR.update().isEmpty()){
       return Optional.empty();
     }
 
 
-    if(Counter == 0){
+    if(COUNTER == 0){
       EstimatedRobotPose POSE = POSE_ESTIMATOR.update().get();
       
       Pose3d CONVERTED = POSE.estimatedPose;
-      Poses.add(CONVERTED);
+      POSES_LIST.add(CONVERTED);
 
       double time = POSE.timestampSeconds;
-      Timestamps.add(time);
+      TIMESTAMP_LIST.add(time);
 
-      Counter ++;
+      COUNTER ++;
 
       return Optional.of(CONVERTED);
     }
 
     else{
-      Pose3d PREV_POSE = Poses.get(Counter);
+      Pose3d PREV_POSE = POSES_LIST.get(COUNTER);
       POSE_ESTIMATOR.setLastPose(PREV_POSE);
 
       EstimatedRobotPose CURRENT_POSE = POSE_ESTIMATOR.update().get();
       
       Pose3d CONVERTED = CURRENT_POSE.estimatedPose;
-      Poses.add(CONVERTED);
+      POSES_LIST.add(CONVERTED);
 
       double time = CURRENT_POSE.timestampSeconds;
-      Timestamps.add(time);
+      TIMESTAMP_LIST.add(time);
 
-      Counter ++;
+      COUNTER ++;
 
       return Optional.of(CONVERTED);
     }
@@ -270,26 +248,25 @@ public final class VisionCamera extends Camera {
   @Override
   public Optional<Pose3d> getObjectFieldPose() {
     Optional<Pose3d> ROBOT = getRobotPosition();
+    Optional<Transform3d> TARGET = getOptimalTarget();
     
-    // TODO: Eventually over here the robot should take the drivebase pose estimation
-    if(ROBOT.isEmpty()){
+
+    if(ROBOT.isEmpty() || TARGET.isEmpty()){
       return Optional.empty();
     }
 
-    var TARGET = getOptimalTarget();
-    return TARGET.isPresent()? Optional.of(new Pose3d(
+    return Optional.of(new Pose3d(
       (TARGET.get().getX() + ROBOT.get().getX()),
       (TARGET.get().getY() + ROBOT.get().getY()),
       TARGET.get().getZ(),
       new Rotation3d()
-      )): Optional.empty();
+      ));
   }
 
   @Override
   public Optional<Pose3d> getObjectFieldPose(Transform3d TARGET) {
     Optional<Pose3d> ROBOT = getRobotPosition();
 
-    // TODO: Eventually over here the robot should take the drivebase pose estimation
     if(ROBOT.isEmpty()){
       return Optional.empty();
     }
@@ -337,8 +314,10 @@ public final class VisionCamera extends Camera {
 
   @Override
   public Optional<Transform3d> getOptimalTarget() {
-    final var BestResult = CAMERA.getLatestResult().getBestTarget();
-    return Optional.ofNullable(BestResult == null? null: BestResult.getBestCameraToTarget());
+    if(CAMERA.getLatestResult().getBestTarget() == null){
+      return Optional.empty();
+    }
+    return Optional.of(CAMERA.getLatestResult().getBestTarget().getBestCameraToTarget());
   }
 
   @Override

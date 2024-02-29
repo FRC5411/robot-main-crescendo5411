@@ -1,11 +1,8 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.vision;
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.photonvision.PhotonCamera;
@@ -27,18 +24,19 @@ import java.util.Optional;
  * @see SubsystemBase
  * @see org.robotalons.crescendo.RobotContainer RobotContainer
  */
-public final class VisionSubsystem extends TalonSubsystemBase {
+public final class VisionSubsystem extends TalonSubsystemBase{
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  public static final List<Camera> CAMERAS;
-  public static final PhotonCamera SOURCE;
-  public static final PhotonCamera SPEAKER_FRONT;
-  public static final PhotonCamera SPEAKER_REAR;
-  public static final PhotonCamera INTAKE;
+  public static List<Camera> CAMERAS;
 
-  public static final VisionCamera SOURCE_CAMERA;
-  public static final VisionCamera SPEAKER_FRONT_CAMERA;
-  public static final VisionCamera SPEAKER_REAR_CAMERA;
-  public static final VisionCamera INTAKE_CAMERA;
+  public static PhotonCamera SOURCE;
+  public static PhotonCamera SPEAKER_FRONT;
+  public static PhotonCamera SPEAKER_REAR;
+  public static PhotonCamera INTAKE;
+
+  public static VisionCamera SOURCE_CAMERA;
+  public static VisionCamera SPEAKER_FRONT_CAMERA;
+  public static VisionCamera SPEAKER_REAR_CAMERA;
+  public static VisionCamera INTAKE_CAMERA;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static VisionSubsystem Instance;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
@@ -93,6 +91,9 @@ public final class VisionSubsystem extends TalonSubsystemBase {
     CAMERAS.forEach(Camera::update);
   }
 
+  /**
+   * Closes Vision Subsystem.
+   */
   @Override
   public void close() {
     try {
@@ -101,6 +102,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
       SPEAKER_REAR_CAMERA.close();
       INTAKE_CAMERA.close();
     } catch (final IOException Exception) {}
+
   }
 
   /**
@@ -109,7 +111,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @param CAMERA_ID that gets the specific camera.
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public static void preSnapshot(Integer CAMERA_ID) throws IllegalArgumentException{
+  public void preSnapshot(Integer CAMERA_ID) throws IllegalArgumentException{
 
     if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
       throw new IllegalArgumentException("Camera ID for method 'preSnapshot' should not be greater than 4, less than 1, or not an integer");
@@ -125,22 +127,14 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @param CAMERA_ID that gets the specific camera.
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public static void postSnapshot(Integer CAMERA_ID) throws IllegalArgumentException{
+  public void postSnapshot(Integer CAMERA_ID) throws IllegalArgumentException{
 
-    if(CAMERAS.size() < CAMERA_ID || CAMERA_ID < 0) {
+    if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
       throw new IllegalArgumentException("Camera ID for method 'postSnapshot' should not be greater than 4, less than 1, or not an integer");
     }
 
     Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
     CAMERA.postSnapshot();
-  }
-
-  /**
-   * Provides the matrix of standard deviations of a given camera object
-   * @param Camera ID of the camera as an integer
-   */
-  public static synchronized Matrix<N3,N1> getStandardDeviations(final Integer Camera) {
-    return CAMERAS.get(Camera).getStandardDeviations();
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
@@ -155,36 +149,52 @@ public final class VisionSubsystem extends TalonSubsystemBase {
   }
 
   /**
-   * Retrieves the Pose3d of the robot that is averaged from the two camera estimations.
-   * 1 - Source Camera, 2 - Speaker Front Camera, 3- Speaker Rear Camera, 4 - OD Camera.
-   * @param CAMERA1_ID that gets the first camera.
-   * @param CAMERA2_ID that gets the second camera.
-   * @return New approximation of Pose3d from robot. 
+   * Retrieves the Pose3d of the robot that is averaged from two camera estimations.
+   * @return New approximation of Pose3d from robot, will return empty if couldnt find two cameras with targets. 
    * @throws IllegalArgumentException when Camera 1 ID or Camera 2 ID is greater than 4, less than 1, or not an integer
    */
-  public static Optional<Pose3d> getApproximatedRobotPose(Integer CAMERA1_ID, Integer CAMERA2_ID) throws IllegalArgumentException{
+  public Optional<Pose3d> getApproximatedRobotPose(){   
+    Camera CAMERA1 = CAMERAS.get(0);
+    Camera CAMERA2 = CAMERAS.get(1);
+    Camera CAMERA3 = CAMERAS.get(2);
+    Camera[] CAMERA_2_USE = new Camera[2];
 
-    if(CAMERAS.size() < CAMERA1_ID || CAMERA2_ID < 0) {
-      throw new IllegalArgumentException("Camera 1 ID for method 'getApproximatedRobotPose' should not be greater than 4, less than 1, or not an integer");
-    }
-
-    if(CAMERAS.size() < CAMERA1_ID || CAMERA2_ID < 0) {
-      throw new IllegalArgumentException("Camera 2 ID for method 'getApproximatedRobotPose' should not be greater than 4, less than 1, or not an integer");
-    }
-    
-    Camera CAMERA1 = CAMERAS.get(CAMERA1_ID - 1);
-    Camera CAMERA2 = CAMERAS.get(CAMERA2_ID - 1);
-
-    //TODO: Eventually over here, make it so that if none of the cameras detect objects just take drivebase estimated pose
     Optional<Pose3d> PRE_POSE1 = CAMERA1.getRobotPosition();
     Optional<Pose3d> PRE_POSE2 = CAMERA2.getRobotPosition();
+    Optional<Pose3d> PRE_POSE3 = CAMERA2.getRobotPosition();
 
-    if(PRE_POSE1.isEmpty() || PRE_POSE2.isEmpty()){
-      return Optional.empty();
+    if(PRE_POSE1.isEmpty()){
+      
+      if(PRE_POSE2.isEmpty() || PRE_POSE3.isEmpty()){
+        return Optional.empty();}
+      
+        else{
+        CAMERA_2_USE[0] = CAMERA2;
+        CAMERA_2_USE[1] = CAMERA3;}
     }
 
-    Pose3d CAMERA1_POSE = CAMERA1.getRobotPosition().get();
-    Pose3d CAMERA2_POSE = CAMERA2.getRobotPosition().get();
+    else if(PRE_POSE2.isEmpty()){
+      
+      if(PRE_POSE1.isEmpty() || PRE_POSE3.isEmpty()){
+        return Optional.empty();}
+      
+        else{
+        CAMERA_2_USE[0] = CAMERA1;
+        CAMERA_2_USE[1] = CAMERA3;}
+    }
+
+    else if(PRE_POSE3.isEmpty()){
+      
+      if(PRE_POSE1.isEmpty() || PRE_POSE2.isEmpty()){
+        return Optional.empty();}
+      
+        else{
+        CAMERA_2_USE[0] = CAMERA1;
+        CAMERA_2_USE[1] = CAMERA2;}
+    }
+
+    Pose3d CAMERA1_POSE = CAMERA_2_USE[0].getRobotPosition().get();
+    Pose3d CAMERA2_POSE = CAMERA_2_USE[1].getRobotPosition().get();
 
     double avgX = (CAMERA1_POSE.getX() + CAMERA2_POSE.getX()) / 2;
     double avgY = (CAMERA1_POSE.getY() + CAMERA2_POSE.getY()) / 2;
@@ -198,6 +208,74 @@ public final class VisionSubsystem extends TalonSubsystemBase {
     return Optional.of(new Pose3d(avgX, avgY, avgZ, new Rotation3d(avgPitch, avgRoll, avgYaw)));
   }
 
+/**
+   * Retrieves the Pose3d of the robot that is averaged from the two camera estimations.
+   * 1 - Source Camera, 2 - Speaker Front Camera, 3- Speaker Rear Camera, 4 - OD Camera.
+   * @param CAMERA1_ID that gets the first camera.
+   * @param CAMERA2_ID that gets the second camera.
+   * @return New approximation of Pose3d from robot. 
+   * @throws IllegalArgumentException when Camera 1 ID or Camera 2 ID is greater than 4, less than 1, or not an integer
+   */
+  public Optional<Pose3d> getApproximatedRobotPose(Integer CAMERA1_ID, Integer CAMERA2_ID){   
+    if(CAMERA1_ID > 4 || CAMERA1_ID < 1 ||  Math.floor(CAMERA1_ID) != CAMERA1_ID){
+      throw new IllegalArgumentException("Camera ID for method 'getApproximatedRobotPose' should not be greater than 4, less than 1, or not an integer");
+    }
+    
+    if(CAMERA2_ID > 4 || CAMERA2_ID < 1 ||  Math.floor(CAMERA2_ID) != CAMERA2_ID){
+      throw new IllegalArgumentException("Camera ID for method 'getApproximatedRobotPose' should not be greater than 4, less than 1, or not an integer");
+    }
+    
+    Camera CAMERA1 = CAMERAS.get(CAMERA1_ID - 1);
+    Camera CAMERA2 = CAMERAS.get(CAMERA2_ID - 1);
+
+    Optional<Pose3d> PRE_POSE1 = CAMERA1.getRobotPosition();
+    Optional<Pose3d> PRE_POSE2 = CAMERA2.getRobotPosition();
+    
+    if(PRE_POSE1.isEmpty() || PRE_POSE2.isEmpty()){
+      return Optional.empty();
+    }
+
+    Pose3d CAMERA1_POSE = PRE_POSE1.get();
+    Pose3d CAMERA2_POSE = PRE_POSE2.get();
+
+    double avgX = (CAMERA1_POSE.getX() + CAMERA2_POSE.getX()) / 2;
+    double avgY = (CAMERA1_POSE.getY() + CAMERA2_POSE.getY()) / 2;
+    double avgZ = (CAMERA1_POSE.getZ() + CAMERA2_POSE.getZ()) / 2;
+
+    double avgPitch = (CAMERA1_POSE.getRotation().getX() + CAMERA2_POSE.getRotation().getX()) / 2;
+    double avgRoll = (CAMERA1_POSE.getRotation().getY() + CAMERA2_POSE.getRotation().getY()) / 2;
+    double avgYaw = (CAMERA1_POSE.getRotation().getZ() + CAMERA2_POSE.getRotation().getZ()) / 2;
+
+
+    return Optional.of(new Pose3d(avgX, avgY, avgZ, new Rotation3d(avgPitch, avgRoll, avgYaw)));
+  }
+
+/**
+   * Retrieves the Pose3d of the robot that is averaged from the two camera estimations.
+   * 1 - Source Camera, 2 - Speaker Front Camera, 3- Speaker Rear Camera, 4 - OD Camera.
+   * @param CAMERA1_ID that gets the first camera.
+   * @return New approximation of Pose3d from robot. 
+   * @throws IllegalArgumentException when Camera 1 ID or Camera 2 ID is greater than 4, less than 1, or not an integer
+   */
+  public Optional<Pose3d> getApproximatedRobotPose(Integer CAMERA_ID){   
+    if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
+      throw new IllegalArgumentException("Camera ID for method 'getApproximatedRobotPose' should not be greater than 4, less than 1, or not an integer");
+    }
+    
+    Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
+
+    Optional<Pose3d> PRE_POSE1 = CAMERA.getRobotPosition();
+    
+    if(PRE_POSE1.isEmpty()){
+      return Optional.empty();
+    }
+
+    Pose3d POSE = PRE_POSE1.get();
+
+
+    return Optional.of(POSE);
+  }
+
   /**
    * Provides the robot relative position timestamps of each delta from the last update control cycle up to the current query of specific camera called.
    * 1 - Source Camera, 2 - Speaker Front Camera, 3- Speaker Rear Camera, 4 - OD Camera.
@@ -205,9 +283,9 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @return List of robot relative snapshot time deltas of specific camera called.
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public static double[] getRobotPositionTimestamps(Integer CAMERA_ID) throws IllegalArgumentException{
+  public double[] getRobotPositionTimestamps(Integer CAMERA_ID) throws IllegalArgumentException{
 
-    if(CAMERAS.size() < CAMERA_ID || CAMERA_ID < 0) {
+    if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
       throw new IllegalArgumentException("Camera ID for method 'getRobotPositionTimestamps' should not be greater than 4, less than 1, or not an integer");
     }
 
@@ -222,9 +300,9 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @return List of Poses of the robot since the last control cycle.
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public static Pose3d[] getRobotPositionDeltas(Integer CAMERA_ID) throws IllegalArgumentException{
+  public Pose3d[] getRobotPositionDeltas(Integer CAMERA_ID) throws IllegalArgumentException{
 
-    if(CAMERAS.size() < CAMERA_ID || CAMERA_ID < 0) {
+    if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
       throw new IllegalArgumentException("Camera ID for method 'snapshot' should not be greater than 4, less than 1, or not an integer");
     }
 
@@ -237,7 +315,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @param Target Transformation to a given target anywhere on the field.
    * @return Position of the object relative to the field.
    */
-  public static Optional<Pose3d> getObjectFieldPose(Transform3d Target){
+  public Optional<Pose3d> getObjectFieldPose(Transform3d Target){
     return INTAKE_CAMERA.getObjectFieldPose(Target);
   }
 
@@ -246,7 +324,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * the desired object is the optimal target of this camera.
    * @return Position of the object relative to the field.
    */
-  public static Optional<Pose3d> getObjectFieldPose(){
+  public Optional<Pose3d> getObjectFieldPose(){
     return INTAKE_CAMERA.getObjectFieldPose();
   }
 
@@ -270,26 +348,13 @@ public final class VisionSubsystem extends TalonSubsystemBase {
 
   /**
    * Provides the april tag with the id that we asked for in Pose3d from the specified camera.
-   * 1 - Source Camera, 2 - Speaker Front Camera, 3- Speaker Rear Camera, 4 - OD Camera.
    * Fiducial ID : (1-16)
-   * @param CAMERA_ID that gets the specific camera.
    * @param APRILTAG_ID that gets the specific fiducial marker ID.
    * @return Position of the tag relative to the field.
-   * @throws IllegalArgumentException when CAMERA_ID is not 4 or not an integer. 
-   * @throws IllegalArgumentException when APRILTAG_ID is greater than 16, less than 0, or not an integer. 
+
    */
-  public static Pose3d getAprilTagPose(Integer CAMERA_ID, Integer APRILTAG_ID) throws IllegalArgumentException{
-
-    if(CAMERAS.size() < CAMERA_ID || CAMERA_ID < 0) {
-      throw new IllegalArgumentException("Camera ID for method 'getAprilTagPose' should not be greater than 4, less than 1, or not an integer");
-    }
-
-    if(APRILTAG_ID > 16 || APRILTAG_ID < 0){
-      throw new IllegalArgumentException("Fiducial ID for method 'getAprilTagPose' should not be greater than 16, less than 0, or not an integer");
-    }
-
-    Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
-    return CAMERA.getAprilTagPose(APRILTAG_ID);
+  public Pose3d getAprilTagPose(Integer APRILTAG_ID){
+    return SOURCE_CAMERA.getAprilTagPose(APRILTAG_ID);
   }
 
   /**
@@ -299,7 +364,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @return Boolean if Camera has Target or not
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public static Boolean hasTargets(Integer CAMERA_ID) throws IllegalArgumentException{
+  public boolean hasTargets(Integer CAMERA_ID) throws IllegalArgumentException{
 
     if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
       throw new IllegalArgumentException("Camera ID for method 'hasTargets' should not be greater than 4, less than 1, or not an integer");
@@ -316,7 +381,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @return Number of Targets found by camera
    * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public static Integer getNumTargets(Integer CAMERA_ID) throws IllegalArgumentException{
+  public int getNumTargets(Integer CAMERA_ID) throws IllegalArgumentException{
 
     if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
       throw new IllegalArgumentException("Camera ID for method 'hasTargets' should not be greater than 4, less than 1, or not an integer");
@@ -340,11 +405,8 @@ public final class VisionSubsystem extends TalonSubsystemBase {
     }
 
     Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
+
     return CAMERA.getOptimalTarget();
   }
-
-
-  
-
 
 }
