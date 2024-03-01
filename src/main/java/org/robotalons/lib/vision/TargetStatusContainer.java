@@ -1,6 +1,7 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.lib.vision;
 
+import edu.wpi.first.math.geometry.Pose3d;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.geometry.Transform3d;
 
@@ -14,8 +15,7 @@ import org.littletonrobotics.junction.AutoLog;
  */
 @AutoLog
 public class TargetStatusContainer {
-  //TODO: Return robot pose, un edit this and change the abstract method once drivebase pose estimation implemented
-  // public Pose3d BestTargetPose = new Pose3d(0, 0, 0, null);
+  public Pose3d BestTargetPose = new Pose3d(0, 0, 0, null);
   public Transform3d OptimalTransform = new Transform3d(0, 0, 0, null);
   public Transform3d[] Targets = new Transform3d[]{};
   public boolean HasTargets = (false);
