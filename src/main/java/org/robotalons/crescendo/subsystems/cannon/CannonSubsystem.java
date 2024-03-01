@@ -97,7 +97,7 @@ public class CannonSubsystem extends TalonSubsystemBase {
     switch (CurrentFiringMode) {
       case MANUAL:
         set(Measurements.PIVOT_FIRING_MAP.inverseInterpolate(Measurements.PIVOT_MAXIMUM_RANGE_METERS, getDistance(), Measurements.PIVOT_MINIMUM_RANGE_METERS));
-        break;
+        break; 
       case SEMI:
         break;
       case AUTO:

@@ -109,9 +109,11 @@ public final class Constants {
           .addPreference(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (0.2))
           .addPreference(Preferences.ORIENTATION_DEADZONE, () -> (0.2))
           .addKeybinding(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.povCenter())
-          .addKeybinding(Keybindings.INTAKE_TOGGLE, INPUT_METHOD.leftBumper())
+          .addKeybinding(Keybindings.INTAKE_TOGGLE, INPUT_METHOD.leftTrigger())
+          .addKeybinding(Keybindings.OUTTAKE_TOGGLE, INPUT_METHOD.rightTrigger())
+          .addKeybinding(Keybindings.CANNON_PIVOT_DOWN, INPUT_METHOD.leftBumper())
           .addKeybinding(Keybindings.CANNON_TOGGLE, INPUT_METHOD.b())
-          .addKeybinding(Keybindings.OUTTAKE_TOGGLE, INPUT_METHOD.rightBumper());
+          .addKeybinding(Keybindings.CANNON_PIVOT_UP, INPUT_METHOD.rightBumper());
       }
 
       public static final class Secondary {
