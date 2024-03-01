@@ -4,17 +4,12 @@ package org.robotalons.crescendo;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 
-import com.pathplanner.lib.auto.AutoBuilder; //TODO: Reimplement
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.pathplanner.lib.auto.AutoBuilder;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.robotalons.crescendo.Constants.Pathplanner;
 import org.robotalons.crescendo.Constants.Profiles;
-import org.robotalons.crescendo.Constants.Profiles.Keybindings;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
 import org.robotalons.lib.utilities.Operator;
 
@@ -49,40 +44,8 @@ public final class RobotContainer {
     });
     Profiles.OPERATORS.forEach((Profile) -> SmartDashboard.putData(Profile.getName(), Profile));
     SubsystemManager.getInstance();
-    Autonomous = new LoggedDashboardChooser<>(("Autonomous Selector"), new SendableChooser<>()); //TODO: Reimplement Auto-builder
+    Autonomous = new LoggedDashboardChooser<>(("Autonomous Selector"), AutoBuilder.buildAutoChooser());
     Pathplanner.ROUTINES.forEach((Name, Routine) -> Autonomous.addOption(Name, Routine));
-
-    //TODO: Remove Temporary Intake-Indexer-Shooter Code
-    @SuppressWarnings("resource")
-    final var INDEXER = new CANSparkMax((22), MotorType.kBrushless);
-    INDEXER.setSmartCurrentLimit((20));
-    INDEXER.setSecondaryCurrentLimit((30));
-    INDEXER.setIdleMode(IdleMode.kBrake);
-    INDEXER.setInverted((false));
-
-    final var INTAKE = new CANSparkMax((21), MotorType.kBrushless);
-    INTAKE.setSmartCurrentLimit((20));
-    INTAKE.setSecondaryCurrentLimit((30));
-
-    Profiles.OPERATORS.get(0).getKeybinding(Keybindings.INTAKE_TOGGLE).onTrue(new InstantCommand(() -> {
-      INTAKE.set(-1d);
-      INDEXER.set(1d);
-    }));
-    Profiles.OPERATORS.get(0).getKeybinding(Keybindings.INTAKE_TOGGLE).onFalse(new InstantCommand(() -> {
-      INTAKE.set(0d);
-      INDEXER.set(0d);
-    }));
-    Profiles.OPERATORS.get(0).getKeybinding(Keybindings.OUTTAKE_TOGGLE).onTrue(new InstantCommand(() -> {
-      INTAKE.set(1d);
-      INDEXER.set(-1d);
-    }));
-    Profiles.OPERATORS.get(0).getKeybinding(Keybindings.OUTTAKE_TOGGLE).onFalse(new InstantCommand(() -> {
-      INTAKE.set(0d);
-      INDEXER.set(0d);
-    }));
-
-    
-
   }
 
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//

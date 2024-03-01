@@ -111,9 +111,9 @@ public final class Constants {
           .addKeybinding(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.povCenter())
           .addKeybinding(Keybindings.INTAKE_TOGGLE, INPUT_METHOD.leftTrigger())
           .addKeybinding(Keybindings.OUTTAKE_TOGGLE, INPUT_METHOD.rightTrigger())
-          .addKeybinding(Keybindings.CANNON_PIVOT_DOWN, INPUT_METHOD.leftBumper())
+          .addKeybinding(Keybindings.CANNON_PIVOT_DOWN, INPUT_METHOD.povUp())
           .addKeybinding(Keybindings.CANNON_TOGGLE, INPUT_METHOD.b())
-          .addKeybinding(Keybindings.CANNON_PIVOT_UP, INPUT_METHOD.rightBumper());
+          .addKeybinding(Keybindings.CANNON_PIVOT_UP, INPUT_METHOD.povDown());
       }
 
       public static final class Secondary {

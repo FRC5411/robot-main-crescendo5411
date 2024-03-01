@@ -1,5 +1,6 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
-package org.robotalons.crescendo.subsystems.cannon;
+package org.robotalons.crescendo.subsystems.superstructure;
+// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.InterpolatingMatrixTreeMap;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Nat;
@@ -17,12 +18,12 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * <p>Contains all cannon-wide constants, does not contain robot-wide constants.
  *
- * @see CannonSubsystem
+ * @see SuperstructureSubsystem
  */
 public class Constants {
   // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
   public static final class Measurements {
-    public static final Double ABSOLUTE_ENCODER_OFFSET = (0d);
+    public static final Double ABSOLUTE_ENCODER_OFFSET = (0.0075d);
 
     public static final Double ODOMETRY_FREQUENCY = (250d);
 
@@ -48,18 +49,28 @@ public class Constants {
 
     public static final InterpolatingMatrixTreeMap<Double,N2,N1> PIVOT_FIRING_MAP = new InterpolatingMatrixTreeMap<>();
 
-    static {
-      //TODO: AUTOMATION TEAM (FIND DATA POINTS)
-      PIVOT_FIRING_MAP.put(ABSOLUTE_ENCODER_OFFSET, MatBuilder.fill(Nat.N2(), Nat.N1(), 0d, 0d));
+    static { //TODO: AUTOMATION TEAM (RECORD SHOT DATA)
+      put((197.709382681d), (3000d), Math.PI/2);
+    }
+
+    /**
+     * Quickly puts the data of a given successful shot relative to the height of the target 
+     * @param Magnitude Measured magnitude of the triangle formed by the distance lengthwise and heightwise to a given target 
+     * @param Velocity  Measured shooter velocity in RPM units
+     * @param Rotation  Measured shooter rotation in radians
+     */
+    private static void put(final Double Magnitude, final Double Velocity, final Double Rotation) {
+      PIVOT_FIRING_MAP.put(Magnitude, MatBuilder.fill(Nat.N2(), Nat.N1(), Velocity, Rotation));
     }
   }
   
   public static final class Ports {
     public static final Integer FIRING_CONTROLLER_RIGHT_ID = (34);
     public static final Integer FIRING_CONTROLLER_LEFT_ID = (35);
+    public static final Integer INTAKE_CONTROLLER_ID = (21);
+    public static final Integer INDEXER_CONTROLLER_ID = (22);
     public static final Integer PIVOT_CONTROLLER_ID = (32);
-    public static final Integer PIVOT_ABSOLUTE_ENCODER_ID = (9);
-    public static final Integer INDEXER_SENSOR_ID = (8);
+    public static final Integer PIVOT_ABSOLUTE_ENCODER_ID = (0);
   }
 
   public static final class Objects {

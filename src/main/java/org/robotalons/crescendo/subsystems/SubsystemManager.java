@@ -15,9 +15,9 @@ import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import org.littletonrobotics.junction.Logger;
-import org.robotalons.crescendo.subsystems.cannon.CannonSubsystem;
 import org.robotalons.crescendo.subsystems.climb.ClimbSubsystem;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
+import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem;
 import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.pathfinding.LocalADStarAK;
@@ -51,7 +51,7 @@ public final class SubsystemManager extends SubsystemBase {
     SUBSYSTEMS = new ArrayList<>();
     FIELD = new Field2d();
     DRIVEBASE = DrivebaseSubsystem.getInstance();
-    CANNON = CannonSubsystem.getInstance();
+    CANNON = SuperstructureSubsystem.getInstance();
     CLIMB = ClimbSubsystem.getInstance();
     VISION = VisionSubsystem.getInstance();
     //TODO: <... Fetch Other Subsystem Instances>
