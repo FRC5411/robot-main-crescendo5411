@@ -66,10 +66,14 @@ public final class VisionCamera extends Camera {
 
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
+<<<<<<< HEAD
   public void periodic(){
     // getRobotPosition().ifPresent((Pose) -> POSE_ESTIMATOR.setLastPose(Pose));
     // update();
   }
+=======
+  public void periodic(){}
+>>>>>>> daef61e2b727354212286903fb567e3c6110898a
 
   @Override
   public void update() {
