@@ -14,7 +14,7 @@ import java.io.Closeable;
  */
 public abstract class Gyroscope implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  protected final GyroscopeStatusContainerAutoLogged Status = new GyroscopeStatusContainerAutoLogged();
+  protected final GyroscopeStatusContainerAutoLogged STATUS = new GyroscopeStatusContainerAutoLogged();
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   /**
    * Updates the underlying signals within this module.
@@ -31,7 +31,7 @@ public abstract class Gyroscope implements Closeable {
    * @return Boolean representing Connectivity
    */
   public Boolean getConnected() {
-    return Status.Connected;
+    return STATUS.Connected;
   }
 
   /**
@@ -39,7 +39,7 @@ public abstract class Gyroscope implements Closeable {
    * @return Double representing rotational velocity as radians per second
    */
   public Double getYawRotationalVelocity() {
-    return Status.YawVelocityRadiansSecond;
+    return STATUS.YawVelocityRadiansSecond;
   }
 
   /**
@@ -47,7 +47,7 @@ public abstract class Gyroscope implements Closeable {
    * @return Rotation in radians of yaw position
    */
   public Rotation2d getYawRotation() {
-    return Status.YawRotation;
+    return STATUS.YawRotation;
   }
 
   /**
@@ -55,7 +55,7 @@ public abstract class Gyroscope implements Closeable {
    * @return Deltas of the gyroscopes yaw rotations
    */
   public Rotation2d[] getOdometryYawRotations() {
-    return Status.PositionDeltas;
+    return STATUS.PositionDeltas;
   }
     
 }
