@@ -1,19 +1,22 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.vision;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.photonvision.PhotonCamera;
+import org.robotalons.crescendo.subsystems.vision.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.vision.Constants.Ports;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.vision.Camera;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 // ------------------------------------------------------------[Vision Subsystem]----------------------------------------------------------//
 /**
@@ -28,7 +31,7 @@ import java.util.Optional;
  */
 public final class VisionSubsystem extends TalonSubsystemBase {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  public static List<Camera> CAMERAS;
+  private static List<Camera> CAMERAS;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static VisionSubsystem Instance;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
@@ -80,7 +83,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * Takes snapshot from specified Camera integer.
    * @param Identifier Camera identifier to query from.
    */
-  public static void snapshotInput(final CameraType Identifier) {
+  public static void snapshotInput(final CameraIdentifier Identifier) {
     CAMERAS.get(Identifier.getValue()).snapshotInput();
   }
 
@@ -88,14 +91,14 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * Takes snapshot from specified Camera integer.
    * @param Identifier Camera identifier to query from.
    */
-  public static void snapshotOutput(final CameraType Identifier) {
+  public static void snapshotOutput(final CameraIdentifier Identifier) {
     CAMERAS.get(Identifier.getValue()).snapshotOutput();
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
   /**
    * Describes a queried camera type with an integer value in a more human-parsable format
    */
-  public enum CameraType {
+  public enum CameraIdentifier {
     SOURCE_CAMERA((0)),
     SPEAKER_FRONT_CAMERA((1)),
     SPEAKER_REAR_CAMERA((2)),
@@ -103,7 +106,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
 
     private final Integer Value;
 
-    CameraType(final Integer Value) {
+    CameraIdentifier(final Integer Value) {
       this.Value = Value;
     }
 
@@ -148,7 +151,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @param Identifier Camera identifier to query from.
    * @return New approximation of Pose3d from robot.
    */
-  public static Optional<Pose3d> getApproximatedRobotPose(final CameraType Identifier){       
+  public static Optional<Pose3d> getApproximatedRobotPose(final CameraIdentifier Identifier){       
     return CAMERAS.get(Identifier.getValue()).getRobotPosition();
   }
 
@@ -157,7 +160,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @param Identifier Camera identifier to query from.
    * @return List of robot relative snapshot time deltas of specific camera called.
    */
-  public static double[] getRobotPositionTimestamps(final CameraType Identifier) {
+  public static double[] getRobotPositionTimestamps(final CameraIdentifier Identifier) {
     return CAMERAS.get(Identifier.getValue()).getRobotPositionTimestamps();
   }
 
@@ -166,7 +169,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @param Identifier Camera identifier to query from.
    * @return List of Poses of the robot since the last control cycle.
    */
-  public static Pose3d[] getRobotPositionDeltas(final CameraType Identifier) {
+  public static Pose3d[] getRobotPositionDeltas(final CameraIdentifier Identifier) {
     return CAMERAS.get(Identifier.getValue()).getRobotPositionDeltas();
   }
 
@@ -176,7 +179,16 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @return Position of the object relative to the field.
    */
   public static Optional<Pose3d> getObjectFieldPose(final Transform3d Target){
-    return CAMERAS.get(CameraType.INTAKE_CAMERA.getValue()).getObjectFieldPose(Target);
+    return CAMERAS.get(CameraIdentifier.INTAKE_CAMERA.getValue()).getObjectFieldPose(Target);
+  }
+
+  /**
+   * Provides the values of standard deviations of the most recent object detection result on the camera
+   * @param Identifier Camera identifier to query from.
+   * @return Standard Deviations of the recorded object detection values
+   */
+  public static Matrix<N3,N1> getStandardDeviations(final CameraIdentifier Identifier) {
+    return CAMERAS.get(Identifier.getValue()).getStandardDeviations();
   }
 
   /**
@@ -185,7 +197,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @return Position of the object relative to the field.
    */
   public static Optional<Pose3d> getObjectFieldPose(){
-    return CAMERAS.get(CameraType.INTAKE_CAMERA.getValue()).getObjectFieldPose();
+    return CAMERAS.get(CameraIdentifier.INTAKE_CAMERA.getValue()).getObjectFieldPose();
   }
 
   /**
@@ -194,19 +206,27 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @return List of robot-relative target transformations.
    */
   @SuppressWarnings("unchecked")
-  public static Optional<Transform3d>[] getTargets(final CameraType Identifier) {
+  public static Optional<Transform3d>[] getTargets(final CameraIdentifier Identifier) {
     return CAMERAS.get(Identifier.getValue()).getTargets().toArray(Optional[]::new);
   }
 
   /**
    * Provides the april tag with the id that we asked for in Pose3d from the specified camera.
    * Fiducial ID : (1-16)
-   * @param Identifier Camera identifier to query from.
    * @param Tag        ID of the april tag
    * @return Position of the tag relative to the field.
    */
-  public static Pose3d getAprilTagPose(final CameraType Identifier, final Integer Tag){
-    return CAMERAS.get(Identifier.getValue()).getAprilTagPose(Tag);
+  public static Optional<Pose3d> getAprilTagPose(final Integer Tag){
+    return Measurements.FIELD_LAYOUT.getTagPose(Tag);
+  }
+
+  /**
+   * Provides the robot offset of a given camera robot-relative
+   * @param Identifier Camera identifier to query from.
+   * @return Transformation from the origin (robot) to a given camera
+   */
+  public static Transform3d getCameraTransform(final CameraIdentifier Identifier) {
+    return CAMERAS.get(Identifier.getValue()).getRobotOffset();
   }
 
   /**
@@ -214,7 +234,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @param Identifier Camera identifier to query from.
    * @return Boolean if Camera has Target or not
    */
-  public static Boolean hasTargets(final CameraType Identifier) {
+  public static Boolean hasTargets(final CameraIdentifier Identifier) {
     return CAMERAS.get(Identifier.getValue()).hasTargets();
   }
 
@@ -223,7 +243,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @param Identifier Camera identifier to query from.
    * @return Number of Targets found by camera
    */
-  public static Integer getNumTargets(final CameraType Identifier) {
+  public static Integer getNumTargets(final CameraIdentifier Identifier) {
     return CAMERAS.get(Identifier.getValue()).getNumTargets();
   }
 
@@ -232,7 +252,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * @param Identifier Camera identifier to query from.
    * @return Robot-relative best target transformation
    */
-  public static Optional<Transform3d> getOptimalTarget(final CameraType Identifier) {
+  public static Optional<Transform3d> getOptimalTarget(final CameraIdentifier Identifier) {
     return CAMERAS.get(Identifier.getValue()).getOptimalTarget();
   }
 

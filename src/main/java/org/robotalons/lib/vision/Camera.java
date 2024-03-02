@@ -11,11 +11,11 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-import java.util.List;
-import java.util.stream.Stream;
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 // -----------------------------------------------------------------[Camera]----------------------------------------------------------------//
 /**
  *
@@ -100,12 +100,6 @@ public abstract class Camera implements Closeable {
   public Optional<Pose3d> getObjectFieldPose(){
     return Optional.ofNullable(TARGET_STATUS.BestTargetPose);
   }
-
-  /**
-   * Provides the april tag with the id that we asked for in Pose3d
-   * @return Position of the tag relative to the field
-   */
-  public abstract Pose3d getAprilTagPose(final Integer ID);
 
   /**
    * Provides the confidence or standard deviation of the cameras evaluations of estimations

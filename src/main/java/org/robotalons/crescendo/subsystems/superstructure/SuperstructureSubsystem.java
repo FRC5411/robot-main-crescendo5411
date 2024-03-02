@@ -1,12 +1,10 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.superstructure;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -18,11 +16,13 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 
 import org.littletonrobotics.junction.Logger;
+import org.photonvision.PhotonUtils;
 import org.robotalons.crescendo.Constants.Profiles.Keybindings;
-import org.robotalons.crescendo.subsystems.SubsystemManager;
+import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.crescendo.subsystems.superstructure.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.superstructure.Constants.Ports;
-import org.robotalons.crescendo.subsystems.vision.VisionSubsystem.CameraType;
+import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
+import org.robotalons.crescendo.subsystems.vision.VisionSubsystem.CameraIdentifier;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.trajectory.solving.TrajectoryObject;
 import org.robotalons.lib.utilities.Operator;
@@ -107,31 +107,40 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
   @Override
   public synchronized void periodic() {
     Constants.Objects.ODOMETRY_LOCKER.lock();
-    final var TargetTransform = new Transform3d();
-    SubsystemManager.getOptimalTarget(CameraType.SPEAKER_FRONT_CAMERA).ifPresent(TargetTransform::plus);
-    SubsystemManager.getOptimalTarget(CameraType.SPEAKER_REAR_CAMERA).ifPresent(TargetTransform::plus);
+    //TODO: Move into Subsystem Manager
     switch(CurrentFiringMode) {
-      case AUTO:
-        CurrentReference.angle = new Rotation2d(Measurements.PIVOT_FIRING_MAP.inverseInterpolate((0d), TargetTransform.getTranslation().getNorm(), (0d)));
-        final var AbsoluteReading = PIVOT_ABSOLUTE_ENCODER.getAbsolutePosition();
-        if(
-          AbsoluteReading > CurrentReference.angle.minus(Rotation2d.fromDegrees((4))).getRadians() 
-                                                  &&
-          AbsoluteReading < CurrentReference.angle.plus(Rotation2d.fromDegrees((4))).getRadians()
-        ) {
-          fire();
-        }
-        break;
-      case SEMI:
-        CurrentReference.angle = new Rotation2d(Measurements.PIVOT_FIRING_MAP.inverseInterpolate((0d), TargetTransform.getTranslation().getNorm(), (0d)));
+      case AUTO, SEMI:
+        final var Camera = VisionSubsystem.getCameraTransform(CameraIdentifier.SOURCE_CAMERA);
+        final var Target = VisionSubsystem.getAprilTagPose(
+          (DrivebaseSubsystem.getRotation().getRadians() % (2) * Math.PI >= Math.PI)? (3): (7)).get();
+        CurrentReference.angle = Rotation2d.fromRadians(Measurements.PIVOT_FIRING_MAP.interpolate(
+          Measurements.PIVOT_LOWER_BOUND,
+          Measurements.PIVOT_UPPER_BOUND,
+          PhotonUtils.calculateDistanceToTargetMeters(
+            Camera.getY(),
+            Target.getY(), 
+            Camera.getRotation().getY(), 
+            Target.getRotation().getY()
+          ) / Measurements.PIVOT_MAXIMUM_RANGE_METERS
+        ).get((1), (0)));
         break;
       default:
         break;
     }
+    final var AbsoluteReading = PIVOT_ABSOLUTE_ENCODER.getAbsolutePosition();
+    if(
+      AbsoluteReading > CurrentReference.angle.minus(Rotation2d.fromDegrees((2.5d))).getRadians() 
+                                              &&
+      AbsoluteReading < CurrentReference.angle.plus(Rotation2d.fromDegrees((2.5d))).getRadians()
+                                              && 
+                            CurrentFiringMode == FiringMode.AUTO
+    ) {
+      fire();
+    }    
     set(CurrentReference.angle);
     Logger.recordOutput(("Cannon/Reference"), CurrentReference);
     Logger.recordOutput(("Cannon/MeasuredVelocity"), FIRING_ENCODER.getVelocity());
-    Logger.recordOutput(("Cannon/MeasuredRotation"), PIVOT_ABSOLUTE_ENCODER.getAbsolutePosition());
+    Logger.recordOutput(("Cannon/MeasuredRotation"), AbsoluteReading);
     Constants.Objects.ODOMETRY_LOCKER.unlock();
   }
 

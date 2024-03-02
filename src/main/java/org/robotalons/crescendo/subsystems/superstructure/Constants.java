@@ -3,6 +3,7 @@ package org.robotalons.crescendo.subsystems.superstructure;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.InterpolatingMatrixTreeMap;
 import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
@@ -46,6 +47,9 @@ public class Constants {
 
     public static final Double PIVOT_MAXIMUM_RANGE_METERS = (100d);
     public static final Double PIVOT_MINIMUM_RANGE_METERS = (0d);
+
+    public static final Matrix<N2,N1> PIVOT_UPPER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), 0d, 0d);
+    public static final Matrix<N2,N1> PIVOT_LOWER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), 0d, 0d);
 
     public static final InterpolatingMatrixTreeMap<Double,N2,N1> PIVOT_FIRING_MAP = new InterpolatingMatrixTreeMap<>();
 

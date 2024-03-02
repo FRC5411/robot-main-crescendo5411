@@ -11,8 +11,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.numbers.N5;
 
-import java.util.NoSuchElementException;
-
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -24,6 +22,7 @@ import org.robotalons.lib.vision.Camera;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 // ---------------------------------------------------------[Photon Vision Module]--------------------------------------------------------//
 /**
@@ -61,7 +60,6 @@ public final class VisionCamera extends Camera {
       PoseStrategy.CLOSEST_TO_REFERENCE_POSE, 
       CAMERA,
       RELATIVE);
-
     TIMESTAMPS = new ArrayList<>();
     POSES = new ArrayList<>();
   }
@@ -164,12 +162,12 @@ public final class VisionCamera extends Camera {
 
   @Override
   public Optional<Matrix<N3, N3>> getCameraMatrix() {
-    return CAMERA.getCameraMatrix();
+    return CAMERA.isConnected()? CAMERA.getCameraMatrix(): Optional.empty();
   }
 
   @Override
   public Optional<Matrix<N5, N1>> getCoefficientMatrix() {
-    return CAMERA.getDistCoeffs();
+    return CAMERA.isConnected()? CAMERA.getDistCoeffs(): Optional.empty();
   }
 
   @Override
@@ -199,69 +197,76 @@ public final class VisionCamera extends Camera {
 
   @Override
   public Optional<Pose3d> getRobotPosition() {
-    final var Estimate = POSE_ESTIMATOR.update().get();
-    if(!POSES.isEmpty()) {
-      POSE_ESTIMATOR.setLastPose(Estimate.estimatedPose);
+    if(CAMERA.isConnected()) {
+      final var Estimate = POSE_ESTIMATOR.update().get();
+      if(!POSES.isEmpty()) {
+        POSE_ESTIMATOR.setLastPose(Estimate.estimatedPose);
+      }
+      POSES.add(Estimate.estimatedPose);
+      TIMESTAMPS.add(Estimate.timestampSeconds);
+      return Optional.ofNullable(Estimate.estimatedPose);      
     }
-    POSES.add(Estimate.estimatedPose);
-    TIMESTAMPS.add(Estimate.timestampSeconds);
-    return Optional.ofNullable(Estimate.estimatedPose);
+    return Optional.empty();
   }
 
   @Override
   public Optional<Pose3d> getObjectFieldPose() {
-    final var RobotEstimate = getRobotPosition();
-    final var OptimalEstimate = getOptimalTarget();
-    if(RobotEstimate.isEmpty() || OptimalEstimate.isEmpty()){
-      return Optional.empty();
-    } 
-    return Optional.of(new Pose3d(
-      (OptimalEstimate.get().getX() + RobotEstimate.get().getX()),
-      (OptimalEstimate.get().getY() + RobotEstimate.get().getY()),
-       OptimalEstimate.get().getZ(),
-      new Rotation3d()
-      ));
+    if(CAMERA.isConnected()) {
+      final var RobotEstimate = getRobotPosition();
+      final var OptimalEstimate = getOptimalTarget();
+      if(RobotEstimate.isEmpty() || OptimalEstimate.isEmpty()){
+        return Optional.empty();
+      } 
+      return Optional.of(new Pose3d(
+        (OptimalEstimate.get().getX() + RobotEstimate.get().getX()),
+        (OptimalEstimate.get().getY() + RobotEstimate.get().getY()),
+        OptimalEstimate.get().getZ(),
+        new Rotation3d()
+        ));
+    }
+    return Optional.empty();
   }
 
   @Override
   public Optional<Pose3d> getObjectFieldPose(final Transform3d Target) {
-    Optional<Pose3d> RobotEstimate = getRobotPosition();
-    if(RobotEstimate.isEmpty()){
-      return Optional.empty();
+    if(CAMERA.isConnected()) {
+      Optional<Pose3d> RobotEstimate = getRobotPosition();
+      if(RobotEstimate.isEmpty()){
+        return Optional.empty();
+      }
+      return Optional.of(new Pose3d(
+        (Target.getX() + RobotEstimate.get().getX()),
+        (Target.getY() + RobotEstimate.get().getY()),
+        Target.getZ(),
+        new Rotation3d()
+      ));
     }
-    return Optional.of(new Pose3d(
-      (Target.getX() + RobotEstimate.get().getX()),
-      (Target.getY() + RobotEstimate.get().getY()),
-      Target.getZ(),
-      new Rotation3d()
-    ));
+    return Optional.empty();
   }
 
   @Override
   public List<Optional<Transform3d>> getTargets() {
-    final var LatestResult = CAMERA.getLatestResult().getTargets();
-    if(LatestResult.isEmpty()){
-      return List.of();
+    if(CAMERA.isConnected()) {
+      final var LatestResult = CAMERA.getLatestResult().getTargets();
+      if(LatestResult.isEmpty()){
+        return List.of();
+      }
+      return CAMERA.getLatestResult().getTargets().stream()
+        .map(PhotonTrackedTarget::getBestCameraToTarget)
+        .map(Optional::ofNullable)
+        .toList();
     }
-    return CAMERA.getLatestResult().getTargets().stream()
-      .map(PhotonTrackedTarget::getBestCameraToTarget)
-      .map(Optional::ofNullable)
-      .toList();
-  }
-
-  @Override
-  public Pose3d getAprilTagPose(final Integer FicidualID) {
-    return Measurements.FIELD_LAYOUT.getTagPose(FicidualID).get();
+    return List.of();
   }
 
   @Override
   public boolean hasTargets(){
-    return CAMERA.getLatestResult().hasTargets();
+    return CAMERA.isConnected()? CAMERA.getLatestResult().hasTargets(): (false);
   }
 
   @Override
   public int getNumTargets(){
-    return CAMERA.getLatestResult().getTargets().size();
+    return CAMERA.isConnected()? CAMERA.getLatestResult().getTargets().size(): (0);
   }
 
 
@@ -275,7 +280,7 @@ public final class VisionCamera extends Camera {
 
   @Override
   public Double getLatency(){
-    return CAMERA.getLatestResult().getLatencyMillis();
+    return CAMERA.isConnected()? CAMERA.getLatestResult().getLatencyMillis(): (-1d);
   }
 
   @Override

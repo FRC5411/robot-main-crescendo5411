@@ -25,7 +25,8 @@ import org.robotalons.crescendo.subsystems.SubsystemManager;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Devices;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Objects;
-import org.robotalons.crescendo.subsystems.vision.VisionSubsystem.CameraType;
+import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
+import org.robotalons.crescendo.subsystems.vision.VisionSubsystem.CameraIdentifier;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.actuators.Module;
 import org.robotalons.lib.motion.sensors.Gyroscope;
@@ -152,6 +153,13 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
         POSE_ESTIMATOR.updateWithTime(Timestamps.get(Index), CurrentRotation, Positions);      
       }      
     }
+    //TODO: AUTOMATION TEAM (FULL DELTA POSE ESTIMATION)
+    VisionSubsystem.getApproximatedRobotPose().ifPresent((Estimate) -> {
+      POSE_ESTIMATOR.addVisionMeasurement(
+      Estimate.toPose2d(),
+      Timer.getFPGATimestamp(),
+      VisionSubsystem.getStandardDeviations(CameraIdentifier.SOURCE_CAMERA));
+    });
     Objects.ODOMETRY_LOCK.unlock();
   }
 
@@ -325,11 +333,11 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
   public static synchronized void set(final Translation2d Translation, final Rotation2d Rotation) {
     switch(CurrentMode) {
       case OBJECT_ORIENTED:
-        SubsystemManager.getOptimalTarget(CameraType.INTAKE_CAMERA).ifPresentOrElse((Optimal) -> {
+        SubsystemManager.getOptimalTarget(CameraIdentifier.INTAKE_CAMERA).ifPresentOrElse((Optimal) -> {
           set(new ChassisSpeeds(
             -Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
             -Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
-            (-(Math.PI) + Optimal.getRotation().toRotation2d().getRadians() * (GYROSCOPE.getYawRotation().getRadians() > Math.PI? -1: 1)) * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY
+            (-(Math.PI) + Optimal.getRotation().toRotation2d().getRadians() * (GYROSCOPE.getYawRotation().getRadians() % 2 * Math.PI > Math.PI? (-1): (1))) * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY
           ));         
         }, () -> {
           CurrentMode = OrientationMode.ROBOT_ORIENTED;

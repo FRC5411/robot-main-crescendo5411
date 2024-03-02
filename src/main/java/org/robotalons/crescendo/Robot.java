@@ -17,6 +17,8 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.urcl.URCL;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonVersion;
 import org.robotalons.crescendo.Constants.Logging;
 import org.robotalons.crescendo.Constants.Subsystems;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
@@ -62,11 +64,15 @@ public final class Robot extends LoggedRobot {
   @Override
   @SuppressWarnings("ExtractMethodRecommender")
   public void robotInit() {
+    PhotonCamera.setVersionCheckEnabled((true));
     Logger.recordMetadata(("ProjectName"), BuildMetadata.MAVEN_NAME);
     Logger.recordMetadata(("BuildDate"), BuildMetadata.BUILD_DATE);
     Logger.recordMetadata(("GitSHA"), BuildMetadata.GIT_SHA);
     Logger.recordMetadata(("GitDate"), BuildMetadata.GIT_DATE);
     Logger.recordMetadata(("GitBranch"), BuildMetadata.GIT_BRANCH);
+    Logger.recordMetadata(("PhotonBuildDate"), PhotonVersion.buildDate);
+    Logger.recordMetadata(("PhotonVersion"), PhotonVersion.versionString);
+    Logger.recordMetadata(("PhotonIsRelease"), Boolean.toString(PhotonVersion.isRelease));
     switch (BuildMetadata.DIRTY) {
       case 0:
         Logger.recordMetadata(("Changes"), ("Committed"));
