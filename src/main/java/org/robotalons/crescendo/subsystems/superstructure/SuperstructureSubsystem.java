@@ -192,7 +192,8 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
   private static synchronized void set(final Rotation2d Reference) {
     PIVOT_CONTROLLER.set(
       PIVOT_CONTROLLER_PID.calculate(getPivotRotation(),
-                                    MathUtil.clamp(Reference.getRotations(),Measurements.PIVOT_MINIMUM_ROTATION,Measurements.PIVOT_MAXIMUM_ROTATION)));
+                                    MathUtil.clamp(Reference.getRotations(),Measurements.PIVOT_MINIMUM_ROTATION,Measurements.PIVOT_MAXIMUM_ROTATION))
+  );
   }
 
   /**
