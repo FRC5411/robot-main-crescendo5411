@@ -15,11 +15,8 @@ import org.robotalons.crescendo.subsystems.indexer.SubsysConstants.INDEXER;
 
 // ------------------------------------------------------------[Indexer Subsystem]---------------------------------------------------------- //
 /**
- *
  * <h1>IndexerSubsystem</h1>
- *
  * <p>Utility class which controls the indexing of notes to and from the intake and shooter.<p>
- * 
  * @see SubsystemBase
  * @see {@link org.robotalons.crescendo.RobotContainer RobotContainer} 
  */
@@ -107,23 +104,25 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
     
 
     // --------------------------------------------------------------[Mutators]--------------------------------------------------------------- //
-    /**
-     * Called by the Cannon subsystem before firing a Note.
-     * Serves the dual purpose of checking for the presence of a Note and passing any Note up to the Cannon.
-     * 
-     * @return Boolean value of whether it is safe for Cannon to proceed with firing sequence (Note is present and clear of TO_CANNON_MOTOR)
-     */
-    public static synchronized Boolean PassToCannon() {
-        boolean safeToFire = false;
-        if (CannonBeamSeesNote) {
-            TO_CANNON_MOTOR.set(INDEXER.TO_CANNON_MOTOR_SPEED);
-            while (CannonBeamSeesNote) {} //placeholder while I learn of a better way to delay
-            safeToFire = true;
-        }
-        return safeToFire;
-    }
+    
 
     // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
+    /**
+     * Called before firing a Note to check if such a Note exists.
+     * @return CannonBeamSeesNote, Boolean value that is true when Intake-side sensor reads a 0
+     */
+    public static synchronized Boolean GetNoteAtIntake() {
+        return IntakeBeamSeesNote;
+    }
+    
+    /**
+     * Called before firing a Note to check if such a Note exists.
+     * @return CannonBeamSeesNote, Boolean value that is true when Cannon-side sensor reads a 0
+     */
+    public static synchronized Boolean GetNoteAtCannon() {
+        return CannonBeamSeesNote;
+    }
+    
     /**
      * Retrieves the existing instance of this static utility class
      * @return Utility class's instance
