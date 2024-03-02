@@ -5,6 +5,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.robotalons.lib.utilities.Operator;
 
+import com.jcabi.aspects.Timeable;
+
+import java.util.concurrent.TimeUnit;
 import java.io.Closeable;
 // ----------------------------------------------------------[Talon Subsystem Base]---------------------------------------------------------//
 /**
@@ -41,6 +44,10 @@ public abstract class TalonSubsystemBase extends SubsystemBase implements Closea
   public void close() {
 
   } 
+
+  @Override
+  @Timeable(limit = 20, unit = TimeUnit.MILLISECONDS)
+  public abstract void periodic();
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Provides the current operator of this subsystem.

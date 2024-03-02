@@ -160,6 +160,7 @@ public final class Robot extends LoggedRobot {
         CurrentAutonomousMessagePrinted = true;
       }
     }
+    Logger.recordOutput(("Match Time"), DriverStation.getMatchTime());
   }
 
   // ------------------------------------------------------------[Simulation]---------------------------------------------------------------//
