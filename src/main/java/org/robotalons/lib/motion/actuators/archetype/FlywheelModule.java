@@ -193,7 +193,7 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
     STATUS.RotationalVelocityRadiansSecond =
         Units.rotationsPerMinuteToRadiansPerSecond(ROTATIONAL_CONTROLLER.getAngularVelocityRPM()) / CONSTANTS.ROTATIONAL_GEAR_RATIO;
     STATUS.RotationalAppliedAmperage = ROTATIONAL_CONTROLLER.getCurrentDrawAmps();
-    STATUS.OdometryTimestamps = TIMESTAMP_QUEUE.stream().mapToDouble(Double::valueOf).toArray();
+    STATUS.OdometryTimestamps = TIMESTAMP_QUEUE.stream().mapToDouble(Double::doubleValue).toArray();
     MODULE_CONSTANTS.STATUS_PROVIDER.getLock().lock();
     STATUS.OdometryTranslationalPositionsRadians =
       TRANSLATIONAL_VELOCITY_QUEUE.stream()

@@ -56,7 +56,7 @@ public class Constants {
     /**
      * Quickly puts the data of a given successful shot relative to the height of the target 
      * @param Magnitude Measured magnitude of the triangle formed by the distance lengthwise and heightwise to a given target 
-     * @param Velocity  Measured shooter velocity in RPM units
+     * @param Velocity  Measured shooter velocity in RPM
      * @param Rotation  Measured shooter rotation in radians
      */
     private static void put(final Double Magnitude, final Double Velocity, final Double Rotation) {

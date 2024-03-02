@@ -22,6 +22,7 @@ import org.robotalons.crescendo.Constants.Profiles.Keybindings;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
 import org.robotalons.crescendo.subsystems.superstructure.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.superstructure.Constants.Ports;
+import org.robotalons.crescendo.subsystems.vision.VisionSubsystem.CameraType;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.trajectory.solving.TrajectoryObject;
 import org.robotalons.lib.utilities.Operator;
@@ -107,8 +108,8 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
   public synchronized void periodic() {
     Constants.Objects.ODOMETRY_LOCKER.lock();
     final var TargetTransform = new Transform3d();
-    SubsystemManager.getOptimalTarget((2)).ifPresent(TargetTransform::plus);
-    SubsystemManager.getOptimalTarget((3)).ifPresent(TargetTransform::plus);
+    SubsystemManager.getOptimalTarget(CameraType.SPEAKER_FRONT_CAMERA).ifPresent(TargetTransform::plus);
+    SubsystemManager.getOptimalTarget(CameraType.SPEAKER_REAR_CAMERA).ifPresent(TargetTransform::plus);
     switch(CurrentFiringMode) {
       case AUTO:
         CurrentReference.angle = new Rotation2d(Measurements.PIVOT_FIRING_MAP.inverseInterpolate((0d), TargetTransform.getTranslation().getNorm(), (0d)));
@@ -163,9 +164,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
   }
   
 
-  /** 
-   * Closes this instance and all held resources immediately 
-   */
+  @Override
   public synchronized void close() {
     FIRING_CONTROLLERS.getFirst().close();
     FIRING_CONTROLLERS.getSecond().close();

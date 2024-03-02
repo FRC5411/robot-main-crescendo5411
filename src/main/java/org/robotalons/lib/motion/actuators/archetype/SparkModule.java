@@ -266,7 +266,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
           synchronized(STATUS.OdometryTimestamps) {
             STATUS.OdometryTimestamps = 
               TIMESTAMP_QUEUE.stream()
-                .mapToDouble(Double::valueOf).toArray();
+                .mapToDouble(Double::doubleValue).toArray();
             TIMESTAMP_QUEUE.clear();          
           }
         }

@@ -19,6 +19,7 @@ import org.robotalons.crescendo.subsystems.climb.ClimbSubsystem;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem;
 import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
+import org.robotalons.crescendo.subsystems.vision.VisionSubsystem.CameraType;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.pathfinding.LocalADStarAK;
 
@@ -113,7 +114,7 @@ public final class SubsystemManager extends SubsystemBase {
    * @param Port Which port to pull data from, ranging from 0, up to 4
    * @return Transformation in three-dimensional space camera relative
    */
-  public static Optional<Transform3d> getOptimalTarget(final Integer Port) {
+  public static Optional<Transform3d> getOptimalTarget(final CameraType Port) {
     return VisionSubsystem.getOptimalTarget(Port);
   }
 

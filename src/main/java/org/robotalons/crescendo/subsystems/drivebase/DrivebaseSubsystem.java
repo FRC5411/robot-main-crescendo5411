@@ -25,6 +25,7 @@ import org.robotalons.crescendo.subsystems.SubsystemManager;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Devices;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Objects;
+import org.robotalons.crescendo.subsystems.vision.VisionSubsystem.CameraType;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.actuators.Module;
 import org.robotalons.lib.motion.sensors.Gyroscope;
@@ -159,9 +160,9 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
    * @return Double representation of the time passed between now and the last timestep.
    */
   private static synchronized Double discretize() {
-    var DiscretizationTimestep = (0.0);
-    if (CurrentTime.equals((0.0))) {
-      DiscretizationTimestep = ((1.0) / (50.0));
+    var DiscretizationTimestep = (0d);
+    if (CurrentTime.equals((0d))) {
+      DiscretizationTimestep = ((1d) / (50d));
     } else {
       var MeasuredTime = Timer.getFPGATimestamp();
       DiscretizationTimestep = MeasuredTime - CurrentTime;
@@ -324,17 +325,16 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
   public static synchronized void set(final Translation2d Translation, final Rotation2d Rotation) {
     switch(CurrentMode) {
       case OBJECT_ORIENTED:
-        SubsystemManager.getOptimalTarget((2)).ifPresentOrElse((Optimal) -> {
+        SubsystemManager.getOptimalTarget(CameraType.INTAKE_CAMERA).ifPresentOrElse((Optimal) -> {
           set(new ChassisSpeeds(
             -Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
             -Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
-            (-180 + Optimal.getRotation().toRotation2d().getRadians() * (GYROSCOPE.getYawRotation().getRadians() > Math.PI? -1: 1)) * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY
+            (-(Math.PI) + Optimal.getRotation().toRotation2d().getRadians() * (GYROSCOPE.getYawRotation().getRadians() > Math.PI? -1: 1)) * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY
           ));         
         }, () -> {
           CurrentMode = OrientationMode.ROBOT_ORIENTED;
           set(Translation, Rotation);
         });
-
         break;
       case ROBOT_ORIENTED:
         set(new ChassisSpeeds(
