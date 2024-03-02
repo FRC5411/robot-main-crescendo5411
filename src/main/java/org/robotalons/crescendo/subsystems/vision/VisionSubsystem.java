@@ -143,7 +143,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
         ValidPoseCount.incrementAndGet();
       });
     });
-    return Optional.ofNullable(EstimatedPoseAverage != new Pose3d()? EstimatedPoseAverage.div(ValidPoseCount.get()): null);
+    return Optional.ofNullable(EstimatedPoseAverage != new Pose3d() && ValidPoseCount.get() > 0? EstimatedPoseAverage.div(ValidPoseCount.get()): null);
   }
 
   /**

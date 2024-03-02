@@ -55,7 +55,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
   private static final Gyroscope GYROSCOPE;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static List<SwerveModulePosition> CurrentPositions;
-  private static OrientationMode CurrentMode;
+  private static DrivebaseState CurrentMode;
   private static Rotation2d CurrentRotation;
   private static Operator CurrentOperator;
   private static Double CurrentTime;
@@ -71,7 +71,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
   } static {
     Instance = new DrivebaseSubsystem();
     GYROSCOPE = Constants.Devices.GYROSCOPE;
-    CurrentMode = OrientationMode.ROBOT_ORIENTED;
+    CurrentMode = DrivebaseState.ROBOT_ORIENTED;
     ModuleLocked = (true);
     PathFlipped = (
       DriverStation.getAlliance().isPresent()?
@@ -205,13 +205,13 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
   public static synchronized void toggleOrientationType() {
     switch (CurrentMode) {
       case ROBOT_ORIENTED:
-        CurrentMode = OrientationMode.FIELD_ORIENTED;
+        CurrentMode = DrivebaseState.FIELD_ORIENTED;
         break;
       case FIELD_ORIENTED:
-        CurrentMode = OrientationMode.OBJECT_ORIENTED;
+        CurrentMode = DrivebaseState.OBJECT_ORIENTED;
         break;
       case OBJECT_ORIENTED:
-        CurrentMode = OrientationMode.ROBOT_ORIENTED;
+        CurrentMode = DrivebaseState.ROBOT_ORIENTED;
         break;
     }
   }
@@ -297,7 +297,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
   /**
    * Describes a robot's current mode of orientation
    */
-  public enum OrientationMode {
+  public enum DrivebaseState {
     OBJECT_ORIENTED,    
     ROBOT_ORIENTED,
     FIELD_ORIENTED,
@@ -340,7 +340,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
             (-(Math.PI) + Optimal.getRotation().toRotation2d().getRadians() * (GYROSCOPE.getYawRotation().getRadians() % 2 * Math.PI > Math.PI? (-1): (1))) * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY
           ));         
         }, () -> {
-          CurrentMode = OrientationMode.ROBOT_ORIENTED;
+          CurrentMode = DrivebaseState.ROBOT_ORIENTED;
           set(Translation, Rotation);
         });
         break;

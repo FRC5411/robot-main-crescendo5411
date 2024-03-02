@@ -43,10 +43,11 @@ public class Constants {
     public static final Boolean PIVOT_INVERTED = (false);
 
     public static final Double PIVOT_MINIMUM_ROTATION = Units.degreesToRadians((0));
+
     public static final Double PIVOT_MAXIMUM_ROTATION = Units.degreesToRadians((40));
 
     public static final Double LOW_HOLD_ROTATION = (PIVOT_MINIMUM_ROTATION + 1d);
-    public static final Double MID_HOLD_ROTATION = Units.degreesToRadians((35d));
+    public static final Double MID_HOLD_ROTATION = Units.degreesToRadians((PIVOT_MINIMUM_ROTATION + PIVOT_MINIMUM_ROTATION) / 2);
     public static final Double HIGH_HOLD_ROTATION = (PIVOT_MAXIMUM_ROTATION - 1d);
 
     public static final Double FIRING_PASSIVE_PERCENTILE = (0.35d);

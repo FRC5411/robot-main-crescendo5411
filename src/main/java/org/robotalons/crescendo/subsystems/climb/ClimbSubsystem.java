@@ -89,8 +89,8 @@ public final class ClimbSubsystem extends TalonSubsystemBase {
   public synchronized void periodic() {
     Objects.ODOMETRY_LOCKER.lock();
 
-    Logger.recordOutput(("Climb/LeftAbsolutePosition"), getPosition(ClimbDirection.LEFT));
-    Logger.recordOutput(("Climb/RightAbsolutePosition"), getPosition(ClimbDirection.RIGHT));
+    Logger.recordOutput(("Climb/LeftAbsolutePosition"), getPosition(ClimbState.LEFT));
+    Logger.recordOutput(("Climb/RightAbsolutePosition"), getPosition(ClimbState.RIGHT));
 
     Logger.recordOutput(("Climb/LeftRelativePosition"), LEFT_RELATIVE_ENCODER.getPosition());
     Logger.recordOutput(("Climb/RightRelativePosition"), LEFT_RELATIVE_ENCODER.getPosition());
@@ -116,7 +116,7 @@ public final class ClimbSubsystem extends TalonSubsystemBase {
   /**
    * Represents directions on the climb subsystem on the physical robot, i. e. which side the hardware lies on.
    */
-  public enum ClimbDirection {
+  public enum ClimbState {
     LEFT,
     RIGHT,
   }
@@ -126,13 +126,13 @@ public final class ClimbSubsystem extends TalonSubsystemBase {
    * @param Direction Side of the climb subsystem being demanded
    * @param Demand    Queried load on the motor controller object, which must lie between -1 and +1
    */ 
-  public synchronized void set(final ClimbDirection Direction, final Double Demand) {
+  public synchronized void set(final ClimbState Direction, final Double Demand) {
     switch(Direction) {
       case LEFT:
-        LEFT_ARM.setVoltage(LEFT_PID.calculate(getPosition(ClimbDirection.LEFT), Demand) + LEFT_FF.calculate(Demand, (0)));
+        LEFT_ARM.setVoltage(LEFT_PID.calculate(getPosition(ClimbState.LEFT), Demand) + LEFT_FF.calculate(Demand, (0)));
         break;
       case RIGHT:
-        RIGHT_ARM.setVoltage(RIGHT_PID.calculate(getPosition(ClimbDirection.RIGHT), Demand) + RIGHT_FF.calculate(Demand, (0)));
+        RIGHT_ARM.setVoltage(RIGHT_PID.calculate(getPosition(ClimbState.RIGHT), Demand) + RIGHT_FF.calculate(Demand, (0)));
         break;
     }
   }
@@ -142,8 +142,8 @@ public final class ClimbSubsystem extends TalonSubsystemBase {
    * @param Demand Queried load on the motor controller object, which must lie between -1 and +1
    */ 
   public synchronized void set(final Double Demand) {
-    LEFT_ARM.setVoltage(LEFT_PID.calculate(getPosition(ClimbDirection.LEFT), Demand) + LEFT_FF.calculate(Demand, (0)));
-    RIGHT_ARM.setVoltage(RIGHT_PID.calculate(getPosition(ClimbDirection.RIGHT), Demand) + RIGHT_FF.calculate(Demand, (0)));
+    LEFT_ARM.setVoltage(LEFT_PID.calculate(getPosition(ClimbState.LEFT), Demand) + LEFT_FF.calculate(Demand, (0)));
+    RIGHT_ARM.setVoltage(RIGHT_PID.calculate(getPosition(ClimbState.RIGHT), Demand) + RIGHT_FF.calculate(Demand, (0)));
   }
 
   /**
@@ -193,7 +193,7 @@ public final class ClimbSubsystem extends TalonSubsystemBase {
    * @param Direction Side of the climb subsystem being demanded
    * @return Current absolute value of the absolute encoders, with a constant offset
    */
-  public static synchronized Double getPosition(final ClimbDirection Direction) {
+  public static synchronized Double getPosition(final ClimbState Direction) {
     switch (Direction) {
       case LEFT:
         return LEFT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.LEFT_ENCODER_OFFSET;
