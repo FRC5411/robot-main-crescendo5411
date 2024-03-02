@@ -348,14 +348,14 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
         set(new ChassisSpeeds(
           -Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
           -Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
-          -Rotation.getRadians() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY
+          Rotation.getRadians() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY
         ));      
         break;
       case FIELD_ORIENTED:
         set(ChassisSpeeds.fromFieldRelativeSpeeds(
           -Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
           -Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
-          -Rotation.getRadians() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY, 
+          Rotation.getRadians() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY, 
           GYROSCOPE.getYawRotation()
         ));      
         break;

@@ -24,7 +24,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Constants {
   // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
   public static final class Measurements {
-    public static final Double ABSOLUTE_ENCODER_OFFSET = (0.0075d);
+    public static final Double ABSOLUTE_ENCODER_OFFSET = (0.656761d);
 
     public static final Double ODOMETRY_FREQUENCY = (250d);
 
@@ -42,11 +42,19 @@ public class Constants {
 
     public static final Boolean PIVOT_INVERTED = (false);
 
-    public static final Double PIVOT_MINIMUM_ROTATION = Units.degreesToRadians((9));
-    public static final Double PIVOT_MAXIMUM_ROTATION = Units.degreesToRadians((70));
+    public static final Double PIVOT_MINIMUM_ROTATION = Units.degreesToRadians((0));
+    public static final Double PIVOT_MAXIMUM_ROTATION = Units.degreesToRadians((40));
+
+    public static final Double LOW_HOLD_ROTATION = (PIVOT_MINIMUM_ROTATION + 1d);
+    public static final Double MID_HOLD_ROTATION = Units.degreesToRadians((35d));
+    public static final Double HIGH_HOLD_ROTATION = (PIVOT_MAXIMUM_ROTATION - 1d);
+
+    public static final Double FIRING_PASSIVE_PERCENTILE = (0.35d);
 
     public static final Double PIVOT_MAXIMUM_RANGE_METERS = (100d);
     public static final Double PIVOT_MINIMUM_RANGE_METERS = (0d);
+
+    public static final Double SPEAKER_PIVOT_HEIGHT_METERS = (0d);
 
     public static final Matrix<N2,N1> PIVOT_UPPER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), 0d, 0d);
     public static final Matrix<N2,N1> PIVOT_LOWER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), 0d, 0d);
@@ -54,7 +62,9 @@ public class Constants {
     public static final InterpolatingMatrixTreeMap<Double,N2,N1> PIVOT_FIRING_MAP = new InterpolatingMatrixTreeMap<>();
 
     static { //TODO: AUTOMATION TEAM (RECORD SHOT DATA)
-      put((197.709382681d), (3000d), Math.PI/2);
+      PIVOT_FIRING_MAP.put(Math.hypot(PIVOT_MAXIMUM_RANGE_METERS, SPEAKER_PIVOT_HEIGHT_METERS), PIVOT_UPPER_BOUND);
+
+      PIVOT_FIRING_MAP.put(Math.hypot(PIVOT_MINIMUM_RANGE_METERS, SPEAKER_PIVOT_HEIGHT_METERS), PIVOT_LOWER_BOUND);
     }
 
     /**
@@ -63,6 +73,7 @@ public class Constants {
      * @param Velocity  Measured shooter velocity in RPM
      * @param Rotation  Measured shooter rotation in radians
      */
+    @SuppressWarnings("unused")
     private static void put(final Double Magnitude, final Double Velocity, final Double Rotation) {
       PIVOT_FIRING_MAP.put(Magnitude, MatBuilder.fill(Nat.N2(), Nat.N1(), Velocity, Rotation));
     }

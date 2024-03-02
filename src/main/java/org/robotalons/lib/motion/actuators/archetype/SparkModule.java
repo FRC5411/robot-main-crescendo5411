@@ -173,10 +173,8 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
   public synchronized void reset() {
     update();
     ROTATIONAL_ENCODER.setPosition(
-      (RobotBase.isReal())?
-        Rotation2d.fromRotations(
-          ABSOLUTE_ENCODER.getAbsolutePosition().getValue()
-        ).getRotations():
+      RobotBase.isReal()?
+      STATUS.RotationalAbsolutePosition.getRotations():
       (0d)
     );
   }

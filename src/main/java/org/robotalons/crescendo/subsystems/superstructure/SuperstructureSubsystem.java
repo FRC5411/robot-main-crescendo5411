@@ -10,10 +10,12 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.RelativeEncoder;
 
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonUtils;
@@ -40,11 +42,11 @@ import org.robotalons.lib.utilities.Operator;
  */
 public class SuperstructureSubsystem extends TalonSubsystemBase {
   // --------------------------------------------------------------[Constants]-------------------------------------------------------------- //
-  private static final Pair<CANSparkMax,CANSparkMax> FIRING_CONTROLLERS;
+  private static final Pair<TalonFX,TalonFX> FIRING_CONTROLLERS;
   private static final CANSparkMax INDEXER_CONTROLLER;
   private static final CANSparkMax INTAKE_CONTROLLER;
   private static final PIDController FIRING_CONTROLLER_PID;
-  private static final RelativeEncoder FIRING_ENCODER;
+  private static final StatusSignal<Double> FIRING_VELOCITY;
 
   //private static final DigitalOutput INDEXER_SENSOR;
  
@@ -64,21 +66,20 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
   private SuperstructureSubsystem() { 
     super(("Cannon Subsystem"));
   } static {
-    CurrentReference = new SwerveModuleState((0d), new Rotation2d((Measurements.PIVOT_MAXIMUM_ROTATION + Measurements.PIVOT_MINIMUM_ROTATION)/2));
+    CurrentReference = new SwerveModuleState((0d), new Rotation2d(Measurements.MID_HOLD_ROTATION));
     CurrentFiringMode = FiringMode.MANUAL;
-    FIRING_CONTROLLERS = new Pair<CANSparkMax,CANSparkMax>(
-      new CANSparkMax(Ports.FIRING_CONTROLLER_LEFT_ID, MotorType.kBrushless), 
-      new CANSparkMax(Ports.FIRING_CONTROLLER_RIGHT_ID, MotorType.kBrushless));
-
-    FIRING_CONTROLLERS.getFirst().setSmartCurrentLimit((50));
-    FIRING_CONTROLLERS.getSecond().setSmartCurrentLimit((50));
-    FIRING_ENCODER = FIRING_CONTROLLERS.getFirst().getEncoder();
+    FIRING_CONTROLLERS = new Pair<TalonFX,TalonFX>(
+      new TalonFX(Ports.FIRING_CONTROLLER_LEFT_ID), 
+      new TalonFX(Ports.FIRING_CONTROLLER_RIGHT_ID)
+    );
+    FIRING_CONTROLLERS.getFirst().getConfigurator().apply(new TalonFXConfiguration().CurrentLimits.withSupplyCurrentLimit((45d)).withStatorCurrentLimit((40d)));
+    FIRING_CONTROLLERS.getSecond().getConfigurator().apply(new TalonFXConfiguration().CurrentLimits.withSupplyCurrentLimit((45d)).withStatorCurrentLimit((40d)));
+    FIRING_VELOCITY = FIRING_CONTROLLERS.getFirst().getVelocity();
     FIRING_CONTROLLER_PID = new PIDController(
       Measurements.FIRING_P_GAIN, 
       Measurements.FIRING_I_GAIN, 
       Measurements.FIRING_D_GAIN);
     FIRING_CONTROLLERS.getSecond().setInverted((false));
-    FIRING_CONTROLLERS.getSecond().follow(FIRING_CONTROLLERS.getFirst());
 
     INDEXER_CONTROLLER = new CANSparkMax(Ports.INDEXER_CONTROLLER_ID, MotorType.kBrushless);
     INDEXER_CONTROLLER.setSmartCurrentLimit((20));
@@ -127,7 +128,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
       default:
         break;
     }
-    final var AbsoluteReading = PIVOT_ABSOLUTE_ENCODER.getAbsolutePosition();
+    final var AbsoluteReading = getPivotRotation();
     if(
       AbsoluteReading > CurrentReference.angle.minus(Rotation2d.fromDegrees((2.5d))).getRadians() 
                                               &&
@@ -139,9 +140,10 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
     }    
     set(CurrentReference.angle);
     Logger.recordOutput(("Cannon/Reference"), CurrentReference);
-    Logger.recordOutput(("Cannon/MeasuredVelocity"), FIRING_ENCODER.getVelocity());
-    Logger.recordOutput(("Cannon/MeasuredRotation"), AbsoluteReading);
+    Logger.recordOutput(("Cannon/MeasuredVelocity"), FIRING_VELOCITY.getValueAsDouble());
+    Logger.recordOutput(("Cannon/MeasuredRotation"), AbsoluteReading * 360d);
     Constants.Objects.ODOMETRY_LOCKER.unlock();
+
   }
 
   /**
@@ -161,15 +163,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
    * Fires the shooter at the best possible target on the field
    */
   public static synchronized void fire() {
-    switch (CurrentFiringMode) {
-      case MANUAL:
-        set(CurrentReference.speedMetersPerSecond);
-        break;
-      case SEMI:
-        break;
-      case AUTO:
-        break;
-    }
+    set(-5.4d);
   }
   
 
@@ -196,7 +190,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
   private static synchronized void set(final Rotation2d Reference) {
     CurrentReference.angle = Reference;
     PIVOT_CONTROLLER.set(
-      PIVOT_CONTROLLER_PID.calculate(PIVOT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.ABSOLUTE_ENCODER_OFFSET,
+      PIVOT_CONTROLLER_PID.calculate(getPivotRotation(),
                                     MathUtil.clamp(Reference.getRotations(),Measurements.PIVOT_MINIMUM_ROTATION,Measurements.PIVOT_MAXIMUM_ROTATION)));
   }
 
@@ -206,7 +200,9 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
    */
   private static synchronized void set(final Double Reference) {
     CurrentReference.speedMetersPerSecond = Reference;
-    FIRING_CONTROLLERS.getFirst().set(FIRING_CONTROLLER_PID.calculate(FIRING_ENCODER.getVelocity(), Reference));
+    final var Effort = FIRING_CONTROLLER_PID.calculate(FIRING_VELOCITY.getValueAsDouble(), -Reference);
+    FIRING_CONTROLLERS.getFirst().set(Effort);
+    FIRING_CONTROLLERS.getSecond().set(Effort);;
   }
 
   /**
@@ -243,18 +239,20 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
 
   @Override
   public void configure(final Operator Profile) {
-
     CurrentPilot = Profile;
     try {
       CurrentPilot.getKeybinding(Keybindings.CANNON_TOGGLE)
-        .whileTrue(new InstantCommand(
-          SuperstructureSubsystem::fire,
+        .onTrue(new InstantCommand(
+          () -> {
+            set((20.4d));
+          },
           SuperstructureSubsystem.getInstance()
-        ).repeatedly());
+        ));
         CurrentPilot.getKeybinding(Keybindings.CANNON_TOGGLE)
           .onFalse(new InstantCommand(
           () -> {
-            FIRING_CONTROLLERS.getFirst().set((0d));
+            FIRING_CONTROLLERS.getFirst().set((0.375d));
+            FIRING_CONTROLLERS.getSecond().set((0.375d));
           }
           ,SuperstructureSubsystem.getInstance()));
     } catch(final NullPointerException Ignored) {}
@@ -262,16 +260,16 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
       CurrentPilot.getKeybinding(Keybindings.CANNON_PIVOT_UP)
         .whileTrue(new InstantCommand(
           () -> {
-            CurrentReference.angle = CurrentReference.angle.plus(Rotation2d.fromDegrees((0.000001d)));
+            CurrentReference.angle = CurrentReference.angle.plus(Rotation2d.fromDegrees((1d)));
           },
           SuperstructureSubsystem.getInstance()
         ).repeatedly());
     } catch(final NullPointerException Ignored) {}
     try {
-      CurrentPilot.getKeybinding(Keybindings.INTAKE_TOGGLE)
+      CurrentPilot.getKeybinding(Keybindings.CANNON_PIVOT_DOWN)
         .whileTrue(new InstantCommand(
           () -> {
-            CurrentReference.angle = CurrentReference.angle.plus(Rotation2d.fromDegrees((-0.000001d)));
+            CurrentReference.angle = CurrentReference.angle.minus(Rotation2d.fromDegrees((1d)));
           },
           SuperstructureSubsystem.getInstance()
         ).repeatedly());
@@ -323,6 +321,14 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
       if (java.util.Objects.isNull(Instance))
           Instance = new SuperstructureSubsystem();
       return Instance;
+  }
+
+  /**
+   * Provides the current rotational reading of the pivot in rotations
+   * @return Pivot rotational reading 
+   */
+  private static Double getPivotRotation() {
+    return -(PIVOT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.ABSOLUTE_ENCODER_OFFSET);
   }
 
   @Override

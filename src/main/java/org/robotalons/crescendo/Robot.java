@@ -1,6 +1,7 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo;
 import edu.wpi.first.hal.AllianceStationID;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.Timer;
@@ -139,7 +140,7 @@ public final class Robot extends LoggedRobot {
     Logger.registerURCL(URCL.startExternal());
     RobotContainer.getInstance();
     Shuffleboard.startRecording();
-
+    DataLogManager.start();
   }
 
   @Override
