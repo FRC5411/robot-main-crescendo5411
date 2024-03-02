@@ -13,7 +13,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 // -----------------------------------------------------------------[Camera]----------------------------------------------------------------//
 /**
  *
@@ -57,12 +59,12 @@ public abstract class Camera implements Closeable {
   /**
    * Forces the camera to take a preprocessed snapshot of it's current processed feed.
    */
-  public abstract void preSnapshot();
+  public abstract void snapshotInput();
 
   /**
    * Forces the camera to take a preprocessed snapshot of it's current processed feed.
    */
-  public abstract void postSnapshot();
+  public abstract void snapshotOutput();
 
   /**
    * Requests raw object metadata from the raw network table instance of the camera
@@ -80,7 +82,6 @@ public abstract class Camera implements Closeable {
    * Closes this instance and all held resources immediately, but does not render the class unusable hence forth and can be re-instantiated.
    */
   public abstract void close() throws IOException;
-  // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Provides the robot relative position to a given object based on the estimated position of this camera and a transformation to a known object
@@ -99,12 +100,6 @@ public abstract class Camera implements Closeable {
   public Optional<Pose3d> getObjectFieldPose(){
     return Optional.ofNullable(TARGET_STATUS.BestTargetPose);
   }
-
-  /**
-   * Provides the april tag with the id that we asked for in Pose3d
-   * @return Position of the tag relative to the field
-   */
-  public abstract Pose3d getAprilTagPose(final Integer ID);
 
   /**
    * Provides the confidence or standard deviation of the cameras evaluations of estimations
@@ -158,8 +153,8 @@ public abstract class Camera implements Closeable {
    * Provides a list of robot-relative transformations to the best target within view of the camera
    * @return List of robot-relative target transformations
    */
-  public Optional<Transform3d[]> getTargets(){
-    return Optional.ofNullable(TARGET_STATUS.Targets);
+  public List<Optional<Transform3d>> getTargets() {
+    return Stream.of(TARGET_STATUS.Targets).map(Optional::ofNullable).toList();
   }
 
   /**

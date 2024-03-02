@@ -1,17 +1,24 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.vision;
+// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.photonvision.PhotonCamera;
+import org.robotalons.crescendo.subsystems.vision.Constants.Measurements;
+import org.robotalons.crescendo.subsystems.vision.Constants.Ports;
+import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.vision.Camera;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+
 // ------------------------------------------------------------[Vision Subsystem]----------------------------------------------------------//
 /**
  *
@@ -23,286 +30,148 @@ import java.util.Optional;
  * @see SubsystemBase
  * @see org.robotalons.crescendo.RobotContainer RobotContainer
  */
-public final class VisionSubsystem extends SubsystemBase implements Closeable {
+public final class VisionSubsystem extends TalonSubsystemBase {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  public static List<Camera> CAMERAS;
-
-  public static PhotonCamera SOURCE;
-  public static PhotonCamera SPEAKER_FRONT;
-  public static PhotonCamera SPEAKER_REAR;
-  public static PhotonCamera INTAKE;
-
-  public static VisionCamera SOURCE_CAMERA;
-  public static VisionCamera SPEAKER_FRONT_CAMERA;
-  public static VisionCamera SPEAKER_REAR_CAMERA;
-  public static VisionCamera INTAKE_CAMERA;
+  private static List<Camera> CAMERAS;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static VisionSubsystem Instance;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Vision Subsystem Constructor.
    */
-  public VisionSubsystem(){
-    SOURCE = new PhotonCamera("SOURCE");
-    SPEAKER_FRONT = new PhotonCamera("SPEAKER_FRONT");
-    SPEAKER_REAR = new PhotonCamera("SPEAKER_REAR");
-    INTAKE = new PhotonCamera("INTAKE");
-
-    SOURCE_CAMERA = new VisionCamera(
-      SOURCE, 
-      Constants.Measurements.SOURCE_CAMERA_POSE, 
-      SOURCE.getName()
-    );
-
-    SPEAKER_FRONT_CAMERA = new VisionCamera(
-      SPEAKER_FRONT, 
-      Constants.Measurements.SPEAKER_FRONT_CAMERA_POSE, 
-      SPEAKER_FRONT.getName()
-    );
-
-    SPEAKER_REAR_CAMERA = new VisionCamera(
-      SPEAKER_REAR, 
-      Constants.Measurements.SPEAKER_REAR_CAMERA_POSE, 
-      SPEAKER_REAR.getName()
-    );
-
-    INTAKE_CAMERA = new VisionCamera(
-      INTAKE, 
-      Constants.Measurements.INTAKE_CAMERA_POSE, 
-      INTAKE.getName()
-    );
-
+  public VisionSubsystem() {
+    super(("Vision Subsystem"));
+  } static {
     CAMERAS = List.of(
-      SOURCE_CAMERA,
-      SPEAKER_FRONT_CAMERA,
-      SPEAKER_REAR_CAMERA,
-      INTAKE_CAMERA
-    ); 
+      new VisionCamera(
+        new PhotonCamera(Ports.SOURCE_CAMERA_NAME), 
+        Constants.Measurements.SOURCE_CAMERA_POSE
+      ),
+      new VisionCamera(
+        new PhotonCamera(Ports.FRONT_RIGHT_CAMERA_NAME), 
+        Constants.Measurements.SPEAKER_FRONT_CAMERA_POSE
+      ),
+      new VisionCamera(
+        new PhotonCamera(Ports.REAR_LEFT_CAMERA_NAME), 
+        Constants.Measurements.SPEAKER_REAR_CAMERA_POSE
+      ),
+      new VisionCamera(
+        new PhotonCamera(Ports.REAR_RIGHT_CAMERA_NAME), 
+        Constants.Measurements.INTAKE_CAMERA_POSE
+    )); 
   }
   
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
   public synchronized void periodic() {
-    CAMERAS.forEach(Camera::update);
+    CAMERAS.forEach((Camera) -> {
+      if (Camera.getConnected()) {
+        Camera.periodic();
+      }
+    });
   }
 
-  /**
-   * Closes Vision Subsystem.
-   */
   @Override
-  public void close() throws IOException {
-    try {
-      SOURCE_CAMERA.close();
-      SPEAKER_FRONT_CAMERA.close();
-      SPEAKER_REAR_CAMERA.close();
-      INTAKE_CAMERA.close();
-    } catch (final IOException Exception) {}
-
+  public void close() {
+    CAMERAS.forEach((Camera) -> {
+      try {
+        Camera.close();
+      } catch(final IOException Ignored) {}
+    });
   }
 
   /**
    * Takes snapshot from specified Camera integer.
-   * 1 - Source Camera, 2 - Speaker Front Camera, 3- Speaker Rear Camera, 4 - OD Camera.
-   * @param CAMERA_ID that gets the specific camera.
-   * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
+   * @param Identifier Camera identifier to query from.
    */
-  public static void preSnapshot(Integer CAMERA_ID) throws IllegalArgumentException{
-
-    if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
-      throw new IllegalArgumentException("Camera ID for method 'preSnapshot' should not be greater than 4, less than 1, or not an integer");
-    }
-
-    Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
-    CAMERA.preSnapshot();
+  public static void snapshotInput(final CameraIdentifier Identifier) {
+    CAMERAS.get(Identifier.getValue()).snapshotInput();
   }
 
   /**
    * Takes snapshot from specified Camera integer.
-   * 1 - Source Camera, 2 - Speaker Front Camera, 3- Speaker Rear Camera, 4 - OD Camera.
-   * @param CAMERA_ID that gets the specific camera.
-   * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
+   * @param Identifier Camera identifier to query from.
    */
-  public static void postSnapshot(Integer CAMERA_ID) throws IllegalArgumentException{
+  public static void snapshotOutput(final CameraIdentifier Identifier) {
+    CAMERAS.get(Identifier.getValue()).snapshotOutput();
+  }
+  // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
+  /**
+   * Describes a queried camera type with an integer value in a more human-parsable format
+   */
+  public enum CameraIdentifier {
+    SOURCE_CAMERA((0)),
+    SPEAKER_FRONT_CAMERA((1)),
+    SPEAKER_REAR_CAMERA((2)),
+    INTAKE_CAMERA((3));
 
-    if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
-      throw new IllegalArgumentException("Camera ID for method 'postSnapshot' should not be greater than 4, less than 1, or not an integer");
+    private final Integer Value;
+
+    CameraIdentifier(final Integer Value) {
+      this.Value = Value;
     }
 
-    Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
-    CAMERA.postSnapshot();
+    /**
+     * Provides the actual camera indexable value of this enum type
+     * @return Integer format of this camera number
+     */
+    public Integer getValue() {
+      return this.Value;
+    }
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Retrieves the existing instance of this static utility class.
    * @return Utility class's instance
    */
-  public static synchronized VisionSubsystem getInstance() {
-      if (java.util.Objects.isNull(Instance)) {
-        Instance = new VisionSubsystem();
-      }
-      return Instance;
+  public static synchronized TalonSubsystemBase getInstance() {
+    if (java.util.Objects.isNull(Instance)) {
+      Instance = new VisionSubsystem();
+    }
+    return Instance;
   }
 
   /**
-   * Retrieves the Pose3d of the robot that is averaged from two camera estimations.
-   * @return New approximation of Pose3d from robot, will return empty if couldnt find two cameras with targets. 
-   * @throws IllegalArgumentException when Camera 1 ID or Camera 2 ID is greater than 4, less than 1, or not an integer
+   * Retrieves the Pose3d of the robot that is averaged from the all camera estimations.
+   * @return New approximation of Pose3d from robot. 
    */
   public static Optional<Pose3d> getApproximatedRobotPose(){   
-    Camera CAMERA1 = CAMERAS.get(0);
-    Camera CAMERA2 = CAMERAS.get(1);
-    Camera CAMERA3 = CAMERAS.get(2);
-    Camera[] CAMERA_2_USE = new Camera[2];
-
-    Optional<Pose3d> PRE_POSE1 = CAMERA1.getRobotPosition();
-    Optional<Pose3d> PRE_POSE2 = CAMERA2.getRobotPosition();
-    Optional<Pose3d> PRE_POSE3 = CAMERA2.getRobotPosition();
-
-    if(PRE_POSE1.isEmpty()){
-      
-      if(PRE_POSE2.isEmpty() || PRE_POSE3.isEmpty()){
-        return Optional.empty();}
-      
-        else{
-        CAMERA_2_USE[0] = CAMERA2;
-        CAMERA_2_USE[1] = CAMERA3;}
-    }
-
-    else if(PRE_POSE2.isEmpty()){
-      
-      if(PRE_POSE1.isEmpty() || PRE_POSE3.isEmpty()){
-        return Optional.empty();}
-      
-        else{
-        CAMERA_2_USE[0] = CAMERA1;
-        CAMERA_2_USE[1] = CAMERA3;}
-    }
-
-    else if(PRE_POSE3.isEmpty()){
-      
-      if(PRE_POSE1.isEmpty() || PRE_POSE2.isEmpty()){
-        return Optional.empty();}
-      
-        else{
-        CAMERA_2_USE[0] = CAMERA1;
-        CAMERA_2_USE[1] = CAMERA2;}
-    }
-
-    Pose3d CAMERA1_POSE = CAMERA_2_USE[0].getRobotPosition().get();
-    Pose3d CAMERA2_POSE = CAMERA_2_USE[1].getRobotPosition().get();
-
-    double avgX = (CAMERA1_POSE.getX() + CAMERA2_POSE.getX()) / 2;
-    double avgY = (CAMERA1_POSE.getY() + CAMERA2_POSE.getY()) / 2;
-    double avgZ = (CAMERA1_POSE.getZ() + CAMERA2_POSE.getZ()) / 2;
-
-    double avgPitch = (CAMERA1_POSE.getRotation().getX() + CAMERA2_POSE.getRotation().getX()) / 2;
-    double avgRoll = (CAMERA1_POSE.getRotation().getY() + CAMERA2_POSE.getRotation().getY()) / 2;
-    double avgYaw = (CAMERA1_POSE.getRotation().getZ() + CAMERA2_POSE.getRotation().getZ()) / 2;
-
-
-    return Optional.of(new Pose3d(avgX, avgY, avgZ, new Rotation3d(avgPitch, avgRoll, avgYaw)));
+    final Pose3d EstimatedPoseAverage = new Pose3d();
+    final AtomicInteger ValidPoseCount = new AtomicInteger();
+    CAMERAS.forEach((Camera) -> {
+      Camera.getRobotPosition().ifPresent((Pose) -> {
+        EstimatedPoseAverage.plus(new Transform3d(Pose.getTranslation(), Pose.getRotation()));
+        ValidPoseCount.incrementAndGet();
+      });
+    });
+    return Optional.ofNullable(EstimatedPoseAverage != new Pose3d()? EstimatedPoseAverage.div(ValidPoseCount.get()): null);
   }
 
-/**
+  /**
    * Retrieves the Pose3d of the robot that is averaged from the two camera estimations.
-   * 1 - Source Camera, 2 - Speaker Front Camera, 3- Speaker Rear Camera, 4 - OD Camera.
-   * @param CAMERA1_ID that gets the first camera.
-   * @param CAMERA2_ID that gets the second camera.
-   * @return New approximation of Pose3d from robot. 
-   * @throws IllegalArgumentException when Camera 1 ID or Camera 2 ID is greater than 4, less than 1, or not an integer
+   * @param Identifier Camera identifier to query from.
+   * @return New approximation of Pose3d from robot.
    */
-  public static Optional<Pose3d> getApproximatedRobotPose(Integer CAMERA1_ID, Integer CAMERA2_ID){   
-    if(CAMERA1_ID > 4 || CAMERA1_ID < 1 ||  Math.floor(CAMERA1_ID) != CAMERA1_ID){
-      throw new IllegalArgumentException("Camera ID for method 'getApproximatedRobotPose' should not be greater than 4, less than 1, or not an integer");
-    }
-    
-    if(CAMERA2_ID > 4 || CAMERA2_ID < 1 ||  Math.floor(CAMERA2_ID) != CAMERA2_ID){
-      throw new IllegalArgumentException("Camera ID for method 'getApproximatedRobotPose' should not be greater than 4, less than 1, or not an integer");
-    }
-    
-    Camera CAMERA1 = CAMERAS.get(CAMERA1_ID - 1);
-    Camera CAMERA2 = CAMERAS.get(CAMERA2_ID - 1);
-
-    Optional<Pose3d> PRE_POSE1 = CAMERA1.getRobotPosition();
-    Optional<Pose3d> PRE_POSE2 = CAMERA2.getRobotPosition();
-    
-    if(PRE_POSE1.isEmpty() || PRE_POSE2.isEmpty()){
-      return Optional.empty();
-    }
-
-    Pose3d CAMERA1_POSE = PRE_POSE1.get();
-    Pose3d CAMERA2_POSE = PRE_POSE2.get();
-
-    double avgX = (CAMERA1_POSE.getX() + CAMERA2_POSE.getX()) / 2;
-    double avgY = (CAMERA1_POSE.getY() + CAMERA2_POSE.getY()) / 2;
-    double avgZ = (CAMERA1_POSE.getZ() + CAMERA2_POSE.getZ()) / 2;
-
-    double avgPitch = (CAMERA1_POSE.getRotation().getX() + CAMERA2_POSE.getRotation().getX()) / 2;
-    double avgRoll = (CAMERA1_POSE.getRotation().getY() + CAMERA2_POSE.getRotation().getY()) / 2;
-    double avgYaw = (CAMERA1_POSE.getRotation().getZ() + CAMERA2_POSE.getRotation().getZ()) / 2;
-
-
-    return Optional.of(new Pose3d(avgX, avgY, avgZ, new Rotation3d(avgPitch, avgRoll, avgYaw)));
-  }
-
-/**
-   * Retrieves the Pose3d of the robot that is averaged from the two camera estimations.
-   * 1 - Source Camera, 2 - Speaker Front Camera, 3- Speaker Rear Camera, 4 - OD Camera.
-   * @param CAMERA1_ID that gets the first camera.
-   * @return New approximation of Pose3d from robot. 
-   * @throws IllegalArgumentException when Camera 1 ID or Camera 2 ID is greater than 4, less than 1, or not an integer
-   */
-  public static Optional<Pose3d> getApproximatedRobotPose(Integer CAMERA_ID){   
-    if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
-      throw new IllegalArgumentException("Camera ID for method 'getApproximatedRobotPose' should not be greater than 4, less than 1, or not an integer");
-    }
-    
-    Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
-
-    Optional<Pose3d> PRE_POSE1 = CAMERA.getRobotPosition();
-    
-    if(PRE_POSE1.isEmpty()){
-      return Optional.empty();
-    }
-
-    Pose3d POSE = PRE_POSE1.get();
-
-
-    return Optional.of(POSE);
+  public static Optional<Pose3d> getApproximatedRobotPose(final CameraIdentifier Identifier){       
+    return CAMERAS.get(Identifier.getValue()).getRobotPosition();
   }
 
   /**
    * Provides the robot relative position timestamps of each delta from the last update control cycle up to the current query of specific camera called.
-   * 1 - Source Camera, 2 - Speaker Front Camera, 3- Speaker Rear Camera, 4 - OD Camera.
-   * @param CAMERA_ID that gets the specific camera.
+   * @param Identifier Camera identifier to query from.
    * @return List of robot relative snapshot time deltas of specific camera called.
-   * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public static double[] getRobotPositionTimestamps(Integer CAMERA_ID) throws IllegalArgumentException{
-
-    if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
-      throw new IllegalArgumentException("Camera ID for method 'getRobotPositionTimestamps' should not be greater than 4, less than 1, or not an integer");
-    }
-
-    Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
-    return CAMERA.getRobotPositionTimestamps();
+  public static double[] getRobotPositionTimestamps(final CameraIdentifier Identifier) {
+    return CAMERAS.get(Identifier.getValue()).getRobotPositionTimestamps();
   }
 
   /**
    * Provides the robot relative (minus offset) position deltas from last update control cycle up to the current query.
-   * 1 - Source Camera, 2 - Speaker Front Camera, 3- Speaker Rear Camera, 4 - OD Camera.
-   * @param CAMERA_ID that gets the specific camera.
+   * @param Identifier Camera identifier to query from.
    * @return List of Poses of the robot since the last control cycle.
-   * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public static Pose3d[] getRobotPositionDeltas(Integer CAMERA_ID) throws IllegalArgumentException{
-
-    if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
-      throw new IllegalArgumentException("Camera ID for method 'snapshot' should not be greater than 4, less than 1, or not an integer");
-    }
-
-    Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
-    return CAMERA.getRobotPositionDeltas();
+  public static Pose3d[] getRobotPositionDeltas(final CameraIdentifier Identifier) {
+    return CAMERAS.get(Identifier.getValue()).getRobotPositionDeltas();
   }
 
   /**
@@ -310,8 +179,17 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    * @param Target Transformation to a given target anywhere on the field.
    * @return Position of the object relative to the field.
    */
-  public static Optional<Pose3d> getObjectFieldPose(Transform3d Target){
-    return INTAKE_CAMERA.getObjectFieldPose(Target);
+  public static Optional<Pose3d> getObjectFieldPose(final Transform3d Target){
+    return CAMERAS.get(CameraIdentifier.INTAKE_CAMERA.getValue()).getObjectFieldPose(Target);
+  }
+
+  /**
+   * Provides the values of standard deviations of the most recent object detection result on the camera
+   * @param Identifier Camera identifier to query from.
+   * @return Standard Deviations of the recorded object detection values
+   */
+  public static Matrix<N3,N1> getStandardDeviations(final CameraIdentifier Identifier) {
+    return CAMERAS.get(Identifier.getValue()).getStandardDeviations();
   }
 
   /**
@@ -320,88 +198,62 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    * @return Position of the object relative to the field.
    */
   public static Optional<Pose3d> getObjectFieldPose(){
-    return INTAKE_CAMERA.getObjectFieldPose();
+    return CAMERAS.get(CameraIdentifier.INTAKE_CAMERA.getValue()).getObjectFieldPose();
   }
 
   /**
    * Provides a list of robot-relative transformations to the best target within view of the camera.
-   * 1 - Source Camera, 2 - Speaker Front Camera, 3- Speaker Rear Camera, 4 - OD Camera.
-   * @param CAMERA_ID that gets the specific camera.
+   * @param Identifier Camera identifier to query from.
    * @return List of robot-relative target transformations.
-   * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public static Optional<Transform3d[]> getTargets(Integer CAMERA_ID) throws IllegalArgumentException{
-
-    if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
-      throw new IllegalArgumentException("Camera ID for method 'getTargets' should not be greater than 4, less than 1, or not an integer");
-    }
-
-    Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
-
-    return CAMERA.getTargets();
+  @SuppressWarnings("unchecked")
+  public static Optional<Transform3d>[] getTargets(final CameraIdentifier Identifier) {
+    return CAMERAS.get(Identifier.getValue()).getTargets().toArray(Optional[]::new);
   }
 
   /**
    * Provides the april tag with the id that we asked for in Pose3d from the specified camera.
    * Fiducial ID : (1-16)
-   * @param APRILTAG_ID that gets the specific fiducial marker ID.
+   * @param Tag        ID of the april tag
    * @return Position of the tag relative to the field.
-
    */
-  public static Pose3d getAprilTagPose(Integer APRILTAG_ID){
-    return SOURCE_CAMERA.getAprilTagPose(APRILTAG_ID);
+  public static Optional<Pose3d> getAprilTagPose(final Integer Tag){
+    return Measurements.FIELD_LAYOUT.getTagPose(Tag);
+  }
+
+  /**
+   * Provides the robot offset of a given camera robot-relative
+   * @param Identifier Camera identifier to query from.
+   * @return Transformation from the origin (robot) to a given camera
+   */
+  public static Transform3d getCameraTransform(final CameraIdentifier Identifier) {
+    return CAMERAS.get(Identifier.getValue()).getRobotOffset();
   }
 
   /**
    * Provides a boolean representation of if the module that was specified has an april tag / object detected
-   * 1 - Source Camera, 2 - Speaker Front Camera, 3- Speaker Rear Camera, 4 - OD Camera.
-   * @param CAMERA_ID that gets the specific camera.
+   * @param Identifier Camera identifier to query from.
    * @return Boolean if Camera has Target or not
-   * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public static boolean hasTargets(Integer CAMERA_ID) throws IllegalArgumentException{
-
-    if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
-      throw new IllegalArgumentException("Camera ID for method 'hasTargets' should not be greater than 4, less than 1, or not an integer");
-    }
-
-    Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
-    return CAMERA.hasTargets();
+  public static Boolean hasTargets(final CameraIdentifier Identifier) {
+    return CAMERAS.get(Identifier.getValue()).hasTargets();
   }
 
   /**
    * Provides a number of targets detected by the specified camera (april tag / object detected)
-   * 1 - Source Camera, 2 - Speaker Front Camera, 3- Speaker Rear Camera, 4 - OD Camera.
-   * @param CAMERA_ID that gets the specific camera.
+   * @param Identifier Camera identifier to query from.
    * @return Number of Targets found by camera
-   * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public static int getNumTargets(Integer CAMERA_ID) throws IllegalArgumentException{
-
-    if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
-      throw new IllegalArgumentException("Camera ID for method 'hasTargets' should not be greater than 4, less than 1, or not an integer");
-    }
-
-    Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
-    return CAMERA.getNumTargets();
+  public static Integer getNumTargets(final CameraIdentifier Identifier) {
+    return CAMERAS.get(Identifier.getValue()).getNumTargets();
   }
 
   /**
    * Provides the robot-relative transformation to the best target within view of the camera that was called
-   * 1 - Source Camera, 2 - Speaker Front Camera, 3- Speaker Rear Camera, 4 - OD Camera.
-   * @param CAMERA_ID that gets the specific camera.
+   * @param Identifier Camera identifier to query from.
    * @return Robot-relative best target transformation
-   * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
    */
-  public static Optional<Transform3d> getOptimalTarget(Integer CAMERA_ID) throws IllegalArgumentException{
-
-    if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
-      throw new IllegalArgumentException("Camera ID for method 'getOptimalTarget' should not be greater than 4, less than 1, or not an integer");
-    }
-
-    Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
-
-    return CAMERA.getOptimalTarget();
+  public static Optional<Transform3d> getOptimalTarget(final CameraIdentifier Identifier) {
+    return CAMERAS.get(Identifier.getValue()).getOptimalTarget();
   }
-
 }
