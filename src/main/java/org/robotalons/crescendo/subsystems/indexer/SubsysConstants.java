@@ -37,8 +37,8 @@ public final class SubsysConstants {
 
     //PORTS
     public static final Integer TO_CANNON_MOTOR_ID = (0);
-    public static final Integer INTAKE_BREAKBEAM_INPUT_ID = (1);
-    public static final Integer CANNON_BREAKBEAM_INPUT_ID = (2);
+    public static final Integer INTAKE_SENSOR_INPUT_ID = (1);
+    public static final Integer CANNON_SENSOR_INPUT_ID = (2);
     
     //OBJECTS
     public static final Lock ODOMETRY_LOCKER = new ReentrantLock();

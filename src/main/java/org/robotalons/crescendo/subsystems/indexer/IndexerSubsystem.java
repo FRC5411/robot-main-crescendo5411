@@ -25,8 +25,10 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
     // --------------------------------------------------------------[Constants]-------------------------------------------------------------- //
     private final static CANSparkMax TO_CANNON_MOTOR;
 
-    private final static DigitalInput INTAKE_BREAKBEAM_INPUT;
-    private final static DigitalInput CANNON_BREAKBEAM_INPUT;
+    private final static DigitalInput INTAKE_SENSOR_INPUT;
+    private final static DigitalInput CANNON_SENSOR_INPUT;
+
+    private final static Boolean INPUT_READING_WITH_NOTE = false; //modify as necessary
 
     // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
     private static IndexerSubsystem Instance;
@@ -43,8 +45,8 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
 
         TO_CANNON_MOTOR = new CANSparkMax(INDEXER.TO_CANNON_MOTOR_ID, MotorType.kBrushless);
 
-        INTAKE_BREAKBEAM_INPUT = new DigitalInput(INDEXER.INTAKE_BREAKBEAM_INPUT_ID);
-        CANNON_BREAKBEAM_INPUT = new DigitalInput(INDEXER.CANNON_BREAKBEAM_INPUT_ID);
+        INTAKE_SENSOR_INPUT = new DigitalInput(INDEXER.INTAKE_SENSOR_INPUT_ID);
+        CANNON_SENSOR_INPUT = new DigitalInput(INDEXER.CANNON_SENSOR_INPUT_ID);
 
         IntakeBeamSeesNote = (false);
         CannonBeamSeesNote = (false);
@@ -55,8 +57,8 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
     public synchronized void periodic() {
         INDEXER.ODOMETRY_LOCKER.lock();
         
-        boolean newIntakeBeamSeesNote = !(INTAKE_BREAKBEAM_INPUT.get());
-        boolean newCannonBeamSeesNote = !(CANNON_BREAKBEAM_INPUT.get());
+        boolean newIntakeBeamSeesNote = !(INTAKE_SENSOR_INPUT.get() ^ INPUT_READING_WITH_NOTE);
+        boolean newCannonBeamSeesNote = !(CANNON_SENSOR_INPUT.get() ^ INPUT_READING_WITH_NOTE);
         
         if (IntakeBeamSeesNote != newIntakeBeamSeesNote) {
             IntakeBeamSeesNote = newIntakeBeamSeesNote;
