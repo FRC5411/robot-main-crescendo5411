@@ -223,7 +223,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
    * @param Source Pose to align the chassis to
    * @return Command configured to achieve this pose autonomously
    */
-  private static Command alignPose(final Pose2d Source) {
+  public static Command alignPose(final Pose2d Source) {
     return SubsystemManager.pathfind(
       Source.transformBy(
       new Transform2d(
@@ -238,7 +238,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
    * @param Source Pose to align the chassis to
    * @return Command configured to achieve this translation autonomously
    */
-  private static Command alignTranslation(final Transform2d Source) {
+  public static Command alignTranslation(final Transform2d Source) {
     return SubsystemManager.pathfind(
       getPose().plus(
         new Transform2d(Source.getTranslation(),

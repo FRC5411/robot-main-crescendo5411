@@ -11,11 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.Matrix;
 
 import java.util.Optional;
 
@@ -117,43 +113,45 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
   @Override
   public synchronized void periodic() {
     Constants.Objects.ODOMETRY_LOCKER.lock();
-    Optional<Matrix<N2,N1>> Interpolation = Optional.empty();
-    switch(CurrentFiringMode) {
-      case AUTO, SEMI:
-        final var Camera = VisionSubsystem.getCameraTransform(CameraIdentifier.SOURCE_CAMERA);
-        final var Robot = new Pose3d(DrivebaseSubsystem.getPose()).transformBy(Camera);
-        final var Target = VisionSubsystem.getAprilTagPose(
-          (DrivebaseSubsystem.getRotation().getRadians() % (2) * Math.PI >= Math.PI)? (3): (7)).get();
-        Interpolation = Optional.ofNullable(Measurements.PIVOT_FIRING_MAP.interpolate(
-          Measurements.PIVOT_LOWER_BOUND,
-          Measurements.PIVOT_UPPER_BOUND,
-          PhotonUtils.calculateDistanceToTargetMeters(
-            Robot.getY(),
-            Target.getY(), 
-            Robot.getRotation().getY(), 
-            Target.getRotation().getY()
-          ) / Measurements.PIVOT_MAXIMUM_RANGE_METERS
-        ));
-        CurrentReference.angle = Rotation2d.fromRadians(Units.radiansToRotations(Interpolation.get().get((0),(1))));
-        final var AbsoluteReading = getPivotRotation();
+    final var Camera = VisionSubsystem.getCameraTransform(CameraIdentifier.SOURCE_CAMERA);
+    final var Robot = new Pose3d(DrivebaseSubsystem.getPose()).transformBy(Camera);
+    final var Target = VisionSubsystem.getAprilTagPose(
+      (DrivebaseSubsystem.getRotation().getRadians() % (2) * Math.PI >= Math.PI)? (3): (7)).get();
+    Optional.ofNullable(Measurements.PIVOT_FIRING_MAP.interpolate(
+      Measurements.PIVOT_LOWER_BOUND,
+      Measurements.PIVOT_UPPER_BOUND,
+      PhotonUtils.calculateDistanceToTargetMeters(
+        Robot.getY(),
+        Target.getY(), 
+        Robot.getRotation().getY(), 
+        Target.getRotation().getY()
+      ) / Measurements.PIVOT_MAXIMUM_RANGE_METERS
+    )).ifPresentOrElse((Interpolated) -> {
+      Logger.recordOutput(("Cannon/InterpolatedFiringVelocity"), Interpolated.get((0), (0)));
+      Logger.recordOutput(("Cannon/InterpolatedPivotRotation"), Interpolated.get((0), (1)));
+      Logger.recordOutput(("Cannon/FiringProbabilityPercentile"), FIRING_VELOCITY.getValueAsDouble() / Interpolated.get((0), (0)));
+      Logger.recordOutput(("Cannon/PivotProbabilityPercentile"), getPivotRotation() / Interpolated.get((0), (1)));
+      if(CurrentFiringMode == SuperstructureState.AUTO || CurrentFiringMode == SuperstructureState.SEMI) {
+        CurrentReference.angle = Rotation2d.fromRadians(Units.radiansToRotations(Interpolated.get((0),(1))));
+        final var Absolute = getPivotRotation();
         if(CurrentFiringMode == SuperstructureState.AUTO) {
-          if(AbsoluteReading > CurrentReference.angle.minus(Rotation2d.fromDegrees((2.5d))).getRadians() 
+          if(Absolute > CurrentReference.angle.minus(Rotation2d.fromDegrees((2.5d))).getRadians() 
                                                         &&
-             AbsoluteReading < CurrentReference.angle.plus(Rotation2d.fromDegrees((2.5d))).getRadians()
-                                                        &&
-                                                Interpolation.isPresent()) {
-              set(Interpolation.get().get((0), (0)));
-              INDEXER_CONTROLLER.set((-1d));
-             }
+             Absolute < CurrentReference.angle.plus(Rotation2d.fromDegrees((2.5d))).getRadians()) {
+            set(Interpolated.get((0), (0)));
+            INDEXER_CONTROLLER.set((-1d));
+            }
         }
-        break;
-      default:
-        break;
-    } 
+      }
+    }, 
+    () -> {
+      Logger.recordOutput(("Cannon/FiringProbabilityPercentile"), (0d));
+      Logger.recordOutput(("Cannon/PivotProbabilityPercentile"), (0d));
+    });
     set(CurrentReference.angle);
     Logger.recordOutput(("Cannon/Reference"), CurrentReference);
     Logger.recordOutput(("Cannon/MeasuredVelocity"), FIRING_VELOCITY.getValueAsDouble());
-    Logger.recordOutput(("Cannon/MeasuredRotation"), Units.rotationsToDegrees(getPivotRotation()));
+    Logger.recordOutput(("Cannon/MeasuredRotation"), getPivotRotation());
     Constants.Objects.ODOMETRY_LOCKER.unlock();
   }
 
@@ -324,10 +322,10 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
 
   /**
    * Provides the current rotational reading of the pivot in rotations
-   * @return Pivot rotational reading 
+   * @return Pivot rotational reading in radians
    */
   private static Double getPivotRotation() {
-    return -(PIVOT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.ABSOLUTE_ENCODER_OFFSET);
+    return Units.rotationsToRadians(-(PIVOT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.ABSOLUTE_ENCODER_OFFSET));
   }
 
   @Override
