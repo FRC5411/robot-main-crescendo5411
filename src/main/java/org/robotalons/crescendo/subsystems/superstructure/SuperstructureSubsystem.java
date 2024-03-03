@@ -117,7 +117,6 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
   @Override
   public synchronized void periodic() {
     Constants.Objects.ODOMETRY_LOCKER.lock();
-    //TODO: Move into Subsystem Manager
     Optional<Matrix<N2,N1>> Interpolation = Optional.empty();
     switch(CurrentFiringMode) {
       case AUTO, SEMI:
@@ -140,7 +139,9 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
         if(CurrentFiringMode == SuperstructureState.AUTO) {
           if(AbsoluteReading > CurrentReference.angle.minus(Rotation2d.fromDegrees((2.5d))).getRadians() 
                                                         &&
-             AbsoluteReading < CurrentReference.angle.plus(Rotation2d.fromDegrees((2.5d))).getRadians()) {
+             AbsoluteReading < CurrentReference.angle.plus(Rotation2d.fromDegrees((2.5d))).getRadians()
+                                                        &&
+                                                Interpolation.isPresent()) {
               set(Interpolation.get().get((0), (0)));
               INDEXER_CONTROLLER.set((-1d));
              }

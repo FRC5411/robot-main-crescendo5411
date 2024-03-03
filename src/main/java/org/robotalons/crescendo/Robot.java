@@ -24,6 +24,8 @@ import org.robotalons.crescendo.Constants.Logging;
 import org.robotalons.crescendo.Constants.Subsystems;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.REVOdometryThread;
+import org.robotalons.lib.utilities.Alert;
+import org.robotalons.lib.utilities.Alert.AlertType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -76,12 +78,15 @@ public final class Robot extends LoggedRobot {
     switch (BuildMetadata.DIRTY) {
       case 0:
         Logger.recordMetadata(("Changes"), ("Committed"));
+        new Alert(("GIT VCS CHANGES COMMITTED"), AlertType.INFO);
         break;
       case 1:
         Logger.recordMetadata(("Changes"), ("Uncommitted"));
+        new Alert(("GIT VCS CHANGES NOT COMMITTED"), AlertType.INFO);
         break;
       default:
         Logger.recordMetadata(("Changes"), ("Unknown"));
+        new Alert(("GIT VCS ERROR OR BUILD ISSUE"), AlertType.INFO);
         break;
     }
     switch (Constants.Subsystems.TYPE) {

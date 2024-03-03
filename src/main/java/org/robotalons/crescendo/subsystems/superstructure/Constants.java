@@ -55,7 +55,7 @@ public class Constants {
     public static final Double PIVOT_MAXIMUM_RANGE_METERS = (100d);
     public static final Double PIVOT_MINIMUM_RANGE_METERS = (0d);
 
-    public static final Double SPEAKER_PIVOT_HEIGHT_METERS = (0d);
+    public static final Double SPEAKER_HEIGHT_METERS = (0d);
 
     public static final Matrix<N2,N1> PIVOT_UPPER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), 0d, 0d);
     public static final Matrix<N2,N1> PIVOT_LOWER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), 0d, 0d);
@@ -63,9 +63,8 @@ public class Constants {
     public static final InterpolatingMatrixTreeMap<Double,N2,N1> PIVOT_FIRING_MAP = new InterpolatingMatrixTreeMap<>();
 
     static { //TODO: AUTOMATION TEAM (RECORD SHOT DATA)
-      PIVOT_FIRING_MAP.put(Math.hypot(PIVOT_MAXIMUM_RANGE_METERS, SPEAKER_PIVOT_HEIGHT_METERS), PIVOT_UPPER_BOUND);
-
-      PIVOT_FIRING_MAP.put(Math.hypot(PIVOT_MINIMUM_RANGE_METERS, SPEAKER_PIVOT_HEIGHT_METERS), PIVOT_LOWER_BOUND);
+      PIVOT_FIRING_MAP.put(Math.hypot(PIVOT_MAXIMUM_RANGE_METERS, SPEAKER_HEIGHT_METERS), PIVOT_UPPER_BOUND);
+      PIVOT_FIRING_MAP.put(Math.hypot(PIVOT_MINIMUM_RANGE_METERS, SPEAKER_HEIGHT_METERS), PIVOT_LOWER_BOUND);
     }
 
     /**
@@ -77,6 +76,17 @@ public class Constants {
     @SuppressWarnings("unused")
     private static void put(final Double Magnitude, final Double Velocity, final Double Rotation) {
       PIVOT_FIRING_MAP.put(Magnitude, MatBuilder.fill(Nat.N2(), Nat.N1(), Velocity, Rotation));
+    }
+
+    /**
+     * Quickly puts the data of a given successful shot relative to the height of the target 
+     * @param Distance  Measured distance of the triangle formed by the distance lengthwise to the speaker
+     * @param Velocity  Measured shooter velocity in RPM
+     * @param Rotation  Measured shooter rotation in radians
+     */
+    @SuppressWarnings("unused")
+    private static void hyput(final Double Distance, final Double Velocity, final Double Rotation) {
+      put(Math.hypot(Distance, SPEAKER_HEIGHT_METERS), Velocity, Rotation);
     }
   }
   

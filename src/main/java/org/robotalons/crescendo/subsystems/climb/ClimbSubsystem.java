@@ -201,8 +201,8 @@ public final class ClimbSubsystem extends TalonSubsystemBase {
    * @return Utility class's instance
    */
   public static synchronized ClimbSubsystem getInstance() {
-      if (java.util.Objects.isNull(Instance))
-          Instance = new ClimbSubsystem();
-      return Instance;
+    if (java.util.Objects.isNull(Instance))
+      Instance = new ClimbSubsystem();
+    return Instance;
   }
 }

@@ -3,7 +3,9 @@ package org.robotalons.lib;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import org.robotalons.lib.utilities.Alert;
 import org.robotalons.lib.utilities.Operator;
+import org.robotalons.lib.utilities.Alert.AlertType;
 
 import com.jcabi.aspects.Timeable;
 
@@ -28,6 +30,7 @@ public abstract class TalonSubsystemBase extends SubsystemBase implements Closea
    */
   protected TalonSubsystemBase(final String Name) {
     super(Name);
+    new Alert(Name + " INITIALIZED", AlertType.INFO);
   }
   // --------------------------------------------------------------[Methods]----------------------------------------------------------------//
   /**
@@ -52,7 +55,9 @@ public abstract class TalonSubsystemBase extends SubsystemBase implements Closea
   protected void with(final Runnable Executable) {
     try {
       Executable.run();
-    } catch (final NullPointerException Ignored) {}
+    } catch (final NullPointerException Ignored) {
+      new Alert((getName().toUpperCase() + " IMPROPERLY CONFIGURED"), AlertType.ERROR);
+    }
   }
 
   @Override
