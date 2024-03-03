@@ -82,7 +82,41 @@ public final class ClimbSubsystem extends TalonSubsystemBase {
       Constants.Measurements.LEFT_ARM_KV,
       Constants.Measurements.LEFT_ARM_KA);
 
-    configure();
+      LEFT_ARM.setIdleMode(IdleMode.kBrake);
+      LEFT_ARM.restoreFactoryDefaults();
+      LEFT_ARM.clearFaults();
+  
+      LEFT_PID.setP(Measurements.LEFT_ARM_P);
+      LEFT_PID.setI(Measurements.LEFT_ARM_I);
+      LEFT_PID.setD(Measurements.LEFT_ARM_D);
+      
+      RIGHT_PID.setP(Measurements.RIGHT_ARM_P);
+      RIGHT_PID.setI(Measurements.RIGHT_ARM_I);
+      RIGHT_PID.setD(Measurements.RIGHT_ARM_D);
+          
+      LEFT_ARM.setSmartCurrentLimit(Measurements.CURRENT_LIMIT);
+  
+      LEFT_ARM.setSoftLimit(
+      SoftLimitDirection.kForward, 
+      Measurements.FORWARD_ARM_LIMIT);
+          
+      LEFT_ARM.setSoftLimit(
+      SoftLimitDirection.kReverse, 
+      Measurements.REVERSE_ARM_LIMIT);
+  
+      RIGHT_ARM.setIdleMode(IdleMode.kBrake);
+      RIGHT_ARM.restoreFactoryDefaults();
+      RIGHT_ARM.clearFaults();
+          
+      RIGHT_ARM.setSmartCurrentLimit(Measurements.CURRENT_LIMIT);
+  
+      RIGHT_ARM.setSoftLimit(
+      SoftLimitDirection.kForward, 
+      Measurements.FORWARD_ARM_LIMIT);
+          
+      RIGHT_ARM.setSoftLimit(
+      SoftLimitDirection.kReverse, 
+      Measurements.FORWARD_ARM_LIMIT);
   }
   
   // ------------------------------------------------------ ---------[Methods]--------------------------------------------------------------- //
@@ -145,48 +179,6 @@ public final class ClimbSubsystem extends TalonSubsystemBase {
     LEFT_ARM.setVoltage(LEFT_PID.calculate(getPosition(ClimbState.LEFT), Demand) + LEFT_FF.calculate(Demand, (0)));
     RIGHT_ARM.setVoltage(RIGHT_PID.calculate(getPosition(ClimbState.RIGHT), Demand) + RIGHT_FF.calculate(Demand, (0)));
   }
-
-  /**
-   * Configures the attached hardware of this instance to correct specifications. 
-   */
-  private synchronized static void configure() {
-    LEFT_ARM.setIdleMode(IdleMode.kBrake);
-    LEFT_ARM.restoreFactoryDefaults();
-    LEFT_ARM.clearFaults();
-
-    LEFT_PID.setP(Measurements.LEFT_ARM_P);
-    LEFT_PID.setI(Measurements.LEFT_ARM_I);
-    LEFT_PID.setD(Measurements.LEFT_ARM_D);
-    
-    RIGHT_PID.setP(Measurements.RIGHT_ARM_P);
-    RIGHT_PID.setI(Measurements.RIGHT_ARM_I);
-    RIGHT_PID.setD(Measurements.RIGHT_ARM_D);
-        
-    LEFT_ARM.setSmartCurrentLimit(Measurements.CURRENT_LIMIT);
-
-    LEFT_ARM.setSoftLimit(
-    SoftLimitDirection.kForward, 
-    Measurements.FORWARD_ARM_LIMIT);
-        
-    LEFT_ARM.setSoftLimit(
-    SoftLimitDirection.kReverse, 
-    Measurements.REVERSE_ARM_LIMIT);
-
-    RIGHT_ARM.setIdleMode(IdleMode.kBrake);
-    RIGHT_ARM.restoreFactoryDefaults();
-    RIGHT_ARM.clearFaults();
-        
-    RIGHT_ARM.setSmartCurrentLimit(Measurements.CURRENT_LIMIT);
-
-    RIGHT_ARM.setSoftLimit(
-    SoftLimitDirection.kForward, 
-    Measurements.FORWARD_ARM_LIMIT);
-        
-    RIGHT_ARM.setSoftLimit(
-    SoftLimitDirection.kReverse, 
-    Measurements.FORWARD_ARM_LIMIT);
-  }
-
   // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
   /**
    * Provides the current value of teh absolute encoders of a side of the climb with the offset applied.

@@ -22,7 +22,6 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonVersion;
 import org.robotalons.crescendo.Constants.Logging;
 import org.robotalons.crescendo.Constants.Subsystems;
-import org.robotalons.crescendo.subsystems.SubsystemManager;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.REVOdometryThread;
 
@@ -187,7 +186,6 @@ public final class Robot extends LoggedRobot {
   // ------------------------------------------------------------[Autonomous]---------------------------------------------------------------//
   @Override
   public void autonomousInit() {
-    SubsystemManager.ensure();
     CurrentAutonomousMessagePrinted = (false);
     CurrentAutonomousStartTime = Timer.getFPGATimestamp();
     CurrentAutonomous = RobotContainer.Autonomous.get();

@@ -22,6 +22,10 @@ public class Constants {
     public static final Double ROBOT_RADIUS_METERS = Math.hypot(ROBOT_LENGTH_METERS / (2.0), ROBOT_WIDTH_METERS / (2.0));      
     
     public static final Double ROBOT_MAXIMUM_LINEAR_VELOCITY = Units.feetToMeters((15.4d));
+    public static final Double ROBOT_MAXIMUM_ANGULAR_VELOCITY = ROBOT_MAXIMUM_LINEAR_VELOCITY / ROBOT_RADIUS_METERS;
+
+    public static final Double ROBOT_MAXIMUM_LINEAR_ACCELERATION = Units.feetToMeters((9.5d));
+    public static final Double ROBOT_MAXIMUM_ANGULAR_ACCELERATION = ROBOT_MAXIMUM_LINEAR_VELOCITY / ROBOT_RADIUS_METERS;
 
     public static final Double ROBOT_TRANSLATION_KP = (1d);
     public static final Double ROBOT_TRANSLATION_KI = (1d);

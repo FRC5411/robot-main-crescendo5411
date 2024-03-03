@@ -241,7 +241,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
   @Override
   public void configure(final Operator Profile) {
     CurrentPilot = Profile;
-    try {
+    with(() -> {
       CurrentPilot.getKeybinding(Keybindings.CANNON_TOGGLE)
         .onTrue(new InstantCommand(
           () -> {
@@ -256,27 +256,24 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
             FIRING_CONTROLLERS.getSecond().set((0.375d));
           }
           ,SuperstructureSubsystem.getInstance()));
-    } catch(final NullPointerException Ignored) {}
-    try {
+    });
+    with(() -> 
       CurrentPilot.getKeybinding(Keybindings.CANNON_PIVOT_UP)
         .whileTrue(new InstantCommand(
           () -> {
             CurrentReference.angle = CurrentReference.angle.plus(Rotation2d.fromDegrees((1d)));
           },
           SuperstructureSubsystem.getInstance()
-        ).repeatedly());
-    } catch(final NullPointerException Ignored) {}
-    try {
+        ).repeatedly()));
+    with(() -> 
       CurrentPilot.getKeybinding(Keybindings.CANNON_PIVOT_DOWN)
         .whileTrue(new InstantCommand(
           () -> {
             CurrentReference.angle = CurrentReference.angle.minus(Rotation2d.fromDegrees((1d)));
           },
           SuperstructureSubsystem.getInstance()
-        ).repeatedly());
-
-    } catch(final NullPointerException Ignored) {}
-    try {
+        ).repeatedly()));
+    with(() -> {
       CurrentPilot.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
         .onTrue(new InstantCommand(
           () -> {
@@ -292,9 +289,9 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
             INDEXER_CONTROLLER.set((0d));
           },
           SuperstructureSubsystem.getInstance()
-        ));
-    } catch(final NullPointerException Ignored) {}
-    try {
+      ));
+    });
+    with(() -> {
       CurrentPilot.getKeybinding(Keybindings.INTAKE_TOGGLE)
         .onTrue(new InstantCommand(
           () -> {
@@ -311,7 +308,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
           },
           SuperstructureSubsystem.getInstance()
         ));
-    } catch(final NullPointerException Ignored) {}
+    });
   }
   // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
   /**

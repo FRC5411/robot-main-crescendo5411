@@ -5,6 +5,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -14,6 +15,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
@@ -216,6 +218,35 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
     }
   }
 
+  /**
+   * Provides implementation for creating repeatable pose alignment
+   * @param Source Pose to align the chassis to
+   * @return Command configured to achieve this pose autonomously
+   */
+  private static Command alignPose(final Pose2d Source) {
+    return SubsystemManager.pathfind(
+      Source.transformBy(
+      new Transform2d(
+        GYROSCOPE.getYawRotation().getRadians() % 2 * Math.PI > Math.PI? -Measurements.ROBOT_RADIUS_METERS: Measurements.ROBOT_RADIUS_METERS,
+        (0d),
+        new Rotation2d())),
+      (0d));
+  }
+
+  /**
+   * Provides implementation for creating repeatable translation alignment
+   * @param Source Pose to align the chassis to
+   * @return Command configured to achieve this translation autonomously
+   */
+  private static Command alignTranslation(final Transform2d Source) {
+    return SubsystemManager.pathfind(
+      getPose().plus(
+        new Transform2d(Source.getTranslation(),
+                        Source.getRotation())
+      ),
+      (0d));
+  }
+
   @Override
   public void configure(final Operator Operator) {
     CurrentOperator = Operator;
@@ -241,20 +272,77 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
         (Double) CurrentOperator.getPreference(Preferences.ORIENTATION_DEADZONE))))), 
         DrivebaseSubsystem.getInstance()
     ));
-    try {
+
+    with(() ->
       CurrentOperator.getKeybinding(Keybindings.ORIENTATION_TOGGLE)
         .onTrue(new InstantCommand(
           DrivebaseSubsystem::toggleOrientationType,
           DrivebaseSubsystem.getInstance()
-        ));
-    } catch(final NullPointerException Ignored) {}
-    try {
+        )));
+
+    with(() ->
       CurrentOperator.getKeybinding(Keybindings.MODULE_LOCKING_TOGGLE)
         .onTrue(new InstantCommand(
           DrivebaseSubsystem::toggle,
           DrivebaseSubsystem.getInstance()
-        ));
-    } catch(final NullPointerException Ignored) {}
+        )));
+
+    with(() ->
+      CurrentOperator.getKeybinding(Keybindings.ALIGNMENT_SPEAKER)
+      .onTrue(new InstantCommand(
+        () -> {
+          final var Rotation = GYROSCOPE.getYawRotation().getRadians();
+          VisionSubsystem.getAprilTagPose(Rotation % 2 * Math.PI > Math.PI? (3): (7))
+            .ifPresent((Pose) -> {
+                alignPose(Pose.toPose2d())
+              .onlyWhile(() -> CurrentOperator.getKeybinding(Keybindings.ORIENTATION_TOGGLE).getAsBoolean()).schedule();
+            });
+        },
+        VisionSubsystem.getInstance(),
+        DrivebaseSubsystem.getInstance()
+      )));
+
+    with(() ->
+      CurrentOperator.getKeybinding(Keybindings.ALIGNMENT_AMP)
+      .onTrue(new InstantCommand(
+        () -> {
+          VisionSubsystem.getAprilTagPose((9))
+            .ifPresent((Pose) -> {
+                alignPose(Pose.toPose2d())
+              .onlyWhile(() -> CurrentOperator.getKeybinding(Keybindings.ORIENTATION_TOGGLE).getAsBoolean()).schedule();
+            });
+        },
+        VisionSubsystem.getInstance(),
+        DrivebaseSubsystem.getInstance()
+      )));
+
+    with(() ->
+      CurrentOperator.getKeybinding(Keybindings.ALIGNMENT_OBJECT)
+      .onTrue(new InstantCommand(
+        () -> {
+          VisionSubsystem.getOptimalTarget(CameraIdentifier.INTAKE_CAMERA)
+            .ifPresent((Transformation) -> {
+              alignTranslation(new Transform2d(Transformation.getTranslation().toTranslation2d(), Transformation.getRotation().toRotation2d()))
+              .onlyWhile(() -> CurrentOperator.getKeybinding(Keybindings.ALIGNMENT_OBJECT).getAsBoolean()).schedule();
+            });
+        },
+        VisionSubsystem.getInstance(),
+        DrivebaseSubsystem.getInstance()
+      )));
+      
+    with(() -> 
+      CurrentOperator.getKeybinding(Keybindings.ALIGNMENT_NEAREST)
+      .onTrue(new InstantCommand(
+        () -> {
+          VisionSubsystem.getOptimalTarget(List.of(CameraIdentifier.SOURCE_CAMERA, CameraIdentifier.SPEAKER_FRONT_CAMERA, CameraIdentifier.SPEAKER_REAR_CAMERA))
+            .ifPresent((Transformation) -> {
+                alignTranslation(new Transform2d(Transformation.getTranslation().toTranslation2d(), Transformation.getRotation().toRotation2d()))
+              .onlyWhile(() -> CurrentOperator.getKeybinding(Keybindings.ALIGNMENT_NEAREST).getAsBoolean()).schedule();
+            });
+        },
+        VisionSubsystem.getInstance(),
+        DrivebaseSubsystem.getInstance()
+      )));
   }
 
   /**
@@ -333,7 +421,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
   public static synchronized void set(final Translation2d Translation, final Rotation2d Rotation) {
     switch(CurrentMode) {
       case OBJECT_ORIENTED:
-        SubsystemManager.getOptimalTarget(CameraIdentifier.INTAKE_CAMERA).ifPresentOrElse((Optimal) -> {
+        VisionSubsystem.getOptimalTarget(CameraIdentifier.INTAKE_CAMERA).ifPresentOrElse((Optimal) -> {
           set(new ChassisSpeeds(
             -Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
             -Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 

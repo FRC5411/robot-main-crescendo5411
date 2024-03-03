@@ -213,7 +213,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
   /**
    * Provides the april tag with the id that we asked for in Pose3d from the specified camera.
    * Fiducial ID : (1-16)
-   * @param Tag        ID of the april tag
+   * @param Tag ID of the april tag
    * @return Position of the tag relative to the field.
    */
   public static Optional<Pose3d> getAprilTagPose(final Integer Tag){
@@ -227,6 +227,33 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    */
   public static Transform3d getCameraTransform(final CameraIdentifier Identifier) {
     return CAMERAS.get(Identifier.getValue()).getRobotOffset();
+  }
+
+  /**
+   * Provides the 'most optimal' target transformation between a list of cameras, compared using the normalization of their respective transformations
+   * @param Cameras List of cameras to take data from, any copies of cameras identifiers are removed
+   * @return if possible, 'most optimal' target transformation 
+   */
+  public static Optional<Transform3d> getOptimalTarget(List<CameraIdentifier> Cameras) {
+    Cameras = Cameras.stream().distinct().toList();
+    Optional<Transform3d> Optimal = Optional.empty();
+    for(final var Identifier: Cameras) {
+      final var RelativeOptimal = CAMERAS.get(Identifier.getValue()).getOptimalTarget();
+      if(Optimal.isPresent() && RelativeOptimal.isPresent()) {
+        if(Optimal.get().getTranslation().getNorm() < RelativeOptimal.get().getTranslation().getNorm()) {
+          Optimal = RelativeOptimal;
+        }
+      }      
+    }
+    return Optimal;
+  }
+
+  /**
+   * Provides the 'most optimal' target transformation between all cameras, compared using the normalization of their respective transformations
+   * @return if possible, 'most optimal' target transformation 
+   */
+  public static Optional<Transform3d> getOptimalTarget() {
+    return getOptimalTarget(List.of(CameraIdentifier.values()));
   }
 
   /**

@@ -154,7 +154,7 @@ public abstract class Camera implements Closeable {
    * @return List of robot-relative target transformations
    */
   public List<Optional<Transform3d>> getTargets(){
-    return Stream.of(TARGET_STATUS.Targets).map(Optional::ofNullable).toList();
+    return Stream.of(TARGET_STATUS.Targets).map((Transformation) -> Transformation.plus(OFFSET)).map(Optional::ofNullable).toList();
   }
 
   /**
@@ -171,7 +171,7 @@ public abstract class Camera implements Closeable {
    * @return Robot-relative best target transformation
    */
   public Optional<Transform3d> getOptimalTarget(){
-    return Optional.ofNullable(TARGET_STATUS.OptimalTransform);
+    return Optional.ofNullable(TARGET_STATUS.OptimalTransform.plus(OFFSET));
   }
 
   /**

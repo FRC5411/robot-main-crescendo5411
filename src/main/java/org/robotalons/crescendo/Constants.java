@@ -153,6 +153,10 @@ public final class Constants {
       public static final String OUTTAKE_TOGGLE = ("OUTTAKE_TOGGLE");
       public static final String CANNON_PIVOT_UP = ("CANNON_PIVOT_UP");
       public static final String CANNON_PIVOT_DOWN = ("CANNON_PIVOT_DOWN");
+      public static final String ALIGNMENT_SPEAKER = ("ALIGNMENT_SPEAKER");
+      public static final String ALIGNMENT_AMP = ("ALIGNMENT_AMP");
+      public static final String ALIGNMENT_OBJECT = ("ALIGNMENT_OBJECT");
+      public static final String ALIGNMENT_NEAREST = ("ALIGNMENT_NEAREST");
     }
   }
 }

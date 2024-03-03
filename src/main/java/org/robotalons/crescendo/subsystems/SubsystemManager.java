@@ -2,12 +2,13 @@
 package org.robotalons.crescendo.subsystems;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -16,16 +17,15 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import org.littletonrobotics.junction.Logger;
 import org.robotalons.crescendo.subsystems.climb.ClimbSubsystem;
+import org.robotalons.crescendo.subsystems.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem;
 import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
-import org.robotalons.crescendo.subsystems.vision.VisionSubsystem.CameraIdentifier;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.pathfinding.LocalADStarAK;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 // -----------------------------------------------------------[Subsystem Manager]---------------------------------------------------------------//
 /**
  *
@@ -90,32 +90,35 @@ public final class SubsystemManager extends SubsystemBase {
       (Reference) -> Logger.recordOutput(("Pathfinding/Reference"), Reference));
     DrivebaseSubsystem.getModules().forEach((Module) -> 
       Module.set(org.robotalons.lib.motion.actuators.Module.ReferenceType.STATE_CONTROL));
+    Pathfinding.ensureInitialized();
+    Pathfinding.setStartPosition(DrivebaseSubsystem.getPose().getTranslation());
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
   public synchronized void periodic() {
-    Pathfinding.ensureInitialized();  
     FIELD.setRobotPose(DrivebaseSubsystem.getPose());
     Pathfinding.setDynamicObstacles(
       new ArrayList<>(),
       DrivebaseSubsystem.getPose().getTranslation());
   }
-
-  /**
-   * Ensures that the pathfinder is initialized, and that the start position of path finding is correct.
-   */
-  public static void ensure() {
-    Pathfinding.ensureInitialized();
-    Pathfinding.setStartPosition(DrivebaseSubsystem.getPose().getTranslation());
-  }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
-   * Provides the transform in three-dimensional space to the optimal target of a given camera
-   * @param Port Which port to pull data from, ranging from 0, up to 4
-   * @return Transformation in three-dimensional space camera relative
+   * Pathfinds and autonomously achieves the robot chassis to a give pose position; with a given end velocity
+   * @param Pose     Ending pose of the robot, the position for the chassis to achieve
+   * @param Terminal Ending velocity of the robot, the velocity for the chassis to end with
+   * @return Command capable of pathfinding the robot to a given position
    */
-  public static Optional<Transform3d> getOptimalTarget(final CameraIdentifier Port) {
-    return VisionSubsystem.getOptimalTarget(Port);
+  public static Command pathfind(final Pose2d Pose, final Double Terminal) {
+    return AutoBuilder.pathfindToPoseFlipped(
+      Pose,
+      new PathConstraints(
+        Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
+        Measurements.ROBOT_MAXIMUM_LINEAR_ACCELERATION,
+        Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY, 
+        Measurements.ROBOT_MAXIMUM_ANGULAR_ACCELERATION
+      ),
+      Terminal
+    );
   }
 
   /**

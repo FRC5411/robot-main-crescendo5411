@@ -45,6 +45,16 @@ public abstract class TalonSubsystemBase extends SubsystemBase implements Closea
 
   } 
 
+  /**
+   * Provides a safe environment for configuring possibly null controller configurations
+   * @param Executable Runnable controller configuration
+   */
+  protected void with(final Runnable Executable) {
+    try {
+      Executable.run();
+    } catch (final NullPointerException Ignored) {}
+  }
+
   @Override
   @Timeable(limit = 20, unit = TimeUnit.MILLISECONDS)
   public abstract void periodic();
