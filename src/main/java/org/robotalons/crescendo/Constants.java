@@ -78,8 +78,8 @@ public final class Constants {
 
   public static final class Profiles { 
 
-    public static final List<Operator> OPERATORS = new ArrayList<Operator>();
-    public static final Map<TalonSubsystemBase,Operator> DEFAULT = new HashMap<TalonSubsystemBase, Operator>();
+    public static final List<Operator<Keybindings, Preferences>> OPERATORS = new ArrayList<>();
+    public static final Map<TalonSubsystemBase<Keybindings,Preferences>,Operator<Keybindings, Preferences>> DEFAULT = new HashMap<>();
     static {
       OPERATORS.add(Operators.Primary.PROFILE);
       OPERATORS.add(Operators.Secondary.PROFILE);
@@ -96,65 +96,65 @@ public final class Constants {
         private static final String NAME = ("ARMAAN K.");
         private static final Integer INPUT_PORT = (0);
         private static final CommandXboxController INPUT_METHOD = new CommandXboxController(INPUT_PORT);
-        public static final Operator PROFILE = new Operator(NAME)
-          .addPreference(Preferences.TRANSLATIONAL_X_INPUT, () -> -INPUT_METHOD.getRawAxis((1)))
-          .addPreference(Preferences.TRANSLATIONAL_Y_INPUT, () -> -INPUT_METHOD.getRawAxis((0)))
-          .addPreference(Preferences.ORIENTATION_INPUT, () -> INPUT_METHOD.getRawAxis((4)))
-          .addPreference(Preferences.SQUARED_INPUT, () -> (true))
-          .addPreference(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (0.2))
-          .addPreference(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (0.2))
-          .addPreference(Preferences.ORIENTATION_DEADZONE, () -> (0.2))
-          .addKeybinding(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.povCenter())
-          .addKeybinding(Keybindings.INTAKE_TOGGLE, INPUT_METHOD.leftTrigger())
-          .addKeybinding(Keybindings.OUTTAKE_TOGGLE, INPUT_METHOD.rightTrigger())
-          .addKeybinding(Keybindings.CANNON_PIVOT_DOWN, INPUT_METHOD.a())
-          .addKeybinding(Keybindings.CANNON_TOGGLE, INPUT_METHOD.b())
-          .addKeybinding(Keybindings.CANNON_PIVOT_UP, INPUT_METHOD.y());
+        public static final Operator<Keybindings,Preferences> PROFILE = new Operator<Keybindings,Preferences>(NAME)
+          .add(Preferences.TRANSLATION_X_INPUT, () -> -INPUT_METHOD.getRawAxis((1)))
+          .add(Preferences.TRANSLATION_Y_INPUT, () -> -INPUT_METHOD.getRawAxis((0)))
+          .add(Preferences.ORIENTATION_X_INPUT, () -> INPUT_METHOD.getRawAxis((4)))
+          .add(Preferences.SQUARED_INPUT, () -> (true))
+          .add(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (2e-2))
+          .add(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (2e-2))
+          .add(Preferences.ORIENTATION_DEADZONE, () -> (2e-2))
+          .add(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.povCenter())
+          .add(Keybindings.INTAKE_TOGGLE, INPUT_METHOD.leftTrigger())
+          .add(Keybindings.OUTTAKE_TOGGLE, INPUT_METHOD.rightTrigger())
+          .add(Keybindings.CANNON_PIVOT_DOWN, INPUT_METHOD.a())
+          .add(Keybindings.CANNON_TOGGLE, INPUT_METHOD.b())
+          .add(Keybindings.CANNON_PIVOT_UP, INPUT_METHOD.y());
       }
 
       public static final class Secondary {
         private static final String NAME = ("ALEX P.");
         private static final Integer INPUT_PORT = (1);
         private static final CommandXboxController INPUT_METHOD = new CommandXboxController(INPUT_PORT);
-        public static final Operator PROFILE = new Operator(NAME)
-          .addPreference(Preferences.TRANSLATIONAL_X_INPUT, () -> -INPUT_METHOD.getRawAxis((1)))
-          .addPreference(Preferences.TRANSLATIONAL_Y_INPUT, () -> -INPUT_METHOD.getRawAxis((0)))
-          .addPreference(Preferences.ORIENTATION_INPUT, () -> INPUT_METHOD.getRawAxis((4)))
-          .addPreference(Preferences.SQUARED_INPUT, () -> (true))
-          .addPreference(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (0.2))
-          .addPreference(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (0.2))
-          .addPreference(Preferences.ORIENTATION_DEADZONE, () -> (0.2))
-          .addKeybinding(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.povCenter())
-          .addKeybinding(Keybindings.INTAKE_TOGGLE, INPUT_METHOD.leftTrigger())
-          .addKeybinding(Keybindings.OUTTAKE_TOGGLE, INPUT_METHOD.rightTrigger())
-          .addKeybinding(Keybindings.CANNON_PIVOT_DOWN, INPUT_METHOD.a())
-          .addKeybinding(Keybindings.CANNON_TOGGLE, INPUT_METHOD.b())
-          .addKeybinding(Keybindings.CANNON_PIVOT_UP, INPUT_METHOD.y());
+        public static final Operator<Keybindings,Preferences> PROFILE = new Operator<Keybindings,Preferences>(NAME)
+          .add(Preferences.TRANSLATION_X_INPUT, () -> -INPUT_METHOD.getRawAxis((1)))
+          .add(Preferences.TRANSLATION_Y_INPUT, () -> -INPUT_METHOD.getRawAxis((0)))
+          .add(Preferences.ORIENTATION_X_INPUT, () -> INPUT_METHOD.getRawAxis((4)))
+          .add(Preferences.SQUARED_INPUT, () -> (true))
+          .add(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (2e-2))
+          .add(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (2e-2))
+          .add(Preferences.ORIENTATION_DEADZONE, () -> (2e-2))
+          .add(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.povCenter())
+          .add(Keybindings.INTAKE_TOGGLE, INPUT_METHOD.leftTrigger())
+          .add(Keybindings.OUTTAKE_TOGGLE, INPUT_METHOD.rightTrigger())
+          .add(Keybindings.CANNON_PIVOT_DOWN, INPUT_METHOD.a())
+          .add(Keybindings.CANNON_TOGGLE, INPUT_METHOD.b())
+          .add(Keybindings.CANNON_PIVOT_UP, INPUT_METHOD.y());
       }
     }
 
-    public static final class Preferences {
-      public static final String TRANSLATIONAL_X_INPUT = ("TRANSLATION_X_INPUT");
-      public static final String TRANSLATIONAL_Y_INPUT = ("TRANSLATION_Y_INPUT");
-      public static final String ORIENTATION_INPUT = ("ORIENTATION_X_INPUT");
-      public static final String SQUARED_INPUT = ("SQUARED_INPUT");
-      public static final String TRANSLATIONAL_X_DEADZONE = ("TRANSLATIONAL_X_DEADZONE");
-      public static final String TRANSLATIONAL_Y_DEADZONE = ("TRANSLATIONAL_Y_DEADZONE");
-      public static final String ORIENTATION_DEADZONE = ("ORIENTATION_DEADZONE");
+    public enum Preferences {
+      TRANSLATION_X_INPUT,
+      TRANSLATION_Y_INPUT,
+      ORIENTATION_X_INPUT,
+      SQUARED_INPUT,
+      TRANSLATIONAL_X_DEADZONE,
+      TRANSLATIONAL_Y_DEADZONE,
+      ORIENTATION_DEADZONE
     }
 
-    public static final class Keybindings {
-      public static final String MODULE_LOCKING_TOGGLE = ("LOCKING_ENABLED_TRIGGER");
-      public static final String ORIENTATION_TOGGLE = ("ORIENTATION_TOGGLE");
-      public static final String INTAKE_TOGGLE = ("INTAKE_TOGGLE");
-      public static final String CANNON_TOGGLE = ("CANNON_TOGGLE");
-      public static final String OUTTAKE_TOGGLE = ("OUTTAKE_TOGGLE");
-      public static final String CANNON_PIVOT_UP = ("CANNON_PIVOT_UP");
-      public static final String CANNON_PIVOT_DOWN = ("CANNON_PIVOT_DOWN");
-      public static final String ALIGNMENT_SPEAKER = ("ALIGNMENT_SPEAKER");
-      public static final String ALIGNMENT_AMP = ("ALIGNMENT_AMP");
-      public static final String ALIGNMENT_OBJECT = ("ALIGNMENT_OBJECT");
-      public static final String ALIGNMENT_NEAREST = ("ALIGNMENT_NEAREST");
+    public enum Keybindings {
+      MODULE_LOCKING_TOGGLE,
+      ORIENTATION_TOGGLE,
+      INTAKE_TOGGLE,
+      CANNON_TOGGLE,
+      OUTTAKE_TOGGLE,
+      CANNON_PIVOT_UP,
+      CANNON_PIVOT_DOWN,
+      ALIGNMENT_SPEAKER,
+      ALIGNMENT_AMP,
+      ALIGNMENT_OBJECT,
+      ALIGNMENT_NEAREST,
     }
   }
 }

@@ -49,7 +49,7 @@ import java.util.stream.IntStream;
  * @see TalonSubsystemBase
  * @see org.robotalons.crescendo.RobotContainer RobotContainer
  */
-public class DrivebaseSubsystem extends TalonSubsystemBase {
+public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferences> {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private static final SwerveDrivePoseEstimator POSE_ESTIMATOR;
   private static final SysIdRoutine CHARACTERIZATION_ROUTINE;
@@ -60,7 +60,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
   private static List<SwerveModulePosition> CurrentPositions;
   private static DrivebaseState CurrentMode;
   private static Rotation2d CurrentRotation;
-  private static Operator CurrentOperator;
+  private static Operator<Keybindings,Preferences> CurrentOperator;
   private static Double CurrentTime;
   private static DrivebaseSubsystem Instance;
   private static Boolean ModuleLocked;      
@@ -264,27 +264,27 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
   }
 
   @Override
-  public void configure(final Operator Operator) {
-    CurrentOperator = Operator;
+  public void configure(final Operator<Keybindings, Preferences> Profile) {
+    CurrentOperator = Profile;
     DrivebaseSubsystem.getInstance().setDefaultCommand(
       new InstantCommand(() ->
       DrivebaseSubsystem.set(((Boolean) CurrentOperator.getPreference(Preferences.SQUARED_INPUT))?
         new Translation2d(
-            square(MathUtil.applyDeadband(-(Double) CurrentOperator.getPreference(Preferences.TRANSLATIONAL_X_INPUT),
+            square(MathUtil.applyDeadband(-(Double) CurrentOperator.getPreference(Preferences.TRANSLATION_X_INPUT),
           (Double) CurrentOperator.getPreference(Preferences.TRANSLATIONAL_X_DEADZONE))),
-            square(MathUtil.applyDeadband(-(Double) CurrentOperator.getPreference(Preferences.TRANSLATIONAL_Y_INPUT),
+            square(MathUtil.applyDeadband(-(Double) CurrentOperator.getPreference(Preferences.TRANSLATION_Y_INPUT),
           (Double) CurrentOperator.getPreference(Preferences.TRANSLATIONAL_Y_DEADZONE)))):
         new Translation2d(
-          MathUtil.applyDeadband(-(Double) CurrentOperator.getPreference(Preferences.TRANSLATIONAL_X_INPUT),
+          MathUtil.applyDeadband(-(Double) CurrentOperator.getPreference(Preferences.TRANSLATION_X_INPUT),
         (Double) CurrentOperator.getPreference(Preferences.TRANSLATIONAL_X_DEADZONE)),
-          MathUtil.applyDeadband(-(Double) CurrentOperator.getPreference(Preferences.TRANSLATIONAL_Y_INPUT),
+          MathUtil.applyDeadband(-(Double) CurrentOperator.getPreference(Preferences.TRANSLATION_Y_INPUT),
         (Double) CurrentOperator.getPreference(Preferences.TRANSLATIONAL_Y_DEADZONE))),
         ((Boolean) CurrentOperator.getPreference(Preferences.SQUARED_INPUT))?
         new Rotation2d(
-            square(MathUtil.applyDeadband(-(Double) CurrentOperator.getPreference(Preferences.ORIENTATION_INPUT),
+            square(MathUtil.applyDeadband(-(Double) CurrentOperator.getPreference(Preferences.ORIENTATION_X_INPUT),
           (Double) CurrentOperator.getPreference(Preferences.ORIENTATION_DEADZONE)))):
         new Rotation2d(
-          (MathUtil.applyDeadband(-(Double) CurrentOperator.getPreference(Preferences.ORIENTATION_INPUT),
+          (MathUtil.applyDeadband(-(Double) CurrentOperator.getPreference(Preferences.ORIENTATION_X_INPUT),
         (Double) CurrentOperator.getPreference(Preferences.ORIENTATION_DEADZONE))))), 
         DrivebaseSubsystem.getInstance()
     ));
@@ -496,7 +496,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   @Override
-  public Operator getOperator() {
+  public Operator<Keybindings, Preferences> getOperator() {
     return CurrentOperator;
   }
   /**

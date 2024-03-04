@@ -17,6 +17,8 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import org.littletonrobotics.junction.Logger;
 import org.robotalons.crescendo.subsystems.climb.ClimbSubsystem;
+import org.robotalons.crescendo.Constants.Profiles.Keybindings;
+import org.robotalons.crescendo.Constants.Profiles.Preferences;
 import org.robotalons.crescendo.subsystems.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem;
@@ -39,11 +41,11 @@ import java.util.List;
  */
 public final class SubsystemManager extends SubsystemBase {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  public static final List<TalonSubsystemBase> SUBSYSTEMS;
-  public static final TalonSubsystemBase DRIVEBASE;
-  public static final TalonSubsystemBase CANNON;
-  public static final TalonSubsystemBase CLIMB;
-  public static final TalonSubsystemBase VISION;
+  public static final List<TalonSubsystemBase<Keybindings,Preferences>> SUBSYSTEMS;
+  public static final TalonSubsystemBase<Keybindings,Preferences> DRIVEBASE;
+  public static final TalonSubsystemBase<Keybindings,Preferences> CANNON;
+  public static final TalonSubsystemBase<Keybindings,Preferences> CLIMB;
+  public static final TalonSubsystemBase<Keybindings,Preferences> VISION;
   public static final Field2d FIELD;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static SubsystemManager Instance;
@@ -133,7 +135,7 @@ public final class SubsystemManager extends SubsystemBase {
    * Provides the employee subsystems managed my this subsystem manager
    * @return List of dependent subsystems
    */
-  public static List<TalonSubsystemBase> getSubsystems() {
+  public static List<TalonSubsystemBase<Keybindings, Preferences>> getSubsystems() {
     return SUBSYSTEMS;
   }
 

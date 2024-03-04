@@ -8,6 +8,8 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.photonvision.PhotonCamera;
+import org.robotalons.crescendo.Constants.Profiles.Keybindings;
+import org.robotalons.crescendo.Constants.Profiles.Preferences;
 import org.robotalons.crescendo.subsystems.vision.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.vision.Constants.Ports;
 import org.robotalons.lib.TalonSubsystemBase;
@@ -29,7 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @see SubsystemBase
  * @see org.robotalons.crescendo.RobotContainer RobotContainer
  */
-public final class VisionSubsystem extends TalonSubsystemBase {
+public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Preferences> {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private static List<Camera> CAMERAS;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
@@ -129,7 +131,7 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * Retrieves the existing instance of this static utility class.
    * @return Utility class's instance
    */
-  public static synchronized TalonSubsystemBase getInstance() {
+  public static synchronized TalonSubsystemBase<Keybindings,Preferences> getInstance() {
     if (java.util.Objects.isNull(Instance)) {
       Instance = new VisionSubsystem();
     }

@@ -9,6 +9,8 @@ import org.robotalons.lib.utilities.Alert.AlertType;
 
 import com.jcabi.aspects.Timeable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.io.Closeable;
 // ----------------------------------------------------------[Talon Subsystem Base]---------------------------------------------------------//
@@ -22,7 +24,9 @@ import java.io.Closeable;
  * @see SubsystemBase
  * @author Cody Washington
  */
-public abstract class TalonSubsystemBase extends SubsystemBase implements Closeable {
+public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preferences extends Enum<?>> extends SubsystemBase implements Closeable {
+  // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
+  private static final List<TalonSubsystemBase<?,?>> SUBSYSTEMS;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Talon Subsystem Constructor.
@@ -30,26 +34,29 @@ public abstract class TalonSubsystemBase extends SubsystemBase implements Closea
    */
   protected TalonSubsystemBase(final String Name) {
     super(Name);
+    SUBSYSTEMS.add(this);
     new Alert(Name + " INITIALIZED", AlertType.INFO);
+  } static {
+    SUBSYSTEMS = new ArrayList<>();
   }
   // --------------------------------------------------------------[Methods]----------------------------------------------------------------//
   /**
-   * Configures a pilot's hardware to operate this subsystem
-   * @param Operator the next operator of this subsystem instance
+   * Configures a pilot's hardware (GenericHID) to operate this subsystem's Hardware (actuators)
+   * @param Operator New subsystem operator
    */
-  public void configure(final Operator Operator) {
+  public synchronized void configure(final Operator<Keybindings, Preferences> Operator) {
 
   }
   
   /**
-   * Closes this instance and all held resources immediately.
+   * Closes this instance and all held resources (actuators) immediately.
    */
-  public void close() {
+  public synchronized void close() {
 
   } 
 
   /**
-   * Provides a safe environment for configuring possibly null controller configurations
+   * Provides a safe environment for configuring possibly null operations
    * @param Executable Runnable controller configuration
    */
   protected void with(final Runnable Executable) {
@@ -62,13 +69,25 @@ public abstract class TalonSubsystemBase extends SubsystemBase implements Closea
 
   @Override
   @Timeable(limit = 20, unit = TimeUnit.MILLISECONDS)
-  public abstract void periodic();
+  public synchronized void periodic() {
+
+  }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
+
+  /**
+   * Provides a list (ordered) of all initialized subsystems
+   * @return List of subsystems
+   */
+  public static List<TalonSubsystemBase<?,?>> getSubsystems() {
+    return SUBSYSTEMS;
+  }
+
   /**
    * Provides the current operator of this subsystem.
-   * @return Subsystem operator
+   * @return Current subsystem operator
    */
-  public Operator getOperator() {
-    return null;
+  public Operator<Keybindings, Preferences> getOperator() {
+    return (null);
   }
+
 }

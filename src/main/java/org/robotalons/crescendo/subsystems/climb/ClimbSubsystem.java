@@ -13,6 +13,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 
 import org.littletonrobotics.junction.Logger;
+import org.robotalons.crescendo.Constants.Profiles.Keybindings;
+import org.robotalons.crescendo.Constants.Profiles.Preferences;
 import org.robotalons.crescendo.subsystems.climb.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.climb.Constants.Objects;
 import org.robotalons.crescendo.subsystems.climb.Constants.Ports;
@@ -27,7 +29,7 @@ import org.robotalons.lib.TalonSubsystemBase;
  * @see SubsystemBase
  * @see {@link org.robotalons.crescendo.RobotContainer RobotContainer} 
  */
-public final class ClimbSubsystem extends TalonSubsystemBase {
+public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Preferences> {
   // --------------------------------------------------------------[Constants]-------------------------------------------------------------- //
   private static final CANSparkMax LEFT_ARM;
   private static final CANSparkMax RIGHT_ARM;

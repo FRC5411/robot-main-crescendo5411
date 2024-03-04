@@ -9,6 +9,8 @@ import com.pathplanner.lib.auto.AutoBuilder;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.robotalons.crescendo.Constants.Profiles;
+import org.robotalons.crescendo.Constants.Profiles.Keybindings;
+import org.robotalons.crescendo.Constants.Profiles.Preferences;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
 import org.robotalons.lib.utilities.Operator;
 
@@ -24,7 +26,7 @@ import java.util.List;
  */
 public final class RobotContainer {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  public static final List<LoggedDashboardChooser<Operator>> SubsystemOperators;
+  public static final List<LoggedDashboardChooser<Operator<Keybindings, Preferences>>> SubsystemOperators;
   public static final LoggedDashboardChooser<Command> Autonomous;
   // ------------------------------23---------------------------------[Fields]----------------------------------------------------------------//
   private static RobotContainer Instance = (null);
@@ -33,13 +35,13 @@ public final class RobotContainer {
   private RobotContainer() {} static {
     SubsystemOperators = new ArrayList<>();
     SubsystemManager.getSubsystems().forEach((Subsystem) -> {
-      final var Selector = new SendableChooser<Operator>();
+      final var Selector = new SendableChooser<Operator<Keybindings, Preferences>>();
       final var Default = Profiles.DEFAULT.get(Subsystem);
       Profiles.OPERATORS.forEach((Profile) -> Selector.addOption(Profile.getName(), Profile));
       Selector.setDefaultOption(Default.getName(), Default);
       Selector.onChange(Subsystem::configure);
       Subsystem.configure(Default);
-      SubsystemOperators.add(new LoggedDashboardChooser<Operator>(Subsystem.getName() + " Pilot Selector", Selector));
+      SubsystemOperators.add(new LoggedDashboardChooser<Operator<Keybindings, Preferences>>(Subsystem.getName() + " Pilot Selector", Selector));
     });
     Profiles.OPERATORS.forEach((Profile) -> SmartDashboard.putData(Profile.getName(), Profile));
     SubsystemManager.getInstance();

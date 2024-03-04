@@ -25,6 +25,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonUtils;
 import org.robotalons.crescendo.Constants.Profiles.Keybindings;
+import org.robotalons.crescendo.Constants.Profiles.Preferences;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.crescendo.subsystems.superstructure.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.superstructure.Constants.Ports;
@@ -45,7 +46,7 @@ import org.robotalons.lib.utilities.Operator;
  * @see SubsystemBase
  * @see org.robotalons.crescendo.RobotContainer RobotContainer
  */
-public class SuperstructureSubsystem extends TalonSubsystemBase {
+public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Preferences> {
   // --------------------------------------------------------------[Constants]-------------------------------------------------------------- //
   private static final Pair<TalonFX,TalonFX> FIRING_CONTROLLERS;
   private static final CANSparkMax INDEXER_CONTROLLER;
@@ -62,7 +63,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
   private static SuperstructureSubsystem Instance;
   private static volatile SwerveModuleState CurrentReference;
   private static volatile SuperstructureState CurrentFiringMode;  
-  private static volatile Operator CurrentPilot;
+  private static volatile Operator<Keybindings,Preferences> CurrentOperator;
     // ------------------------------------------------------------[Constructors]----------------------------------------------------------- //
   /** 
    * Cannon Subsystem Constructor 
@@ -236,17 +237,17 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
   }
 
   @Override
-  public void configure(final Operator Profile) {
-    CurrentPilot = Profile;
+  public void configure(final Operator<Keybindings, Preferences> Profile) {
+    CurrentOperator = Profile;
     with(() -> {
-      CurrentPilot.getKeybinding(Keybindings.CANNON_TOGGLE)
+      CurrentOperator.getKeybinding(Keybindings.CANNON_TOGGLE)
         .onTrue(new InstantCommand(
           () -> {
             set((3000d));
           },
           SuperstructureSubsystem.getInstance()
         ));
-        CurrentPilot.getKeybinding(Keybindings.CANNON_TOGGLE)
+        CurrentOperator.getKeybinding(Keybindings.CANNON_TOGGLE)
           .onFalse(new InstantCommand(
           () -> {
             FIRING_CONTROLLERS.getFirst().set((0.375d));
@@ -255,7 +256,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
           ,SuperstructureSubsystem.getInstance()));
     });
     with(() -> 
-      CurrentPilot.getKeybinding(Keybindings.CANNON_PIVOT_UP)
+      CurrentOperator.getKeybinding(Keybindings.CANNON_PIVOT_UP)
         .whileTrue(new InstantCommand(
           () -> {
             CurrentReference.angle = CurrentReference.angle.plus(Rotation2d.fromDegrees((1d)));
@@ -263,7 +264,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
           SuperstructureSubsystem.getInstance()
         ).repeatedly()));
     with(() -> 
-      CurrentPilot.getKeybinding(Keybindings.CANNON_PIVOT_DOWN)
+      CurrentOperator.getKeybinding(Keybindings.CANNON_PIVOT_DOWN)
         .whileTrue(new InstantCommand(
           () -> {
             CurrentReference.angle = CurrentReference.angle.minus(Rotation2d.fromDegrees((1d)));
@@ -271,7 +272,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
           SuperstructureSubsystem.getInstance()
         ).repeatedly()));
     with(() -> {
-      CurrentPilot.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
+      CurrentOperator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
         .onTrue(new InstantCommand(
           () -> {
             INTAKE_CONTROLLER.set((-1d));
@@ -279,7 +280,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
           },
           SuperstructureSubsystem.getInstance()
         ));
-        CurrentPilot.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
+        CurrentOperator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
         .onFalse(new InstantCommand(
           () -> {
             INTAKE_CONTROLLER.set((0d));
@@ -289,7 +290,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
       ));
     });
     with(() -> {
-      CurrentPilot.getKeybinding(Keybindings.INTAKE_TOGGLE)
+      CurrentOperator.getKeybinding(Keybindings.INTAKE_TOGGLE)
         .onTrue(new InstantCommand(
           () -> {
             INTAKE_CONTROLLER.set((1d));
@@ -297,7 +298,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
           },
           SuperstructureSubsystem.getInstance()
         ));
-        CurrentPilot.getKeybinding(Keybindings.INTAKE_TOGGLE)
+        CurrentOperator.getKeybinding(Keybindings.INTAKE_TOGGLE)
         .onFalse(new InstantCommand(
           () -> {
             INTAKE_CONTROLLER.set((0d));
@@ -327,7 +328,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
   }
 
   @Override
-  public Operator getOperator() {
-    return CurrentPilot;
+  public Operator<Keybindings, Preferences> getOperator() {
+    return CurrentOperator;
   }
 }
