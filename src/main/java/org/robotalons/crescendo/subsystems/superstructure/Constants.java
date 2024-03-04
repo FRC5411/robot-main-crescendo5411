@@ -57,12 +57,14 @@ public class Constants {
 
     public static final Double SPEAKER_HEIGHT_METERS = (0d);
 
+    public static final Double ALLOWABLE_SHOT_PERCENTAGE = (85e-2);
+
     public static final Matrix<N2,N1> PIVOT_UPPER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), 0d, 0d);
     public static final Matrix<N2,N1> PIVOT_LOWER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), 0d, 0d);
 
     public static final InterpolatingMatrixTreeMap<Double,N2,N1> PIVOT_FIRING_MAP = new InterpolatingMatrixTreeMap<>();
 
-    static { //TODO: AUTOMATION TEAM (RECORD SHOT DATA)
+    static {
       PIVOT_FIRING_MAP.put(Math.hypot(PIVOT_MAXIMUM_RANGE_METERS, SPEAKER_HEIGHT_METERS), PIVOT_UPPER_BOUND);
       PIVOT_FIRING_MAP.put(Math.hypot(PIVOT_MINIMUM_RANGE_METERS, SPEAKER_HEIGHT_METERS), PIVOT_LOWER_BOUND);
     }
@@ -73,7 +75,6 @@ public class Constants {
      * @param Velocity  Measured shooter velocity in RPM
      * @param Rotation  Measured shooter rotation in radians
      */
-    @SuppressWarnings("unused")
     private static void put(final Double Magnitude, final Double Velocity, final Double Rotation) {
       PIVOT_FIRING_MAP.put(Magnitude, MatBuilder.fill(Nat.N2(), Nat.N1(), Velocity, Rotation));
     }

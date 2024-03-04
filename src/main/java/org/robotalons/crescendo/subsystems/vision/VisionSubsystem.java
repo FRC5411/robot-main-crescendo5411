@@ -34,6 +34,12 @@ public final class VisionSubsystem extends TalonSubsystemBase {
   private static List<Camera> CAMERAS;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static VisionSubsystem Instance;
+  public static final List<CameraIdentifier> ALL_CAMERA_IDENTIFIERS = List.of(
+    CameraIdentifier.SOURCE_CAMERA,
+    CameraIdentifier.INTAKE_CAMERA,
+    CameraIdentifier.SPEAKER_FRONT_CAMERA,
+    CameraIdentifier.SPEAKER_REAR_CAMERA
+  );
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Vision Subsystem Constructor.

@@ -123,11 +123,9 @@ public final class VisionCamera extends Camera {
 
   @Override
   public Matrix<N3, N1> getStandardDeviations() {
-    final var Length = POSES.size();
-
-    final var X_Estimates = new double[Length];
-    final var Y_Estimates = new double[Length];
-    final var Z_Estimates = new double[Length];  
+    final var X_Estimates = new double[POSES.size()];
+    final var Y_Estimates = new double[POSES.size()];
+    final var Z_Estimates = new double[POSES.size()];  
 
     for(Integer Index = (0); Index < POSES.size(); Index++){
       final var Estimate = POSES.get(Index);
@@ -148,7 +146,7 @@ public final class VisionCamera extends Camera {
    * @param Numbers Collection (array) of data to find the standard deviation of
    * @return Standard deviation as a double value
    */
-  private double standardDeviation(double[] Numbers){
+  private static double standardDeviation(double[] Numbers){
     Double Mean = 0d, SummativeSquareDifference = 0d;
     for(double Number : Numbers){
       Mean += Number;
@@ -177,7 +175,7 @@ public final class VisionCamera extends Camera {
 
   @Override
   public Pose3d[] getRobotPositionDeltas() {
-    final Pose3d[] Deltas = new Pose3d[POSES.size() - (1)];
+    final Pose3d[] Deltas = new Pose3d[POSES.size()];
     for(Integer Index =  (0); Index < POSES.size(); Index++){
       final var Previous = POSES.get(Index);
       final var Current = POSES.get(Index+(1));

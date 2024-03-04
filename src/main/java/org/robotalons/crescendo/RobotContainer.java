@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.robotalons.crescendo.Constants.Pathplanner;
 import org.robotalons.crescendo.Constants.Profiles;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
 import org.robotalons.lib.utilities.Operator;
@@ -45,7 +44,6 @@ public final class RobotContainer {
     Profiles.OPERATORS.forEach((Profile) -> SmartDashboard.putData(Profile.getName(), Profile));
     SubsystemManager.getInstance();
     Autonomous = new LoggedDashboardChooser<>(("Autonomous Selector"), AutoBuilder.buildAutoChooser());
-    Pathplanner.ROUTINES.forEach((Name, Routine) -> Autonomous.addOption(Name, Routine));
   }
 
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//

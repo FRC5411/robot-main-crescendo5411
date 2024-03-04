@@ -4,10 +4,12 @@ package org.robotalons.crescendo;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
-import com.pathplanner.lib.commands.PathPlannerAuto;
-
 import org.robotalons.crescendo.Robot.RobotType;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
+import org.robotalons.crescendo.subsystems.climb.ClimbSubsystem;
+import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
+import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem;
+import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.REVOdometryThread;
@@ -70,13 +72,6 @@ public final class Constants {
     public static final REVOdometryThread REV_ODOMETRY_THREAD = REVOdometryThread.create(REV_ODOMETRY_LOCK);
   }
 
-  public static final class Pathplanner {
-    public static final Map<String,PathPlannerAuto> ROUTINES = new HashMap<>();
-    static {
-      //TODO: AUTOMATION TEAM (DECIDE PATHS)
-    }
-  }
-
   public static final class Ports {
     public static final Integer POWER_DISTRIBUTION_HUB = (1);
   }
@@ -89,9 +84,10 @@ public final class Constants {
       OPERATORS.add(Operators.Primary.PROFILE);
       OPERATORS.add(Operators.Secondary.PROFILE);
 
-      SubsystemManager.getSubsystems().forEach((Subsystem) -> {
-        DEFAULT.put(Subsystem, OPERATORS.get((0)));
-      });
+      DEFAULT.put(ClimbSubsystem.getInstance(), Operators.Secondary.PROFILE);
+      DEFAULT.put(VisionSubsystem.getInstance(), Operators.Secondary.PROFILE);
+      DEFAULT.put(DrivebaseSubsystem.getInstance(), Operators.Primary.PROFILE);
+      DEFAULT.put(SuperstructureSubsystem.getInstance(), Operators.Secondary.PROFILE);
     }
 
     public static final class Operators {

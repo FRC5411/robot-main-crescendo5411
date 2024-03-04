@@ -37,8 +37,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public final class Constants {
 // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
   public static final class Simulation {
-    public static final Double TRANSLATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (505.597120488d); //TODO: Update
-    public static final Double ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (249.71004822d); //TODO: Update
+    public static final Double TRANSLATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (505.597120488d);
+    public static final Double ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (249.71004822d);
     public static final Matrix<N1,N1> TRANSLATIONAL_MEASUREMENT_STDEVS = MatBuilder.fill(Nat.N1(), Nat.N1(), (0.25));
     public static final Matrix<N1,N1> ROTATIONAL_MEASUREMENT_STDEVS = MatBuilder.fill(Nat.N1(), Nat.N1(), (0.25));
     public static final FlywheelSim TRANSLATIONAL_FLYWHEEL = new FlywheelSim(

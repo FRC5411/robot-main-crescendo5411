@@ -36,6 +36,7 @@ import org.robotalons.lib.utilities.Operator;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.IntStream;
 // ----------------------------------------------------------[Drivebase Subsystem]----------------------------------------------------------//
 /**
  *
@@ -97,12 +98,22 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
                          (Constants.Measurements.ROBOT_LENGTH_METERS) / (2)),
       new Translation2d(-(Constants.Measurements.ROBOT_WIDTH_METERS)  / (2),
                         -(Constants.Measurements.ROBOT_LENGTH_METERS) / (2)));
-    POSE_ESTIMATOR = new SwerveDrivePoseEstimator(
-      KINEMATICS, 
-      GYROSCOPE.getYawRotation(),
-      getModulePositions(),   
-      new Pose2d(new Translation2d(), CurrentRotation) //TODO: AUTOMATION TEAM (DEFAULT TRANSLATION FROM CAMERA STATES)
-    );
+    final var Estimated = VisionSubsystem.getApproximatedRobotPose();
+    if (Estimated.isPresent()) {
+      POSE_ESTIMATOR = new SwerveDrivePoseEstimator(
+        KINEMATICS, 
+        GYROSCOPE.getYawRotation(),
+        getModulePositions(),   
+        Estimated.get().toPose2d()
+      );
+    } else {
+      POSE_ESTIMATOR = new SwerveDrivePoseEstimator(
+        KINEMATICS, 
+        GYROSCOPE.getYawRotation(),
+        getModulePositions(),   
+        new Pose2d(new Translation2d(), CurrentRotation)
+      );
+    }
     CHARACTERIZATION_ROUTINE = new SysIdRoutine(
       new SysIdRoutine.Config(
         (null),
@@ -155,12 +166,17 @@ public class DrivebaseSubsystem extends TalonSubsystemBase {
         POSE_ESTIMATOR.updateWithTime(Timestamps.get(Index), CurrentRotation, Positions);      
       }      
     }
-    //TODO: AUTOMATION TEAM (FULL DELTA POSE ESTIMATION)
-    VisionSubsystem.getApproximatedRobotPose().ifPresent((Estimate) -> {
-      POSE_ESTIMATOR.addVisionMeasurement(
-      Estimate.toPose2d(),
-      Timer.getFPGATimestamp(),
-      VisionSubsystem.getStandardDeviations(CameraIdentifier.SOURCE_CAMERA));
+    VisionSubsystem.ALL_CAMERA_IDENTIFIERS.forEach((Identifier) -> {
+      final var Timestamps = VisionSubsystem.getRobotPositionTimestamps(Identifier);
+      final var Positions = VisionSubsystem.getRobotPositionDeltas(Identifier);
+      final var Deviation = VisionSubsystem.getStandardDeviations(Identifier);
+      IntStream.range((0), Math.min(Timestamps.length, Positions.length)).parallel().forEach((Index) -> {
+        POSE_ESTIMATOR.addVisionMeasurement(
+          Positions[Index].toPose2d(), 
+          Timestamps[Index],
+          Deviation
+        );
+      });
     });
     Objects.ODOMETRY_LOCK.unlock();
   }

@@ -31,7 +31,7 @@ public class TrajectorySolver implements Callable<Optional<TrajectoryObject>>, C
   private static final Integer SOLVING_MAXIMUM_INSTANCES = (10);
   private static final Queue<TrajectoryObject> SOLVING_QUEUE = new ArrayBlockingQueue<>(SOLVING_QUEUE_MAXIMUM_ELEMENTS, SOLVING_QUEUE_IS_ORDERED);
 
-  private final static Double STANDARD_ACCELERATION = (-9.80665d); //TODO: Flip Sign?
+  private final static Double STANDARD_ACCELERATION = (-9.80665d);
   private final static Double STANDARD_DELTA = (1e-4);
   // -------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static volatile Integer Instances = (0);
@@ -80,7 +80,7 @@ public class TrajectorySolver implements Callable<Optional<TrajectoryObject>>, C
           ) {
             Rotation = new Rotation2d(
               rootTangent(
-                Rotation.getRadians(), //TODO: Position?
+                Rotation.getRadians(),
                 rotationalTrajectory(Distance, Reserved.INITIAL_VELOCITY, Rotation),
                 rotationalDiscreteDerivative(Distance, Reserved.INITIAL_VELOCITY, Rotation, new Rotation2d(STANDARD_DELTA))
               )

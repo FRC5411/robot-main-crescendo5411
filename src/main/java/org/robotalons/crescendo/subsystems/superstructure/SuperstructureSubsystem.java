@@ -13,10 +13,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.util.Units;
 
-import java.util.Optional;
-
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.SlotConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -50,7 +50,6 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
   private static final Pair<TalonFX,TalonFX> FIRING_CONTROLLERS;
   private static final CANSparkMax INDEXER_CONTROLLER;
   private static final CANSparkMax INTAKE_CONTROLLER;
-  private static final PIDController FIRING_CONTROLLER_PID;
   private static final StatusSignal<Double> FIRING_VELOCITY;
 
   //private static final DigitalOutput INDEXER_SENSOR;
@@ -77,13 +76,21 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
       new TalonFX(Ports.FIRING_CONTROLLER_LEFT_ID), 
       new TalonFX(Ports.FIRING_CONTROLLER_RIGHT_ID)
     );
+
+    FIRING_CONTROLLERS.getFirst().getConfigurator().apply(new SlotConfigs()
+      .withKP(Measurements.FIRING_P_GAIN)
+      .withKI(Measurements.FIRING_I_GAIN)
+      .withKD(Measurements.FIRING_D_GAIN)
+    );
+    FIRING_CONTROLLERS.getSecond().getConfigurator().apply(new SlotConfigs()
+      .withKP(Measurements.FIRING_P_GAIN)
+      .withKI(Measurements.FIRING_I_GAIN)
+      .withKD(Measurements.FIRING_D_GAIN)
+    );
+
     FIRING_CONTROLLERS.getFirst().getConfigurator().apply(new TalonFXConfiguration().CurrentLimits.withSupplyCurrentLimit((45d)).withStatorCurrentLimit((40d)));
     FIRING_CONTROLLERS.getSecond().getConfigurator().apply(new TalonFXConfiguration().CurrentLimits.withSupplyCurrentLimit((45d)).withStatorCurrentLimit((40d)));
     FIRING_VELOCITY = FIRING_CONTROLLERS.getFirst().getVelocity();
-    FIRING_CONTROLLER_PID = new PIDController(
-      Measurements.FIRING_P_GAIN, 
-      Measurements.FIRING_I_GAIN, 
-      Measurements.FIRING_D_GAIN);
     FIRING_CONTROLLERS.getSecond().setInverted((false));
 
     INDEXER_CONTROLLER = new CANSparkMax(Ports.INDEXER_CONTROLLER_ID, MotorType.kBrushless);
@@ -113,11 +120,9 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
   @Override
   public synchronized void periodic() {
     Constants.Objects.ODOMETRY_LOCKER.lock();
-    final var Camera = VisionSubsystem.getCameraTransform(CameraIdentifier.SOURCE_CAMERA);
-    final var Robot = new Pose3d(DrivebaseSubsystem.getPose()).transformBy(Camera);
-    final var Target = VisionSubsystem.getAprilTagPose(
-      (DrivebaseSubsystem.getRotation().getRadians() % (2) * Math.PI >= Math.PI)? (3): (7)).get();
-    Optional.ofNullable(Measurements.PIVOT_FIRING_MAP.interpolate(
+    final var Robot = new Pose3d(DrivebaseSubsystem.getPose()).transformBy(VisionSubsystem.getCameraTransform(CameraIdentifier.SOURCE_CAMERA));
+    final var Target = VisionSubsystem.getAprilTagPose((DrivebaseSubsystem.getRotation().getRadians() % (2) * Math.PI >= Math.PI)? (3): (7)).get();
+    final var Interpolated = Measurements.PIVOT_FIRING_MAP.interpolate(
       Measurements.PIVOT_LOWER_BOUND,
       Measurements.PIVOT_UPPER_BOUND,
       PhotonUtils.calculateDistanceToTargetMeters(
@@ -126,29 +131,23 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
         Robot.getRotation().getY(), 
         Target.getRotation().getY()
       ) / Measurements.PIVOT_MAXIMUM_RANGE_METERS
-    )).ifPresentOrElse((Interpolated) -> {
-      Logger.recordOutput(("Cannon/InterpolatedFiringVelocity"), Interpolated.get((0), (0)));
-      Logger.recordOutput(("Cannon/InterpolatedPivotRotation"), Interpolated.get((0), (1)));
-      Logger.recordOutput(("Cannon/FiringProbabilityPercentile"), FIRING_VELOCITY.getValueAsDouble() / Interpolated.get((0), (0)));
-      Logger.recordOutput(("Cannon/PivotProbabilityPercentile"), getPivotRotation() / Interpolated.get((0), (1)));
-      if(CurrentFiringMode == SuperstructureState.AUTO || CurrentFiringMode == SuperstructureState.SEMI) {
-        CurrentReference.angle = Rotation2d.fromRadians(Units.radiansToRotations(Interpolated.get((0),(1))));
-        final var Absolute = getPivotRotation();
-        if(CurrentFiringMode == SuperstructureState.AUTO) {
-          if(Absolute > CurrentReference.angle.minus(Rotation2d.fromDegrees((2.5d))).getRadians() 
-                                                        &&
-             Absolute < CurrentReference.angle.plus(Rotation2d.fromDegrees((2.5d))).getRadians()) {
-            set(Interpolated.get((0), (0)));
-            INDEXER_CONTROLLER.set((-1d));
-            }
-        }
+    );
+    final var Percentage = 
+      (FIRING_VELOCITY.getValueAsDouble() / Interpolated.get((0), (0))
+        + getPivotRotation() / Interpolated.get((1), (0))) / 2;
+    if(CurrentFiringMode == SuperstructureState.AUTO || CurrentFiringMode == SuperstructureState.SEMI) {
+      CurrentReference.angle = Rotation2d.fromRadians(Units.radiansToRotations(Interpolated.get((1), (0))));
+      if(CurrentFiringMode == SuperstructureState.AUTO) {
+        if(Percentage < Measurements.ALLOWABLE_SHOT_PERCENTAGE) {
+          set(Interpolated.get((0), (0)));
+          INDEXER_CONTROLLER.set((-1d));
+          }
       }
-    }, 
-    () -> {
-      Logger.recordOutput(("Cannon/FiringProbabilityPercentile"), (0d));
-      Logger.recordOutput(("Cannon/PivotProbabilityPercentile"), (0d));
-    });
+    }
     set(CurrentReference.angle);
+    Logger.recordOutput(("Cannon/InterpolatedPercentile"), Percentage);  
+    Logger.recordOutput(("Cannon/InterpolatedVelocity"), Interpolated.get((0), (0)));
+    Logger.recordOutput(("Cannon/InterpolatedRotation"), Interpolated.get((1), (0)));
     Logger.recordOutput(("Cannon/Reference"), CurrentReference);
     Logger.recordOutput(("Cannon/MeasuredVelocity"), FIRING_VELOCITY.getValueAsDouble());
     Logger.recordOutput(("Cannon/MeasuredRotation"), getPivotRotation());
@@ -176,7 +175,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
   /**
-   * Describes a robot's current mode of firing control
+   * Describes a robot's current mode of superstructure control
    */
   public enum SuperstructureState {
     MANUAL,    
@@ -200,9 +199,8 @@ public class SuperstructureSubsystem extends TalonSubsystemBase {
    * @param Reference Desired velocity in RPM
    */
   private static synchronized void set(final Double Reference) {
-    final var Effort = FIRING_CONTROLLER_PID.calculate(FIRING_VELOCITY.getValueAsDouble(), -Reference);
-    FIRING_CONTROLLERS.getFirst().set(Effort);
-    FIRING_CONTROLLERS.getSecond().set(Effort);;
+    FIRING_CONTROLLERS.getFirst().setControl(new VelocityDutyCycle(Reference));
+    FIRING_CONTROLLERS.getSecond().setControl(new VelocityDutyCycle(Reference));
   }
 
   /**
