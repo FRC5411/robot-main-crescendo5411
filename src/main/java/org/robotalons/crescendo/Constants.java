@@ -97,9 +97,9 @@ public final class Constants {
         private static final Integer INPUT_PORT = (0);
         private static final CommandXboxController INPUT_METHOD = new CommandXboxController(INPUT_PORT);
         public static final Operator PROFILE = new Operator(NAME)
-        .addPreference(Preferences.TRANSLATIONAL_X_INPUT, () -> -INPUT_METHOD.getRawAxis((1)))
-        .addPreference(Preferences.TRANSLATIONAL_Y_INPUT, () -> -INPUT_METHOD.getRawAxis((0)))
-        .addPreference(Preferences.ORIENTATION_INPUT, () -> INPUT_METHOD.getRawAxis((4)))
+          .addPreference(Preferences.TRANSLATIONAL_X_INPUT, () -> -INPUT_METHOD.getRawAxis((1)))
+          .addPreference(Preferences.TRANSLATIONAL_Y_INPUT, () -> -INPUT_METHOD.getRawAxis((0)))
+          .addPreference(Preferences.ORIENTATION_INPUT, () -> INPUT_METHOD.getRawAxis((4)))
           .addPreference(Preferences.SQUARED_INPUT, () -> (true))
           .addPreference(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (0.2))
           .addPreference(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (0.2))
@@ -125,9 +125,11 @@ public final class Constants {
           .addPreference(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (0.2))
           .addPreference(Preferences.ORIENTATION_DEADZONE, () -> (0.2))
           .addKeybinding(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.povCenter())
-          .addKeybinding(Keybindings.CANNON_PIVOT_DOWN, INPUT_METHOD.leftBumper())
+          .addKeybinding(Keybindings.INTAKE_TOGGLE, INPUT_METHOD.leftTrigger())
+          .addKeybinding(Keybindings.OUTTAKE_TOGGLE, INPUT_METHOD.rightTrigger())
+          .addKeybinding(Keybindings.CANNON_PIVOT_DOWN, INPUT_METHOD.a())
           .addKeybinding(Keybindings.CANNON_TOGGLE, INPUT_METHOD.b())
-          .addKeybinding(Keybindings.CANNON_PIVOT_UP, INPUT_METHOD.rightBumper());
+          .addKeybinding(Keybindings.CANNON_PIVOT_UP, INPUT_METHOD.y());
       }
     }
 
