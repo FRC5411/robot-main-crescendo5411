@@ -43,9 +43,9 @@ import java.util.stream.IntStream;
  *
  * <h1>DrivebaseSubsystem</h1>
  *
- * <p>Utility class which controls the modules to achieve individual goal set points within an acceptable target range of accuracy and time 
+ * <p>Utility class which controls the modules to achieve individual goal set points within an acceptable target range of accuracy and time
  * efficiency and providing an API for querying new goal states.<p>
- * 
+ *
  * @see TalonSubsystemBase
  * @see org.robotalons.crescendo.RobotContainer RobotContainer
  */
@@ -63,8 +63,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   private static Operator<Keybindings,Preferences> CurrentOperator;
   private static Double CurrentTime;
   private static DrivebaseSubsystem Instance;
-  private static Boolean ModuleLocked;      
-  private static Boolean PathFlipped;    
+  private static Boolean ModuleLocked;
+  private static Boolean PathFlipped;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Drivebase Subsystem Constructor.
@@ -88,9 +88,9 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       Devices.FRONT_RIGHT_MODULE,
       Devices.REAR_LEFT_MODULE,
       Devices.REAR_RIGHT_MODULE
-    );    
+    );
     KINEMATICS = new SwerveDriveKinematics(
-      new Translation2d( (Constants.Measurements.ROBOT_WIDTH_METERS)  / (2), 
+      new Translation2d( (Constants.Measurements.ROBOT_WIDTH_METERS)  / (2),
                          (Constants.Measurements.ROBOT_LENGTH_METERS) / (2)),
       new Translation2d( (Constants.Measurements.ROBOT_WIDTH_METERS)  / (2),
                         -(Constants.Measurements.ROBOT_LENGTH_METERS) / (2)),
@@ -101,16 +101,16 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     final var Estimated = VisionSubsystem.getApproximatedRobotPose();
     if (Estimated.isPresent()) {
       POSE_ESTIMATOR = new SwerveDrivePoseEstimator(
-        KINEMATICS, 
+        KINEMATICS,
         GYROSCOPE.getYawRotation(),
-        getModulePositions(),   
+        getModulePositions(),
         Estimated.get().toPose2d()
       );
     } else {
       POSE_ESTIMATOR = new SwerveDrivePoseEstimator(
-        KINEMATICS, 
+        KINEMATICS,
         GYROSCOPE.getYawRotation(),
-        getModulePositions(),   
+        getModulePositions(),
         new Pose2d(new Translation2d(), CurrentRotation)
       );
     }
@@ -138,7 +138,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   public synchronized void periodic() {
     Objects.ODOMETRY_LOCK.lock();
     MODULES.forEach(Module::periodic);
-    GYROSCOPE.update();    
+    GYROSCOPE.update();
     Logger.recordOutput(("Drivebase/Measurements"),getModuleMeasurements());
     if (DriverStation.isDisabled()) {
       MODULES.forEach(Module::cease);
@@ -163,8 +163,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
           Twist2d TwistDelta = KINEMATICS.toTwist2d(Deltas);
           CurrentRotation = CurrentRotation.plus(new Rotation2d(TwistDelta.dtheta));
         }
-        POSE_ESTIMATOR.updateWithTime(Timestamps.get(Index), CurrentRotation, Positions);      
-      }      
+        POSE_ESTIMATOR.updateWithTime(Timestamps.get(Index), CurrentRotation, Positions);
+      }
     }
     VisionSubsystem.ALL_CAMERA_IDENTIFIERS.forEach((Identifier) -> {
       final var Timestamps = VisionSubsystem.getRobotPositionTimestamps(Identifier);
@@ -172,7 +172,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       final var Deviation = VisionSubsystem.getStandardDeviations(Identifier);
       IntStream.range((0), Math.min(Timestamps.length, Positions.length)).parallel().forEach((Index) -> {
         POSE_ESTIMATOR.addVisionMeasurement(
-          Positions[Index].toPose2d(), 
+          Positions[Index].toPose2d(),
           Timestamps[Index],
           Deviation
         );
@@ -193,7 +193,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       var MeasuredTime = Timer.getFPGATimestamp();
       DiscretizationTimestep = MeasuredTime - CurrentTime;
       CurrentTime = MeasuredTime;
-    }    
+    }
     return DiscretizationTimestep;
   }
 
@@ -281,11 +281,11 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         (Double) CurrentOperator.getPreference(Preferences.TRANSLATIONAL_Y_DEADZONE))),
         ((Boolean) CurrentOperator.getPreference(Preferences.SQUARED_INPUT))?
         new Rotation2d(
-            square(MathUtil.applyDeadband(-(Double) CurrentOperator.getPreference(Preferences.ORIENTATION_X_INPUT),
+            square(MathUtil.applyDeadband(-(Double) CurrentOperator.getPreference(Preferences.ORIENTATION_T_INPUT),
           (Double) CurrentOperator.getPreference(Preferences.ORIENTATION_DEADZONE)))):
         new Rotation2d(
-          (MathUtil.applyDeadband(-(Double) CurrentOperator.getPreference(Preferences.ORIENTATION_X_INPUT),
-        (Double) CurrentOperator.getPreference(Preferences.ORIENTATION_DEADZONE))))), 
+          (MathUtil.applyDeadband(-(Double) CurrentOperator.getPreference(Preferences.ORIENTATION_T_INPUT),
+        (Double) CurrentOperator.getPreference(Preferences.ORIENTATION_DEADZONE))))),
         DrivebaseSubsystem.getInstance()
     ));
 
@@ -345,8 +345,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         VisionSubsystem.getInstance(),
         DrivebaseSubsystem.getInstance()
       )));
-      
-    with(() -> 
+
+    with(() ->
       CurrentOperator.getKeybinding(Keybindings.ALIGNMENT_NEAREST)
       .onTrue(new InstantCommand(
         () -> {
@@ -402,7 +402,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    * Describes a robot's current mode of orientation
    */
   public enum DrivebaseState {
-    OBJECT_ORIENTED,    
+    OBJECT_ORIENTED,
     ROBOT_ORIENTED,
     FIELD_ORIENTED,
   }
@@ -418,7 +418,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       var Discrete = ChassisSpeeds.discretize(Demand, discretize());
       var Reference = KINEMATICS.toSwerveModuleStates(Discrete);
       SwerveDriveKinematics.desaturateWheelSpeeds(
-        Reference, 
+        Reference,
         Discrete,
         Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
         Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
@@ -439,10 +439,10 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       case OBJECT_ORIENTED:
         VisionSubsystem.getOptimalTarget(CameraIdentifier.INTAKE_CAMERA).ifPresentOrElse((Optimal) -> {
           set(new ChassisSpeeds(
-            -Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
-            -Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
+            -Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
+            -Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
             (-(Math.PI) + Optimal.getRotation().toRotation2d().getRadians() * (GYROSCOPE.getYawRotation().getRadians() % 2 * Math.PI > Math.PI? (-1): (1))) * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY
-          ));         
+          ));
         }, () -> {
           CurrentMode = DrivebaseState.ROBOT_ORIENTED;
           set(Translation, Rotation);
@@ -450,18 +450,18 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         break;
       case ROBOT_ORIENTED:
         set(new ChassisSpeeds(
-          -Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
-          -Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
+          -Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
+          -Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
           Rotation.getRadians() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY
-        ));      
+        ));
         break;
       case FIELD_ORIENTED:
         set(ChassisSpeeds.fromFieldRelativeSpeeds(
-          -Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
-          -Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
-          Rotation.getRadians() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY, 
+          -Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
+          -Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
+          Rotation.getRadians() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY,
           GYROSCOPE.getYawRotation()
-        ));      
+        ));
         break;
     }
   }
@@ -475,12 +475,12 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     final var StateIterator = States.iterator();
     Logger.recordOutput(("Drivebase/Reference"), States.toArray(SwerveModuleState[]::new));
     Logger.recordOutput(("Drivebase/Optimized"),
-      MODULES.stream().map((Module) -> 
+      MODULES.stream().map((Module) ->
         Module.set(StateIterator.next())).toArray(SwerveModuleState[]::new));
   }
 
   /**
-   * Stops all drivebase movement, if locking is enabled then all modules are 
+   * Stops all drivebase movement, if locking is enabled then all modules are
    * reset into an 'X' orientation.
    */
   public static synchronized void set() {
@@ -523,7 +523,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   public static List<Module> getModules() {
     return MODULES;
   }
-  
+
   /**
    * Provides the current position of the drivebase in space
    * @return Pose2d of Robot drivebase

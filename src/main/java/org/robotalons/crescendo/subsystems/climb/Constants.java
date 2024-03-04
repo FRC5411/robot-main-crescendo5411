@@ -55,10 +55,10 @@ public class Constants {
   }
 
   public static final class Ports {
-    public static final Integer LEFT_ARM_CONTROLLER_ID = 0; 
+    public static final Integer LEFT_ARM_CONTROLLER_ID = 0;
     public static final Integer RIGHT_ARM_CONTROLLER_ID = 1;
     public static final Integer LEFT_ENCODER_ID = (2);
-    public static final Integer RIGHT_ENCODER_ID = (3);    
+    public static final Integer RIGHT_ENCODER_ID = (3);
   }
 
   public static final class Objects {
@@ -68,5 +68,5 @@ public class Constants {
   public static final class Devices {
 
   }
-  
+
 }

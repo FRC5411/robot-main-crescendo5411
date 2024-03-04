@@ -40,9 +40,9 @@ import org.robotalons.lib.utilities.Operator;
  *
  * <h1>SuperstructureSubsystem</h1>
  *
- * <p>Utility class which controls the firing of objects to a given target, based on the current angle in radians, distance to target, and 
+ * <p>Utility class which controls the firing of objects to a given target, based on the current angle in radians, distance to target, and
  * robot drivebase states.<p>
- * 
+ *
  * @see SubsystemBase
  * @see org.robotalons.crescendo.RobotContainer RobotContainer
  */
@@ -53,8 +53,6 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   private static final CANSparkMax INTAKE_CONTROLLER;
   private static final StatusSignal<Double> FIRING_VELOCITY;
 
-  //private static final DigitalOutput INDEXER_SENSOR;
- 
   private static final CANSparkMax PIVOT_CONTROLLER;
   private static final PIDController PIVOT_CONTROLLER_PID;
 
@@ -62,19 +60,19 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
   private static SuperstructureSubsystem Instance;
   private static volatile SwerveModuleState CurrentReference;
-  private static volatile SuperstructureState CurrentFiringMode;  
+  private static volatile SuperstructureState CurrentFiringMode;
   private static volatile Operator<Keybindings,Preferences> CurrentOperator;
     // ------------------------------------------------------------[Constructors]----------------------------------------------------------- //
-  /** 
-   * Cannon Subsystem Constructor 
+  /**
+   * Cannon Subsystem Constructor
    */
-  private SuperstructureSubsystem() { 
+  private SuperstructureSubsystem() {
     super(("Cannon Subsystem"));
   } static {
     CurrentReference = new SwerveModuleState((0d), new Rotation2d(Measurements.MID_HOLD_ROTATION));
     CurrentFiringMode = SuperstructureState.MANUAL;
     FIRING_CONTROLLERS = new Pair<TalonFX,TalonFX>(
-      new TalonFX(Ports.FIRING_CONTROLLER_LEFT_ID), 
+      new TalonFX(Ports.FIRING_CONTROLLER_LEFT_ID),
       new TalonFX(Ports.FIRING_CONTROLLER_RIGHT_ID)
     );
 
@@ -100,7 +98,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     INDEXER_CONTROLLER.setIdleMode(IdleMode.kBrake);
     INDEXER_CONTROLLER.setInverted((false));
 
-    INTAKE_CONTROLLER = new CANSparkMax(Ports.INTAKE_CONTROLLER_ID, MotorType.kBrushless); 
+    INTAKE_CONTROLLER = new CANSparkMax(Ports.INTAKE_CONTROLLER_ID, MotorType.kBrushless);
     INTAKE_CONTROLLER.setSmartCurrentLimit((20));
     INTAKE_CONTROLLER.setSecondaryCurrentLimit((30));
     INTAKE_CONTROLLER.setInverted((true));
@@ -108,15 +106,15 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     PIVOT_CONTROLLER = new CANSparkMax(Ports.PIVOT_CONTROLLER_ID, MotorType.kBrushless);
     PIVOT_CONTROLLER.setSmartCurrentLimit((40));
     PIVOT_CONTROLLER_PID = new PIDController(
-      Measurements.PIVOT_P_GAIN, 
-      Measurements.PIVOT_I_GAIN, 
+      Measurements.PIVOT_P_GAIN,
+      Measurements.PIVOT_I_GAIN,
       Measurements.PIVOT_D_GAIN);
     PIVOT_CONTROLLER.setInverted(Measurements.PIVOT_INVERTED);
     PIVOT_CONTROLLER_PID.enableContinuousInput(Measurements.PIVOT_MINIMUM_ROTATION, Measurements.PIVOT_MAXIMUM_ROTATION);
 
-    PIVOT_ABSOLUTE_ENCODER = new DutyCycleEncoder(Ports.PIVOT_ABSOLUTE_ENCODER_ID); 
+    PIVOT_ABSOLUTE_ENCODER = new DutyCycleEncoder(Ports.PIVOT_ABSOLUTE_ENCODER_ID);
   }
-  
+
   // ---------------------------------------------------------------[Methods]--------------------------------------------------------------- //
   @Override
   public synchronized void periodic() {
@@ -128,12 +126,12 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       Measurements.PIVOT_UPPER_BOUND,
       PhotonUtils.calculateDistanceToTargetMeters(
         Robot.getY(),
-        Target.getY(), 
-        Robot.getRotation().getY(), 
+        Target.getY(),
+        Robot.getRotation().getY(),
         Target.getRotation().getY()
       ) / Measurements.PIVOT_MAXIMUM_RANGE_METERS
     );
-    final var Percentage = 
+    final var Percentage =
       (FIRING_VELOCITY.getValueAsDouble() / Interpolated.get((0), (0))
         + getPivotRotation() / Interpolated.get((1), (0))) / 2;
     if(CurrentFiringMode == SuperstructureState.AUTO || CurrentFiringMode == SuperstructureState.SEMI) {
@@ -146,7 +144,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       }
     }
     set(CurrentReference.angle);
-    Logger.recordOutput(("Cannon/InterpolatedPercentile"), Percentage);  
+    Logger.recordOutput(("Cannon/InterpolatedPercentile"), Percentage);
     Logger.recordOutput(("Cannon/InterpolatedVelocity"), Interpolated.get((0), (0)));
     Logger.recordOutput(("Cannon/InterpolatedRotation"), Interpolated.get((1), (0)));
     Logger.recordOutput(("Cannon/Reference"), CurrentReference);
@@ -167,7 +165,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   private static TrajectoryObject object(final Double Velocity, final Double Distance, final Double Height, final Rotation2d Rotation) {
     return TrajectoryObject.note(Velocity, Rotation, Measurements.CANNON_LENGTH, Distance, Height, (2000));
   }
-  
+
   @Override
   public synchronized void close() {
     FIRING_CONTROLLERS.getFirst().close();
@@ -179,7 +177,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * Describes a robot's current mode of superstructure control
    */
   public enum SuperstructureState {
-    MANUAL,    
+    MANUAL,
     SEMI,
     AUTO,
   }
@@ -250,27 +248,35 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
         CurrentOperator.getKeybinding(Keybindings.CANNON_TOGGLE)
           .onFalse(new InstantCommand(
           () -> {
-            FIRING_CONTROLLERS.getFirst().set((0.375d));
-            FIRING_CONTROLLERS.getSecond().set((0.375d));
+            FIRING_CONTROLLERS.getFirst().set((-0.375d));
+            FIRING_CONTROLLERS.getSecond().set((-0.375d));
           }
           ,SuperstructureSubsystem.getInstance()));
     });
-    with(() -> 
-      CurrentOperator.getKeybinding(Keybindings.CANNON_PIVOT_UP)
-        .whileTrue(new InstantCommand(
+    with(() ->
+      CurrentOperator.getKeybinding(Keybindings.CANNON_PIVOT_SUBWOOFER)
+        .onTrue(new InstantCommand(
           () -> {
-            CurrentReference.angle = CurrentReference.angle.plus(Rotation2d.fromDegrees((1d)));
+            CurrentReference.angle = Rotation2d.fromRadians(Measurements.PIVOT_SUBWOOFER_PRESET);
           },
           SuperstructureSubsystem.getInstance()
-        ).repeatedly()));
-    with(() -> 
-      CurrentOperator.getKeybinding(Keybindings.CANNON_PIVOT_DOWN)
-        .whileTrue(new InstantCommand(
+        )));
+    with(() ->
+      CurrentOperator.getKeybinding(Keybindings.CANNON_PIVOT_CENTERLINE)
+        .onTrue(new InstantCommand(
           () -> {
-            CurrentReference.angle = CurrentReference.angle.minus(Rotation2d.fromDegrees((1d)));
+            CurrentReference.angle = Rotation2d.fromRadians(Measurements.PIVOT_CENTERLINE_PRESET);
           },
           SuperstructureSubsystem.getInstance()
-        ).repeatedly()));
+        )));
+    with(() ->
+      CurrentOperator.getKeybinding(Keybindings.CANNON_PIVOT_PODIUMLINE)
+        .onTrue(new InstantCommand(
+          () -> {
+            CurrentReference.angle = Rotation2d.fromRadians(Measurements.PIVOT_PODIUMLINE_PRESET);
+          },
+          SuperstructureSubsystem.getInstance()
+        )));
     with(() -> {
       CurrentOperator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
         .onTrue(new InstantCommand(

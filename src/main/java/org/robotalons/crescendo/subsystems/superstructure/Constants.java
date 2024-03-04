@@ -38,6 +38,10 @@ public class Constants {
     public static final Double FIRING_I_GAIN = (0d);
     public static final Double FIRING_D_GAIN = (0.0001d);
 
+    public static final Double PIVOT_SUBWOOFER_PRESET = Units.degreesToRadians((0));
+    public static final Double PIVOT_PODIUMLINE_PRESET = Units.degreesToRadians((0));
+    public static final Double PIVOT_CENTERLINE_PRESET = Units.degreesToRadians((0));
+
     public static final Double CANNON_LENGTH = (1d);
 
     public static final Boolean PIVOT_INVERTED = (false);
@@ -47,7 +51,7 @@ public class Constants {
     public static final Double PIVOT_MAXIMUM_ROTATION = Units.degreesToRadians((40));
 
     public static final Double LOW_HOLD_ROTATION = (PIVOT_MINIMUM_ROTATION + 1d);
-    public static final Double MID_HOLD_ROTATION = Units.degreesToRadians((PIVOT_MINIMUM_ROTATION + PIVOT_MINIMUM_ROTATION) / 2);
+    public static final Double MID_HOLD_ROTATION = Units.degreesToRadians((35d));
     public static final Double HIGH_HOLD_ROTATION = (PIVOT_MAXIMUM_ROTATION - 1d);
 
     public static final Double FIRING_PASSIVE_PERCENTILE = (0.35d);
@@ -70,8 +74,8 @@ public class Constants {
     }
 
     /**
-     * Quickly puts the data of a given successful shot relative to the height of the target 
-     * @param Magnitude Measured magnitude of the triangle formed by the distance lengthwise and heightwise to a given target 
+     * Quickly puts the data of a given successful shot relative to the height of the target
+     * @param Magnitude Measured magnitude of the triangle formed by the distance lengthwise and heightwise to a given target
      * @param Velocity  Measured shooter velocity in RPM
      * @param Rotation  Measured shooter rotation in radians
      */
@@ -80,7 +84,7 @@ public class Constants {
     }
 
     /**
-     * Quickly puts the data of a given successful shot relative to the height of the target 
+     * Quickly puts the data of a given successful shot relative to the height of the target
      * @param Distance  Measured distance of the triangle formed by the distance lengthwise to the speaker
      * @param Velocity  Measured shooter velocity in RPM
      * @param Rotation  Measured shooter rotation in radians
@@ -90,7 +94,7 @@ public class Constants {
       put(Math.hypot(Distance, SPEAKER_HEIGHT_METERS), Velocity, Rotation);
     }
   }
-  
+
   public static final class Ports {
     public static final Integer FIRING_CONTROLLER_RIGHT_ID = (34);
     public static final Integer FIRING_CONTROLLER_LEFT_ID = (35);
@@ -107,5 +111,5 @@ public class Constants {
   public static final class Devices {
 
   }
-  
+
 }

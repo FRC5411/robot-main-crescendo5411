@@ -42,12 +42,12 @@ public final class Constants {
     public static final Matrix<N1,N1> TRANSLATIONAL_MEASUREMENT_STDEVS = MatBuilder.fill(Nat.N1(), Nat.N1(), (0.25));
     public static final Matrix<N1,N1> ROTATIONAL_MEASUREMENT_STDEVS = MatBuilder.fill(Nat.N1(), Nat.N1(), (0.25));
     public static final FlywheelSim TRANSLATIONAL_FLYWHEEL = new FlywheelSim(
-      DCMotor.getNEO((1)), 
-      1 / Measurements.ROBOT_LINEAR_GEAR_RATIO, 
+      DCMotor.getNEO((1)),
+      1 / Measurements.ROBOT_LINEAR_GEAR_RATIO,
       TRANSLATIONAL_FLYWHEEL_KG_PER_METER_SQUARED, TRANSLATIONAL_MEASUREMENT_STDEVS);
     public static final FlywheelSim ROTATIONAL_FLYWHEEL = new FlywheelSim(
-      DCMotor.getNEO((1)), 
-      1 / Measurements.ROBOT_ROTATION_GEAR_RATIO, 
+      DCMotor.getNEO((1)),
+      1 / Measurements.ROBOT_ROTATION_GEAR_RATIO,
       ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED, ROTATIONAL_MEASUREMENT_STDEVS);
   }
 
@@ -55,9 +55,9 @@ public final class Constants {
     public static final Double ROBOT_WHEEL_DIAMETER_METERS = Units.inchesToMeters((4d));
     public static final Double ROBOT_WHEEL_PERIMETER_METERS = ROBOT_WHEEL_DIAMETER_METERS * Math.PI;
 
-    public static final Double ROBOT_LENGTH_METERS = Units.inchesToMeters((29.5));        
+    public static final Double ROBOT_LENGTH_METERS = Units.inchesToMeters((29.5));
     public static final Double ROBOT_WIDTH_METERS = Units.inchesToMeters((29.5));
-    public static final Double ROBOT_RADIUS_METERS = Math.hypot(ROBOT_LENGTH_METERS / (2.0), ROBOT_WIDTH_METERS / (2.0)); 
+    public static final Double ROBOT_RADIUS_METERS = Math.hypot(ROBOT_LENGTH_METERS / (2.0), ROBOT_WIDTH_METERS / (2.0));
 
     public static final Double ROBOT_MAXIMUM_LINEAR_VELOCITY = Units.feetToMeters((16.6d));
     public static final Double ROBOT_MAXIMUM_ANGULAR_VELOCITY = ROBOT_MAXIMUM_LINEAR_VELOCITY / ROBOT_RADIUS_METERS;
@@ -309,7 +309,7 @@ public final class Constants {
   }
 
   public static final class Ports {
-    public static final Integer GYROSCOPE_ID = (10);      
+    public static final Integer GYROSCOPE_ID = (10);
   }
 
   public static final class Objects {
@@ -317,23 +317,23 @@ public final class Constants {
   }
 
   public static final class Devices {
-  public static final Gyroscope GYROSCOPE = 
+  public static final Gyroscope GYROSCOPE =
     new PigeonGyroscope(Ports.GYROSCOPE_ID,org.robotalons.crescendo.Constants.Odometry.CTRE_ODOMETRY_THREAD);
-  public static final Module FRONT_LEFT_MODULE = 
-    (RobotBase.isSimulation())? 
-    (new FlywheelModule<>(Measurements.Modules.FL.SIM_CONSTANTS)): 
-    (new SparkModule<CANSparkMax>(Measurements.Modules.FL.REAL_CONSTANTS));     
-  public static final Module FRONT_RIGHT_MODULE = 
-    (RobotBase.isSimulation())? 
-    (new FlywheelModule<>(Measurements.Modules.FR.SIM_CONSTANTS)): 
-    (new SparkModule<CANSparkMax>(Measurements.Modules.FR.REAL_CONSTANTS));              
-  public static final Module REAR_LEFT_MODULE = 
-    (RobotBase.isSimulation())? 
-    (new FlywheelModule<>(Measurements.Modules.RL.SIM_CONSTANTS)): 
-    (new SparkModule<CANSparkMax>(Measurements.Modules.RL.REAL_CONSTANTS));        
-  public static final Module REAR_RIGHT_MODULE = 
-    (RobotBase.isSimulation())? 
-    (new FlywheelModule<>(Measurements.Modules.RR.SIM_CONSTANTS)): 
-    (new SparkModule<CANSparkMax>(Measurements.Modules.RR.REAL_CONSTANTS));    
+  public static final Module FRONT_LEFT_MODULE =
+    (RobotBase.isSimulation())?
+    (new FlywheelModule<>(Measurements.Modules.FL.SIM_CONSTANTS)):
+    (new SparkModule<CANSparkMax>(Measurements.Modules.FL.REAL_CONSTANTS));
+  public static final Module FRONT_RIGHT_MODULE =
+    (RobotBase.isSimulation())?
+    (new FlywheelModule<>(Measurements.Modules.FR.SIM_CONSTANTS)):
+    (new SparkModule<CANSparkMax>(Measurements.Modules.FR.REAL_CONSTANTS));
+  public static final Module REAR_LEFT_MODULE =
+    (RobotBase.isSimulation())?
+    (new FlywheelModule<>(Measurements.Modules.RL.SIM_CONSTANTS)):
+    (new SparkModule<CANSparkMax>(Measurements.Modules.RL.REAL_CONSTANTS));
+  public static final Module REAR_RIGHT_MODULE =
+    (RobotBase.isSimulation())?
+    (new FlywheelModule<>(Measurements.Modules.RR.SIM_CONSTANTS)):
+    (new SparkModule<CANSparkMax>(Measurements.Modules.RR.REAL_CONSTANTS));
   }
 }

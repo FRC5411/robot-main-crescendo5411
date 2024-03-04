@@ -99,17 +99,12 @@ public final class Constants {
         public static final Operator<Keybindings,Preferences> PROFILE = new Operator<Keybindings,Preferences>(NAME)
           .add(Preferences.TRANSLATION_X_INPUT, () -> -INPUT_METHOD.getRawAxis((1)))
           .add(Preferences.TRANSLATION_Y_INPUT, () -> -INPUT_METHOD.getRawAxis((0)))
-          .add(Preferences.ORIENTATION_X_INPUT, () -> INPUT_METHOD.getRawAxis((4)))
+          .add(Preferences.ORIENTATION_T_INPUT, () -> INPUT_METHOD.getRawAxis((4)))
           .add(Preferences.SQUARED_INPUT, () -> (true))
           .add(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (2e-2))
           .add(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (2e-2))
           .add(Preferences.ORIENTATION_DEADZONE, () -> (2e-2))
-          .add(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.povCenter())
-          .add(Keybindings.INTAKE_TOGGLE, INPUT_METHOD.leftTrigger())
-          .add(Keybindings.OUTTAKE_TOGGLE, INPUT_METHOD.rightTrigger())
-          .add(Keybindings.CANNON_PIVOT_DOWN, INPUT_METHOD.a())
-          .add(Keybindings.CANNON_TOGGLE, INPUT_METHOD.b())
-          .add(Keybindings.CANNON_PIVOT_UP, INPUT_METHOD.y());
+          .add(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.povCenter());
       }
 
       public static final class Secondary {
@@ -117,26 +112,19 @@ public final class Constants {
         private static final Integer INPUT_PORT = (1);
         private static final CommandXboxController INPUT_METHOD = new CommandXboxController(INPUT_PORT);
         public static final Operator<Keybindings,Preferences> PROFILE = new Operator<Keybindings,Preferences>(NAME)
-          .add(Preferences.TRANSLATION_X_INPUT, () -> -INPUT_METHOD.getRawAxis((1)))
-          .add(Preferences.TRANSLATION_Y_INPUT, () -> -INPUT_METHOD.getRawAxis((0)))
-          .add(Preferences.ORIENTATION_X_INPUT, () -> INPUT_METHOD.getRawAxis((4)))
-          .add(Preferences.SQUARED_INPUT, () -> (true))
-          .add(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (2e-2))
-          .add(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (2e-2))
-          .add(Preferences.ORIENTATION_DEADZONE, () -> (2e-2))
-          .add(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.povCenter())
           .add(Keybindings.INTAKE_TOGGLE, INPUT_METHOD.leftTrigger())
           .add(Keybindings.OUTTAKE_TOGGLE, INPUT_METHOD.rightTrigger())
-          .add(Keybindings.CANNON_PIVOT_DOWN, INPUT_METHOD.a())
-          .add(Keybindings.CANNON_TOGGLE, INPUT_METHOD.b())
-          .add(Keybindings.CANNON_PIVOT_UP, INPUT_METHOD.y());
+          .add(Keybindings.CANNON_PIVOT_PODIUMLINE, INPUT_METHOD.a())
+          .add(Keybindings.CANNON_PIVOT_SUBWOOFER, INPUT_METHOD.x())
+          .add(Keybindings.CANNON_PIVOT_CENTERLINE, INPUT_METHOD.y())
+          .add(Keybindings.CANNON_TOGGLE, INPUT_METHOD.b());
       }
     }
 
     public enum Preferences {
       TRANSLATION_X_INPUT,
       TRANSLATION_Y_INPUT,
-      ORIENTATION_X_INPUT,
+      ORIENTATION_T_INPUT,
       SQUARED_INPUT,
       TRANSLATIONAL_X_DEADZONE,
       TRANSLATIONAL_Y_DEADZONE,
@@ -149,8 +137,9 @@ public final class Constants {
       INTAKE_TOGGLE,
       CANNON_TOGGLE,
       OUTTAKE_TOGGLE,
-      CANNON_PIVOT_UP,
-      CANNON_PIVOT_DOWN,
+      CANNON_PIVOT_SUBWOOFER,
+      CANNON_PIVOT_CENTERLINE,
+      CANNON_PIVOT_PODIUMLINE,
       ALIGNMENT_SPEAKER,
       ALIGNMENT_AMP,
       ALIGNMENT_OBJECT,

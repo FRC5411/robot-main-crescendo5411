@@ -190,14 +190,10 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
         case STATE_CONTROL:
           if(Reference != (null)) {
             if (Reference.angle != (null)) {
-              setRotationalVoltage(ROTATIONAL_PID.calculate(getRelativeRotation().getRadians(),Reference.angle.getRadians()));
+              setRotationalVoltage(ROTATIONAL_PID.calculate(getRelativeRotation().getRadians(),Reference.angle.getRadians() * MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO));
             }
-            var AdjustReferenceVelocity = (Reference.speedMetersPerSecond * Math.cos(ROTATIONAL_PID.getPositionError())) / MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
-            setTranslationalVoltage(     
-                                  -(TRANSLATIONAL_PID.calculate(AdjustReferenceVelocity))
-                                                                +
-              (TRANSLATIONAL_FF.calculate(STATUS.TranslationalVelocityRadiansSecond, AdjustReferenceVelocity))
-            );          
+            var Adjusted = (Reference.speedMetersPerSecond * Math.cos(ROTATIONAL_PID.getPositionError())) / MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
+            setTranslationalVoltage(-(TRANSLATIONAL_PID.calculate(Adjusted)) + (TRANSLATIONAL_FF.calculate(STATUS.TranslationalVelocityRadiansSecond, Adjusted)));          
           }
           break;
         case DISABLED:
@@ -207,8 +203,8 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
           close();
           break;
       }
-      DELTAS.clear();
       synchronized(DELTAS) {
+        DELTAS.clear();
         IntStream.range((0), STATUS.OdometryTimestamps.length).parallel().forEach((Index) -> {
           final var Rotation = STATUS.OdometryRotationalPositions[Index].plus((RotationalRelativeOffset != null)? (RotationalRelativeOffset): (new Rotation2d()));
           final var Position = STATUS.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
