@@ -45,6 +45,11 @@ public class Constants {
     public static final Double PIVOT_PODIUMLINE_PRESET = Units.degreesToRadians((22.75d));
     public static final Double PIVOT_CENTERLINE_PRESET = Units.degreesToRadians((8.75d));
 
+    public static final Double SHOOTER_SUBWOOFER_PRESET = (1000d);
+    public static final Double SHOOTER_WINGLINE_PRESET = (2500d);
+    public static final Double SHOOTER_PODIUMLINE_PRESET = (2000d);
+    public static final Double SHOOTER_CENTERLINE_PRESET = (3000d);
+    public static final Double SHOOTER_AMP_PRESET = (500d);
 
     public static final Double CANNON_LENGTH = (1d);
 

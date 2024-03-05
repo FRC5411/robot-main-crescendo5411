@@ -86,7 +86,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       .withKI(Measurements.FIRING_I_GAIN)
       .withKD(Measurements.FIRING_D_GAIN)
     );
-    
+
 
     FIRING_CONTROLLERS.getFirst().getConfigurator().apply(new TalonFXConfiguration().CurrentLimits.withSupplyCurrentLimit((45d)).withStatorCurrentLimit((40d)));
     FIRING_CONTROLLERS.getSecond().getConfigurator().apply(new TalonFXConfiguration().CurrentLimits.withSupplyCurrentLimit((45d)).withStatorCurrentLimit((40d)));
@@ -232,21 +232,21 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * @param Keybinding Trigger to bind this association to
    * @param Rotation   Value of rotation to bring to pivot to
    */
-  private void with(final Trigger Keybinding, final Double Rotation) {
+  private void with(final Trigger Keybinding, final Double Rotation, final Double Velocity) {
     with(() -> {
       Keybinding.whileTrue(new InstantCommand(
         () -> {
           CurrentReference.angle = Rotation2d.fromRadians(Rotation);
-          FIRING_CONTROLLERS.getFirst().set((-Measurements.FIRING_IDLE_PERCENT));
-          FIRING_CONTROLLERS.getSecond().set((-Measurements.FIRING_IDLE_PERCENT));
+          FIRING_CONTROLLERS.getFirst().set((-Velocity));
+          FIRING_CONTROLLERS.getSecond().set((-Velocity));
         },
         SuperstructureSubsystem.getInstance()
       ));
       Keybinding.onFalse(new InstantCommand(
         () -> {
-          CurrentReference.angle = Rotation2d.fromRadians(Measurements.PIVOT_MINIMUM_ROTATION);
-          FIRING_CONTROLLERS.getFirst().set((0d));
-          FIRING_CONTROLLERS.getSecond().set((0d));
+          CurrentReference.angle = Rotation2d.fromRadians(Rotation);
+          FIRING_CONTROLLERS.getFirst().set((-Measurements.FIRING_IDLE_PERCENT));
+          FIRING_CONTROLLERS.getSecond().set((-Measurements.FIRING_IDLE_PERCENT));
         },
         SuperstructureSubsystem.getInstance()
       ));
@@ -258,37 +258,24 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     CurrentOperator = Profile;
     with(
       CurrentOperator.getKeybinding(Keybindings.CANNON_PIVOT_SUBWOOFER),
-      Measurements.PIVOT_SUBWOOFER_PRESET);
+      Measurements.PIVOT_SUBWOOFER_PRESET,
+      Measurements.SHOOTER_SUBWOOFER_PRESET);
     with(
       CurrentOperator.getKeybinding(Keybindings.CANNON_PIVOT_WINGLINE),
-      Measurements.PIVOT_WINGLINE_PRESET);
+      Measurements.PIVOT_WINGLINE_PRESET,
+      Measurements.SHOOTER_WINGLINE_PRESET);
     with(
       CurrentOperator.getKeybinding(Keybindings.CANNON_PIVOT_PODIUMLINE),
-      Measurements.PIVOT_PODIUMLINE_PRESET);
+      Measurements.PIVOT_PODIUMLINE_PRESET,
+      Measurements.SHOOTER_PODIUMLINE_PRESET);
     with(
       CurrentOperator.getKeybinding(Keybindings.CANNON_PIVOT_CENTERLINE),
-      Measurements.PIVOT_CENTERLINE_PRESET);
+      Measurements.PIVOT_CENTERLINE_PRESET,
+      Measurements.SHOOTER_CENTERLINE_PRESET);
     with(
       CurrentOperator.getKeybinding(Keybindings.CANNON_PIVOT_MAXIMUM),
-      Measurements.PIVOT_MAXIMUM_ROTATION);
-    with(() -> {
-      CurrentOperator.getKeybinding(Keybindings.CANNON_TOGGLE)
-        .onTrue(new InstantCommand(
-          () -> {
-            set(Measurements.FIRING_STANDARD_VELOCITY);
-            INDEXER_CONTROLLER.set((1d));
-            
-          },
-          SuperstructureSubsystem.getInstance()
-        ));
-      CurrentOperator.getKeybinding(Keybindings.CANNON_TOGGLE)
-        .onFalse(new InstantCommand(
-        () -> {
-          FIRING_CONTROLLERS.getFirst().set((-Measurements.FIRING_IDLE_PERCENT));
-          FIRING_CONTROLLERS.getSecond().set((-Measurements.FIRING_IDLE_PERCENT));
-        }
-        ,SuperstructureSubsystem.getInstance()));
-    });
+      Measurements.PIVOT_MAXIMUM_ROTATION,
+      Measurements.SHOOTER_AMP_PRESET);
     with(() -> {
       CurrentOperator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
         .onTrue(new InstantCommand(
