@@ -30,8 +30,8 @@ import javax.management.InstanceNotFoundException;
  */
 public final class CTREOdometryThread extends Thread implements OdometryThread<StatusSignal<Double>> {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  private static final List<Queue<Double>> TIMESTAMPS;  
-  private static final List<Queue<Double>> QUEUES;
+  private static final List<Queue<Double>> TIMESTAMP_QUEUES;  
+  private static final List<Queue<Double>> SIGNAL_QUEUES;
   private static final Lock SIGNALS_LOCK;
   private final Lock ODOMETRY_LOCK;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
@@ -51,8 +51,8 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
     start();
   } static {
     Signals = new ArrayList<>();
-    QUEUES = new ArrayList<>();
-    TIMESTAMPS = new ArrayList<>();
+    SIGNAL_QUEUES = new ArrayList<>();
+    TIMESTAMP_QUEUES = new ArrayList<>();
     SIGNALS_LOCK = new ReentrantLock();
     Instance = (null);
     Frequency = (500d);
@@ -61,7 +61,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
   public synchronized void start() {
-    if (TIMESTAMPS.isEmpty()) {
+    if (TIMESTAMP_QUEUES.isEmpty()) {
       super.start();
     }
   }
@@ -73,7 +73,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
     ODOMETRY_LOCK.lock();
     try {
       Signals.add(Signal);
-      QUEUES.add(Queue);
+      SIGNAL_QUEUES.add(Queue);
     } finally {
       SIGNALS_LOCK.unlock();
       ODOMETRY_LOCK.unlock();
@@ -82,7 +82,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
   }
 
   public synchronized void close() throws IOException {
-    QUEUES.clear();
+    SIGNAL_QUEUES.clear();
     Signals.clear();
     try {
       super.join();
@@ -90,13 +90,14 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
       Exception.printStackTrace();
     }     
     Instance = (null);
+    this.interrupt();
   }
 
   public synchronized Queue<Double> timestamp() {
     Queue<Double> Queue = new ArrayDeque<>((100));
     ODOMETRY_LOCK.lock();
     try {
-      TIMESTAMPS.add(Queue);
+      TIMESTAMP_QUEUES.add(Queue);
     } finally {
       ODOMETRY_LOCK.unlock();
     }
@@ -109,9 +110,9 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
       SIGNALS_LOCK.lock();
       try {
         if (FlexibleCAN) {
-          BaseStatusSignal.waitForAll((2.0) / Frequency, Signals.toArray(StatusSignal[]::new));
+          BaseStatusSignal.waitForAll((2d) / Frequency, Signals.toArray(StatusSignal[]::new));
         } else {
-          Thread.sleep((long) ((1000.0)/ Frequency));
+          Thread.sleep((long) ((1000d) / Frequency));
           Signals.forEach(StatusSignal::refresh);
         }
       } catch (final InterruptedException Exception) {
@@ -121,30 +122,41 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
       }
       ODOMETRY_LOCK.lock();
       try {
-        final var SignalIterator = Signals.iterator();
-        var RealTimestamp = new AtomicReference<>(Logger.getRealTimestamp() / 1e6);
-        var SummativeLatency = new AtomicReference<>((0d));
-        Signals.forEach((Signal) -> SummativeLatency.set(SummativeLatency.get() + Signal.getTimestamp().getLatency()));
+        final var Providers = Signals.iterator();
+        final var Timestamp = new AtomicReference<>(Logger.getRealTimestamp() / (1e6));
+        final var Latency = new AtomicReference<>((0d));
+        Signals.forEach((Signal) -> Latency.set(Latency.get() + Signal.getTimestamp().getLatency()));
         if (!Signals.isEmpty()) {
-          RealTimestamp.set(RealTimestamp.get() - SummativeLatency.get() / Signals.size());
+          Timestamp.set(Timestamp.get() - Latency.get() / Signals.size());
         }
-        QUEUES.forEach((Queue) -> Queue.offer(SignalIterator.next().getValue()));
-        TIMESTAMPS.forEach((Timestamp) -> Timestamp.offer(RealTimestamp.get()));
+        SIGNAL_QUEUES.forEach((final Queue<Double> Queue) -> {
+          synchronized(Queue) {
+            Queue.offer(Providers.next().getValue());
+          }
+        });
+        TIMESTAMP_QUEUES.forEach((final Queue<Double> Queue) ->  {
+          synchronized(Queue) {
+            Queue.offer(Timestamp.get());
+          }
+        });
       } finally {
         ODOMETRY_LOCK.unlock();
+      } if(this.isInterrupted()) {
+        break;
       }
     }
   }  
 
   /**
    * Creates a new instance of the existing utility class
+   * @param Lock Valid reentrance locker for this type
    * @return Utility class's instance
    */
-  public static synchronized CTREOdometryThread create(final Lock OdometryLocker) {
+  public static synchronized CTREOdometryThread create(final Lock Lock) {
     if (!java.util.Objects.isNull(Instance)) {
       return Instance;
     }
-    Instance = new CTREOdometryThread(OdometryLocker);
+    Instance = new CTREOdometryThread(Lock);
     return Instance;
   }
 

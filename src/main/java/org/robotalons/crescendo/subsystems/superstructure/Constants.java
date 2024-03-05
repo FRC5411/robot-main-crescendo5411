@@ -38,6 +38,8 @@ public class Constants {
     public static final Double FIRING_I_GAIN = (0d);
     public static final Double FIRING_D_GAIN = (0.0001d);
 
+    public static final Double FIRING_STANDARD_VELOCITY = (2000d);
+
     public static final Double PIVOT_SUBWOOFER_PRESET = Units.degreesToRadians((46.25d));
     public static final Double PIVOT_WINGLINE_PRESET = Units.degreesToRadians((12.75d));
     public static final Double PIVOT_PODIUMLINE_PRESET = Units.degreesToRadians((22.75d));
@@ -56,6 +58,8 @@ public class Constants {
     public static final Double MID_HOLD_ROTATION = Units.degreesToRadians((35d));
     public static final Double HIGH_HOLD_ROTATION = (PIVOT_MAXIMUM_ROTATION - 1d);
 
+    public static final Double FIRING_IDLE_PERCENT = (.175d);
+
     public static final Double FIRING_PASSIVE_PERCENTILE = (0.35d);
 
     public static final Double PIVOT_MAXIMUM_RANGE_METERS = (100d);
@@ -63,7 +67,7 @@ public class Constants {
 
     public static final Double SPEAKER_HEIGHT_METERS = (0d);
 
-    public static final Double ALLOWABLE_SHOT_PERCENTAGE = (85e-2);
+    public static final Double ALLOWABLE_SHOT_PERCENTAGE = (95e-2);
 
     public static final Matrix<N2,N1> PIVOT_UPPER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), 0d, 0d);
     public static final Matrix<N2,N1> PIVOT_LOWER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), 0d, 0d);

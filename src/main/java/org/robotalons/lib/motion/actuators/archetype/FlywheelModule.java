@@ -96,9 +96,8 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
    * Force configures this module's hardware to standard SparkModule specifications.
    */
   private synchronized void configure() {
-    cease();
     ODOMETRY_LOCK.lock();
-    TRANSLATIONAL_PID.enableContinuousInput((-1), (1));
+    cease();
     ROTATIONAL_PID.enableContinuousInput(-Math.PI, Math.PI);
     ODOMETRY_LOCK.unlock();
   }
@@ -121,44 +120,42 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
 
   @Override
   public synchronized void periodic() {
-    final var DiscretizationTimestamp = discretize();
-    ROTATIONAL_CONTROLLER.update(DiscretizationTimestamp);
-    TRANSLATIONAL_CONTROLLER.update(DiscretizationTimestamp);
-    RotationalIntegratedPosition += ROTATIONAL_CONTROLLER.getAngularVelocityRPM() * (DiscretizationTimestamp);
-    TranslationalIntegratedPosition += TRANSLATIONAL_CONTROLLER.getAngularVelocityRPM() * (DiscretizationTimestamp);
-    ODOMETRY_LOCK.lock();
+    final var Timestamp = discretize();
+    ROTATIONAL_CONTROLLER.update(Timestamp);
+    TRANSLATIONAL_CONTROLLER.update(Timestamp);
+    RotationalIntegratedPosition += ROTATIONAL_CONTROLLER.getAngularVelocityRPM() * (Timestamp);
+    TranslationalIntegratedPosition += TRANSLATIONAL_CONTROLLER.getAngularVelocityRPM() * (Timestamp);
     update();
-    if (RotationalRelativeOffset == (null) && STATUS.RotationalAbsolutePosition.getRadians() != (0d)) {
-      RotationalRelativeOffset = STATUS.RotationalAbsolutePosition.minus(STATUS.RotationalRelativePosition);
-    }
-    switch(ReferenceMode) {
-      case STATE_CONTROL:
-      if(Reference != (null)) {
-        if (Reference.angle != (null)) {
-          setRotationalVoltage(ROTATIONAL_PID.calculate(getRelativeRotation().getRadians(),Reference.angle.getRadians()));
-        }
-        var AdjustReferenceVelocity = (Reference.speedMetersPerSecond * Math.cos(ROTATIONAL_PID.getPositionError())) / MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
-        setTranslationalVoltage(     -(TRANSLATIONAL_PID.calculate(AdjustReferenceVelocity))
-                                                            +
-          (TRANSLATIONAL_FF.calculate(STATUS.TranslationalVelocityRadiansSecond, AdjustReferenceVelocity)));          
+    synchronized(STATUS) {
+      if (RotationalRelativeOffset == (null) && STATUS.RotationalAbsolutePosition.getRadians() != (0d)) {
+        RotationalRelativeOffset = STATUS.RotationalAbsolutePosition.minus(STATUS.RotationalRelativePosition);
       }
-        break;
-      case DISABLED:
-        cease();
-        break;
-      case CLOSED:
-        close();
-        break;
+      switch(ReferenceMode) {
+        case STATE_CONTROL:
+          if(Reference != (null)) {
+            if (Reference.angle != (null)) {
+              setRotationalVoltage(ROTATIONAL_PID.calculate(getAbsoluteRotation().getRadians(),Reference.angle.getRadians()));
+            }
+            var Adjusted = (Reference.speedMetersPerSecond * Math.cos(ROTATIONAL_PID.getPositionError())) / MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
+            setTranslationalVoltage(-(TRANSLATIONAL_PID.calculate(Adjusted)) + (TRANSLATIONAL_FF.calculate(STATUS.TranslationalVelocityRadiansSecond, Adjusted)));          
+          }
+          break;
+        case DISABLED:
+          cease();
+          break;
+        case CLOSED:
+          close();
+          break;
+      }
+      synchronized(DELTAS) {
+        DELTAS.clear();
+        IntStream.range((0), Math.min(STATUS.OdometryTranslationalPositionsRadians.length, STATUS.OdometryRotationalPositions.length)).parallel().forEach((Index) -> {
+          final var Rotation = STATUS.OdometryRotationalPositions[Index].plus((RotationalRelativeOffset != null)? (RotationalRelativeOffset): (new Rotation2d()));
+          final var Position = STATUS.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
+          DELTAS.add(new SwerveModulePosition(Position, Rotation));
+        });              
+      }
     }
-    DELTAS.clear();
-    IntStream.range((0), (STATUS.OdometryTimestamps.length - 1)).forEach((Index) -> {
-      final var Position = STATUS.OdometryTranslationalPositionsRadians[Index] * CONSTANTS.WHEEL_RADIUS_METERS;
-      final var Rotation = STATUS.OdometryRotationalPositions[Index].plus(
-        RotationalRelativeOffset != null? RotationalRelativeOffset: new Rotation2d());
-      DELTAS.add(new SwerveModulePosition(Position, Rotation));
-    });
-    ODOMETRY_LOCK.unlock();  
-
   }
 
   /**

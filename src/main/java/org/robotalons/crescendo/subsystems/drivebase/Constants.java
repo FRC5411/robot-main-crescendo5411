@@ -39,8 +39,8 @@ public final class Constants {
   public static final class Simulation {
     public static final Double TRANSLATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (505.597120488d);
     public static final Double ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (249.71004822d);
-    public static final Matrix<N1,N1> TRANSLATIONAL_MEASUREMENT_STDEVS = MatBuilder.fill(Nat.N1(), Nat.N1(), (0.25));
-    public static final Matrix<N1,N1> ROTATIONAL_MEASUREMENT_STDEVS = MatBuilder.fill(Nat.N1(), Nat.N1(), (0.25));
+    public static final Matrix<N1,N1> TRANSLATIONAL_MEASUREMENT_STDEVS = MatBuilder.fill(Nat.N1(), Nat.N1(), (0.25d));
+    public static final Matrix<N1,N1> ROTATIONAL_MEASUREMENT_STDEVS = MatBuilder.fill(Nat.N1(), Nat.N1(), (0.25d));
     public static final FlywheelSim TRANSLATIONAL_FLYWHEEL = new FlywheelSim(
       DCMotor.getNEO((1)),
       1 / Measurements.ROBOT_LINEAR_GEAR_RATIO,
@@ -55,9 +55,9 @@ public final class Constants {
     public static final Double ROBOT_WHEEL_DIAMETER_METERS = Units.inchesToMeters((4d));
     public static final Double ROBOT_WHEEL_PERIMETER_METERS = ROBOT_WHEEL_DIAMETER_METERS * Math.PI;
 
-    public static final Double ROBOT_LENGTH_METERS = Units.inchesToMeters((29.5));
-    public static final Double ROBOT_WIDTH_METERS = Units.inchesToMeters((29.5));
-    public static final Double ROBOT_RADIUS_METERS = Math.hypot(ROBOT_LENGTH_METERS / (2.0), ROBOT_WIDTH_METERS / (2.0));
+    public static final Double ROBOT_LENGTH_METERS = Units.inchesToMeters((29.5d));
+    public static final Double ROBOT_WIDTH_METERS = Units.inchesToMeters((29.5d));
+    public static final Double ROBOT_RADIUS_METERS = Math.hypot(ROBOT_LENGTH_METERS / (2d), ROBOT_WIDTH_METERS / (2d));
 
     public static final Double ROBOT_MAXIMUM_LINEAR_VELOCITY = Units.feetToMeters((16.6d));
     public static final Double ROBOT_MAXIMUM_ANGULAR_VELOCITY = ROBOT_MAXIMUM_LINEAR_VELOCITY / ROBOT_RADIUS_METERS;

@@ -25,9 +25,9 @@ import javax.management.InstanceNotFoundException;
  */
 public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  private static final List<DoubleSupplier> SIGNALS;
-  private static final List<Queue<Double>> TIMESTAMPS;
-  private static final List<Queue<Double>> QUEUES;
+  private static final List<DoubleSupplier> SIGNAL_PROVIDERS;
+  private static final List<Queue<Double>> TIMESTAMP_QUEUES;
+  private static final List<Queue<Double>> SIGNAL_QUEUES;
   private final Lock ODOMETRY_LOCK;
   private final Notifier NOTIFIER;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
@@ -44,9 +44,9 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
     NOTIFIER.setName(("REVOdometryThread"));
     start();
   } static {
-    QUEUES = new ArrayList<>();
-    TIMESTAMPS = new ArrayList<>();
-    SIGNALS = new ArrayList<>();
+    SIGNAL_QUEUES = new ArrayList<>();
+    TIMESTAMP_QUEUES = new ArrayList<>();
+    SIGNAL_PROVIDERS = new ArrayList<>();
     Instance = (null);
     Frequency = (500d);
   }
@@ -56,8 +56,8 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
     Queue<Double> Queue = new ArrayDeque<>((100));
     ODOMETRY_LOCK.lock();
     try {
-      SIGNALS.add(Signal);
-      QUEUES.add(Queue);
+      SIGNAL_PROVIDERS.add(Signal);
+      SIGNAL_QUEUES.add(Queue);
     } finally {
       ODOMETRY_LOCK.unlock();
     }
@@ -69,7 +69,7 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
     Queue<Double> Queue = new ArrayDeque<>((100));
     ODOMETRY_LOCK.lock();
     try {
-      TIMESTAMPS.add(Queue);
+      TIMESTAMP_QUEUES.add(Queue);
     } finally {
       ODOMETRY_LOCK.unlock();
     }
@@ -77,15 +77,15 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   }
 
   public synchronized void start() {
-    if (TIMESTAMPS.isEmpty()) {
+    if (TIMESTAMP_QUEUES.isEmpty()) {
       NOTIFIER.startPeriodic((1d)/ Frequency);
     }
   }
 
   @Override
   public synchronized void close() throws IOException {
-    QUEUES.clear();
-    SIGNALS.clear();
+    SIGNAL_QUEUES.clear();
+    SIGNAL_PROVIDERS.clear();
     NOTIFIER.stop();  
     Instance = (null);
   }
@@ -94,10 +94,18 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   public synchronized void run() {
     ODOMETRY_LOCK.lock();
     try {
-      final var SignalIterator = SIGNALS.iterator();
-      final var RealTimestamp = Logger.getRealTimestamp() / (1e6);
-      QUEUES.forEach((Queue) -> Queue.offer(SignalIterator.next().getAsDouble()));
-      TIMESTAMPS.forEach((Timestamp) -> Timestamp.offer(RealTimestamp));
+      final var Providers = SIGNAL_PROVIDERS.iterator();
+      final var Timestamp = Logger.getRealTimestamp() / (1e6);
+      SIGNAL_QUEUES.forEach((final Queue<Double> Queue) -> {
+        synchronized(Queue) {
+          Queue.offer(Providers.next().getAsDouble());
+        }
+      });
+      TIMESTAMP_QUEUES.forEach((final Queue<Double> Queue) ->  {
+        synchronized(Queue) {
+          Queue.offer(Timestamp);
+        }
+      });
     } finally {
       ODOMETRY_LOCK.unlock();
     }
@@ -105,13 +113,14 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   
   /**
    * Creates a new instance of the existing utility class
+   * @param Lock Valid reentrance locker for this type
    * @return Utility class's instance
    */
-  public static synchronized REVOdometryThread create(Lock OdometryLock) {
+  public static synchronized REVOdometryThread create(Lock Lock) {
     if (!java.util.Objects.isNull(Instance)) {
       return Instance;
     }
-    Instance = new REVOdometryThread(OdometryLock);
+    Instance = new REVOdometryThread(Lock);
     return Instance;
   }
 
