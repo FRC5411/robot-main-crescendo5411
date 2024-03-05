@@ -9,7 +9,6 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.photonvision.PhotonCamera;
-import org.robotalons.crescendo.subsystems.vision.*;
 import org.robotalons.crescendo.subsystems.vision.Constants.Measurements;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.vision.Camera;
@@ -50,6 +49,8 @@ public final class VisionSubsystem extends TalonSubsystemBase {
    * Vision Subsystem Constructor.
    */
   public VisionSubsystem(){
+    super(("Vision Subsystem"));
+  }{
     SOURCE = new PhotonCamera("SOURCE");
     SPEAKER_FRONT = new PhotonCamera("SPEAKER_FRONT");
     SPEAKER_REAR = new PhotonCamera("SPEAKER_REAR");
