@@ -4,7 +4,7 @@ package org.robotalons.crescendo;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj.RobotBase;
 
-// ------------------------------------------------------------------[Main]-----------------------------------------------------------------//
+// -----------------------------------------------------------------[Main]------------------------------------------------------------------//
 /**
  *
  *
@@ -19,7 +19,6 @@ public final class Main {
 
     /**
      * Initializes the robot and underlying systems
-     *
      * @param Options Additional options applied via the command line
      */
     public static void main(String... Options) {

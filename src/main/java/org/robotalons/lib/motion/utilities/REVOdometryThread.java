@@ -3,11 +3,13 @@ package org.robotalons.lib.motion.utilities;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj.Notifier;
 
+import org.littletonrobotics.junction.Logger;
+
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.function.DoubleSupplier;
 import javax.management.InstanceNotFoundException;
@@ -24,6 +26,7 @@ import javax.management.InstanceNotFoundException;
 public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private static final List<DoubleSupplier> SIGNALS;
+  private static final List<Queue<Double>> TIMESTAMPS;
   private static final List<Queue<Double>> QUEUES;
   private final Lock ODOMETRY_LOCK;
   private final Notifier NOTIFIER;
@@ -37,19 +40,20 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
    */
   private REVOdometryThread(Lock OdometryLocker) {
     ODOMETRY_LOCK = OdometryLocker;
-    NOTIFIER = new Notifier(this::run);
+    NOTIFIER = new Notifier(this);
     NOTIFIER.setName(("REVOdometryThread"));
-    NOTIFIER.startPeriodic((1.0) / Frequency);
+    start();
   } static {
     QUEUES = new ArrayList<>();
+    TIMESTAMPS = new ArrayList<>();
     SIGNALS = new ArrayList<>();
     Instance = (null);
-    Frequency = (250d);
+    Frequency = (500d);
   }
 
   @Override
   public synchronized Queue<Double> register(final DoubleSupplier Signal) {
-    Queue<Double> Queue = new ArrayBlockingQueue<>((100));
+    Queue<Double> Queue = new ArrayDeque<>((100));
     ODOMETRY_LOCK.lock();
     try {
       SIGNALS.add(Signal);
@@ -58,6 +62,24 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
       ODOMETRY_LOCK.unlock();
     }
     return Queue;
+  }
+
+  @Override
+  public synchronized Queue<Double> timestamp() {
+    Queue<Double> Queue = new ArrayDeque<>((100));
+    ODOMETRY_LOCK.lock();
+    try {
+      TIMESTAMPS.add(Queue);
+    } finally {
+      ODOMETRY_LOCK.unlock();
+    }
+    return Queue;
+  }
+
+  public synchronized void start() {
+    if (TIMESTAMPS.isEmpty()) {
+      NOTIFIER.startPeriodic((1d)/ Frequency);
+    }
   }
 
   @Override
@@ -72,19 +94,15 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   public synchronized void run() {
     ODOMETRY_LOCK.lock();
     try {
-      var SignalIterator = SIGNALS.iterator();
-      QUEUES.forEach((Queue) -> {
-        Queue.offer(SignalIterator.next().getAsDouble());
-      });
+      final var SignalIterator = SIGNALS.iterator();
+      final var RealTimestamp = Logger.getRealTimestamp() / (1e6);
+      QUEUES.forEach((Queue) -> Queue.offer(SignalIterator.next().getAsDouble()));
+      TIMESTAMPS.forEach((Timestamp) -> Timestamp.offer(RealTimestamp));
     } finally {
       ODOMETRY_LOCK.unlock();
     }
   }
-  // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
-  public synchronized void set(final Double Frequency) {
-    REVOdometryThread.Frequency = Frequency;
-  }
-  // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
+  
   /**
    * Creates a new instance of the existing utility class
    * @return Utility class's instance
@@ -97,6 +115,25 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
     return Instance;
   }
 
+  @Override
+  public Double getFrequency() {
+    return Frequency;
+  }  
+  // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
+  
+  @Override
+  public synchronized void set(final Double Frequency) {
+    ODOMETRY_LOCK.lock();
+    REVOdometryThread.Frequency = Frequency;
+    NOTIFIER.stop();
+    NOTIFIER.startPeriodic(Frequency);
+    ODOMETRY_LOCK.unlock();
+  }
+  // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
+  @Override
+  public Lock getLock() {
+    return ODOMETRY_LOCK;
+  }
   /**
    * Retrieves the existing instance of this static utility class
    * @return Utility class's instance

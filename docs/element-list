@@ -1,4 +1,14 @@
+<<<<<<< HEAD
 org.robotalons.lib.motion.pathfinding
+=======
+org.robotalons.lib
+org.robotalons.lib.motion.actuators
+org.robotalons.lib.motion.actuators.archetype
+org.robotalons.lib.motion.pathfinding
+org.robotalons.lib.motion.sensors
+org.robotalons.lib.motion.sensors.archetype
+org.robotalons.lib.motion.trajectory.solving
+>>>>>>> faaa5856de12afbea4562cf3fd3e92cfe088cace
 org.robotalons.lib.motion.utilities
 org.robotalons.lib.utilities
 org.robotalons.lib.vision

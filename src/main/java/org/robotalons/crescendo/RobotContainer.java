@@ -1,14 +1,20 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
+import org.robotalons.crescendo.Constants.Pathplanner;
+import org.robotalons.crescendo.Constants.Profiles;
+import org.robotalons.crescendo.subsystems.SubsystemManager;
+import org.robotalons.lib.utilities.Operator;
+
+import java.util.ArrayList;
+import java.util.List;
 // -------------------------------------------------------------[Robot Container]-----------------------------------------------------------//
 /**
  *
@@ -19,36 +25,28 @@ import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
  */
 public final class RobotContainer {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  public static final LoggedDashboardChooser<Command> CommandSelector;
-  public static final CommandXboxController controller;
-  public static final VisionSubsystem subsystem;
-  // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
+  public static final List<LoggedDashboardChooser<Operator>> SubsystemOperators;
+  public static final LoggedDashboardChooser<Command> Autonomous;
+  // ------------------------------23---------------------------------[Fields]----------------------------------------------------------------//
   private static RobotContainer Instance = (null);
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
+  
   private RobotContainer() {} static {
-    CommandSelector = new LoggedDashboardChooser<>(("Autonomous Command Selector"), AutoBuilder.buildAutoChooser());
-    subsystem = new VisionSubsystem();
-    controller = new CommandXboxController(0);
-    configureDefaultCommands();
-    configurePilotKeybinds();
+    SubsystemOperators = new ArrayList<>();
+    SubsystemManager.getSubsystems().forEach((Subsystem) -> {
+      final var Selector = new SendableChooser<Operator>();
+      final var Default = Profiles.DEFAULT.get(Subsystem);
+      Profiles.OPERATORS.forEach((Profile) -> Selector.addOption(Profile.getName(), Profile));
+      Selector.setDefaultOption(Default.getName(), Default);
+      Selector.onChange(Subsystem::configure);
+      Subsystem.configure(Default);
+      SubsystemOperators.add(new LoggedDashboardChooser<Operator>(Subsystem.getName() + " Pilot Selector", Selector));
+    });
+    Profiles.OPERATORS.forEach((Profile) -> SmartDashboard.putData(Profile.getName(), Profile));
+    SubsystemManager.getInstance();
+    Autonomous = new LoggedDashboardChooser<>(("Autonomous Selector"), AutoBuilder.buildAutoChooser());
+    Pathplanner.ROUTINES.forEach((Name, Routine) -> Autonomous.addOption(Name, Routine));
   }
-  // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
-  /**
-   * Configures subsystem default commands
-   */
-  public static void configureDefaultCommands() {
-    controller.a().onTrue(new InstantCommand(() -> VisionSubsystem.postSnapshot(1)));
-    controller.b().onTrue(new InstantCommand(() -> VisionSubsystem.getApproximatedRobotPose()));
-    controller.x().onTrue(new InstantCommand(() -> VisionSubsystem.getObjectFieldPose()));
-    controller.y().onTrue(new InstantCommand(() -> VisionSubsystem.getOptimalTarget(1)));
-  }
-
-  /**
-   * Configures the bindings, and preferences for each subsystem driver
-   */
-  private static void configurePilotKeybinds() {
-
-  }  
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Retrieves the existing instance of this static utility class
