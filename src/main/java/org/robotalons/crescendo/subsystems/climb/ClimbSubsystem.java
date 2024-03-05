@@ -3,7 +3,9 @@ package org.robotalons.crescendo.subsystems.climb;
 // ---------------------------------------------------------------[Libraries]--------------------------------------------------------------- //
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.CANSparkMax;
@@ -19,6 +21,7 @@ import org.robotalons.crescendo.subsystems.climb.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.climb.Constants.Objects;
 import org.robotalons.crescendo.subsystems.climb.Constants.Ports;
 import org.robotalons.lib.TalonSubsystemBase;
+import org.robotalons.lib.utilities.Operator;
 // ------------------------------------------------------------[Climb Subsystem]------------------------------------------------------------ //
 /**
  *
@@ -46,6 +49,8 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
   private static final PIDController RIGHT_PID;
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
   private static ClimbSubsystem Instance;
+  private static volatile Operator<Keybindings, Preferences> CurrentOperator;
+  private static volatile Double Rotation;
   // ------------------------------------------------------------[Constructors]------------------------------------------------------------- //
 
   /**
@@ -54,6 +59,7 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
   public ClimbSubsystem() {
     super(("Climb Subsystem"));
   } static {
+    CurrentOperator = (null);
     LEFT_ARM = new CANSparkMax(Ports.LEFT_ARM_CONTROLLER_ID, MotorType.kBrushless);
     RIGHT_ARM = new CANSparkMax(Ports.RIGHT_ARM_CONTROLLER_ID, MotorType.kBrushless);
 
@@ -98,14 +104,6 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
 
       LEFT_ARM.setSmartCurrentLimit(Measurements.CURRENT_LIMIT);
 
-      LEFT_ARM.setSoftLimit(
-      SoftLimitDirection.kForward,
-      Measurements.FORWARD_ARM_LIMIT);
-
-      LEFT_ARM.setSoftLimit(
-      SoftLimitDirection.kReverse,
-      Measurements.REVERSE_ARM_LIMIT);
-
       RIGHT_ARM.setIdleMode(IdleMode.kBrake);
       RIGHT_ARM.restoreFactoryDefaults();
       RIGHT_ARM.clearFaults();
@@ -114,22 +112,32 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
 
       RIGHT_ARM.setSoftLimit(
       SoftLimitDirection.kForward,
-      Measurements.FORWARD_ARM_LIMIT);
+      ((Double) Units.radiansToRotations(Measurements.MAXIMUM_ARM_ROTATION)).floatValue());
 
       RIGHT_ARM.setSoftLimit(
       SoftLimitDirection.kReverse,
-      Measurements.FORWARD_ARM_LIMIT);
+      ((Double) Units.radiansToRotations(Measurements.MINIMUM_ARM_ROTATION)).floatValue());
+
+      LEFT_ARM.setSoftLimit(
+      SoftLimitDirection.kForward,
+      ((Double) Units.radiansToRotations(Measurements.MAXIMUM_ARM_ROTATION)).floatValue());
+
+      LEFT_ARM.setSoftLimit(
+      SoftLimitDirection.kReverse,
+      ((Double) Units.radiansToRotations(Measurements.MINIMUM_ARM_ROTATION)).floatValue());
+      
+      Rotation = LEFT_ABSOLUTE_ENCODER.getAbsolutePosition() + RIGHT_ABSOLUTE_ENCODER.getAbsolutePosition() / 2;
   }
 
   // ------------------------------------------------------ ---------[Methods]--------------------------------------------------------------- //
   public synchronized void periodic() {
     Objects.ODOMETRY_LOCKER.lock();
 
-    Logger.recordOutput(("Climb/LeftAbsolutePosition"), getPosition(ClimbState.LEFT));
-    Logger.recordOutput(("Climb/RightAbsolutePosition"), getPosition(ClimbState.RIGHT));
+    Logger.recordOutput(("Climb/LeftAbsolutePosition"), Units.rotationsToDegrees(getPosition(ClimbState.LEFT)));
+    Logger.recordOutput(("Climb/RightAbsolutePosition"), Units.rotationsToDegrees(getPosition(ClimbState.RIGHT)));
 
-    Logger.recordOutput(("Climb/LeftRelativePosition"), LEFT_RELATIVE_ENCODER.getPosition());
-    Logger.recordOutput(("Climb/RightRelativePosition"), LEFT_RELATIVE_ENCODER.getPosition());
+    Logger.recordOutput(("Climb/LeftRelativePosition"), Units.rotationsToDegrees(LEFT_RELATIVE_ENCODER.getPosition()));
+    Logger.recordOutput(("Climb/RightRelativePosition"), Units.rotationsToDegrees(RIGHT_RELATIVE_ENCODER.getPosition()));
 
     Logger.recordOutput(("Climb/LeftVelocity"), LEFT_RELATIVE_ENCODER.getVelocity());
     Logger.recordOutput(("Climb/RightVelocity"), RIGHT_RELATIVE_ENCODER.getVelocity());
@@ -140,6 +148,7 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
     Logger.recordOutput(("Climb/LeftVoltage"), LEFT_ARM.getBusVoltage());
     Logger.recordOutput(("Climb/RightVoltage"), RIGHT_ARM.getBusVoltage());
 
+    set(Rotation);
     Objects.ODOMETRY_LOCKER.unlock();
   }
 
@@ -147,6 +156,16 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
   public synchronized void close() {
     LEFT_ARM.close();
     RIGHT_ARM.close();
+  }
+
+  public synchronized void configure(final Operator<Keybindings, Preferences> Operator) {
+    CurrentOperator = Operator;
+    CurrentOperator.getKeybinding(Keybindings.CLIMB_ROTATE_FORWARD).whileTrue(new InstantCommand(() -> {
+      Rotation += (1e-2d);
+    }, getInstance()).repeatedly());
+    CurrentOperator.getKeybinding(Keybindings.CLIMB_ROTATE_BACKWARD).whileTrue(new InstantCommand(() -> {
+      Rotation -= (1e-2d);
+    }, getInstance()).repeatedly());
   }
   // --------------------------------------------------------------[Internal]--------------------------------------------------------------- //
   /**

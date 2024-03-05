@@ -113,11 +113,12 @@ public final class Constants {
         private static final Integer INPUT_PORT = (1);
         private static final CommandXboxController INPUT_METHOD = new CommandXboxController(INPUT_PORT);
         public static final Operator<Keybindings,Preferences> PROFILE = new Operator<Keybindings,Preferences>(NAME)
-          .add(Keybindings.CANNON_PIVOT_PODIUMLINE, INPUT_METHOD.a())
-          .add(Keybindings.CANNON_PIVOT_SUBWOOFER, INPUT_METHOD.x())
-          .add(Keybindings.CANNON_PIVOT_CENTERLINE, INPUT_METHOD.y())
-          .add(Keybindings.CANNON_PIVOT_WINGLINE, INPUT_METHOD.b())
-          .add(Keybindings.CANNON_TOGGLE, INPUT_METHOD.leftBumper())
+          .add(Keybindings.CANNON_PIVOT_PODIUMLINE, INPUT_METHOD.povUp())
+          .add(Keybindings.CANNON_PIVOT_SUBWOOFER, INPUT_METHOD.povDown())
+          .add(Keybindings.CANNON_PIVOT_CENTERLINE, INPUT_METHOD.povLeft())
+          .add(Keybindings.CANNON_PIVOT_WINGLINE, INPUT_METHOD.povRight())
+          .add(Keybindings.CANNON_PIVOT_MAXIMUM, INPUT_METHOD.povCenter())
+          .add(Keybindings.CANNON_TOGGLE, INPUT_METHOD.b())
           .add(Keybindings.INTAKE_TOGGLE, Operators.Primary.INPUT_METHOD.leftTrigger())
           .add(Keybindings.OUTTAKE_TOGGLE, Operators.Primary.INPUT_METHOD.rightTrigger());
       }
@@ -136,6 +137,8 @@ public final class Constants {
     public enum Keybindings {
       MODULE_LOCKING_TOGGLE,
       ORIENTATION_TOGGLE,
+      CLIMB_ROTATE_FORWARD,
+      CLIMB_ROTATE_BACKWARD,
       INTAKE_TOGGLE,
       OUTTAKE_TOGGLE,
       CANNON_TOGGLE,

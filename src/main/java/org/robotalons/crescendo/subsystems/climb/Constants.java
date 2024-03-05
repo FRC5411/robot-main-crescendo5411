@@ -2,6 +2,7 @@
 package org.robotalons.crescendo.subsystems.climb;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -42,10 +43,10 @@ public class Constants {
 
     public static final Double TICK_CONVERSION_FACTOR = (2.0 * Math.PI /4096.0);
 
-    public static final Integer CURRENT_LIMIT = (60);
+    public static final Double MINIMUM_ARM_ROTATION = Units.degreesToRadians(-100d);
+    public static final Double MAXIMUM_ARM_ROTATION = Units.degreesToRadians(100d);
 
-    public static final float FORWARD_ARM_LIMIT = (90);
-    public static final float REVERSE_ARM_LIMIT = (-90);
+    public static final Integer CURRENT_LIMIT = (60);
 
     public static final Double GEAR_RATIO = (1/244.5);
 
