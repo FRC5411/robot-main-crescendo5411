@@ -31,19 +31,19 @@ public final class SubsysConstants {
   }
   
   public class INDEXER {
-    //MEASUREMENTS
+    //MEASUREMENTS - placeholder values
     public static final Double TO_CANNON_MOTOR_SPEED = (1d);
     public static final Integer K_CURRENT_LIMIT = (60);
 
     //PORTS
-    public static final Integer TO_CANNON_MOTOR_ID = (0);
-    public static final Integer INTAKE_SENSOR_INPUT_ID = (1);
-    public static final Integer CANNON_SENSOR_INPUT_ID = (2);
+    public static final Integer TO_CANNON_MOTOR_ID = (22);
+    public static final Integer INTAKE_SENSOR_INPUT_ID = (0); //placeholder value
+    public static final Integer CANNON_SENSOR_INPUT_ID = (8);
     
     //OBJECTS
     public static final Lock ODOMETRY_LOCKER = new ReentrantLock();
 
-    //DEVICES
+    //DEVICES - placeholder values
     public static final Integer K_TO_CANNON_MOTOR_ENCODER_CHANNELA = (0);
     public static final Integer K_TO_CANNON_MOTOR_ENCODER_CHANNELB = (1);
   }
