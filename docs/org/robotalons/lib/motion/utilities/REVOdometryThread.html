@@ -112,7 +112,7 @@ implements <a href="OdometryThread.html" title="interface in org.robotalons.lib.
 <div class="block">Closes this instance and all held resources immediately, but does not render the class unusable hence forth and can be re-instantiated.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="REVOdometryThread.html" title="class in org.robotalons.lib.motion.utilities">REVOdometryThread</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#create(java.util.concurrent.locks.Lock)" class="member-name-link">create</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/locks/Lock.html" title="class or interface in java.util.concurrent.locks" class="external-link">Lock</a>&nbsp;OdometryLock)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#create(java.util.concurrent.locks.Lock)" class="member-name-link">create</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/locks/Lock.html" title="class or interface in java.util.concurrent.locks" class="external-link">Lock</a>&nbsp;Lock)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Creates a new instance of the existing utility class</div>
 </div>
@@ -243,9 +243,11 @@ implements <a href="OdometryThread.html" title="interface in org.robotalons.lib.
 <li>
 <section class="detail" id="create(java.util.concurrent.locks.Lock)">
 <h3>create</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="REVOdometryThread.html" title="class in org.robotalons.lib.motion.utilities">REVOdometryThread</a></span>&nbsp;<span class="element-name">create</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/locks/Lock.html" title="class or interface in java.util.concurrent.locks" class="external-link">Lock</a>&nbsp;OdometryLock)</span></div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="REVOdometryThread.html" title="class in org.robotalons.lib.motion.utilities">REVOdometryThread</a></span>&nbsp;<span class="element-name">create</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/locks/Lock.html" title="class or interface in java.util.concurrent.locks" class="external-link">Lock</a>&nbsp;Lock)</span></div>
 <div class="block">Creates a new instance of the existing utility class</div>
 <dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>Lock</code> - Valid reentrance locker for this type</dd>
 <dt>Returns:</dt>
 <dd>Utility class's instance</dd>
 </dl>

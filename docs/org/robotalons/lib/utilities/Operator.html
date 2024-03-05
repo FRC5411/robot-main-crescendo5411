@@ -68,10 +68,10 @@ loadScripts(document, 'script');</script>
 <!-- ======== START OF CLASS DATA ======== -->
 <div class="header">
 <div class="sub-title"><span class="package-label-in-type">Package</span>&nbsp;<a href="package-summary.html">org.robotalons.lib.utilities</a></div>
-<h1 title="Class Operator" class="title">Class Operator</h1>
+<h1 title="Class Operator" class="title">Class Operator&lt;Keybindings extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Enum.html" title="class or interface in java.lang" class="external-link">Enum</a>&lt;?&gt;,<wbr>Preferences extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Enum.html" title="class or interface in java.lang" class="external-link">Enum</a>&lt;?&gt;&gt;</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
-<div class="inheritance">org.robotalons.lib.utilities.Operator</div>
+<div class="inheritance">org.robotalons.lib.utilities.Operator&lt;Keybindings,<wbr>Preferences&gt;</div>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
@@ -79,12 +79,14 @@ loadScripts(document, 'script');</script>
 <dd><code>edu.wpi.first.util.sendable.Sendable</code></dd>
 </dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public final class </span><span class="element-name type-name-label">Operator</span>
+<div class="type-signature"><span class="annotations">@DoNotMock
+</span><span class="modifiers">public final class </span><span class="element-name type-name-label">Operator&lt;Keybindings extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Enum.html" title="class or interface in java.lang" class="external-link">Enum</a>&lt;?&gt;,<wbr>Preferences extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Enum.html" title="class or interface in java.lang" class="external-link">Enum</a>&lt;?&gt;&gt;</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements edu.wpi.first.util.sendable.Sendable</span></div>
 <div class="block"><h1>Operator</h1>
  
- <p> Represents a robot driver's personalized preferences and keybindings that can be used to control the robot to their desires. </p></div>
+ <p> Represents a robot driver's personalized preferences and keybindings that can be used to control the robot to their specifications,
+ and is parametrized with an enum containing the necessary mappings for keybindings and preferences.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -108,42 +110,47 @@ implements edu.wpi.first.util.sendable.Sendable</span></div>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab1" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab1', 3)" class="table-tab">Static Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel">
 <div class="summary-table three-column-summary" aria-labelledby="method-summary-table-tab0">
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Operator.html" title="class in org.robotalons.lib.utilities">Operator</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addKeybinding(java.lang.String,edu.wpi.first.wpilibj2.command.button.Trigger)" class="member-name-link">addKeybinding</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;Keybinding,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Operator.html" title="class in org.robotalons.lib.utilities">Operator</a>&lt;<a href="Operator.html" title="type parameter in Operator">Keybindings</a>,<wbr><a href="Operator.html" title="type parameter in Operator">Preferences</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#add(Keybindings,edu.wpi.first.wpilibj2.command.button.Trigger)" class="member-name-link">add</a><wbr>(<a href="Operator.html" title="type parameter in Operator">Keybindings</a>&nbsp;Keybinding,
  edu.wpi.first.wpilibj2.command.button.Trigger&nbsp;Trigger)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Adds a new keybinding to the pilot's keybinding mapping</div>
+<div class="block">Adds a new keybinding to the keybinding(s) map of this operator</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Operator.html" title="class in org.robotalons.lib.utilities">Operator</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addPreference(java.lang.String,java.util.function.Supplier)" class="member-name-link">addPreference</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;Preference,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&nbsp;Value)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;Supplied&gt;&nbsp;<a href="Operator.html" title="class in org.robotalons.lib.utilities">Operator</a>&lt;<a href="Operator.html" title="type parameter in Operator">Keybindings</a>,<wbr><a href="Operator.html" title="type parameter in Operator">Preferences</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#add(Preferences,java.util.function.Supplier)" class="member-name-link">add</a><wbr>(<a href="Operator.html" title="type parameter in Operator">Preferences</a>&nbsp;Preference,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;Supplied&gt;&nbsp;Value)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Add a new preference to the pilot's preference mapping</div>
+<div class="block">Adds a new keybinding to the preference(s) map of this operator</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.wpilibj2.command.button.Trigger</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getKeybinding(java.lang.String)" class="member-name-link">getKeybinding</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;Keybinding)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getKeybinding(Keybindings)" class="member-name-link">getKeybinding</a><wbr>(<a href="Operator.html" title="type parameter in Operator">Keybindings</a>&nbsp;Keybinding)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Retrieves a keybinding from the pilot's keybinding mapping</div>
+<div class="block">Provides the value of a given keybinding from this operator's keybinding map</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getName()" class="member-name-link">getName</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Retrieves the pilot's name</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPreference(java.lang.String)" class="member-name-link">getPreference</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;Preference)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Retrieves a preference from the pilot's preference mapping</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Operator.html" title="class in org.robotalons.lib.utilities">Operator</a>&lt;?,<wbr>?&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getOperators()" class="member-name-link">getOperators</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Provides a list of all constructed operator objects</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#initSendable(edu.wpi.first.util.sendable.SendableBuilder)" class="member-name-link">initSendable</a><wbr>(edu.wpi.first.util.sendable.SendableBuilder&nbsp;Builder)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPreference(Preferences)" class="member-name-link">getPreference</a><wbr>(<a href="Operator.html" title="type parameter in Operator">Preferences</a>&nbsp;Preference)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Provides the value of a given preference from this operator's keybinding map</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#initSendable(edu.wpi.first.util.sendable.SendableBuilder)" class="member-name-link">initSendable</a><wbr>(edu.wpi.first.util.sendable.SendableBuilder&nbsp;Builder)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -191,54 +198,69 @@ implements edu.wpi.first.util.sendable.Sendable</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="addKeybinding(java.lang.String,edu.wpi.first.wpilibj2.command.button.Trigger)">
-<h3>addKeybinding</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Operator.html" title="class in org.robotalons.lib.utilities">Operator</a></span>&nbsp;<span class="element-name">addKeybinding</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;Keybinding,
+<section class="detail" id="add(Keybindings,edu.wpi.first.wpilibj2.command.button.Trigger)">
+<h3 id="add(java.lang.Enum,edu.wpi.first.wpilibj2.command.button.Trigger)">add</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Operator.html" title="class in org.robotalons.lib.utilities">Operator</a>&lt;<a href="Operator.html" title="type parameter in Operator">Keybindings</a>,<wbr><a href="Operator.html" title="type parameter in Operator">Preferences</a>&gt;</span>&nbsp;<span class="element-name">add</span><wbr><span class="parameters">(<a href="Operator.html" title="type parameter in Operator">Keybindings</a>&nbsp;Keybinding,
  edu.wpi.first.wpilibj2.command.button.Trigger&nbsp;Trigger)</span></div>
-<div class="block">Adds a new keybinding to the pilot's keybinding mapping</div>
+<div class="block">Adds a new keybinding to the keybinding(s) map of this operator</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>Keybinding</code> - Name of keybinding</dd>
-<dd><code>Trigger</code> - Keybinding Trigger</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="addPreference(java.lang.String,java.util.function.Supplier)">
-<h3>addPreference</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Operator.html" title="class in org.robotalons.lib.utilities">Operator</a></span>&nbsp;<span class="element-name">addPreference</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;Preference,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&nbsp;Value)</span></div>
-<div class="block">Add a new preference to the pilot's preference mapping</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>Preference</code> - Name of preference</dd>
-<dd><code>Value</code> - Value of preference, can be any object</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="getKeybinding(java.lang.String)">
-<h3>getKeybinding</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.wpilibj2.command.button.Trigger</span>&nbsp;<span class="element-name">getKeybinding</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;Keybinding)</span></div>
-<div class="block">Retrieves a keybinding from the pilot's keybinding mapping</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>Keybinding</code> - Name of keybinding</dd>
+<dd><code>Keybinding</code> - Enum type value that can be added to the map</dd>
+<dd><code>Trigger</code> - Valid trigger of this Operator's GenericHID input</dd>
 <dt>Returns:</dt>
-<dd>A trigger from the pilot's keybinding map</dd>
+<dd>This operator, for chained calls to <a href="#add(Preferences,java.util.function.Supplier)"><code>add(Enum, Supplier)</code></a> or <a href="#add(Keybindings,edu.wpi.first.wpilibj2.command.button.Trigger)"><code>add(Enum, Trigger)</code></a></dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="getPreference(java.lang.String)">
-<h3>getPreference</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span>&nbsp;<span class="element-name">getPreference</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;Preference)</span></div>
-<div class="block">Retrieves a preference from the pilot's preference mapping</div>
+<section class="detail" id="add(Preferences,java.util.function.Supplier)">
+<h3 id="add(java.lang.Enum,java.util.function.Supplier)">add</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;Supplied&gt;</span>&nbsp;<span class="return-type"><a href="Operator.html" title="class in org.robotalons.lib.utilities">Operator</a>&lt;<a href="Operator.html" title="type parameter in Operator">Keybindings</a>,<wbr><a href="Operator.html" title="type parameter in Operator">Preferences</a>&gt;</span>&nbsp;<span class="element-name">add</span><wbr><span class="parameters">(<a href="Operator.html" title="type parameter in Operator">Preferences</a>&nbsp;Preference,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;Supplied&gt;&nbsp;Value)</span></div>
+<div class="block">Adds a new keybinding to the preference(s) map of this operator</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>Preference</code> - Name of preference</dd>
+<dd><code>Preference</code> - Enum type value that can be added to the map</dd>
+<dd><code>Value</code> - Valid supplier of a changing preference of this operator</dd>
 <dt>Returns:</dt>
-<dd>An object from the pilot's keybinding map</dd>
+<dd>This operator, for chained calls to <a href="#add(Preferences,java.util.function.Supplier)"><code>add(Enum, Supplier)</code></a> or <a href="#add(Keybindings,edu.wpi.first.wpilibj2.command.button.Trigger)"><code>add(Enum, Trigger)</code></a></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getKeybinding(Keybindings)">
+<h3 id="getKeybinding(java.lang.Enum)">getKeybinding</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.wpilibj2.command.button.Trigger</span>&nbsp;<span class="element-name">getKeybinding</span><wbr><span class="parameters">(<a href="Operator.html" title="type parameter in Operator">Keybindings</a>&nbsp;Keybinding)</span></div>
+<div class="block">Provides the value of a given keybinding from this operator's keybinding map</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>Keybinding</code> - Enum type value to pull information from</dd>
+<dt>Returns:</dt>
+<dd>The keybinding if it exists within the map, if not <code>NullPointerException</code> is thrown</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getPreference(Preferences)">
+<h3 id="getPreference(java.lang.Enum)">getPreference</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span>&nbsp;<span class="element-name">getPreference</span><wbr><span class="parameters">(<a href="Operator.html" title="type parameter in Operator">Preferences</a>&nbsp;Preference)</span></div>
+<div class="block">Provides the value of a given preference from this operator's keybinding map</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>Preference</code> - Enum type value to pull information from</dd>
+<dt>Returns:</dt>
+<dd>The value of preference's supplier if it exists within the map, if not <code>NullPointerException</code> is thrown</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getOperators()">
+<h3>getOperators</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Operator.html" title="class in org.robotalons.lib.utilities">Operator</a>&lt;?,<wbr>?&gt;&gt;</span>&nbsp;<span class="element-name">getOperators</span>()</div>
+<div class="block">Provides a list of all constructed operator objects</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>List of Operators</dd>
 </dl>
 </section>
 </li>
