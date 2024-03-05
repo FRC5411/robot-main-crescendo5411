@@ -64,11 +64,7 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
             IntakeBeamSeesNote = newIntakeBeamSeesNote;
             if (IntakeBeamSeesNote) {
                 TO_CANNON_MOTOR.set(INDEXER.TO_CANNON_MOTOR_SPEED);
-                //INDEX_LED.set(off);
-            } else {
-                TO_CANNON_MOTOR.set(INDEXER.TO_CANNON_MOTOR_SPEED);
-                //INDEX_LED.set(off);
-                //IntakeSubsystem.INTAKE_MOTOR.set(0);
+                //INDEX_LED.set("loading note to indexer");
             }
         }
 
@@ -76,11 +72,11 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
             CannonBeamSeesNote = newCannonBeamSeesNote;
             if (CannonBeamSeesNote) {
                 TO_CANNON_MOTOR.set(0);
-                //INDEX_LED.set(green, flashing);
                 //IntakeSubsystem.INTAKE_MOTOR.set(0);
+                //INDEX_LED.set("note loaded into indexer");
             } else {
                 TO_CANNON_MOTOR.set(0);
-                //INDEX_LED.set(off);
+                //INDEX_LED.set("note no longer in indexer");
             }
         }
 
