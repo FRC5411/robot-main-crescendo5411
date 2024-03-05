@@ -30,5 +30,5 @@ public class ModuleStatusContainer {
 
   public double[] OdometryTimestamps = new double[] {};
   public double[] OdometryTranslationalPositionsRadians = new double[] {};
-  public Rotation2d[] OdometryRotationalPositions = new Rotation2d[] {};
+  public Rotation2d[] OdometryRotationalPositionsRadians = new Rotation2d[] {};
 }

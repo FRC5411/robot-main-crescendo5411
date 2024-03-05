@@ -46,11 +46,13 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
   private final PIDController ROTATIONAL_PID;
   private final RelativeEncoder ROTATIONAL_ENCODER;
   private final Queue<Double> ROTATIONAL_POSITION_QUEUE;   
-
   private final CANcoder ABSOLUTE_ENCODER;
+
+  private final List<SwerveModulePosition> POSITION_DELTAS;
+
   private final Queue<Double> TIMESTAMP_QUEUE;
-  private final List<SwerveModulePosition> DELTAS;
   private final List<Double> TIMESTAMPS;
+
   private final Lock ODOMETRY_LOCK;
 
   private final ModuleConfiguration<Controller> MODULE_CONSTANTS;
@@ -88,7 +90,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     TIMESTAMP_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.timestamp();
     
     TIMESTAMPS = new ArrayList<>();
-    DELTAS = new ArrayList<>();
+    POSITION_DELTAS = new ArrayList<>();
 
     configure();
   }
@@ -157,7 +159,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     ROTATIONAL_POSITION_QUEUE.clear();
     TIMESTAMP_QUEUE.clear();
     TIMESTAMPS.clear();
-    DELTAS.clear();
+    POSITION_DELTAS.clear();
   }
 
   @Override
@@ -186,10 +188,10 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
         case STATE_CONTROL:
           if(Reference != (null)) {
             if (Reference.angle != (null)) {
-              setRotationalVoltage(ROTATIONAL_PID.calculate(getAbsoluteRotation().getRadians(),Reference.angle.getRadians()));
+              setRotationalVoltage(ROTATIONAL_PID.calculate(getAbsoluteRotation().getRadians(), Reference.angle.getRadians()));
             }
             var Adjusted = (Reference.speedMetersPerSecond * Math.cos(ROTATIONAL_PID.getPositionError())) / MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
-            setTranslationalVoltage(-(TRANSLATIONAL_PID.calculate(Adjusted)) + (TRANSLATIONAL_FF.calculate(STATUS.TranslationalVelocityRadiansSecond, Adjusted)));          
+            setTranslationalVoltage((TRANSLATIONAL_PID.calculate(Adjusted)) + (TRANSLATIONAL_FF.calculate(STATUS.TranslationalVelocityRadiansSecond, Adjusted)));          
           }
           break;
         case DISABLED:
@@ -199,12 +201,13 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
           close();
           break;
       }
-      synchronized(DELTAS) {
-        DELTAS.clear();
-        IntStream.range((0), Math.min(STATUS.OdometryTranslationalPositionsRadians.length, STATUS.OdometryRotationalPositions.length)).parallel().forEach((Index) -> {
-          final var Rotation = STATUS.OdometryRotationalPositions[Index].plus((RotationalRelativeOffset != null)? (RotationalRelativeOffset): (new Rotation2d()));
-          final var Position = STATUS.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
-          DELTAS.add(new SwerveModulePosition(Position, Rotation));
+      synchronized(POSITION_DELTAS) {
+        POSITION_DELTAS.clear();
+        IntStream.range((0), Math.min(STATUS.OdometryTranslationalPositionsRadians.length, STATUS.OdometryRotationalPositionsRadians.length)).parallel().forEach((Index) -> {
+          POSITION_DELTAS.add(new SwerveModulePosition(
+            STATUS.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS,
+            STATUS.OdometryRotationalPositionsRadians[Index]
+          ));
         });              
       }
     }
@@ -253,22 +256,28 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
         ROTATIONAL_CONTROLLER.getMotorTemperature();
 
       synchronized(TIMESTAMP_QUEUE) {
-        STATUS.OdometryTimestamps = 
-          TIMESTAMP_QUEUE.stream()
-            .mapToDouble(Double::doubleValue).toArray();
-        TIMESTAMP_QUEUE.clear();          
+        synchronized(TIMESTAMPS) {
+          TIMESTAMPS.clear();
+          STATUS.OdometryTimestamps = 
+            TIMESTAMP_QUEUE.stream()
+              .mapToDouble((final Double Timestamp) -> {
+                TIMESTAMPS.add(Timestamp);
+                return Timestamp.doubleValue();
+              }).toArray();
+          TIMESTAMP_QUEUE.clear();             
+        }
       }
       synchronized(TRANSLATIONAL_VELOCITY_QUEUE) {
         STATUS.OdometryTranslationalPositionsRadians =
           TRANSLATIONAL_VELOCITY_QUEUE.stream()
-            .mapToDouble((final Double Value) -> Units.rotationsToRadians(Value) / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO)
+            .mapToDouble((final Double Position) -> Units.rotationsToRadians(Position) / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO)
             .toArray();    
         TRANSLATIONAL_VELOCITY_QUEUE.clear();    
       }
       synchronized(ROTATIONAL_POSITION_QUEUE) {
-        STATUS.OdometryRotationalPositions =
+        STATUS.OdometryRotationalPositionsRadians =
           ROTATIONAL_POSITION_QUEUE.stream()
-            .map((final Double Value) -> Rotation2d.fromRotations(Value / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO))
+            .map((final Double Position) -> Rotation2d.fromRotations(Position / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO))
             .toArray(Rotation2d[]::new);    
         ROTATIONAL_POSITION_QUEUE.clear();  
       }
@@ -280,11 +289,15 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   @Override
   public List<SwerveModulePosition> getPositionDeltas() {
-    return DELTAS;
+    synchronized(POSITION_DELTAS) {
+      return POSITION_DELTAS; 
+    }
   }
 
   @Override
   public List<Double> getPositionTimestamps() {
-    return TIMESTAMPS;
+    synchronized(TIMESTAMPS) {
+      return TIMESTAMPS;
+    } 
   }
 }

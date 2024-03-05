@@ -90,43 +90,43 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
       Constants.Measurements.LEFT_ARM_KV,
       Constants.Measurements.LEFT_ARM_KA);
 
-      LEFT_ARM.setIdleMode(IdleMode.kBrake);
-      LEFT_ARM.restoreFactoryDefaults();
-      LEFT_ARM.clearFaults();
+    LEFT_ARM.setIdleMode(IdleMode.kBrake);
+    LEFT_ARM.restoreFactoryDefaults();
+    LEFT_ARM.clearFaults();
 
-      LEFT_PID.setP(Measurements.LEFT_ARM_P);
-      LEFT_PID.setI(Measurements.LEFT_ARM_I);
-      LEFT_PID.setD(Measurements.LEFT_ARM_D);
+    LEFT_PID.setP(Measurements.LEFT_ARM_P);
+    LEFT_PID.setI(Measurements.LEFT_ARM_I);
+    LEFT_PID.setD(Measurements.LEFT_ARM_D);
 
-      RIGHT_PID.setP(Measurements.RIGHT_ARM_P);
-      RIGHT_PID.setI(Measurements.RIGHT_ARM_I);
-      RIGHT_PID.setD(Measurements.RIGHT_ARM_D);
+    RIGHT_PID.setP(Measurements.RIGHT_ARM_P);
+    RIGHT_PID.setI(Measurements.RIGHT_ARM_I);
+    RIGHT_PID.setD(Measurements.RIGHT_ARM_D);
 
-      LEFT_ARM.setSmartCurrentLimit(Measurements.CURRENT_LIMIT);
+    LEFT_ARM.setSmartCurrentLimit(Measurements.CURRENT_LIMIT);
 
-      RIGHT_ARM.setIdleMode(IdleMode.kBrake);
-      RIGHT_ARM.restoreFactoryDefaults();
-      RIGHT_ARM.clearFaults();
+    RIGHT_ARM.setIdleMode(IdleMode.kBrake);
+    RIGHT_ARM.restoreFactoryDefaults();
+    RIGHT_ARM.clearFaults();
 
-      RIGHT_ARM.setSmartCurrentLimit(Measurements.CURRENT_LIMIT);
+    RIGHT_ARM.setSmartCurrentLimit(Measurements.CURRENT_LIMIT);
 
-      RIGHT_ARM.setSoftLimit(
-      SoftLimitDirection.kForward,
-      ((Double) Units.radiansToRotations(Measurements.MAXIMUM_ARM_ROTATION)).floatValue());
+    RIGHT_ARM.setSoftLimit(
+    SoftLimitDirection.kForward,
+    ((Double) Units.radiansToRotations(Measurements.MAXIMUM_ARM_ROTATION)).floatValue());
 
-      RIGHT_ARM.setSoftLimit(
-      SoftLimitDirection.kReverse,
-      ((Double) Units.radiansToRotations(Measurements.MINIMUM_ARM_ROTATION)).floatValue());
+    RIGHT_ARM.setSoftLimit(
+    SoftLimitDirection.kReverse,
+    ((Double) Units.radiansToRotations(Measurements.MINIMUM_ARM_ROTATION)).floatValue());
 
-      LEFT_ARM.setSoftLimit(
-      SoftLimitDirection.kForward,
-      ((Double) Units.radiansToRotations(Measurements.MAXIMUM_ARM_ROTATION)).floatValue());
+    LEFT_ARM.setSoftLimit(
+    SoftLimitDirection.kForward,
+    ((Double) Units.radiansToRotations(Measurements.MAXIMUM_ARM_ROTATION)).floatValue());
 
-      LEFT_ARM.setSoftLimit(
-      SoftLimitDirection.kReverse,
-      ((Double) Units.radiansToRotations(Measurements.MINIMUM_ARM_ROTATION)).floatValue());
-      
-      Rotation = LEFT_ABSOLUTE_ENCODER.getAbsolutePosition() + RIGHT_ABSOLUTE_ENCODER.getAbsolutePosition() / 2;
+    LEFT_ARM.setSoftLimit(
+    SoftLimitDirection.kReverse,
+    ((Double) Units.radiansToRotations(Measurements.MINIMUM_ARM_ROTATION)).floatValue());
+    
+    Rotation = LEFT_ABSOLUTE_ENCODER.getAbsolutePosition() + RIGHT_ABSOLUTE_ENCODER.getAbsolutePosition() / 2;
   }
 
   // ------------------------------------------------------ ---------[Methods]--------------------------------------------------------------- //
@@ -160,12 +160,16 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
 
   public synchronized void configure(final Operator<Keybindings, Preferences> Operator) {
     CurrentOperator = Operator;
-    CurrentOperator.getKeybinding(Keybindings.CLIMB_ROTATE_FORWARD).whileTrue(new InstantCommand(() -> {
-      Rotation += (1e-2d);
-    }, getInstance()).repeatedly());
-    CurrentOperator.getKeybinding(Keybindings.CLIMB_ROTATE_BACKWARD).whileTrue(new InstantCommand(() -> {
-      Rotation -= (1e-2d);
-    }, getInstance()).repeatedly());
+    with(() -> {
+      CurrentOperator.getKeybinding(Keybindings.CLIMB_ROTATE_FORWARD).whileTrue(new InstantCommand(() -> {
+        Rotation += (1e-2d);
+      }, getInstance()).repeatedly());      
+    });
+    with(() -> {
+      CurrentOperator.getKeybinding(Keybindings.CLIMB_ROTATE_BACKWARD).whileTrue(new InstantCommand(() -> {
+        Rotation -= (1e-2d);
+      }, getInstance()).repeatedly());
+    });
   }
   // --------------------------------------------------------------[Internal]--------------------------------------------------------------- //
   /**

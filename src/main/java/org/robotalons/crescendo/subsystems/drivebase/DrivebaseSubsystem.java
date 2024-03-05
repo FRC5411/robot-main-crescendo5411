@@ -114,6 +114,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         new Pose2d(new Translation2d(), CurrentRotation)
       );
     }
+    CurrentPositions = MODULES.stream().map(Module::getPosition).toList();
     CHARACTERIZATION_ROUTINE = new SysIdRoutine(
       new SysIdRoutine.Config(
         (null),
@@ -145,20 +146,20 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     }
     synchronized(MODULES) {
       final var Timestamps = MODULES.get((0)).getPositionTimestamps();
-      for (Integer Index = (0); Index < Timestamps.size(); Index++) {
+      final var Rotations = GYROSCOPE.getOdometryYawRotations();
+      for (Integer Index = (0); Index < Math.min(Timestamps.size(), Rotations.length); Index++) {
         SwerveModulePosition[] Positions = new SwerveModulePosition[MODULES.size()];
         SwerveModulePosition[] Deltas = new SwerveModulePosition[MODULES.size()];
         for (Integer Module = (0); Module < MODULES.size(); Module++) {
           Positions[Module] = MODULES.get(Module).getPositionDeltas().get(Index);
           Deltas[Module] =
               new SwerveModulePosition(
-                  Positions[Module].distanceMeters
-                      - CurrentPositions.get(Module).distanceMeters,
-                  Positions[Module].angle);
-                CurrentPositions.set(Module,Positions[Module]);
+                  Positions[Module].distanceMeters - CurrentPositions.get(Module).distanceMeters,
+                  Positions[Module].angle
+              );
         }
         if(GYROSCOPE.getConnected()) {
-          CurrentRotation = GYROSCOPE.getOdometryYawRotations()[Index];
+          CurrentRotation = Rotations[Index];
         } else {
           Twist2d TwistDelta = KINEMATICS.toTwist2d(Deltas);
           CurrentRotation = CurrentRotation.plus(new Rotation2d(TwistDelta.dtheta));
@@ -166,6 +167,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         POSE_ESTIMATOR.updateWithTime(Timestamps.get(Index), CurrentRotation, Positions);
       }
     }
+    CurrentPositions = MODULES.stream().map(Module::getPosition).toList();
     VisionSubsystem.ALL_CAMERA_IDENTIFIERS.forEach((Identifier) -> {
       final var Timestamps = VisionSubsystem.getRobotPositionTimestamps(Identifier);
       final var Positions = VisionSubsystem.getRobotPositionDeltas(Identifier);

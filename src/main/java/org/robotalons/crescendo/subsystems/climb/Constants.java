@@ -43,8 +43,8 @@ public class Constants {
 
     public static final Double TICK_CONVERSION_FACTOR = (2.0 * Math.PI /4096.0);
 
-    public static final Double MINIMUM_ARM_ROTATION = Units.degreesToRadians(-100d);
-    public static final Double MAXIMUM_ARM_ROTATION = Units.degreesToRadians(100d);
+    public static final Double MINIMUM_ARM_ROTATION = Units.degreesToRadians((-100d));
+    public static final Double MAXIMUM_ARM_ROTATION = Units.degreesToRadians((100d));
 
     public static final Integer CURRENT_LIMIT = (60);
 

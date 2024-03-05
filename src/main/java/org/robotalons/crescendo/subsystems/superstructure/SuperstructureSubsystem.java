@@ -69,7 +69,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   private SuperstructureSubsystem() {
     super(("Cannon Subsystem"));
   } static {
-    CurrentReference = new SwerveModuleState((0d), new Rotation2d(Measurements.MID_HOLD_ROTATION));
+    CurrentReference = new SwerveModuleState((0d), new Rotation2d(Measurements.PIVOT_MINIMUM_ROTATION));
     CurrentFiringMode = SuperstructureState.MANUAL;
     FIRING_CONTROLLERS = new Pair<TalonFX,TalonFX>(
       new TalonFX(Ports.FIRING_CONTROLLER_LEFT_ID),
@@ -86,6 +86,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       .withKI(Measurements.FIRING_I_GAIN)
       .withKD(Measurements.FIRING_D_GAIN)
     );
+    
 
     FIRING_CONTROLLERS.getFirst().getConfigurator().apply(new TalonFXConfiguration().CurrentLimits.withSupplyCurrentLimit((45d)).withStatorCurrentLimit((40d)));
     FIRING_CONTROLLERS.getSecond().getConfigurator().apply(new TalonFXConfiguration().CurrentLimits.withSupplyCurrentLimit((45d)).withStatorCurrentLimit((40d)));
@@ -226,11 +227,6 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     set(Reference);
   }
 
-  public static synchronized void setRotation(final Rotation2d Reference) {
-    CurrentReference.angle = Reference;
-  }
-
-
   /**
    * Utility method for quickly adding button bindings to reach a given rotation, and reset to default
    * @param Keybinding Trigger to bind this association to
@@ -248,7 +244,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       ));
       Keybinding.onFalse(new InstantCommand(
         () -> {
-          CurrentReference.angle = Rotation2d.fromRadians(Rotation);
+          CurrentReference.angle = Rotation2d.fromRadians(Measurements.PIVOT_MINIMUM_ROTATION);
           FIRING_CONTROLLERS.getFirst().set((0d));
           FIRING_CONTROLLERS.getSecond().set((0d));
         },
@@ -285,13 +281,13 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
           },
           SuperstructureSubsystem.getInstance()
         ));
-        CurrentOperator.getKeybinding(Keybindings.CANNON_TOGGLE)
-          .onFalse(new InstantCommand(
-          () -> {
-            FIRING_CONTROLLERS.getFirst().set((-Measurements.FIRING_IDLE_PERCENT));
-            FIRING_CONTROLLERS.getSecond().set((-Measurements.FIRING_IDLE_PERCENT));
-          }
-          ,SuperstructureSubsystem.getInstance()));
+      CurrentOperator.getKeybinding(Keybindings.CANNON_TOGGLE)
+        .onFalse(new InstantCommand(
+        () -> {
+          FIRING_CONTROLLERS.getFirst().set((-Measurements.FIRING_IDLE_PERCENT));
+          FIRING_CONTROLLERS.getSecond().set((-Measurements.FIRING_IDLE_PERCENT));
+        }
+        ,SuperstructureSubsystem.getInstance()));
     });
     with(() -> {
       CurrentOperator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
@@ -302,7 +298,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
           },
           SuperstructureSubsystem.getInstance()
         ));
-        CurrentOperator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
+      CurrentOperator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
         .onFalse(new InstantCommand(
           () -> {
             INTAKE_CONTROLLER.set((0d));
@@ -320,7 +316,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
           },
           SuperstructureSubsystem.getInstance()
         ));
-        CurrentOperator.getKeybinding(Keybindings.INTAKE_TOGGLE)
+      CurrentOperator.getKeybinding(Keybindings.INTAKE_TOGGLE)
         .onFalse(new InstantCommand(
           () -> {
             INTAKE_CONTROLLER.set((0d));

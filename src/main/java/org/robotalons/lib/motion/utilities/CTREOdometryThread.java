@@ -30,14 +30,14 @@ import javax.management.InstanceNotFoundException;
  */
 public final class CTREOdometryThread extends Thread implements OdometryThread<StatusSignal<Double>> {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
+  private static final List<StatusSignal<Double>> SIGNAL_PROVIDERS;
   private static final List<Queue<Double>> TIMESTAMP_QUEUES;  
   private static final List<Queue<Double>> SIGNAL_QUEUES;
   private static final Lock SIGNALS_LOCK;
   private final Lock ODOMETRY_LOCK;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  private static List<StatusSignal<Double>> Signals;
   private static CTREOdometryThread Instance;  
-  private static Boolean FlexibleCAN;
+  private static Boolean Flexible;
   private static Double Frequency;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
@@ -50,13 +50,13 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
     setDaemon((true));
     start();
   } static {
-    Signals = new ArrayList<>();
+    SIGNAL_PROVIDERS = new ArrayList<>();
     SIGNAL_QUEUES = new ArrayList<>();
     TIMESTAMP_QUEUES = new ArrayList<>();
     SIGNALS_LOCK = new ReentrantLock();
     Instance = (null);
     Frequency = (500d);
-    FlexibleCAN = (false);
+    Flexible = (false);
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
@@ -72,7 +72,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
     SIGNALS_LOCK.lock();
     ODOMETRY_LOCK.lock();
     try {
-      Signals.add(Signal);
+      SIGNAL_PROVIDERS.add(Signal);
       SIGNAL_QUEUES.add(Queue);
     } finally {
       SIGNALS_LOCK.unlock();
@@ -83,7 +83,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
 
   public synchronized void close() throws IOException {
     SIGNAL_QUEUES.clear();
-    Signals.clear();
+    SIGNAL_PROVIDERS.clear();
     try {
       super.join();
     } catch (final InterruptedException Exception) {
@@ -109,11 +109,11 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
     while (this.isAlive()) {
       SIGNALS_LOCK.lock();
       try {
-        if (FlexibleCAN) {
-          BaseStatusSignal.waitForAll((2d) / Frequency, Signals.toArray(StatusSignal[]::new));
+        if (Flexible) {
+          BaseStatusSignal.waitForAll((2d) / Frequency, SIGNAL_PROVIDERS.toArray(StatusSignal[]::new));
         } else {
           Thread.sleep((long) ((1000d) / Frequency));
-          Signals.forEach(StatusSignal::refresh);
+          SIGNAL_PROVIDERS.forEach(StatusSignal::refresh);
         }
       } catch (final InterruptedException Exception) {
         Exception.printStackTrace();
@@ -122,19 +122,19 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
       }
       ODOMETRY_LOCK.lock();
       try {
-        final var Providers = Signals.iterator();
+        final var Providers = SIGNAL_PROVIDERS.iterator();
         final var Timestamp = new AtomicReference<>(Logger.getRealTimestamp() / (1e6));
         final var Latency = new AtomicReference<>((0d));
-        Signals.forEach((Signal) -> Latency.set(Latency.get() + Signal.getTimestamp().getLatency()));
-        if (!Signals.isEmpty()) {
-          Timestamp.set(Timestamp.get() - Latency.get() / Signals.size());
+        SIGNAL_PROVIDERS.forEach((Signal) -> Latency.set(Latency.get() + Signal.getTimestamp().getLatency()));
+        if (!SIGNAL_PROVIDERS.isEmpty()) {
+          Timestamp.set(Timestamp.get() - Latency.get() / SIGNAL_PROVIDERS.size());
         }
-        SIGNAL_QUEUES.forEach((final Queue<Double> Queue) -> {
+        SIGNAL_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) -> {
           synchronized(Queue) {
             Queue.offer(Providers.next().getValue());
           }
         });
-        TIMESTAMP_QUEUES.forEach((final Queue<Double> Queue) ->  {
+        TIMESTAMP_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) ->  {
           synchronized(Queue) {
             Queue.offer(Timestamp.get());
           }
@@ -167,7 +167,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
    * @param IsFlexible If the CAN bus of devices is flexible
    */
   public synchronized void set(final Boolean IsFlexible) {
-    FlexibleCAN = IsFlexible;
+    Flexible = IsFlexible;
   }
 
   @Override

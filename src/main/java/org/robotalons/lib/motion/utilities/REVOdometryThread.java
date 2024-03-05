@@ -84,10 +84,12 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
 
   @Override
   public synchronized void close() throws IOException {
+    ODOMETRY_LOCK.lock();
     SIGNAL_QUEUES.clear();
     SIGNAL_PROVIDERS.clear();
     NOTIFIER.stop();  
     Instance = (null);
+    ODOMETRY_LOCK.unlock();
   }
 
   @Override
@@ -96,12 +98,12 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
     try {
       final var Providers = SIGNAL_PROVIDERS.iterator();
       final var Timestamp = Logger.getRealTimestamp() / (1e6);
-      SIGNAL_QUEUES.forEach((final Queue<Double> Queue) -> {
+      SIGNAL_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) -> {
         synchronized(Queue) {
           Queue.offer(Providers.next().getAsDouble());
         }
       });
-      TIMESTAMP_QUEUES.forEach((final Queue<Double> Queue) ->  {
+      TIMESTAMP_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) ->  {
         synchronized(Queue) {
           Queue.offer(Timestamp);
         }
