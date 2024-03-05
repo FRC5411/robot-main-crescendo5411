@@ -124,9 +124,15 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
 
     ROTATIONAL_ENCODER.setPosition(
       (RobotBase.isReal())?
-        (Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble()).minus(RotationalAbsoluteOffset).getRotations() * MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO):
-        (0d)
+      (-RotationalAbsoluteOffset
+              .plus(
+        Rotation2d.fromRotations(
+          ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble())
+        ).getRotations()
+      ):
+      (0d)
     );
+
     ROTATIONAL_ENCODER.setAverageDepth((2));
     ROTATIONAL_ENCODER.setMeasurementPeriod((10));
 
@@ -173,8 +179,10 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
   public synchronized void reset() {
     update();
     ROTATIONAL_ENCODER.setPosition(
-      RobotBase.isReal()?
-      Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble()).minus(RotationalAbsoluteOffset).getRotations() * MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO:
+      (RobotBase.isReal())?
+        Rotation2d.fromRotations(
+          ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble()
+        ).getRotations():
       (0d)
     );
   }
@@ -190,7 +198,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
         case STATE_CONTROL:
           if(Reference != (null)) {
             if (Reference.angle != (null)) {
-              setRotationalVoltage(ROTATIONAL_PID.calculate(getRelativeRotation().getRadians(),Reference.angle.getRadians() * MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO));
+              setRotationalVoltage(ROTATIONAL_PID.calculate(getAbsoluteRotation().minus(RotationalAbsoluteOffset).getRadians(),Reference.angle.getRadians()));
             }
             var Adjusted = (Reference.speedMetersPerSecond * Math.cos(ROTATIONAL_PID.getPositionError())) / MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
             setTranslationalVoltage(-(TRANSLATIONAL_PID.calculate(Adjusted)) + (TRANSLATIONAL_FF.calculate(STATUS.TranslationalVelocityRadiansSecond, Adjusted)));          
@@ -203,14 +211,20 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
           close();
           break;
       }
-      synchronized(DELTAS) {
-        DELTAS.clear();
-        IntStream.range((0), STATUS.OdometryTimestamps.length).parallel().forEach((Index) -> {
-          final var Rotation = STATUS.OdometryRotationalPositions[Index].plus((RotationalRelativeOffset != null)? (RotationalRelativeOffset): (new Rotation2d()));
-          final var Position = STATUS.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
-          DELTAS.add(new SwerveModulePosition(Position, Rotation));
-        });
-      }
+      // synchronized(DELTAS) {
+      //   synchronized(STATUS.OdometryRotationalPositions) {
+      //     synchronized(STATUS.OdometryTimestamps) {
+      //       synchronized(STATUS.OdometryTranslationalPositionsRadians) {
+      //         DELTAS.clear();
+      //         IntStream.range((0), STATUS.OdometryTimestamps.length - 1).parallel().forEach((Index) -> {
+      //           final var Rotation = STATUS.OdometryRotationalPositions[Index].plus((RotationalRelativeOffset != null)? (RotationalRelativeOffset): (new Rotation2d()));
+      //           final var Position = STATUS.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
+      //           DELTAS.add(new SwerveModulePosition(Position, Rotation));
+      //         });              
+      //       }
+      //     }
+      //   }
+      // }
     }
   }
 
@@ -243,8 +257,8 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
           TRANSLATIONAL_CONTROLLER.getMotorTemperature();
 
         STATUS.RotationalAbsolutePosition = 
-          Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().getValue()).minus(RotationalAbsoluteOffset);
-        STATUS.RotationalRelativePosition =
+          Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble()).minus(RotationalAbsoluteOffset);
+          STATUS.RotationalRelativePosition =
           Rotation2d.fromRotations(ROTATIONAL_ENCODER.getPosition() / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO);
         STATUS.RotationalVelocityRadiansSecond =
             Units.rotationsPerMinuteToRadiansPerSecond(ROTATIONAL_ENCODER.getVelocity()) / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO;

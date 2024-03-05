@@ -30,25 +30,27 @@ public class Constants {
 
     public static final Double PIVOT_GEAR_RATIO = (1d);
 
-    public static final Double PIVOT_P_GAIN = (2.34d);
+    public static final Double PIVOT_P_GAIN = (3.65d);
     public static final Double PIVOT_I_GAIN = (0d);
-    public static final Double PIVOT_D_GAIN = (0.00001d);
+    public static final Double PIVOT_D_GAIN = (0.001d);
 
     public static final Double FIRING_P_GAIN = (10d);
     public static final Double FIRING_I_GAIN = (0d);
     public static final Double FIRING_D_GAIN = (0.0001d);
 
-    public static final Double PIVOT_SUBWOOFER_PRESET = Units.degreesToRadians((0));
-    public static final Double PIVOT_PODIUMLINE_PRESET = Units.degreesToRadians((0));
-    public static final Double PIVOT_CENTERLINE_PRESET = Units.degreesToRadians((0));
+    public static final Double PIVOT_SUBWOOFER_PRESET = Units.degreesToRadians((46.25d));
+    public static final Double PIVOT_WINGLINE_PRESET = Units.degreesToRadians((12.75d));
+    public static final Double PIVOT_PODIUMLINE_PRESET = Units.degreesToRadians((17.75d));
+    public static final Double PIVOT_CENTERLINE_PRESET = Units.degreesToRadians((8.75d));
+
 
     public static final Double CANNON_LENGTH = (1d);
 
     public static final Boolean PIVOT_INVERTED = (false);
 
-    public static final Double PIVOT_MINIMUM_ROTATION = Units.degreesToRadians((0));
+    public static final Double PIVOT_MINIMUM_ROTATION = Units.degreesToRotations((0));
 
-    public static final Double PIVOT_MAXIMUM_ROTATION = Units.degreesToRadians((40));
+    public static final Double PIVOT_MAXIMUM_ROTATION = Units.degreesToRotations((70));
 
     public static final Double LOW_HOLD_ROTATION = (PIVOT_MINIMUM_ROTATION + 1d);
     public static final Double MID_HOLD_ROTATION = Units.degreesToRadians((35d));

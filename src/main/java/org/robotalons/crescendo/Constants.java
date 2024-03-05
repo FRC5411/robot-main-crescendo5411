@@ -61,7 +61,7 @@ public final class Constants {
       RobotType.CONCRETE, ("/media/sda1/")
     );
     public static final Boolean LOGGING_TURBO_MODE = (false);
-    public static final Boolean LOGGING_ENABLED = (false);
+    public static final Boolean LOGGING_ENABLED = (true);
     public static final Boolean REPLAY_FROM_LOG = (false);
   }
 
@@ -104,7 +104,8 @@ public final class Constants {
           .add(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (2e-2))
           .add(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (2e-2))
           .add(Preferences.ORIENTATION_DEADZONE, () -> (2e-2))
-          .add(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.povCenter());
+          .add(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.povUp())
+          .add(Keybindings.MODULE_LOCKING_TOGGLE, INPUT_METHOD.povDown());
       }
 
       public static final class Secondary {
@@ -112,12 +113,13 @@ public final class Constants {
         private static final Integer INPUT_PORT = (1);
         private static final CommandXboxController INPUT_METHOD = new CommandXboxController(INPUT_PORT);
         public static final Operator<Keybindings,Preferences> PROFILE = new Operator<Keybindings,Preferences>(NAME)
-          .add(Keybindings.INTAKE_TOGGLE, INPUT_METHOD.leftTrigger())
-          .add(Keybindings.OUTTAKE_TOGGLE, INPUT_METHOD.rightTrigger())
           .add(Keybindings.CANNON_PIVOT_PODIUMLINE, INPUT_METHOD.a())
           .add(Keybindings.CANNON_PIVOT_SUBWOOFER, INPUT_METHOD.x())
           .add(Keybindings.CANNON_PIVOT_CENTERLINE, INPUT_METHOD.y())
-          .add(Keybindings.CANNON_TOGGLE, INPUT_METHOD.b());
+          .add(Keybindings.CANNON_PIVOT_WINGLINE, INPUT_METHOD.b())
+          .add(Keybindings.CANNON_TOGGLE, INPUT_METHOD.leftBumper())
+          .add(Keybindings.INTAKE_TOGGLE, Operators.Primary.INPUT_METHOD.leftTrigger())
+          .add(Keybindings.OUTTAKE_TOGGLE, Operators.Primary.INPUT_METHOD.rightTrigger());
       }
     }
 
@@ -135,8 +137,9 @@ public final class Constants {
       MODULE_LOCKING_TOGGLE,
       ORIENTATION_TOGGLE,
       INTAKE_TOGGLE,
-      CANNON_TOGGLE,
       OUTTAKE_TOGGLE,
+      CANNON_TOGGLE,
+      CANNON_PIVOT_WINGLINE,
       CANNON_PIVOT_SUBWOOFER,
       CANNON_PIVOT_CENTERLINE,
       CANNON_PIVOT_PODIUMLINE,

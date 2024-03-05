@@ -3,16 +3,16 @@ package org.robotalons.lib;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import org.robotalons.lib.utilities.Alert;
-import org.robotalons.lib.utilities.Operator;
-import org.robotalons.lib.utilities.Alert.AlertType;
-
 import com.jcabi.aspects.Timeable;
 
+import org.robotalons.lib.utilities.Alert;
+import org.robotalons.lib.utilities.Alert.AlertType;
+import org.robotalons.lib.utilities.Operator;
+
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.io.Closeable;
 // ----------------------------------------------------------[Talon Subsystem Base]---------------------------------------------------------//
 /**
  *

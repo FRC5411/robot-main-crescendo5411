@@ -16,10 +16,10 @@ import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import org.littletonrobotics.junction.Logger;
-import org.robotalons.crescendo.subsystems.climb.ClimbSubsystem;
 import org.robotalons.crescendo.Constants.Profiles.Keybindings;
 import org.robotalons.crescendo.Constants.Profiles.Preferences;
 import org.robotalons.crescendo.subsystems.Constants.Measurements;
+import org.robotalons.crescendo.subsystems.climb.ClimbSubsystem;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem;
 import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;

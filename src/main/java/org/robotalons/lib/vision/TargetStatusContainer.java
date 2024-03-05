@@ -2,7 +2,6 @@
 package org.robotalons.lib.vision;
 
 import edu.wpi.first.math.geometry.Pose3d;
-// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.geometry.Transform3d;
 
 import org.littletonrobotics.junction.AutoLog;

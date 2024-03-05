@@ -7,11 +7,10 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.math.util.Units;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.SlotConfigs;
@@ -110,8 +109,6 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       Measurements.PIVOT_I_GAIN,
       Measurements.PIVOT_D_GAIN);
     PIVOT_CONTROLLER.setInverted(Measurements.PIVOT_INVERTED);
-    PIVOT_CONTROLLER_PID.enableContinuousInput(Measurements.PIVOT_MINIMUM_ROTATION, Measurements.PIVOT_MAXIMUM_ROTATION);
-
     PIVOT_ABSOLUTE_ENCODER = new DutyCycleEncoder(Ports.PIVOT_ABSOLUTE_ENCODER_ID);
   }
 
@@ -188,7 +185,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    */
   private static synchronized void set(final Rotation2d Reference) {
     PIVOT_CONTROLLER.set(
-      PIVOT_CONTROLLER_PID.calculate(getPivotRotation(),
+      PIVOT_CONTROLLER_PID.calculate(Units.radiansToRotations(getPivotRotation()),
                                     MathUtil.clamp(Reference.getRotations(),Measurements.PIVOT_MINIMUM_ROTATION,Measurements.PIVOT_MAXIMUM_ROTATION))
   );
   }
@@ -198,8 +195,8 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * @param Reference Desired velocity in RPM
    */
   private static synchronized void set(final Double Reference) {
-    FIRING_CONTROLLERS.getFirst().setControl(new VelocityDutyCycle(Reference));
-    FIRING_CONTROLLERS.getSecond().setControl(new VelocityDutyCycle(Reference));
+    FIRING_CONTROLLERS.getFirst().setControl(new VelocityDutyCycle(-Reference));
+    FIRING_CONTROLLERS.getSecond().setControl(new VelocityDutyCycle(-Reference));
   }
 
   /**
@@ -248,35 +245,84 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
         CurrentOperator.getKeybinding(Keybindings.CANNON_TOGGLE)
           .onFalse(new InstantCommand(
           () -> {
-            FIRING_CONTROLLERS.getFirst().set((-0.375d));
-            FIRING_CONTROLLERS.getSecond().set((-0.375d));
+            FIRING_CONTROLLERS.getFirst().set((-0.175d));
+            FIRING_CONTROLLERS.getSecond().set((-0.175d));
           }
           ,SuperstructureSubsystem.getInstance()));
     });
-    with(() ->
+    with(() -> {
       CurrentOperator.getKeybinding(Keybindings.CANNON_PIVOT_SUBWOOFER)
-        .onTrue(new InstantCommand(
+        .whileTrue(new InstantCommand(
           () -> {
             CurrentReference.angle = Rotation2d.fromRadians(Measurements.PIVOT_SUBWOOFER_PRESET);
           },
           SuperstructureSubsystem.getInstance()
-        )));
-    with(() ->
+        ));
+      CurrentOperator.getKeybinding(Keybindings.CANNON_PIVOT_SUBWOOFER)
+        .onFalse(new InstantCommand(
+          () -> {
+            CurrentReference.angle = Rotation2d.fromRadians(Measurements.PIVOT_MINIMUM_ROTATION);
+            FIRING_CONTROLLERS.getFirst().set((0d));
+            FIRING_CONTROLLERS.getSecond().set((0d));
+          },
+          SuperstructureSubsystem.getInstance()
+        ));
+      });
+    with(() -> {
+      CurrentOperator.getKeybinding(Keybindings.CANNON_PIVOT_WINGLINE)
+        .whileTrue(new InstantCommand(
+          () -> {
+            CurrentReference.angle = Rotation2d.fromRadians(Measurements.PIVOT_WINGLINE_PRESET);
+          },
+          SuperstructureSubsystem.getInstance()
+        ));
+      CurrentOperator.getKeybinding(Keybindings.CANNON_PIVOT_WINGLINE)
+        .onFalse(new InstantCommand(
+          () -> {
+            CurrentReference.angle = Rotation2d.fromRadians(Measurements.PIVOT_MINIMUM_ROTATION);
+            FIRING_CONTROLLERS.getFirst().set((0d));
+            FIRING_CONTROLLERS.getSecond().set((0d));
+          },
+          SuperstructureSubsystem.getInstance()
+        ));
+      });
+    with(() -> {
       CurrentOperator.getKeybinding(Keybindings.CANNON_PIVOT_CENTERLINE)
-        .onTrue(new InstantCommand(
+        .whileTrue(new InstantCommand(
           () -> {
             CurrentReference.angle = Rotation2d.fromRadians(Measurements.PIVOT_CENTERLINE_PRESET);
           },
           SuperstructureSubsystem.getInstance()
-        )));
-    with(() ->
+        ));
+      CurrentOperator.getKeybinding(Keybindings.CANNON_PIVOT_CENTERLINE)
+        .onFalse(new InstantCommand(
+          () -> {
+            CurrentReference.angle = Rotation2d.fromRadians(Measurements.PIVOT_MINIMUM_ROTATION);
+            FIRING_CONTROLLERS.getFirst().set((0d));
+            FIRING_CONTROLLERS.getSecond().set((0d));
+          },
+          SuperstructureSubsystem.getInstance()
+        ));
+    });
+    with(() -> {
       CurrentOperator.getKeybinding(Keybindings.CANNON_PIVOT_PODIUMLINE)
-        .onTrue(new InstantCommand(
+        .whileTrue(new InstantCommand(
           () -> {
             CurrentReference.angle = Rotation2d.fromRadians(Measurements.PIVOT_PODIUMLINE_PRESET);
           },
           SuperstructureSubsystem.getInstance()
-        )));
+        ));
+      CurrentOperator.getKeybinding(Keybindings.CANNON_PIVOT_PODIUMLINE)
+        .onFalse(new InstantCommand(
+          () -> {
+            CurrentReference.angle = Rotation2d.fromRadians(Measurements.PIVOT_MINIMUM_ROTATION);
+            FIRING_CONTROLLERS.getFirst().set((0d));
+            FIRING_CONTROLLERS.getSecond().set((0d));
+          },
+          SuperstructureSubsystem.getInstance()
+        ));
+    });
+
     with(() -> {
       CurrentOperator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
         .onTrue(new InstantCommand(

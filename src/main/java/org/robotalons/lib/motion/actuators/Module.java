@@ -147,7 +147,6 @@ public abstract class Module implements Closeable {
    */
   public synchronized void reset() {
     update();
-    RotationalRelativeOffset = STATUS.RotationalAbsolutePosition.minus(STATUS.RotationalRelativePosition);
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
