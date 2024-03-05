@@ -37,10 +37,10 @@ public final class RobotContainer {
    * Configures subsystem default commands
    */
   public static void configureDefaultCommands() {
-    controller.a().onTrue(new InstantCommand(() -> subsystem.postSnapshot(1)));
-    controller.b().onTrue(new InstantCommand(() -> subsystem.getApproximatedRobotPose()));
-    controller.x().onTrue(new InstantCommand(() -> subsystem.getObjectFieldPose()));
-    controller.y().onTrue(new InstantCommand(() -> subsystem.getOptimalTarget(1)));
+    controller.a().onTrue(new InstantCommand(() -> VisionSubsystem.postSnapshot(1)));
+    controller.b().onTrue(new InstantCommand(() -> VisionSubsystem.getApproximatedRobotPose()));
+    controller.x().onTrue(new InstantCommand(() -> VisionSubsystem.getObjectFieldPose()));
+    controller.y().onTrue(new InstantCommand(() -> VisionSubsystem.getOptimalTarget(1)));
   }
 
   /**

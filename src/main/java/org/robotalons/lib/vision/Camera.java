@@ -180,6 +180,14 @@ public abstract class Camera implements Closeable {
   }
 
   /**
+   * Provides if the target has debounced from the camera
+   * @return boolean to represnt if target has been debounced or not
+   */
+  public boolean hasDebouncedTarget(){
+    return TARGET_STATUS.TargetDebounce;
+  }
+
+  /**
    * Provides the number of targets that is detected within the view of the camera
    * @return Number of targets detected by camera
    */

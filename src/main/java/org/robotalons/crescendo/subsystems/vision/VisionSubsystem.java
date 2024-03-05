@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.photonvision.PhotonCamera;
+import org.robotalons.crescendo.subsystems.vision.Constants.Devices;
 import org.robotalons.lib.vision.Camera;
 
 import java.io.Closeable;
@@ -28,13 +29,13 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
   public static List<Camera> CAMERAS;
 
   public static PhotonCamera SOURCE;
-  public static PhotonCamera SPEAKER_FRONT;
-  public static PhotonCamera SPEAKER_REAR;
+  public static PhotonCamera SPEAKER_RIGHT;
+  public static PhotonCamera SPEAKER_LEFT;
   public static PhotonCamera INTAKE;
 
   public static VisionCamera SOURCE_CAMERA;
-  public static VisionCamera SPEAKER_FRONT_CAMERA;
-  public static VisionCamera SPEAKER_REAR_CAMERA;
+  public static VisionCamera SPEAKER_RIGHT_CAMERA;
+  public static VisionCamera SPEAKER_LEFT_CAMERA;
   public static VisionCamera INTAKE_CAMERA;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static VisionSubsystem Instance;
@@ -43,10 +44,10 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
    * Vision Subsystem Constructor.
    */
   public VisionSubsystem(){
-    SOURCE = new PhotonCamera("SOURCE");
-    SPEAKER_FRONT = new PhotonCamera("SPEAKER_FRONT");
-    SPEAKER_REAR = new PhotonCamera("SPEAKER_REAR");
-    INTAKE = new PhotonCamera("INTAKE");
+    Devices.SOURCE_CAMERA = new PhotonCamera("SOURCE");
+    Devices.SPEAKER_RIGHT_CAMERA = new PhotonCamera("SPEAKER_RIGHT");
+    Devices.SPEAKER_LEFT_CAMERA = new PhotonCamera("SPEAKER_LEFT");
+    Devices.INTAKE_CAMERA = new PhotonCamera("INTAKE");
 
     SOURCE_CAMERA = new VisionCamera(
       SOURCE, 
@@ -54,16 +55,16 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
       SOURCE.getName()
     );
 
-    SPEAKER_FRONT_CAMERA = new VisionCamera(
-      SPEAKER_FRONT, 
-      Constants.Measurements.SPEAKER_FRONT_CAMERA_POSE, 
-      SPEAKER_FRONT.getName()
+    SPEAKER_RIGHT_CAMERA = new VisionCamera(
+      SPEAKER_RIGHT, 
+      Constants.Measurements.RIGHT_CAMERA_CAMERA_POSE, 
+      SPEAKER_RIGHT.getName()
     );
 
-    SPEAKER_REAR_CAMERA = new VisionCamera(
-      SPEAKER_REAR, 
-      Constants.Measurements.SPEAKER_REAR_CAMERA_POSE, 
-      SPEAKER_REAR.getName()
+    SPEAKER_LEFT_CAMERA = new VisionCamera(
+      SPEAKER_LEFT, 
+      Constants.Measurements.LEFT_CAMERA_CAMERA_POSE, 
+      SPEAKER_LEFT.getName()
     );
 
     INTAKE_CAMERA = new VisionCamera(
@@ -74,8 +75,8 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
 
     CAMERAS = List.of(
       SOURCE_CAMERA,
-      SPEAKER_FRONT_CAMERA,
-      SPEAKER_REAR_CAMERA,
+      SPEAKER_RIGHT_CAMERA,
+      SPEAKER_LEFT_CAMERA,
       INTAKE_CAMERA
     ); 
   }
@@ -93,8 +94,8 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
   public void close() throws IOException {
     try {
       SOURCE_CAMERA.close();
-      SPEAKER_FRONT_CAMERA.close();
-      SPEAKER_REAR_CAMERA.close();
+      SPEAKER_RIGHT_CAMERA.close();
+      SPEAKER_LEFT_CAMERA.close();
       INTAKE_CAMERA.close();
     } catch (final IOException Exception) {}
 
@@ -402,6 +403,24 @@ public final class VisionSubsystem extends SubsystemBase implements Closeable {
     Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
 
     return CAMERA.getOptimalTarget();
+  }
+
+  /**
+   * Return boolean value of if the target debouced from specified camera view
+   * 1 - Source Camera, 2 - Speaker Front Camera, 3- Speaker Rear Camera, 4 - OD Camera.
+   * @param CAMERA_ID that gets the specific camera.
+   * @return Boolean value to represent debounce target
+   * @throws IllegalArgumentException when ID is greater than 4, less than 1, or not an integer. 
+   */
+  public static boolean getTargetDebounce(Integer CAMERA_ID){
+    
+    if(CAMERA_ID > 4 || CAMERA_ID < 1 ||  Math.floor(CAMERA_ID) != CAMERA_ID){
+      throw new IllegalArgumentException("Camera ID for method 'getOptimalTarget' should not be greater than 4, less than 1, or not an integer");
+    } 
+
+    Camera CAMERA = CAMERAS.get(CAMERA_ID - 1);
+
+    return CAMERA.hasDebouncedTarget();
   }
 
 }

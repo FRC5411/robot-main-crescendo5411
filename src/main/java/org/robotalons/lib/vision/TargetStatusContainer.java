@@ -19,4 +19,5 @@ public class TargetStatusContainer {
   public Transform3d[] Targets = new Transform3d[]{};
   public boolean HasTargets = (false);
   public int TotalTargets = 0;
+  public boolean TargetDebounce = (false);
 }

@@ -4,6 +4,7 @@ package org.robotalons.crescendo.subsystems.vision;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -43,6 +44,7 @@ public final class VisionCamera extends Camera {
   private List<Double> TIMESTAMP_LIST;
   private List<Pose3d> POSES_LIST;
   private int COUNTER;
+  private Debouncer DEBOUNCE;
 
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
 
@@ -86,6 +88,7 @@ public final class VisionCamera extends Camera {
     getTargets().ifPresent((Targets) -> Logger.recordOutput(IDENTITY + "/Targets", Targets));
     Logger.recordOutput(IDENTITY + "/HasTargets", hasTargets());
     Logger.recordOutput(IDENTITY + "/NumTargets", getNumTargets());
+    Logger.recordOutput(IDENTITY + "/TargetDebounce", hasDebouncedTarget());
 
     
   }
@@ -133,18 +136,16 @@ public final class VisionCamera extends Camera {
       pitch[i] = POSE.getRotation().getX();
       roll[i] = POSE.getRotation().getY();
       yaw[i] = POSE.getRotation().getZ();
+
     }
 
     double sdX = getStandardDeviation(x);
     double sdY = getStandardDeviation(y);
     double sdZ = getStandardDeviation(z);
-    double sdPitch = getStandardDeviation(pitch);
-    double sdRoll = getStandardDeviation(roll);
-    double sdYaw = getStandardDeviation(yaw);
 
-    double[] data = new double[]{sdX, sdY, sdZ, sdPitch, sdRoll, sdYaw};
+    double[] data = new double[]{sdX, sdY, sdZ};
 
-    return MatBuilder.fill(() -> 6, Nat.N1(), data);
+    return MatBuilder.fill(() -> 3, Nat.N1(), data);
   }
  
   private double getStandardDeviation(double[] nums){
@@ -328,6 +329,11 @@ public final class VisionCamera extends Camera {
       return Optional.empty();
     }
     return Optional.of(CAMERA.getLatestResult().getBestTarget().getBestCameraToTarget());
+  }
+
+  @Override
+  public boolean hasDebouncedTarget(){
+    return DEBOUNCE.calculate(hasTargets());
   }
 
   @Override
