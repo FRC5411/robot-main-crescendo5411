@@ -40,7 +40,7 @@ public class Constants {
 
     public static final Double PIVOT_SUBWOOFER_PRESET = Units.degreesToRadians((46.25d));
     public static final Double PIVOT_WINGLINE_PRESET = Units.degreesToRadians((12.75d));
-    public static final Double PIVOT_PODIUMLINE_PRESET = Units.degreesToRadians((17.75d));
+    public static final Double PIVOT_PODIUMLINE_PRESET = Units.degreesToRadians((22.75d));
     public static final Double PIVOT_CENTERLINE_PRESET = Units.degreesToRadians((8.75d));
 
 

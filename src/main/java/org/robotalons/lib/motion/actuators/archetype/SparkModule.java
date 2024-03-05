@@ -180,9 +180,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     update();
     ROTATIONAL_ENCODER.setPosition(
       (RobotBase.isReal())?
-        Rotation2d.fromRotations(
-          ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble()
-        ).getRotations():
+      getAbsoluteRotation().getRotations():
       (0d)
     );
   }
@@ -198,7 +196,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
         case STATE_CONTROL:
           if(Reference != (null)) {
             if (Reference.angle != (null)) {
-              setRotationalVoltage(ROTATIONAL_PID.calculate(getAbsoluteRotation().minus(RotationalAbsoluteOffset).getRadians(),Reference.angle.getRadians()));
+              setRotationalVoltage(ROTATIONAL_PID.calculate(getAbsoluteRotation().getRadians(),Reference.angle.getRadians()));
             }
             var Adjusted = (Reference.speedMetersPerSecond * Math.cos(ROTATIONAL_PID.getPositionError())) / MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
             setTranslationalVoltage(-(TRANSLATIONAL_PID.calculate(Adjusted)) + (TRANSLATIONAL_FF.calculate(STATUS.TranslationalVelocityRadiansSecond, Adjusted)));          
@@ -258,7 +256,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
 
         STATUS.RotationalAbsolutePosition = 
           Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble()).minus(RotationalAbsoluteOffset);
-          STATUS.RotationalRelativePosition =
+        STATUS.RotationalRelativePosition =
           Rotation2d.fromRotations(ROTATIONAL_ENCODER.getPosition() / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO);
         STATUS.RotationalVelocityRadiansSecond =
             Units.rotationsPerMinuteToRadiansPerSecond(ROTATIONAL_ENCODER.getVelocity()) / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO;
