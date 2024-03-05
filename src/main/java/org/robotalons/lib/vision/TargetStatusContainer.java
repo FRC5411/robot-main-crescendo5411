@@ -13,7 +13,7 @@ import org.littletonrobotics.junction.AutoLog;
  * <p>Loggable input reference to a specific singular unit which assists in position of targets. 
  */
 @AutoLog
-public class TargetStatusContainer {
+public class TargetStatusContainer  {
   public Pose3d BestTargetPose = new Pose3d(0, 0, 0, null);
   public Transform3d OptimalTransform = new Transform3d(0, 0, 0, null);
   public Transform3d[] Targets = new Transform3d[]{};
