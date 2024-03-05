@@ -55,7 +55,7 @@ public class Constants {
 
     public static final Boolean PIVOT_INVERTED = (false);
 
-    public static final Double PIVOT_MINIMUM_ROTATION = Units.degreesToRotations((0));
+    public static final Double PIVOT_MINIMUM_ROTATION = Units.degreesToRotations((9));
 
     public static final Double PIVOT_MAXIMUM_ROTATION = Units.degreesToRotations((70));
 

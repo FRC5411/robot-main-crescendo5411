@@ -231,10 +231,11 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * Utility method for quickly adding button bindings to reach a given rotation, and reset to default
    * @param Keybinding Trigger to bind this association to
    * @param Rotation   Value of rotation to bring to pivot to
+   * @param Velocity   Value of velocity to bring the firing controllers to
    */
   private void with(final Trigger Keybinding, final Double Rotation, final Double Velocity) {
     with(() -> {
-      Keybinding.whileTrue(new InstantCommand(
+      Keybinding.onTrue(new InstantCommand(
         () -> {
           CurrentReference.angle = Rotation2d.fromRadians(Rotation);
           FIRING_CONTROLLERS.getFirst().set((-Velocity));
@@ -244,9 +245,9 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       ));
       Keybinding.onFalse(new InstantCommand(
         () -> {
-          CurrentReference.angle = Rotation2d.fromRadians(Rotation);
-          FIRING_CONTROLLERS.getFirst().set((-Measurements.FIRING_IDLE_PERCENT));
-          FIRING_CONTROLLERS.getSecond().set((-Measurements.FIRING_IDLE_PERCENT));
+          CurrentReference.angle = Rotation2d.fromRadians(Measurements.PIVOT_MINIMUM_ROTATION);
+          FIRING_CONTROLLERS.getFirst().set((0d));
+          FIRING_CONTROLLERS.getSecond().set((0d));
         },
         SuperstructureSubsystem.getInstance()
       ));
