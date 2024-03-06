@@ -20,18 +20,18 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Constants {
   // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
   public static final class Measurements {
-    public static final Double LEFT_ARM_P = (0.001d);
+    public static final Double LEFT_ARM_P = (2d);
     public static final Double LEFT_ARM_I = (0d);
-    public static final Double LEFT_ARM_D = (0d);
+    public static final Double LEFT_ARM_D = (0.0001d);
 
     public static final Double LEFT_ARM_KS = (0.001d);
     public static final Double LEFT_ARM_KV = (0d);
     public static final Double LEFT_ARM_KA = (0d);
     public static final Double LEFT_ARM_KG = (0d);
 
-    public static final Double RIGHT_ARM_P = (0.001d);
+    public static final Double RIGHT_ARM_P = (2d);
     public static final Double RIGHT_ARM_I = (0d);
-    public static final Double RIGHT_ARM_D = (0d);
+    public static final Double RIGHT_ARM_D = (0.0001d);
 
     public static final Double RIGHT_ARM_KS = (0.001d);
     public static final Double RIGHT_ARM_KV = (0d);
@@ -56,8 +56,8 @@ public class Constants {
   }
 
   public static final class Ports {
-    public static final Integer LEFT_ARM_CONTROLLER_ID = 0;
-    public static final Integer RIGHT_ARM_CONTROLLER_ID = 1;
+    public static final Integer LEFT_ARM_CONTROLLER_ID = (41);
+    public static final Integer RIGHT_ARM_CONTROLLER_ID = (42);
     public static final Integer LEFT_ENCODER_ID = (2);
     public static final Integer RIGHT_ENCODER_ID = (3);
   }

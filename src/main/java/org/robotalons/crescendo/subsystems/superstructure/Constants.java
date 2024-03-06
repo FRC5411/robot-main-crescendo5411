@@ -41,9 +41,10 @@ public class Constants {
     public static final Double FIRING_STANDARD_VELOCITY = (2000d);
 
     public static final Double PIVOT_SUBWOOFER_PRESET = Units.degreesToRadians((46.25d));
-    public static final Double PIVOT_WINGLINE_PRESET = Units.degreesToRadians((12.75d));
+    public static final Double PIVOT_WINGLINE_PRESET = Units.degreesToRadians((22.75d));
     public static final Double PIVOT_PODIUMLINE_PRESET = Units.degreesToRadians((22.75d));
-    public static final Double PIVOT_CENTERLINE_PRESET = Units.degreesToRadians((8.75d));
+    public static final Double PIVOT_CENTERLINE_PRESET = Units.degreesToRadians((19.25d));
+    public static final Double PIVOT_MAXIMUM_PRESET = Units.degreesToRadians((50));
 
     public static final Double SHOOTER_SUBWOOFER_PRESET = (1000d);
     public static final Double SHOOTER_WINGLINE_PRESET = (2500d);
@@ -55,7 +56,7 @@ public class Constants {
 
     public static final Boolean PIVOT_INVERTED = (false);
 
-    public static final Double PIVOT_MINIMUM_ROTATION = Units.degreesToRotations((9));
+    public static final Double PIVOT_MINIMUM_ROTATION = Units.degreesToRotations((5));
 
     public static final Double PIVOT_MAXIMUM_ROTATION = Units.degreesToRotations((70));
 

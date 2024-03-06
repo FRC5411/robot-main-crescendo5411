@@ -275,7 +275,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       Measurements.SHOOTER_CENTERLINE_PRESET);
     with(
       CurrentOperator.getKeybinding(Keybindings.CANNON_PIVOT_MAXIMUM),
-      Measurements.PIVOT_MAXIMUM_ROTATION,
+      Measurements.PIVOT_MAXIMUM_PRESET,
       Measurements.SHOOTER_AMP_PRESET);
     with(() -> {
       CurrentOperator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)

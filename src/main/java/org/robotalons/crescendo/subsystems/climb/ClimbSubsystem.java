@@ -125,8 +125,8 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
     LEFT_ARM.setSoftLimit(
     SoftLimitDirection.kReverse,
     ((Double) Units.radiansToRotations(Measurements.MINIMUM_ARM_ROTATION)).floatValue());
-    
-    Rotation = LEFT_ABSOLUTE_ENCODER.getAbsolutePosition() + RIGHT_ABSOLUTE_ENCODER.getAbsolutePosition() / 2;
+
+    LEFT_ARM.setInverted((true));
   }
 
   // ------------------------------------------------------ ---------[Methods]--------------------------------------------------------------- //
@@ -161,14 +161,24 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
   public synchronized void configure(final Operator<Keybindings, Preferences> Operator) {
     CurrentOperator = Operator;
     with(() -> {
-      CurrentOperator.getKeybinding(Keybindings.CLIMB_ROTATE_FORWARD).whileTrue(new InstantCommand(() -> {
-        Rotation += (1e-2d);
-      }, getInstance()).repeatedly());      
+      CurrentOperator.getKeybinding(Keybindings.CLIMB_ROTATE_FORWARD).onTrue(new InstantCommand(() -> {
+        LEFT_ARM.set((0.3d));
+        RIGHT_ARM.set((0.3d));
+      }, getInstance()));   
+      CurrentOperator.getKeybinding(Keybindings.CLIMB_ROTATE_FORWARD).onFalse(new InstantCommand(() -> {
+        LEFT_ARM.set((0d));
+        RIGHT_ARM.set((0d));
+      }, getInstance()));   
     });
     with(() -> {
       CurrentOperator.getKeybinding(Keybindings.CLIMB_ROTATE_BACKWARD).whileTrue(new InstantCommand(() -> {
-        Rotation -= (1e-2d);
+        LEFT_ARM.set(-0.3d);
+        RIGHT_ARM.set(-0.3d);
       }, getInstance()).repeatedly());
+      CurrentOperator.getKeybinding(Keybindings.CLIMB_ROTATE_BACKWARD).onFalse(new InstantCommand(() -> {
+        LEFT_ARM.set((0d));
+        RIGHT_ARM.set((0d));
+      }, getInstance()));   
     });
   }
   // --------------------------------------------------------------[Internal]--------------------------------------------------------------- //
@@ -201,8 +211,8 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
    * @param Demand Queried load on the motor controller object, which must lie between -1 and +1
    */
   public synchronized void set(final Double Demand) {
-    LEFT_ARM.setVoltage(LEFT_PID.calculate(getPosition(ClimbState.LEFT), Demand) + LEFT_FF.calculate(Demand, (0)));
-    RIGHT_ARM.setVoltage(RIGHT_PID.calculate(getPosition(ClimbState.RIGHT), Demand) + RIGHT_FF.calculate(Demand, (0)));
+  //   LEFT_ARM.setVoltage(LEFT_PID.calculate(getPosition(ClimbState.LEFT), Demand) + LEFT_FF.calculate(Demand, (0)));
+  //   RIGHT_ARM.setVoltage(RIGHT_PID.calculate(getPosition(ClimbState.RIGHT), Demand) + RIGHT_FF.calculate(Demand, (0)));
   }
   // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
   /**

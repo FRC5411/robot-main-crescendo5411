@@ -104,8 +104,8 @@ public final class Constants {
           .add(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (2e-2))
           .add(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (2e-2))
           .add(Preferences.ORIENTATION_DEADZONE, () -> (2e-2))
-          .add(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.povUp())
-          .add(Keybindings.MODULE_LOCKING_TOGGLE, INPUT_METHOD.povDown());
+          .add(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.a())
+          .add(Keybindings.MODULE_LOCKING_TOGGLE, INPUT_METHOD.b());
       }
 
       public static final class Secondary {
@@ -113,12 +113,14 @@ public final class Constants {
         private static final Integer INPUT_PORT = (1);
         private static final CommandXboxController INPUT_METHOD = new CommandXboxController(INPUT_PORT);
         public static final Operator<Keybindings,Preferences> PROFILE = new Operator<Keybindings,Preferences>(NAME)
-          .add(Keybindings.CANNON_PIVOT_PODIUMLINE, INPUT_METHOD.povUp())
-          .add(Keybindings.CANNON_PIVOT_SUBWOOFER, INPUT_METHOD.povDown())
-          .add(Keybindings.CANNON_PIVOT_CENTERLINE, INPUT_METHOD.povLeft())
-          .add(Keybindings.CANNON_PIVOT_WINGLINE, INPUT_METHOD.povRight())
-          .add(Keybindings.CANNON_PIVOT_MAXIMUM, INPUT_METHOD.povCenter())
-          .add(Keybindings.CANNON_TOGGLE, INPUT_METHOD.b())
+          .add(Keybindings.CANNON_PIVOT_PODIUMLINE, INPUT_METHOD.a())
+          .add(Keybindings.CANNON_PIVOT_SUBWOOFER, INPUT_METHOD.b())
+          .add(Keybindings.CANNON_PIVOT_CENTERLINE, INPUT_METHOD.x())
+          .add(Keybindings.CANNON_PIVOT_WINGLINE, INPUT_METHOD.y())
+          .add(Keybindings.CANNON_PIVOT_MAXIMUM, INPUT_METHOD.rightBumper())
+          .add(Keybindings.CANNON_TOGGLE, INPUT_METHOD.leftBumper())
+          .add(Keybindings.CLIMB_ROTATE_BACKWARD, INPUT_METHOD.povDown())
+          .add(Keybindings.CLIMB_ROTATE_FORWARD, INPUT_METHOD.povUp())
           .add(Keybindings.INTAKE_TOGGLE, Operators.Primary.INPUT_METHOD.leftTrigger())
           .add(Keybindings.OUTTAKE_TOGGLE, Operators.Primary.INPUT_METHOD.rightTrigger());
       }
