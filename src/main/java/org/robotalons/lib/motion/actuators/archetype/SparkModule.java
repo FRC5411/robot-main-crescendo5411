@@ -42,7 +42,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
   private final PIDController TRANSLATIONAL_PID;
   private final SimpleMotorFeedforward TRANSLATIONAL_FF;
   private final RelativeEncoder TRANSLATIONAL_ENCODER;
-  private final Queue<Double> TRANSLATIONAL_VELOCITY_QUEUE;
+  private final Queue<Double> TRANSLATIONAL_POSITION_QUEUE;
 
   private final Controller ROTATIONAL_CONTROLLER;
   private final PIDController ROTATIONAL_PID;
@@ -87,7 +87,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     RotationalAbsoluteOffset = MODULE_CONSTANTS.ROTATIONAL_ENCODER_OFFSET;
     ODOMETRY_LOCK = new ReentrantLock();
 
-    TRANSLATIONAL_VELOCITY_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(TRANSLATIONAL_ENCODER::getPosition);
+    TRANSLATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(TRANSLATIONAL_ENCODER::getPosition);
     ROTATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(() -> getAbsoluteRotation().getRadians());
     TIMESTAMP_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.timestamp();
     
@@ -158,7 +158,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     TRANSLATIONAL_CONTROLLER.close();
     ROTATIONAL_CONTROLLER.close();
     ABSOLUTE_ENCODER.close();
-    TRANSLATIONAL_VELOCITY_QUEUE.clear();
+    TRANSLATIONAL_POSITION_QUEUE.clear();
     ROTATIONAL_POSITION_QUEUE.clear();
     TIMESTAMP_QUEUE.clear();
     TIMESTAMPS.clear();
@@ -272,12 +272,12 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
           TIMESTAMP_QUEUE.clear();             
         }
       }
-      synchronized(TRANSLATIONAL_VELOCITY_QUEUE) {
+      synchronized(TRANSLATIONAL_POSITION_QUEUE) {
         STATUS.OdometryTranslationalPositionsRadians =
-          TRANSLATIONAL_VELOCITY_QUEUE.stream()
+          TRANSLATIONAL_POSITION_QUEUE.stream()
             .mapToDouble((final Double Position) -> Units.rotationsToRadians(Position) / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO)
             .toArray();    
-        TRANSLATIONAL_VELOCITY_QUEUE.clear();    
+        TRANSLATIONAL_POSITION_QUEUE.clear();    
       }
       synchronized(ROTATIONAL_POSITION_QUEUE) {
         STATUS.OdometryRotationalPositionsRadians =

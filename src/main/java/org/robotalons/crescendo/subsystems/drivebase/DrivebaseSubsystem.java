@@ -13,7 +13,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -82,7 +81,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
        (false)
     );
     CurrentRotation = GYROSCOPE.getYawRotation();
-    CurrentTime = Timer.getFPGATimestamp();
+    CurrentTime = Logger.getRealTimestamp() / (1e6);
     MODULES = List.of(
       Devices.FRONT_LEFT_MODULE,
       Devices.FRONT_RIGHT_MODULE,
@@ -148,35 +147,39 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     }
     synchronized(MODULES) {
       final var Rotation = GYROSCOPE.getOdometryYawRotations();
-      final var Modules = MODULES.stream().map(Module::getPositionDeltas).toList();
+      final var Measured = MODULES.stream().map(Module::getPositionDeltas).toList();
       final var Timestamps = MODULES.stream().map(Module::getPositionTimestamps).toList();
-      final var Sizes = Timestamps.stream().mapToInt(List::size).boxed().toList();
-      Timestamps.stream().mapToInt(List::size).min().ifPresentOrElse((final int Size) -> {
+      final var Partitions = Timestamps.stream().mapToInt(List::size).boxed().toList();
+      Partitions.stream().mapToInt(Integer::intValue).min().ifPresentOrElse((final int Size) -> {
         for(Integer Timestamp = (0); Timestamp < Math.min(Size, Rotation.length); Timestamp++) {
-          final var Positions = new SwerveModulePosition[MODULES.size()];
-          final var Deltas = new SwerveModulePosition[MODULES.size()];
-          for (Integer Module = (0); Module < MODULES.size(); Module++) {
-            Positions[Module] = Modules.get(Module).get(Timestamp);
-            Deltas[Module] = new SwerveModulePosition(
-              Positions[Module].distanceMeters - CurrentPositions.get(Module).distanceMeters, 
-              Positions[Module].angle);
-            CurrentPositions.set(Module, Positions[Module]);
-          } if (GYROSCOPE.getConnected() && Rotation.length > (0)) {
-            CurrentRotation = Rotation[Timestamp];
-          } else {
-            final var Twist = KINEMATICS.toTwist2d(Deltas);
-            CurrentRotation = CurrentRotation.plus(new Rotation2d(Twist.dtheta));
-          }
-          POSE_ESTIMATOR.updateWithTime(
-            Timestamps.get(Sizes.indexOf(Size)).get(Timestamp),
-            CurrentRotation, 
-            Positions
-          );
+          try {
+            final var Positions = new SwerveModulePosition[MODULES.size()];
+            final var Deltas = new SwerveModulePosition[MODULES.size()];
+            for (Integer Module = (0); Module < MODULES.size(); Module++) {
+              Positions[Module] = Measured.get(Module).get(Timestamp);
+              Deltas[Module] = new SwerveModulePosition(
+                Positions[Module].distanceMeters - CurrentPositions.get(Module).distanceMeters, 
+                Positions[Module].angle);
+              CurrentPositions.set(Module, Positions[Module]);;
+            } if (GYROSCOPE.getConnected() && Rotation.length > (0)) {
+              CurrentRotation = Rotation[Timestamp];
+            } else {
+              final var Twist = KINEMATICS.toTwist2d(Deltas);
+              CurrentRotation = CurrentRotation.plus(new Rotation2d(Twist.dtheta));
+            }
+            POSE_ESTIMATOR.updateWithTime(
+              Timestamps.get(Partitions.indexOf(Size)).get(Timestamp),
+              CurrentRotation, 
+              Positions
+            );            
+          } catch (final IndexOutOfBoundsException | NullPointerException Ignored) {
+            break;
+          } 
         }
       },
       () -> {
         POSE_ESTIMATOR.updateWithTime(
-          Timer.getFPGATimestamp(),
+          Logger.getRealTimestamp() / (1e6),
           CurrentRotation, 
           getModulePositions()
         );
@@ -206,7 +209,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     if (CurrentTime.equals((0d))) {
       DiscretizationTimestep = ((1d) / (50d));
     } else {
-      var MeasuredTime = Timer.getFPGATimestamp();
+      var MeasuredTime = Logger.getRealTimestamp() / (1e6);
       DiscretizationTimestep = MeasuredTime - CurrentTime;
       CurrentTime = MeasuredTime;
     }

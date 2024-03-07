@@ -35,7 +35,7 @@ public class Constants {
     public static final Transform3d SOURCE_CAMERA_POSE = new Transform3d(
       new Translation3d(ROBOT_RADIUS_METERS, new Rotation3d()), new Rotation3d((0d), (0.6806784d), (0d)));
     
-    //TODO: Find Rotations and what they actually are for speakers
+    //TODO: Find Real Rotational Values for Speaker
     public static final Transform3d SPEAKER_RIGHT_CAMERA_POSE = new Transform3d(
       new Translation3d(SPEAKER_TO_GYRO, new Rotation3d()), new Rotation3d((0d), (0.6108652d), (0.7853982d)));
     

@@ -102,7 +102,6 @@ public class Constants {
      * @param Velocity  Measured shooter velocity in RPM
      * @param Rotation  Measured shooter rotation in radians
      */
-    @SuppressWarnings("unused")
     private static void hyput(final Double Distance, final Double Velocity, final Double Rotation) {
       put(Math.hypot(Distance + OFFSET_WALL_METERS, SPEAKER_HEIGHT_METERS), Velocity, Rotation);
     }

@@ -10,7 +10,6 @@ package org.robotalons.lib.utilities;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.ArrayList;
@@ -19,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+
+import org.littletonrobotics.junction.Logger;
 
 /** Class for managing persistent alerts to be sent over NetworkTables. */
 public class Alert {
@@ -65,7 +66,7 @@ public class Alert {
    */
   public void set(boolean active) {
     if (active && !this.active) {
-      activeStartTime = Timer.getFPGATimestamp();
+      activeStartTime = Logger.getRealTimestamp() / (1e6);
       switch (type) {
         case ERROR:
           DriverStation.reportError(text, false);
