@@ -56,11 +56,11 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
       ),
       new VisionCamera(
         new PhotonCamera(Ports.FRONT_RIGHT_CAMERA_NAME), 
-        Constants.Measurements.SPEAKER_FRONT_CAMERA_POSE
+        Constants.Measurements.SPEAKER_RIGHT_CAMERA_POSE
       ),
       new VisionCamera(
         new PhotonCamera(Ports.REAR_LEFT_CAMERA_NAME), 
-        Constants.Measurements.SPEAKER_REAR_CAMERA_POSE
+        Constants.Measurements.SPEAKER_LEFT_CAMERA_POSE
       ),
       new VisionCamera(
         new PhotonCamera(Ports.REAR_RIGHT_CAMERA_NAME), 

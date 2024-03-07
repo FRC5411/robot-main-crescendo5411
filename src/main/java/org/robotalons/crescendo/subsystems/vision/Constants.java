@@ -30,12 +30,18 @@ public class Constants {
     public static final Double ROBOT_LENGTH_METERS = Units.inchesToMeters((29));        
     public static final Double ROBOT_WIDTH_METERS = Units.inchesToMeters((29));
     public static final Double ROBOT_RADIUS_METERS = Math.hypot(ROBOT_LENGTH_METERS / (2.0), ROBOT_WIDTH_METERS / (2.0)); 
+    public static final Double SPEAKER_TO_GYRO = 0.1129;
+    
     public static final Transform3d SOURCE_CAMERA_POSE = new Transform3d(
       new Translation3d(ROBOT_RADIUS_METERS, new Rotation3d()), new Rotation3d((0d), (0.6806784d), (0d)));
-    public static final Transform3d SPEAKER_FRONT_CAMERA_POSE = new Transform3d(
-      new Translation3d(ROBOT_RADIUS_METERS, new Rotation3d()), new Rotation3d((0d), (0.6108652d), (0.7853982d)));
-    public static final Transform3d SPEAKER_REAR_CAMERA_POSE = new Transform3d(
-      new Translation3d(ROBOT_RADIUS_METERS, new Rotation3d()), new Rotation3d((0d), (0.6108652d), (-0.7853982d)));
+    
+    //TODO: Find Rotations and what they actually are for speakers
+    public static final Transform3d SPEAKER_RIGHT_CAMERA_POSE = new Transform3d(
+      new Translation3d(SPEAKER_TO_GYRO, new Rotation3d()), new Rotation3d((0d), (0.6108652d), (0.7853982d)));
+    
+    public static final Transform3d SPEAKER_LEFT_CAMERA_POSE = new Transform3d(
+      new Translation3d(SPEAKER_TO_GYRO, new Rotation3d()), new Rotation3d((0d), (0.6108652d), (-0.7853982d)));
+    
     public static final Transform3d INTAKE_CAMERA_POSE = new Transform3d(
       new Translation3d(ROBOT_RADIUS_METERS, new Rotation3d()), new Rotation3d((0d), (-0.08203047d), (1.021018d)));
   }
