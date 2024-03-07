@@ -19,7 +19,8 @@ import java.util.concurrent.TimeUnit;
  *
  * <h1>TalonSubsystemBase</h1>
  *
- * <p>An extension of the traditional SubsystemBase class which allows for implementation of a pilot control based system.<p>
+ * <p>An extension of the traditional SubsystemBase class which allows for better implementation of a operator-subsystem control based system, 
+ * and implementation of standard methods like {@link #close()} <p>
  * 
  * @see SubsystemBase
  * @author Cody Washington
@@ -35,7 +36,7 @@ public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preference
   protected TalonSubsystemBase(final String Name) {
     super(Name);
     SUBSYSTEMS.add(this);
-    new Alert(Name + " INITIALIZED", AlertType.INFO);
+    new Alert(Name + " Initialized", AlertType.INFO);
   } static {
     SUBSYSTEMS = new ArrayList<>();
   }
@@ -63,7 +64,7 @@ public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preference
     try {
       Executable.run();
     } catch (final NullPointerException Ignored) {
-      new Alert((getName().toUpperCase() + " IMPROPERLY CONFIGURED"), AlertType.ERROR);
+      new Alert((getName().toUpperCase() + " Bindings Improperly Configured"), AlertType.ERROR);
     }
   }
 

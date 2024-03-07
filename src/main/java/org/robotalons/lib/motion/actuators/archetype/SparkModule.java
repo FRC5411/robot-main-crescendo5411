@@ -9,6 +9,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -129,6 +131,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       (0d)
     );
 
+    ABSOLUTE_ENCODER.getConfigurator().apply(new CANcoderConfiguration().withMagnetSensor(new MagnetSensorConfigs()));
     ROTATIONAL_ENCODER.setAverageDepth((2));
     ROTATIONAL_ENCODER.setMeasurementPeriod((10));
 
@@ -189,6 +192,8 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
           if(Reference != (null)) {
             if (Reference.angle != (null)) {
               setRotationalVoltage(ROTATIONAL_PID.calculate(getAbsoluteRotation().getRadians(), Reference.angle.getRadians()));
+            } else {
+              setRotationalVoltage((0d));
             }
             var Adjusted = (Reference.speedMetersPerSecond * Math.cos(ROTATIONAL_PID.getPositionError())) / MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
             setTranslationalVoltage((TRANSLATIONAL_PID.calculate(Adjusted)) + (TRANSLATIONAL_FF.calculate(STATUS.TranslationalVelocityRadiansSecond, Adjusted)));          
@@ -216,12 +221,12 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
 
   @Override
   protected synchronized void setTranslationalVoltage(final Double Voltage) {
-    TRANSLATIONAL_CONTROLLER.setVoltage(MathUtil.clamp(Voltage, (-12d), (12d)));
+    TRANSLATIONAL_CONTROLLER.setVoltage(MathUtil.clamp(Voltage != null? Voltage: 0d, (-12d), (12d)));
   }
 
   @Override
   protected synchronized void setRotationalVoltage(final Double Voltage) {
-    ROTATIONAL_CONTROLLER.setVoltage(MathUtil.clamp(Voltage, (-12d), (12d)));
+    ROTATIONAL_CONTROLLER.setVoltage(MathUtil.clamp(Voltage != null? Voltage: 0d, (-12d), (12d)));
   }
   
   /**

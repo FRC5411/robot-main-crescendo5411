@@ -145,28 +145,30 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       MODULES.forEach(Module::cease);
     }
     synchronized(MODULES) {
-      final var ModulePositions = MODULES.parallelStream().map(Module::getPositionDeltas).toList();
-      final var ModuleTimestamps = MODULES.parallelStream().mapToInt((Module) -> Module.getPositionTimestamps().size());
-      final var GyroscopeRotations = GYROSCOPE.getOdometryYawRotations();
-      ModuleTimestamps.min().ifPresentOrElse((final int Size) -> {
-        for(Integer Index = (0); Index < Math.min(Size, GyroscopeRotations.length); Index++) {
-          final var IndexedPositions = new SwerveModulePosition[MODULES.size()];
-          final var IndexedDeltas = new SwerveModulePosition[MODULES.size()];
-          for (Integer IndexedModule = (0); IndexedModule < MODULES.size(); IndexedModule++) {
-            IndexedPositions[IndexedModule] = ModulePositions.get(IndexedModule).get(Index);
-            IndexedDeltas[IndexedModule] = new SwerveModulePosition(
-              IndexedPositions[IndexedModule].distanceMeters - CurrentPositions.get(IndexedModule).distanceMeters, 
-              IndexedPositions[IndexedModule].angle);
-          } if (GYROSCOPE.getConnected()) {
-            CurrentRotation = GyroscopeRotations[Index];
+      final var Rotation = GYROSCOPE.getOdometryYawRotations();
+      final var Modules = MODULES.stream().map(Module::getPositionDeltas).toList();
+      final var Timestamps = MODULES.stream().mapToInt((Module) -> Module.getPositionTimestamps().size()).boxed().toList();
+      Timestamps.stream().mapToInt(Integer::intValue).min().ifPresentOrElse((final int Size) -> {
+        for(Integer Timestamp = (0); Timestamp < Math.min(Size, Rotation.length); Timestamp++) {
+          final var Positions = new SwerveModulePosition[MODULES.size()];
+          final var Deltas = new SwerveModulePosition[MODULES.size()];
+          for (Integer Module = (0); Module < MODULES.size(); Module++) {
+            Positions[Module] = Modules.get(Module).get(Timestamp);
+            Deltas[Module] = new SwerveModulePosition(
+              Positions[Module].distanceMeters - CurrentPositions.get(Module).distanceMeters, 
+              Positions[Module].angle);
+            CurrentPositions.set(Module, Positions[Module]);
+          } if (GYROSCOPE.getConnected() && Rotation.length > (0)) {
+            CurrentRotation = Rotation[Timestamp];
           } else {
-            final var Twist = KINEMATICS.toTwist2d(IndexedDeltas);
+            final var Twist = KINEMATICS.toTwist2d(Deltas);
             CurrentRotation = CurrentRotation.plus(new Rotation2d(Twist.dtheta));
           }
           POSE_ESTIMATOR.updateWithTime(
-            ModuleTimestamps.boxed().toList().get(Size),
+            Timestamps.get(Timestamp),
             CurrentRotation, 
-            IndexedPositions);
+            Positions
+          );
         }
       },
       () -> {
@@ -177,8 +179,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         );
       });
     }
-    CurrentPositions = MODULES.stream().map(Module::getPosition).toList();
-    VisionSubsystem.ALL_CAMERA_IDENTIFIERS.forEach((Identifier) -> {
+    VisionSubsystem.ALL_CAMERA_IDENTIFIERS.parallelStream().forEach((Identifier) -> {
       final var Timestamps = VisionSubsystem.getRobotPositionTimestamps(Identifier);
       final var Positions = VisionSubsystem.getRobotPositionDeltas(Identifier);
       final var Deviation = VisionSubsystem.getStandardDeviations(Identifier);

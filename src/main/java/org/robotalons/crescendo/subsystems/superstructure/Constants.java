@@ -40,44 +40,49 @@ public class Constants {
 
     public static final Double FIRING_STANDARD_VELOCITY = (2000d);
 
-    public static final Double PIVOT_SUBWOOFER_PRESET = Units.degreesToRadians((46.25d));
-    public static final Double PIVOT_WINGLINE_PRESET = Units.degreesToRadians((22.75d));
-    public static final Double PIVOT_PODIUMLINE_PRESET = Units.degreesToRadians((22.75d));
-    public static final Double PIVOT_CENTERLINE_PRESET = Units.degreesToRadians((19.25d));
-    public static final Double PIVOT_MAXIMUM_PRESET = Units.degreesToRadians((50));
-
-    public static final Double SHOOTER_SUBWOOFER_PRESET = (1000d);
-    public static final Double SHOOTER_WINGLINE_PRESET = (2500d);
-    public static final Double SHOOTER_PODIUMLINE_PRESET = (2000d);
-    public static final Double SHOOTER_CENTERLINE_PRESET = (3000d);
-    public static final Double SHOOTER_AMP_PRESET = (500d);
-
     public static final Double CANNON_LENGTH = (1d);
-
     public static final Boolean PIVOT_INVERTED = (false);
 
     public static final Double PIVOT_MINIMUM_ROTATION = Units.degreesToRotations((5));
-
     public static final Double PIVOT_MAXIMUM_ROTATION = Units.degreesToRotations((70));
 
     public static final Double FIRING_IDLE_PERCENT = (.175d);
 
     public static final Double FIRING_PASSIVE_PERCENTILE = (0.35d);
 
-    public static final Double PIVOT_MAXIMUM_RANGE_METERS = (100d);
-    public static final Double PIVOT_MINIMUM_RANGE_METERS = (0d);
+
+    public static final Double OFFSET_WALL_METERS = (1.16d);
+    public static final Double PIVOT_MAXIMUM_RANGE_METERS = (3.5d) + OFFSET_WALL_METERS;
+    public static final Double PIVOT_MINIMUM_RANGE_METERS = (0d) + OFFSET_WALL_METERS;
 
     public static final Double SPEAKER_HEIGHT_METERS = (0d);
 
     public static final Double ALLOWABLE_SHOT_PERCENTAGE = (95e-2);
 
-    public static final Matrix<N2,N1> PIVOT_UPPER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), 0d, 0d);
-    public static final Matrix<N2,N1> PIVOT_LOWER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), 0d, 0d);
+    public static final Double PIVOT_POSITIVE_RATE_LIMIT = (1.1d);
+    public static final Double PIVOT_NEGATIVE_RATE_LIMIT = (0.6d);
+    public static final Double PIVOT_INITIAL_OUTPUT = (0d);
+
+    public static final Matrix<N2,N1> PIVOT_UPPER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), new double[]{FIRING_STANDARD_VELOCITY, (29d)});
+    public static final Matrix<N2,N1> PIVOT_LOWER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), new double[]{FIRING_STANDARD_VELOCITY, (55d)});
 
     public static final InterpolatingMatrixTreeMap<Double,N2,N1> PIVOT_FIRING_MAP = new InterpolatingMatrixTreeMap<>();
 
     static {
       PIVOT_FIRING_MAP.put(Math.hypot(PIVOT_MAXIMUM_RANGE_METERS, SPEAKER_HEIGHT_METERS), PIVOT_UPPER_BOUND);
+      hyput((0.25), FIRING_STANDARD_VELOCITY, (52d));
+      hyput((0.5d), FIRING_STANDARD_VELOCITY, (48d));
+      hyput((0.75), FIRING_STANDARD_VELOCITY, (45d));
+      hyput((1d), FIRING_STANDARD_VELOCITY, (42.5d));
+      hyput((1.25), FIRING_STANDARD_VELOCITY, (40d));
+      hyput((1.5d), FIRING_STANDARD_VELOCITY, (38.5d));
+      hyput((1.75), FIRING_STANDARD_VELOCITY, (37d));
+      hyput((2d), FIRING_STANDARD_VELOCITY, (35.6d));
+      hyput((2.25), FIRING_STANDARD_VELOCITY, (34.5d));
+      hyput((2.5d), FIRING_STANDARD_VELOCITY, (33.5d));
+      hyput((2.75), FIRING_STANDARD_VELOCITY, (32d));
+      hyput((3d), FIRING_STANDARD_VELOCITY, (31.1d));
+      hyput((3.25d), FIRING_STANDARD_VELOCITY, (30.3d));
       PIVOT_FIRING_MAP.put(Math.hypot(PIVOT_MINIMUM_RANGE_METERS, SPEAKER_HEIGHT_METERS), PIVOT_LOWER_BOUND);
     }
 
@@ -99,7 +104,7 @@ public class Constants {
      */
     @SuppressWarnings("unused")
     private static void hyput(final Double Distance, final Double Velocity, final Double Rotation) {
-      put(Math.hypot(Distance, SPEAKER_HEIGHT_METERS), Velocity, Rotation);
+      put(Math.hypot(Distance + OFFSET_WALL_METERS, SPEAKER_HEIGHT_METERS), Velocity, Rotation);
     }
   }
 
