@@ -185,14 +185,14 @@ public class SimulatedModule<Controller extends DCMotorSim> extends Module {
     synchronized(STATUS) {
       STATUS.TranslationalPositionRadians = TranslationalIntegratedPosition;
       STATUS.TranslationalVelocityRadiansSecond =
-          Units.rotationsPerMinuteToRadiansPerSecond(TRANSLATIONAL_CONTROLLER.getAngularVelocityRPM()) * MODULE_CONSTANTS.TRANSLATIONAL_MAXIMUM_VELOCITY_METERS / CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
+          Units.rotationsPerMinuteToRadiansPerSecond(TRANSLATIONAL_CONTROLLER.getAngularVelocityRPM()) / CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
       STATUS.RotationalRelativePosition = new Rotation2d(RotationalIntegratedPosition);
       STATUS.RotationalAbsolutePosition = new Rotation2d(RotationalIntegratedPosition);
       STATUS.TranslationalAppliedVoltage = 
         TRANSLATIONAL_CONTROLLER.getCurrentDrawAmps() * (5);
       STATUS.TranslationalCurrentAmperage = TRANSLATIONAL_CONTROLLER.getCurrentDrawAmps();
       STATUS.RotationalVelocityRadiansSecond =
-          Units.rotationsPerMinuteToRadiansPerSecond(ROTATIONAL_CONTROLLER.getAngularVelocityRPM()) * MODULE_CONSTANTS.ROTATIONAL_MAXIMUM_VELOCITY_METERS / CONSTANTS.ROTATIONAL_GEAR_RATIO;
+          Units.rotationsPerMinuteToRadiansPerSecond(ROTATIONAL_CONTROLLER.getAngularVelocityRPM()) / CONSTANTS.ROTATIONAL_GEAR_RATIO;
       STATUS.RotationalAppliedAmperage = ROTATIONAL_CONTROLLER.getCurrentDrawAmps();      
     
       synchronized(TIMESTAMP_QUEUE) {

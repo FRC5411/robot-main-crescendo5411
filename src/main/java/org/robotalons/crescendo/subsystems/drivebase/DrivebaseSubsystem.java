@@ -149,8 +149,9 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     synchronized(MODULES) {
       final var Rotation = GYROSCOPE.getOdometryYawRotations();
       final var Modules = MODULES.stream().map(Module::getPositionDeltas).toList();
-      final var Timestamps = MODULES.stream().mapToInt((Module) -> Module.getPositionTimestamps().size()).boxed().toList();
-      Timestamps.stream().mapToInt(Integer::intValue).min().ifPresentOrElse((final int Size) -> {
+      final var Timestamps = MODULES.stream().map(Module::getPositionTimestamps).toList();
+      final var Sizes = Timestamps.stream().mapToInt(List::size).boxed().toList();
+      Timestamps.stream().mapToInt(List::size).min().ifPresentOrElse((final int Size) -> {
         for(Integer Timestamp = (0); Timestamp < Math.min(Size, Rotation.length); Timestamp++) {
           final var Positions = new SwerveModulePosition[MODULES.size()];
           final var Deltas = new SwerveModulePosition[MODULES.size()];
@@ -167,7 +168,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
             CurrentRotation = CurrentRotation.plus(new Rotation2d(Twist.dtheta));
           }
           POSE_ESTIMATOR.updateWithTime(
-            Timestamps.get(Timestamp),
+            Timestamps.get(Sizes.indexOf(Size)).get(Timestamp),
             CurrentRotation, 
             Positions
           );
