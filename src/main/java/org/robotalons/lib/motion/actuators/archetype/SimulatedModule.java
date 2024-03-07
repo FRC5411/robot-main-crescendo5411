@@ -9,7 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 import org.littletonrobotics.junction.Logger;
 import org.robotalons.lib.motion.actuators.Module;
@@ -30,7 +30,7 @@ import java.util.stream.IntStream;
  * 
  * @see Module
  */
-public class FlywheelModule<Controller extends FlywheelSim> extends Module {
+public class SimulatedModule<Controller extends DCMotorSim> extends Module {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private final Controller TRANSLATIONAL_CONTROLLER;
   private final SimpleMotorFeedforward TRANSLATIONAL_FF;
@@ -56,7 +56,7 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
    * Spark Module Constructor
    * @param Constants Constant values to construct a new module from
    */
-  public FlywheelModule(final ModuleConfiguration<Controller> Constants) {
+  public SimulatedModule(final ModuleConfiguration<Controller> Constants) {
     super(Constants);
     MODULE_CONSTANTS = Constants;
     TRANSLATIONAL_CONTROLLER = (Controller) MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER;
@@ -79,13 +79,14 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
     TIMESTAMP_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.timestamp();
     ODOMETRY_LOCK = new ReentrantLock();
 
-    RotationalIntegratedPosition = (MODULE_CONSTANTS.TRANSLATIONAL_POSITION_METERS);
-    TranslationalIntegratedPosition = (MODULE_CONSTANTS.ROTATIONAL_ENCODER_OFFSET.getRadians());
+    RotationalAbsoluteOffset = MODULE_CONSTANTS.ROTATIONAL_ENCODER_OFFSET;
+    RotationalIntegratedPosition = new Rotation2d(Math.random() * 2.0 * Math.PI).getRadians();
+    TranslationalIntegratedPosition = new Rotation2d(Math.random() * 2.0 * Math.PI).getRadians();
 
     TIMESTAMPS = new ArrayList<>();
     DELTAS = new ArrayList<>();
 
-    RotationalAbsoluteOffset = MODULE_CONSTANTS.ROTATIONAL_ENCODER_OFFSET;
+    
 
     DiscretizationPreviousTimestamp = Timer.getFPGATimestamp();
 
@@ -184,14 +185,14 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
     synchronized(STATUS) {
       STATUS.TranslationalPositionRadians = TranslationalIntegratedPosition;
       STATUS.TranslationalVelocityRadiansSecond =
-          Units.rotationsPerMinuteToRadiansPerSecond(TRANSLATIONAL_CONTROLLER.getAngularVelocityRPM()) / CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
+          Units.rotationsPerMinuteToRadiansPerSecond(TRANSLATIONAL_CONTROLLER.getAngularVelocityRPM()) * MODULE_CONSTANTS.TRANSLATIONAL_MAXIMUM_VELOCITY_METERS / CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
       STATUS.RotationalRelativePosition = new Rotation2d(RotationalIntegratedPosition);
       STATUS.RotationalAbsolutePosition = new Rotation2d(RotationalIntegratedPosition);
       STATUS.TranslationalAppliedVoltage = 
         TRANSLATIONAL_CONTROLLER.getCurrentDrawAmps() * (5);
       STATUS.TranslationalCurrentAmperage = TRANSLATIONAL_CONTROLLER.getCurrentDrawAmps();
       STATUS.RotationalVelocityRadiansSecond =
-          Units.rotationsPerMinuteToRadiansPerSecond(ROTATIONAL_CONTROLLER.getAngularVelocityRPM()) / CONSTANTS.ROTATIONAL_GEAR_RATIO;
+          Units.rotationsPerMinuteToRadiansPerSecond(ROTATIONAL_CONTROLLER.getAngularVelocityRPM()) * MODULE_CONSTANTS.ROTATIONAL_MAXIMUM_VELOCITY_METERS / CONSTANTS.ROTATIONAL_GEAR_RATIO;
       STATUS.RotationalAppliedAmperage = ROTATIONAL_CONTROLLER.getCurrentDrawAmps();      
     
       synchronized(TIMESTAMP_QUEUE) {
@@ -234,12 +235,12 @@ public class FlywheelModule<Controller extends FlywheelSim> extends Module {
 
   @Override
   protected synchronized void setTranslationalVoltage(final Double Voltage) {
-    TRANSLATIONAL_CONTROLLER.setInputVoltage(MathUtil.clamp(Voltage, (-12d), (12d)));
+    TRANSLATIONAL_CONTROLLER.setInputVoltage(MathUtil.clamp(Voltage != null? Voltage: 0d, (-12d), (12d)));
   }
 
   @Override
   protected synchronized void setRotationalVoltage(final Double Voltage) {
-    ROTATIONAL_CONTROLLER.setInputVoltage(MathUtil.clamp(Voltage, (-12d), (12d)));
+    ROTATIONAL_CONTROLLER.setInputVoltage(MathUtil.clamp(Voltage != null? Voltage: 0d, (-12d), (12d)));
   }
   
 

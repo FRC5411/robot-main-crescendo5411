@@ -58,11 +58,11 @@ public class PigeonGyroscope extends Gyroscope {
       STATUS.YawRotation = Rotation2d.fromDegrees(YAW_ROTATION.getValue());
       STATUS.YawVelocityRadiansSecond = Units.degreesToRadians(YAW_VELOCITY.getValue());
       synchronized(YAW_ROTATION_QUEUE) {
-        // STATUS.PositionDeltas =
-        //     YAW_ROTATION_QUEUE.stream()
-        //         .map(Rotation2d::fromDegrees)
-        //         .toArray(Rotation2d[]::new);
-        // YAW_ROTATION_QUEUE.clear();    
+        STATUS.PositionDeltas =
+            YAW_ROTATION_QUEUE.stream()
+                .map(Rotation2d::fromDegrees)
+                .toArray(Rotation2d[]::new);
+        YAW_ROTATION_QUEUE.clear();    
       }  
       Logger.processInputs(("RealInputs/Gyroscope"), STATUS);
     }

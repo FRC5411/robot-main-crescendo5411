@@ -33,6 +33,7 @@ import org.robotalons.lib.motion.actuators.Module;
 import org.robotalons.lib.motion.sensors.Gyroscope;
 import org.robotalons.lib.utilities.Operator;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -113,7 +114,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         new Pose2d(new Translation2d(), CurrentRotation)
       );
     }
-    CurrentPositions = MODULES.stream().map(Module::getPosition).toList();
+    CurrentPositions = new ArrayList<>();
+    MODULES.stream().map(Module::getPosition).forEachOrdered(CurrentPositions::add);
     CHARACTERIZATION_ROUTINE = new SysIdRoutine(
       new SysIdRoutine.Config(
         (null),

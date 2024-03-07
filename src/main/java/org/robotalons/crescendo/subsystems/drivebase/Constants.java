@@ -1,23 +1,19 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.drivebase;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
-import edu.wpi.first.math.MatBuilder;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 import com.pathplanner.lib.util.PIDConstants;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.robotalons.lib.motion.actuators.Module;
-import org.robotalons.lib.motion.actuators.archetype.FlywheelModule;
 import org.robotalons.lib.motion.actuators.archetype.ModuleConfiguration;
+import org.robotalons.lib.motion.actuators.archetype.SimulatedModule;
 import org.robotalons.lib.motion.actuators.archetype.SparkModule;
 import org.robotalons.lib.motion.sensors.Gyroscope;
 import org.robotalons.lib.motion.sensors.archetype.PigeonGyroscope;
@@ -37,18 +33,16 @@ import java.util.concurrent.locks.ReentrantLock;
 public final class Constants {
 // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
   public static final class Simulation {
-    public static final Double TRANSLATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (505.597120488d);
-    public static final Double ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (249.71004822d);
-    public static final Matrix<N1,N1> TRANSLATIONAL_MEASUREMENT_STDEVS = MatBuilder.fill(Nat.N1(), Nat.N1(), (0.25d));
-    public static final Matrix<N1,N1> ROTATIONAL_MEASUREMENT_STDEVS = MatBuilder.fill(Nat.N1(), Nat.N1(), (0.25d));
-    public static final FlywheelSim TRANSLATIONAL_FLYWHEEL = new FlywheelSim(
+    public static final Double TRANSLATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (0.097120488d);
+    public static final Double ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (16.91004822d);
+    public static final DCMotorSim TRANSLATIONAL_FLYWHEEL = new DCMotorSim(
       DCMotor.getNEO((1)),
-      1 / Measurements.ROBOT_LINEAR_GEAR_RATIO,
-      TRANSLATIONAL_FLYWHEEL_KG_PER_METER_SQUARED, TRANSLATIONAL_MEASUREMENT_STDEVS);
-    public static final FlywheelSim ROTATIONAL_FLYWHEEL = new FlywheelSim(
+      Measurements.ROBOT_LINEAR_GEAR_RATIO,
+      TRANSLATIONAL_FLYWHEEL_KG_PER_METER_SQUARED);
+    public static final DCMotorSim ROTATIONAL_FLYWHEEL = new DCMotorSim(
       DCMotor.getNEO((1)),
-      1 / Measurements.ROBOT_ROTATION_GEAR_RATIO,
-      ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED, ROTATIONAL_MEASUREMENT_STDEVS);
+      Measurements.ROBOT_ROTATION_GEAR_RATIO,
+      ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED);
   }
 
   public static final class Measurements {
@@ -76,7 +70,7 @@ public final class Constants {
         public static final Integer ABSOLUTE_ENCODER_ID = (3);
         public static final Double ROTATIONAL_P_GAIN = (2.81d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
-        public static final Double ROTATIONAL_D_GAIN = (0.00001d);
+        public static final Double ROTATIONAL_D_GAIN = (0.75d);
         public static final Double ROTATIONAL_ENCODER_OFFSET = (-0.108154d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
@@ -88,7 +82,7 @@ public final class Constants {
         public static final Double LINEAR_KA_GAIN = (0d);
         public static final Integer NUMBER = (0);
         public static final ModuleConfiguration<CANSparkMax> REAL_CONSTANTS = new ModuleConfiguration<>();
-        public static final ModuleConfiguration<FlywheelSim> SIM_CONSTANTS = new ModuleConfiguration<>();
+        public static final ModuleConfiguration<DCMotorSim> SIM_CONSTANTS = new ModuleConfiguration<>();
         static {
           REAL_CONSTANTS.TRANSLATIONAL_CONTROLLER = new CANSparkMax(LINEAR_CONTROLLER_ID, MotorType.kBrushless);
           REAL_CONSTANTS.ROTATIONAL_CONTROLLER = new CANSparkMax(ROTATIONAL_CONTROLLER_ID, MotorType.kBrushless);
@@ -108,8 +102,14 @@ public final class Constants {
           REAL_CONSTANTS.TRANSLATIONAL_INVERTED = LINEAR_INVERTED;
           REAL_CONSTANTS.ROTATIONAL_INVERTED = ROTATIONAL_INVERTED;
           REAL_CONSTANTS.NUMBER = NUMBER;
-          SIM_CONSTANTS.TRANSLATIONAL_CONTROLLER = Simulation.TRANSLATIONAL_FLYWHEEL;
-          SIM_CONSTANTS.ROTATIONAL_CONTROLLER = Simulation.ROTATIONAL_FLYWHEEL;
+          SIM_CONSTANTS.TRANSLATIONAL_CONTROLLER = new DCMotorSim(
+            DCMotor.getNEO((1)),
+            Measurements.ROBOT_LINEAR_GEAR_RATIO,
+            Simulation.TRANSLATIONAL_FLYWHEEL_KG_PER_METER_SQUARED);
+          SIM_CONSTANTS.ROTATIONAL_CONTROLLER = new DCMotorSim(
+            DCMotor.getNEO((1)),
+            Measurements.ROBOT_ROTATION_GEAR_RATIO,
+            Simulation.ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED);
           SIM_CONSTANTS.ABSOLUTE_ENCODER_PORT = ABSOLUTE_ENCODER_ID;
           SIM_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS = new PIDConstants(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
           SIM_CONSTANTS.ROTATIONAL_PID_CONSTANTS = new PIDConstants(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
@@ -135,7 +135,7 @@ public final class Constants {
         public static final Integer ABSOLUTE_ENCODER_ID = (4);
         public static final Double ROTATIONAL_P_GAIN = (2.81d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
-        public static final Double ROTATIONAL_D_GAIN = (0.00001d);
+        public static final Double ROTATIONAL_D_GAIN = (0.75d);
         public static final Double ROTATIONAL_ENCODER_OFFSET = (-0.197266d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
@@ -147,7 +147,7 @@ public final class Constants {
         public static final Double LINEAR_KA_GAIN = (0d);
         public static final Integer NUMBER = (1);
         public static final ModuleConfiguration<CANSparkMax> REAL_CONSTANTS = new ModuleConfiguration<>();
-        public static final ModuleConfiguration<FlywheelSim> SIM_CONSTANTS = new ModuleConfiguration<>();
+        public static final ModuleConfiguration<DCMotorSim> SIM_CONSTANTS = new ModuleConfiguration<>();
         static {
           REAL_CONSTANTS.TRANSLATIONAL_CONTROLLER = new CANSparkMax(LINEAR_CONTROLLER_ID, MotorType.kBrushless);
           REAL_CONSTANTS.ROTATIONAL_CONTROLLER = new CANSparkMax(ROTATIONAL_CONTROLLER_ID, MotorType.kBrushless);
@@ -167,8 +167,14 @@ public final class Constants {
           REAL_CONSTANTS.TRANSLATIONAL_INVERTED = LINEAR_INVERTED;
           REAL_CONSTANTS.ROTATIONAL_INVERTED = ROTATIONAL_INVERTED;
           REAL_CONSTANTS.NUMBER = NUMBER;
-          SIM_CONSTANTS.TRANSLATIONAL_CONTROLLER = Simulation.TRANSLATIONAL_FLYWHEEL;
-          SIM_CONSTANTS.ROTATIONAL_CONTROLLER = Simulation.ROTATIONAL_FLYWHEEL;
+          SIM_CONSTANTS.TRANSLATIONAL_CONTROLLER = new DCMotorSim(
+            DCMotor.getNEO((1)),
+            Measurements.ROBOT_LINEAR_GEAR_RATIO,
+            Simulation.TRANSLATIONAL_FLYWHEEL_KG_PER_METER_SQUARED);
+          SIM_CONSTANTS.ROTATIONAL_CONTROLLER = new DCMotorSim(
+            DCMotor.getNEO((1)),
+            Measurements.ROBOT_ROTATION_GEAR_RATIO,
+            Simulation.ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED);
           SIM_CONSTANTS.ABSOLUTE_ENCODER_PORT = ABSOLUTE_ENCODER_ID;
           SIM_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS = new PIDConstants(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
           SIM_CONSTANTS.ROTATIONAL_PID_CONSTANTS = new PIDConstants(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
@@ -194,7 +200,7 @@ public final class Constants {
         public static final Integer ABSOLUTE_ENCODER_ID = (5);
         public static final Double ROTATIONAL_P_GAIN = (2.81d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
-        public static final Double ROTATIONAL_D_GAIN = (0.00001d);
+        public static final Double ROTATIONAL_D_GAIN = (0.75d);
         public static final Double ROTATIONAL_ENCODER_OFFSET = (0.326172d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
@@ -206,7 +212,7 @@ public final class Constants {
         public static final Double LINEAR_KA_GAIN = (0d);
         public static final Integer NUMBER = (2);
         public static final ModuleConfiguration<CANSparkMax> REAL_CONSTANTS = new ModuleConfiguration<>();
-        public static final ModuleConfiguration<FlywheelSim> SIM_CONSTANTS = new ModuleConfiguration<>();
+        public static final ModuleConfiguration<DCMotorSim> SIM_CONSTANTS = new ModuleConfiguration<>();
         static {
           REAL_CONSTANTS.TRANSLATIONAL_CONTROLLER = new CANSparkMax(LINEAR_CONTROLLER_ID, MotorType.kBrushless);
           REAL_CONSTANTS.ROTATIONAL_CONTROLLER = new CANSparkMax(ROTATIONAL_CONTROLLER_ID, MotorType.kBrushless);
@@ -226,8 +232,14 @@ public final class Constants {
           REAL_CONSTANTS.TRANSLATIONAL_INVERTED = LINEAR_INVERTED;
           REAL_CONSTANTS.ROTATIONAL_INVERTED = ROTATIONAL_INVERTED;
           REAL_CONSTANTS.NUMBER = NUMBER;
-          SIM_CONSTANTS.TRANSLATIONAL_CONTROLLER = Simulation.TRANSLATIONAL_FLYWHEEL;
-          SIM_CONSTANTS.ROTATIONAL_CONTROLLER = Simulation.ROTATIONAL_FLYWHEEL;
+          SIM_CONSTANTS.TRANSLATIONAL_CONTROLLER = new DCMotorSim(
+            DCMotor.getNEO((1)),
+            Measurements.ROBOT_LINEAR_GEAR_RATIO,
+            Simulation.TRANSLATIONAL_FLYWHEEL_KG_PER_METER_SQUARED);
+          SIM_CONSTANTS.ROTATIONAL_CONTROLLER = new DCMotorSim(
+            DCMotor.getNEO((1)),
+            Measurements.ROBOT_ROTATION_GEAR_RATIO,
+            Simulation.ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED);
           SIM_CONSTANTS.ABSOLUTE_ENCODER_PORT = ABSOLUTE_ENCODER_ID;
           SIM_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS = new PIDConstants(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
           SIM_CONSTANTS.ROTATIONAL_PID_CONSTANTS = new PIDConstants(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
@@ -253,7 +265,7 @@ public final class Constants {
         public static final Integer ABSOLUTE_ENCODER_ID = (6);
         public static final Double ROTATIONAL_P_GAIN = (2.81d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
-        public static final Double ROTATIONAL_D_GAIN = (0.00001d);
+        public static final Double ROTATIONAL_D_GAIN = (0.75d);
         public static final Double ROTATIONAL_ENCODER_OFFSET = (0.090820d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
@@ -265,7 +277,7 @@ public final class Constants {
         public static final Double LINEAR_KA_GAIN = (0d);
         public static final Integer NUMBER = (3);
         public static final ModuleConfiguration<CANSparkMax> REAL_CONSTANTS = new ModuleConfiguration<>();
-        public static final ModuleConfiguration<FlywheelSim> SIM_CONSTANTS = new ModuleConfiguration<>();
+        public static final ModuleConfiguration<DCMotorSim> SIM_CONSTANTS = new ModuleConfiguration<>();
         static {
           REAL_CONSTANTS.TRANSLATIONAL_CONTROLLER = new CANSparkMax(LINEAR_CONTROLLER_ID, MotorType.kBrushless);
           REAL_CONSTANTS.ROTATIONAL_CONTROLLER = new CANSparkMax(ROTATIONAL_CONTROLLER_ID, MotorType.kBrushless);
@@ -285,8 +297,14 @@ public final class Constants {
           REAL_CONSTANTS.TRANSLATIONAL_INVERTED = LINEAR_INVERTED;
           REAL_CONSTANTS.ROTATIONAL_INVERTED = ROTATIONAL_INVERTED;
           REAL_CONSTANTS.NUMBER = NUMBER;
-          SIM_CONSTANTS.TRANSLATIONAL_CONTROLLER = Simulation.TRANSLATIONAL_FLYWHEEL;
-          SIM_CONSTANTS.ROTATIONAL_CONTROLLER = Simulation.ROTATIONAL_FLYWHEEL;
+          SIM_CONSTANTS.TRANSLATIONAL_CONTROLLER = new DCMotorSim(
+            DCMotor.getNEO((1)),
+            Measurements.ROBOT_LINEAR_GEAR_RATIO,
+            Simulation.TRANSLATIONAL_FLYWHEEL_KG_PER_METER_SQUARED);
+          SIM_CONSTANTS.ROTATIONAL_CONTROLLER = new DCMotorSim(
+            DCMotor.getNEO((1)),
+            Measurements.ROBOT_ROTATION_GEAR_RATIO,
+            Simulation.ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED);
           SIM_CONSTANTS.ABSOLUTE_ENCODER_PORT = ABSOLUTE_ENCODER_ID;
           SIM_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS = new PIDConstants(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
           SIM_CONSTANTS.ROTATIONAL_PID_CONSTANTS = new PIDConstants(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
@@ -321,19 +339,19 @@ public final class Constants {
     new PigeonGyroscope(Ports.GYROSCOPE_ID,org.robotalons.crescendo.Constants.Odometry.CTRE_ODOMETRY_THREAD);
   public static final Module FRONT_LEFT_MODULE =
     (RobotBase.isSimulation())?
-    (new FlywheelModule<>(Measurements.Modules.FL.SIM_CONSTANTS)):
+    (new SimulatedModule<>(Measurements.Modules.FL.SIM_CONSTANTS)):
     (new SparkModule<CANSparkMax>(Measurements.Modules.FL.REAL_CONSTANTS));
   public static final Module FRONT_RIGHT_MODULE =
     (RobotBase.isSimulation())?
-    (new FlywheelModule<>(Measurements.Modules.FR.SIM_CONSTANTS)):
+    (new SimulatedModule<>(Measurements.Modules.FR.SIM_CONSTANTS)):
     (new SparkModule<CANSparkMax>(Measurements.Modules.FR.REAL_CONSTANTS));
   public static final Module REAR_LEFT_MODULE =
     (RobotBase.isSimulation())?
-    (new FlywheelModule<>(Measurements.Modules.RL.SIM_CONSTANTS)):
+    (new SimulatedModule<>(Measurements.Modules.RL.SIM_CONSTANTS)):
     (new SparkModule<CANSparkMax>(Measurements.Modules.RL.REAL_CONSTANTS));
   public static final Module REAR_RIGHT_MODULE =
     (RobotBase.isSimulation())?
-    (new FlywheelModule<>(Measurements.Modules.RR.SIM_CONSTANTS)):
+    (new SimulatedModule<>(Measurements.Modules.RR.SIM_CONSTANTS)):
     (new SparkModule<CANSparkMax>(Measurements.Modules.RR.REAL_CONSTANTS));
   }
 }
