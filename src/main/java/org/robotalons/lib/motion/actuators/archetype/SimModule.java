@@ -19,19 +19,19 @@ import java.util.Queue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.IntStream;
-// ------------------------------------------------------------[Flywheel Module]-------------------------------------------------------------//
+// --------------------------------------------------------------[Sim Module]-------------------------------------------------------------//
 /**
  *
  *
- * <h1>FlywheelModule</h1>
+ * <h1>SimModule</h1>
  *
- * <p>Implementation of a single swerve module unit which utilizes simulated Linear Flywheel Systems as hardware.</p>
+ * <p>Implementation of a single swerve module unit which utilizes simulated Linear Motor Systems as hardware.</p>
  * 
  * @see Module
  * 
  * @author Cody Washington (@Jelatinone) 
  */
-public class SimulatedModule<Controller extends DCMotorSim> extends Module {
+public class SimModule<Controller extends DCMotorSim> extends Module {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private final Controller TRANSLATIONAL_CONTROLLER;
   private final SimpleMotorFeedforward TRANSLATIONAL_FF;
@@ -57,7 +57,7 @@ public class SimulatedModule<Controller extends DCMotorSim> extends Module {
    * Spark Module Constructor
    * @param Constants Constant values to construct a new module from
    */
-  public SimulatedModule(final ModuleConfiguration<Controller> Constants) {
+  public SimModule(final ModuleConfiguration<Controller> Constants) {
     super(Constants);
     MODULE_CONSTANTS = Constants;
     TRANSLATIONAL_CONTROLLER = (Controller) MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER;
@@ -114,8 +114,8 @@ public class SimulatedModule<Controller extends DCMotorSim> extends Module {
 
   @Override
   public synchronized void cease() {
-    ROTATIONAL_CONTROLLER.setInputVoltage((0d));
     TRANSLATIONAL_CONTROLLER.setInputVoltage((0d));
+    ROTATIONAL_CONTROLLER.setInputVoltage((0d));
   }
 
   @Override
@@ -124,7 +124,7 @@ public class SimulatedModule<Controller extends DCMotorSim> extends Module {
     ROTATIONAL_CONTROLLER.update(Timestamp);
     TRANSLATIONAL_CONTROLLER.update(Timestamp);
     RotationalIntegratedPosition += ROTATIONAL_CONTROLLER.getAngularVelocityRadPerSec() * (Timestamp);
-    TranslationalIntegratedPosition += TRANSLATIONAL_CONTROLLER.getAngularVelocityRadPerSec() * (Timestamp) * MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
+    TranslationalIntegratedPosition += TRANSLATIONAL_CONTROLLER.getAngularVelocityRadPerSec() * (Timestamp) / MODULE_CONSTANTS.WHEEL_RADIUS_METERS * Math.cos(RotationalIntegratedPosition);
     update();
     synchronized(STATUS) {
       if (RotationalRelativeOffset == (null) && STATUS.RotationalAbsolutePosition.getRadians() != (0d)) {
@@ -148,17 +148,13 @@ public class SimulatedModule<Controller extends DCMotorSim> extends Module {
           break;
       }
       synchronized(DELTAS) {
-        synchronized(STATUS.OdometryRotationalPositionsRadians) {
-          synchronized(STATUS.OdometryTranslationalPositionsRadians) {
-            DELTAS.clear();
-            IntStream.range((0), Math.min(STATUS.OdometryTranslationalPositionsRadians.length, STATUS.OdometryRotationalPositionsRadians.length)).parallel().forEach((Index) -> {
-              DELTAS.add(new SwerveModulePosition(
-                STATUS.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS,
-                STATUS.OdometryRotationalPositionsRadians[Index]
-              ));
-            });              
-          }
-        } 
+        DELTAS.clear();
+        IntStream.range((0), Math.min(STATUS.OdometryTranslationalPositionsRadians.length, STATUS.OdometryRotationalPositionsRadians.length)).forEachOrdered((Index) -> {
+          DELTAS.add(new SwerveModulePosition(
+            STATUS.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS,
+            STATUS.OdometryRotationalPositionsRadians[Index]
+          ));
+        });    
       }
     }
   }

@@ -13,7 +13,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.robotalons.lib.motion.actuators.Module;
 import org.robotalons.lib.motion.actuators.archetype.ModuleConfiguration;
-import org.robotalons.lib.motion.actuators.archetype.SimulatedModule;
+import org.robotalons.lib.motion.actuators.archetype.SimModule;
 import org.robotalons.lib.motion.actuators.archetype.SparkModule;
 import org.robotalons.lib.motion.sensors.Gyroscope;
 import org.robotalons.lib.motion.sensors.archetype.PigeonGyroscope;
@@ -33,8 +33,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public final class Constants {
 // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
   public static final class Simulation {
-    public static final Double TRANSLATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (0.697120488d);
-    public static final Double ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (16.91004822d);
+    public static final Double TRANSLATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (0.997120488d);
+    public static final Double ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (20.91004822d);
     public static final DCMotorSim TRANSLATIONAL_FLYWHEEL = new DCMotorSim(
       DCMotor.getNEO((1)),
       Measurements.ROBOT_LINEAR_GEAR_RATIO,
@@ -43,9 +43,9 @@ public final class Constants {
       DCMotor.getNEO((1)),
       Measurements.ROBOT_ROTATION_GEAR_RATIO,
       ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED);
-    public static final Double ROTATIONAL_P_GAIN = (5.91d);
+    public static final Double ROTATIONAL_P_GAIN = (2.81d);
     public static final Double ROTATIONAL_I_GAIN = (0d);
-    public static final Double ROTATIONAL_D_GAIN = (4.51d);      
+    public static final Double ROTATIONAL_D_GAIN = (0.001d); 
   }
 
 
@@ -74,7 +74,7 @@ public final class Constants {
         public static final Integer ABSOLUTE_ENCODER_ID = (3);
         public static final Double ROTATIONAL_P_GAIN = (2.81d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
-        public static final Double ROTATIONAL_D_GAIN = (0.0000001d);
+        public static final Double ROTATIONAL_D_GAIN = (0.001d);
         public static final Double ROTATIONAL_ENCODER_OFFSET = (-0.108154d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
@@ -139,7 +139,7 @@ public final class Constants {
         public static final Integer ABSOLUTE_ENCODER_ID = (4);
         public static final Double ROTATIONAL_P_GAIN = (2.81d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
-        public static final Double ROTATIONAL_D_GAIN = (0.0000001d);
+        public static final Double ROTATIONAL_D_GAIN = (0.001d);
         public static final Double ROTATIONAL_ENCODER_OFFSET = (-0.197266d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
@@ -204,7 +204,7 @@ public final class Constants {
         public static final Integer ABSOLUTE_ENCODER_ID = (5);
         public static final Double ROTATIONAL_P_GAIN = (2.81d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
-        public static final Double ROTATIONAL_D_GAIN = (0.0000001d);
+        public static final Double ROTATIONAL_D_GAIN = (0.001d);
         public static final Double ROTATIONAL_ENCODER_OFFSET = (0.326172d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
@@ -269,7 +269,7 @@ public final class Constants {
         public static final Integer ABSOLUTE_ENCODER_ID = (6);
         public static final Double ROTATIONAL_P_GAIN = (2.81d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
-        public static final Double ROTATIONAL_D_GAIN = (0.0000001d);
+        public static final Double ROTATIONAL_D_GAIN = (0.001d);
         public static final Double ROTATIONAL_ENCODER_OFFSET = (0.090820d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
@@ -343,19 +343,19 @@ public final class Constants {
     new PigeonGyroscope(Ports.GYROSCOPE_ID,org.robotalons.crescendo.Constants.Odometry.CTRE_ODOMETRY_THREAD);
   public static final Module FRONT_LEFT_MODULE =
     (RobotBase.isSimulation())?
-    (new SimulatedModule<>(Measurements.Modules.FL.SIM_CONSTANTS)):
+    (new SimModule<>(Measurements.Modules.FL.SIM_CONSTANTS)):
     (new SparkModule<CANSparkMax>(Measurements.Modules.FL.REAL_CONSTANTS));
   public static final Module FRONT_RIGHT_MODULE =
     (RobotBase.isSimulation())?
-    (new SimulatedModule<>(Measurements.Modules.FR.SIM_CONSTANTS)):
+    (new SimModule<>(Measurements.Modules.FR.SIM_CONSTANTS)):
     (new SparkModule<CANSparkMax>(Measurements.Modules.FR.REAL_CONSTANTS));
   public static final Module REAR_LEFT_MODULE =
     (RobotBase.isSimulation())?
-    (new SimulatedModule<>(Measurements.Modules.RL.SIM_CONSTANTS)):
+    (new SimModule<>(Measurements.Modules.RL.SIM_CONSTANTS)):
     (new SparkModule<CANSparkMax>(Measurements.Modules.RL.REAL_CONSTANTS));
   public static final Module REAR_RIGHT_MODULE =
     (RobotBase.isSimulation())?
-    (new SimulatedModule<>(Measurements.Modules.RR.SIM_CONSTANTS)):
+    (new SimModule<>(Measurements.Modules.RR.SIM_CONSTANTS)):
     (new SparkModule<CANSparkMax>(Measurements.Modules.RR.REAL_CONSTANTS));
   }
 }

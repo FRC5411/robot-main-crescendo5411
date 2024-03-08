@@ -7,11 +7,10 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import org.photonvision.PhotonCamera;
 import org.robotalons.crescendo.Constants.Profiles.Keybindings;
 import org.robotalons.crescendo.Constants.Profiles.Preferences;
+import org.robotalons.crescendo.subsystems.vision.Constants.Devices;
 import org.robotalons.crescendo.subsystems.vision.Constants.Measurements;
-import org.robotalons.crescendo.subsystems.vision.Constants.Ports;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.vision.Camera;
 
@@ -39,8 +38,8 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
   public static final List<CameraIdentifier> ALL_CAMERA_IDENTIFIERS = List.of(
     CameraIdentifier.SOURCE_CAMERA,
     CameraIdentifier.INTAKE_CAMERA,
-    CameraIdentifier.SPEAKER_FRONT_CAMERA,
-    CameraIdentifier.SPEAKER_REAR_CAMERA
+    CameraIdentifier.SPEAKER_LEFT_CAMERA,
+    CameraIdentifier.SPEAKER_RIGHT_CAMERA
   );
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
@@ -50,22 +49,11 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
     super(("Vision Subsystem"));
   } static {
     CAMERAS = List.of(
-      new VisionCamera(
-        new PhotonCamera(Ports.SOURCE_CAMERA_NAME), 
-        Constants.Measurements.SOURCE_CAMERA_POSE
-      ),
-      new VisionCamera(
-        new PhotonCamera(Ports.FRONT_RIGHT_CAMERA_NAME), 
-        Constants.Measurements.SPEAKER_RIGHT_CAMERA_POSE
-      ),
-      new VisionCamera(
-        new PhotonCamera(Ports.REAR_LEFT_CAMERA_NAME), 
-        Constants.Measurements.SPEAKER_LEFT_CAMERA_POSE
-      ),
-      new VisionCamera(
-        new PhotonCamera(Ports.REAR_RIGHT_CAMERA_NAME), 
-        Constants.Measurements.INTAKE_CAMERA_POSE
-    )); 
+      Devices.FRONT_LEFT_CAMERA,
+      Devices.FRONT_RIGHT_CAMERA,
+      Devices.REAR_LEFT_CAMERA,
+      Devices.REAR_RIGHT_CAMERA
+    ); 
   }
   
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
@@ -107,9 +95,9 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
    * Describes a queried camera type with an integer value in a more human-parsable format
    */
   public enum CameraIdentifier {
-    SOURCE_CAMERA((0)),
-    SPEAKER_FRONT_CAMERA((1)),
-    SPEAKER_REAR_CAMERA((2)),
+    SPEAKER_LEFT_CAMERA((0)),
+    SPEAKER_RIGHT_CAMERA((1)),    
+    SOURCE_CAMERA((2)),
     INTAKE_CAMERA((3));
 
     private final Integer Value;
@@ -119,7 +107,7 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
     }
 
     /**
-     * Provides the actual camera indexable value of this enum type
+     * Provides the actual camera indexable value of this enum type can be used interchangeably with {@link #ordinal()}.
      * @return Integer format of this camera number
      */
     public Integer getValue() {

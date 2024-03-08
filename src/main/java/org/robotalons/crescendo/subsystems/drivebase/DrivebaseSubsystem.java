@@ -369,7 +369,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       CurrentOperator.getKeybinding(Keybindings.ALIGNMENT_NEAREST)
       .onTrue(new InstantCommand(
         () -> {
-          VisionSubsystem.getOptimalTarget(List.of(CameraIdentifier.SOURCE_CAMERA, CameraIdentifier.SPEAKER_FRONT_CAMERA, CameraIdentifier.SPEAKER_REAR_CAMERA))
+          VisionSubsystem.getOptimalTarget(List.of(CameraIdentifier.SOURCE_CAMERA, CameraIdentifier.SPEAKER_LEFT_CAMERA, CameraIdentifier.SPEAKER_RIGHT_CAMERA))
             .ifPresent((Transformation) -> {
                 alignTranslation(new Transform2d(Transformation.getTranslation().toTranslation2d(), Transformation.getRotation().toRotation2d()))
               .onlyWhile(() -> CurrentOperator.getKeybinding(Keybindings.ALIGNMENT_NEAREST).getAsBoolean()).schedule();

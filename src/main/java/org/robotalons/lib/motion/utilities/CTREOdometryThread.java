@@ -54,7 +54,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
    */
   private CTREOdometryThread(final Lock Lock) {
     ODOMETRY_LOCK = Lock;
-    setName(this.getClass().getName());
+    setName(this.getClass().getSimpleName());
     setDaemon((true));
     start();
   } static {

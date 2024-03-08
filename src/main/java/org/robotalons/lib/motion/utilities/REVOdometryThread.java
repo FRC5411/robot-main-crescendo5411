@@ -50,7 +50,7 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   private REVOdometryThread(final Lock Lock) {
     ODOMETRY_LOCK = Lock;
     NOTIFIER = new Notifier(this);
-    NOTIFIER.setName(this.getClass().getName());
+    NOTIFIER.setName(this.getClass().getSimpleName());
     start();
   } static {
     SIGNAL_QUEUES = new ArrayList<>();
