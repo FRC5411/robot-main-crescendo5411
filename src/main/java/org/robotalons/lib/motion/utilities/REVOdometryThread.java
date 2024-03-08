@@ -22,7 +22,14 @@ import javax.management.InstanceNotFoundException;
  * <p>Provides an interface for asynchronously reading high-frequency measurements to a set of queues. This version is intended for devices
  * like the SparkMax that require polling rather than a blocking thread. A Notifier thread is used to gather samples with consistent timing.
  * 
+ * <p>This file was converted into List and Stream(able) objects (lists) for ease of interfacing with data, from Mechanical Advantage's original
+ * implementation found <a href="https://github.com/Mechanical-Advantage/AdvantageKit/blob/main/example_projects/advanced_swerve_drive/src/main/java/frc/robot/subsystems/drive/SparkMaxOdometryThread.java">here</a>.
+ * 
  * @see OdometryThread
+ * @see Notifier
+ * 
+ * @author Cody Washington
+ * @author Mechanical Advantage
  * 
  */
 public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
@@ -38,12 +45,12 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * REV Odometry Thread Constructor.
-   * @param OdometryLocker Appropriate Reentrance Locker for Odometry
+   * @param Lock Appropriate Reentrance Locker for Odometry
    */
-  private REVOdometryThread(Lock OdometryLocker) {
-    ODOMETRY_LOCK = OdometryLocker;
+  private REVOdometryThread(final Lock Lock) {
+    ODOMETRY_LOCK = Lock;
     NOTIFIER = new Notifier(this);
-    NOTIFIER.setName(("REVOdometryThread"));
+    NOTIFIER.setName(this.getClass().getName());
     start();
   } static {
     SIGNAL_QUEUES = new ArrayList<>();

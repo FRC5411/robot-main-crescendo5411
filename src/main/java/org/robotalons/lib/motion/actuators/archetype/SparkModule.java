@@ -35,6 +35,8 @@ import java.util.stream.IntStream;
  * <p>Implementation of a single swerve module unit which utilizes REV Controllers (SparkMax) as hardware.</p>
  * 
  * @see Module
+ * 
+ * @author Cody Washington (@Jelatinone) 
  */
 public class SparkModule<Controller extends CANSparkMax> extends Module {
   // --------------------------------------------------------------[Constants]----------------------------------------------------------------//
@@ -227,13 +229,17 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
           break;
       }
       synchronized(POSITION_DELTAS) {
-        POSITION_DELTAS.clear();
-        IntStream.range((0), Math.min(STATUS.OdometryTranslationalPositionsRadians.length, STATUS.OdometryRotationalPositionsRadians.length)).parallel().forEach((Index) -> {
-          POSITION_DELTAS.add(new SwerveModulePosition(
-            STATUS.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS,
-            STATUS.OdometryRotationalPositionsRadians[Index]
-          ));
-        });              
+        synchronized(STATUS.OdometryRotationalPositionsRadians) {
+          synchronized(STATUS.OdometryTranslationalPositionsRadians) {
+            POSITION_DELTAS.clear();
+            IntStream.range((0), Math.min(STATUS.OdometryTranslationalPositionsRadians.length, STATUS.OdometryRotationalPositionsRadians.length)).parallel().forEach((Index) -> {
+              POSITION_DELTAS.add(new SwerveModulePosition(
+                STATUS.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS,
+                STATUS.OdometryRotationalPositionsRadians[Index]
+              ));
+            });              
+          }
+        } 
       }
     }
   }

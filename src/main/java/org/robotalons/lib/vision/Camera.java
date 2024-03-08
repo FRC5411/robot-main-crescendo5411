@@ -22,6 +22,7 @@ import java.util.stream.Stream;
  *
  * <p>Singular unit which assists in the odometry and kinematics of a given robot.
  * 
+ * @author Cody Washington (@Jelatinone) 
  */
 public abstract class Camera implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//

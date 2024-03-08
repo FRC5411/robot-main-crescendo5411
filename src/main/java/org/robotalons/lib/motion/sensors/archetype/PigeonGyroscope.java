@@ -23,6 +23,8 @@ import java.util.Queue;
  * <p>Implementation of an auto-logged Gyroscope using a Pigeon as hardware.<p>
  * 
  * @see Gyroscope
+ * 
+ * @author Cody Washington
  */
 public class PigeonGyroscope extends Gyroscope {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//

@@ -11,6 +11,8 @@ import java.io.Closeable;
  * <p>Singular unit which assists in the control of motion throughout the competition field, which provides implementation for sensing heading
  * and direction of a given drivebase.
  * 
+ * @author Cody Washington
+ * 
  */
 public abstract class Gyroscope implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//

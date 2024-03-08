@@ -16,6 +16,8 @@ import java.util.concurrent.locks.Lock;
  * @see Runnable
  * @see Closeable
  * 
+ * @author Cody Washington
+ * 
  */
 public sealed interface OdometryThread<SignalType> extends Runnable, Closeable permits CTREOdometryThread, REVOdometryThread {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//

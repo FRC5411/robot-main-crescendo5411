@@ -23,7 +23,8 @@ import java.util.concurrent.TimeUnit;
  * and implementation of standard methods like {@link #close()} <p>
  * 
  * @see SubsystemBase
- * @author Cody Washington
+ * 
+ * @author Cody Washington (@Jelatinone) 
  */
 public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preferences extends Enum<?>> extends SubsystemBase implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//

@@ -26,8 +26,14 @@ import javax.management.InstanceNotFoundException;
  * 6 devices on both the RIO and CANivore buses. When using a CANivore, the thread uses the "waitForAll" blocking method to enable more
  * consistent sampling. This also allows Phoenix Pro users to benefit from lower latency between devices using CANivore time synchronization.
  * 
+ * <p>This file was converted into List and Stream(able) objects (lists) for ease of interfacing with data, from Mechanical Advantage's original
+ * implementation found <a href="https://github.com/Mechanical-Advantage/AdvantageKit/blob/main/example_projects/advanced_swerve_drive/src/main/java/frc/robot/subsystems/drive/PhoenixOdometryThread.java">here</a>.
+ * 
  * @see OdometryThread
  * @see Thread
+ * 
+ * @author Cody Washington
+ * @author Mechanical Advantage
  * 
  */
 public final class CTREOdometryThread extends Thread implements OdometryThread<StatusSignal<Double>> {
@@ -44,11 +50,11 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Phoenix Odometry Thread Constructor.
-   * @param OdometryLocker Appropriate Reentrance Locker for Odometry
+   * @param Lock Appropriate Reentrance Locker for Odometry
    */
-  private CTREOdometryThread(final Lock OdometryLocker) {
-    ODOMETRY_LOCK = OdometryLocker;
-    setName(("CTREOdometryThread"));
+  private CTREOdometryThread(final Lock Lock) {
+    ODOMETRY_LOCK = Lock;
+    setName(this.getClass().getName());
     setDaemon((true));
     start();
   } static {

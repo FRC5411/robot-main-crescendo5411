@@ -20,6 +20,8 @@ import java.util.Objects;
  * 
  * @see ModuleStatusContainer
  * 
+ * @author Cody Washington (@Jelatinone) 
+ * 
  */
 public abstract class Module implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//

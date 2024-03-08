@@ -28,6 +28,8 @@ import java.util.stream.IntStream;
  * <p>Implementation of a single swerve module unit which utilizes simulated Linear Flywheel Systems as hardware.</p>
  * 
  * @see Module
+ * 
+ * @author Cody Washington (@Jelatinone) 
  */
 public class SimulatedModule<Controller extends DCMotorSim> extends Module {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
@@ -84,8 +86,6 @@ public class SimulatedModule<Controller extends DCMotorSim> extends Module {
 
     TIMESTAMPS = new ArrayList<>();
     DELTAS = new ArrayList<>();
-
-    
 
     DiscretizationPreviousTimestamp = Logger.getRealTimestamp() / (1e6);
 
@@ -148,12 +148,17 @@ public class SimulatedModule<Controller extends DCMotorSim> extends Module {
           break;
       }
       synchronized(DELTAS) {
-        DELTAS.clear();
-        IntStream.range((0), Math.min(STATUS.OdometryTranslationalPositionsRadians.length, STATUS.OdometryRotationalPositionsRadians.length)).parallel().forEach((Index) -> {
-          final var Rotation = STATUS.OdometryRotationalPositionsRadians[Index].plus((RotationalRelativeOffset != null)? (RotationalRelativeOffset): (new Rotation2d()));
-          final var Position = STATUS.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
-          DELTAS.add(new SwerveModulePosition(Position, Rotation));
-        });              
+        synchronized(STATUS.OdometryRotationalPositionsRadians) {
+          synchronized(STATUS.OdometryTranslationalPositionsRadians) {
+            DELTAS.clear();
+            IntStream.range((0), Math.min(STATUS.OdometryTranslationalPositionsRadians.length, STATUS.OdometryRotationalPositionsRadians.length)).parallel().forEach((Index) -> {
+              DELTAS.add(new SwerveModulePosition(
+                STATUS.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS,
+                STATUS.OdometryRotationalPositionsRadians[Index]
+              ));
+            });              
+          }
+        } 
       }
     }
   }
