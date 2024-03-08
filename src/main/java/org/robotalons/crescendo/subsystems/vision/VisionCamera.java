@@ -219,7 +219,7 @@ public final class VisionCamera extends Camera {
       if(RobotEstimate.isEmpty() || OptimalEstimate.isEmpty()){
         return Optional.empty();
       } 
-      return Optional.of(new Pose3d(
+      return Optional.ofNullable(new Pose3d(
         (OptimalEstimate.get().getX() + RobotEstimate.get().getX()),
         (OptimalEstimate.get().getY() + RobotEstimate.get().getY()),
         OptimalEstimate.get().getZ(),
@@ -236,7 +236,7 @@ public final class VisionCamera extends Camera {
       if(RobotEstimate.isEmpty()){
         return Optional.empty();
       }
-      return Optional.of(new Pose3d(
+      return Optional.ofNullable(new Pose3d(
         (Target.getX() + RobotEstimate.get().getX()),
         (Target.getY() + RobotEstimate.get().getY()),
         Target.getZ(),
@@ -277,7 +277,7 @@ public final class VisionCamera extends Camera {
     if(CAMERA.getLatestResult().getBestTarget() == (null)){
       return Optional.empty();
     }
-    return Optional.of(CAMERA.getLatestResult().getBestTarget().getBestCameraToTarget().plus(OFFSET));
+    return Optional.ofNullable(CAMERA.getLatestResult().getBestTarget().getBestCameraToTarget().plus(OFFSET));
   }
 
   @Override
