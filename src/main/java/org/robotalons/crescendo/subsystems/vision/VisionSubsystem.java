@@ -71,8 +71,8 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
   public synchronized void periodic() {
-    CAMERAS.forEach((Camera) -> {
-      if (Camera.getConnected()) {
+    CAMERAS.parallelStream().forEach((Camera) -> {
+      if(Camera.getConnected()) {
         Camera.periodic();
       }
     });

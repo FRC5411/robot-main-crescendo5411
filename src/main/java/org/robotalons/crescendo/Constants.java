@@ -61,7 +61,7 @@ public final class Constants {
       RobotType.CONCRETE, ("/media/sda1/")
     );
     public static final Boolean LOGGING_TURBO_MODE = (false);
-    public static final Boolean LOGGING_ENABLED = (true);
+    public static final Boolean LOGGING_ENABLED = (false);
     public static final Boolean REPLAY_FROM_LOG = (false);
   }
 

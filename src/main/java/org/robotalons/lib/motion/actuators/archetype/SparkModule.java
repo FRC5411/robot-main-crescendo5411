@@ -37,7 +37,7 @@ import java.util.stream.IntStream;
  * @see Module
  */
 public class SparkModule<Controller extends CANSparkMax> extends Module {
-  // --------------------------------------------------------------[MODULE_CONSTANTS]--------------------------------------------------------------//
+  // --------------------------------------------------------------[Constants]----------------------------------------------------------------//
   private final Controller TRANSLATIONAL_CONTROLLER;
   private final PIDController TRANSLATIONAL_PID;
   private final SimpleMotorFeedforward TRANSLATIONAL_FF;
@@ -58,6 +58,9 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
   private final Lock ODOMETRY_LOCK;
 
   private final ModuleConfiguration<Controller> MODULE_CONSTANTS;
+  // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
+  private volatile Double TranslationalPosition = (0d);
+  private volatile Double DiscretizationPreviousTimestamp = Logger.getRealTimestamp() / (1e6);
   // -----------------------------------------------------------[Constructor(s)]------------------------------------------------------------//
   /**
    * Spark Module Constructor
@@ -87,7 +90,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     RotationalAbsoluteOffset = MODULE_CONSTANTS.ROTATIONAL_ENCODER_OFFSET;
     ODOMETRY_LOCK = new ReentrantLock();
 
-    TRANSLATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(TRANSLATIONAL_ENCODER::getPosition);
+    TRANSLATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(() -> TranslationalPosition);
     ROTATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(() -> getAbsoluteRotation().getRadians());
     TIMESTAMP_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.timestamp();
     
@@ -180,9 +183,26 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     ROTATIONAL_ENCODER.setPosition((RobotBase.isReal())? getAbsoluteRotation().getRotations(): (0d));
   }
 
+  /**
+   * Calculates the discretization timestep, {@code dt}, at this current time based on the FPGA clock.
+   * @return Double representation of the time passed between now and the last timestep.
+   */
+  private synchronized Double discretize() {
+    var DiscretizationTimestep = (0.0);
+    if (DiscretizationPreviousTimestamp.equals((0.0))) {
+      DiscretizationTimestep = ((1.0) / (50.0));
+    } else {
+      var MeasuredTime = Logger.getRealTimestamp() / (1e6);
+      DiscretizationTimestep = MeasuredTime - DiscretizationPreviousTimestamp;
+      DiscretizationPreviousTimestamp = MeasuredTime;
+    }    
+    return DiscretizationTimestep;
+  }
+
   @Override
   public synchronized void periodic() {
     update();
+    TranslationalPosition += Units.rotationsPerMinuteToRadiansPerSecond(TRANSLATIONAL_ENCODER.getVelocity()) * discretize();
     synchronized(STATUS) {
       if (RotationalRelativeOffset == (null) && STATUS.RotationalAbsolutePosition.getRadians() != (0d)) {
         RotationalRelativeOffset = STATUS.RotationalAbsolutePosition.minus(STATUS.RotationalRelativePosition);

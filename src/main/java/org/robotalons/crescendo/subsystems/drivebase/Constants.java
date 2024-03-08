@@ -70,7 +70,7 @@ public final class Constants {
         public static final Integer ABSOLUTE_ENCODER_ID = (3);
         public static final Double ROTATIONAL_P_GAIN = (2.81d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
-        public static final Double ROTATIONAL_D_GAIN = (0.00001d);
+        public static final Double ROTATIONAL_D_GAIN = (0.0000001d);
         public static final Double ROTATIONAL_ENCODER_OFFSET = (-0.108154d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
@@ -135,7 +135,7 @@ public final class Constants {
         public static final Integer ABSOLUTE_ENCODER_ID = (4);
         public static final Double ROTATIONAL_P_GAIN = (2.81d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
-        public static final Double ROTATIONAL_D_GAIN = (0.00001d);
+        public static final Double ROTATIONAL_D_GAIN = (0.0000001d);
         public static final Double ROTATIONAL_ENCODER_OFFSET = (-0.197266d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
@@ -200,7 +200,7 @@ public final class Constants {
         public static final Integer ABSOLUTE_ENCODER_ID = (5);
         public static final Double ROTATIONAL_P_GAIN = (2.81d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
-        public static final Double ROTATIONAL_D_GAIN = (0.00001d);
+        public static final Double ROTATIONAL_D_GAIN = (0.0000001d);
         public static final Double ROTATIONAL_ENCODER_OFFSET = (0.326172d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
@@ -265,7 +265,7 @@ public final class Constants {
         public static final Integer ABSOLUTE_ENCODER_ID = (6);
         public static final Double ROTATIONAL_P_GAIN = (2.81d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
-        public static final Double ROTATIONAL_D_GAIN = (0.00001d);
+        public static final Double ROTATIONAL_D_GAIN = (0.0000001d);
         public static final Double ROTATIONAL_ENCODER_OFFSET = (0.090820d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
