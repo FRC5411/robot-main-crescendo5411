@@ -12,6 +12,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.numbers.N5;
 
 import org.littletonrobotics.junction.Logger;
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
@@ -96,6 +97,8 @@ public final class VisionCamera extends Camera {
         Logger.recordOutput(IDENTITY + "/HasTargets", hasTargets());
         Logger.recordOutput(IDENTITY + "/AmountTarget", getNumTargets());        
       }
+      //TODO: Update This
+      //Logger.processInputs(IDENTITY, CAMERA_STATUS);
     } 
   }
 
@@ -196,13 +199,15 @@ public final class VisionCamera extends Camera {
   @Override
   public Optional<Pose3d> getRobotPosition() {
     if(CAMERA.isConnected()) {
-      final var Estimate = POSE_ESTIMATOR.update().get();
-      if(!POSES.isEmpty()) {
-        POSE_ESTIMATOR.setLastPose(Estimate.estimatedPose);
+      final var Estimate = POSE_ESTIMATOR.update();
+      if(Estimate.isPresent()) {
+        if(!POSES.isEmpty()) {
+          POSE_ESTIMATOR.setLastPose(Estimate.get().estimatedPose);
+        }
+        POSES.add(Estimate.get().estimatedPose);
+        TIMESTAMPS.add(Estimate.get().timestampSeconds);
+        return Optional.ofNullable(Estimate.get().estimatedPose);          
       }
-      POSES.add(Estimate.estimatedPose);
-      TIMESTAMPS.add(Estimate.timestampSeconds);
-      return Optional.ofNullable(Estimate.estimatedPose);      
     }
     return Optional.empty();
   }

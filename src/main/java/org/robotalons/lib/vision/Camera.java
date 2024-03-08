@@ -25,8 +25,8 @@ import java.util.stream.Stream;
  */
 public abstract class Camera implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  protected final CameraStatusContainer CAMERA_STATUS = new CameraStatusContainer();
-  protected final TargetStatusContainer TARGET_STATUS = new TargetStatusContainer();
+  protected final CameraStatusContainerAutoLogged CAMERA_STATUS = new CameraStatusContainerAutoLogged();
+  protected final TargetStatusContainerAutoLogged TARGET_STATUS = new TargetStatusContainerAutoLogged();
   protected final NetworkTable INSTANCE;
   protected final Transform3d OFFSET;
   protected final String IDENTITY;

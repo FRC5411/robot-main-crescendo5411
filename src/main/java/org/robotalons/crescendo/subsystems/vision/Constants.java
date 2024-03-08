@@ -48,8 +48,8 @@ public class Constants {
 
   public static final class Ports {
     public static final String SOURCE_CAMERA_NAME = ("SOURCE");    
-    public static final String FRONT_RIGHT_CAMERA_NAME = ("SPEAKER_FRONT");    
-    public static final String REAR_LEFT_CAMERA_NAME = ("SPEAKER_REAR");    
+    public static final String FRONT_RIGHT_CAMERA_NAME = ("SPEAKER_RIGHT");    
+    public static final String REAR_LEFT_CAMERA_NAME = ("SPEAKER_LEFT");    
     public static final String REAR_RIGHT_CAMERA_NAME = ("INTAKE");    
   }
 
