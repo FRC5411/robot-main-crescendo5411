@@ -4,7 +4,6 @@ package org.robotalons.crescendo.subsystems.superstructure;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -55,7 +54,6 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
 
   private static final CANSparkMax PIVOT_CONTROLLER;
   private static final PIDController PIVOT_CONTROLLER_PID;
-  private static final SlewRateLimiter PIVOT_RATE_LIMITER;
 
   private static final DutyCycleEncoder PIVOT_ABSOLUTE_ENCODER;
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
@@ -111,12 +109,6 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       Measurements.PIVOT_I_GAIN,
       Measurements.PIVOT_D_GAIN);
     PIVOT_CONTROLLER.setInverted(Measurements.PIVOT_INVERTED);
-
-    PIVOT_RATE_LIMITER = new SlewRateLimiter(
-      Measurements.PIVOT_POSITIVE_RATE_LIMIT,
-      Measurements.PIVOT_NEGATIVE_RATE_LIMIT,
-      Measurements.PIVOT_INITIAL_OUTPUT
-    );
     PIVOT_ABSOLUTE_ENCODER = new DutyCycleEncoder(Ports.PIVOT_ABSOLUTE_ENCODER_ID);
   }
 

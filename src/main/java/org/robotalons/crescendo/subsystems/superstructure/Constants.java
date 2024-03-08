@@ -59,10 +59,6 @@ public class Constants {
 
     public static final Double ALLOWABLE_SHOT_PERCENTAGE = (95e-2);
 
-    public static final Double PIVOT_POSITIVE_RATE_LIMIT = (1.1d);
-    public static final Double PIVOT_NEGATIVE_RATE_LIMIT = (0.6d);
-    public static final Double PIVOT_INITIAL_OUTPUT = (0d);
-
     public static final Matrix<N2,N1> PIVOT_UPPER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), new double[]{FIRING_STANDARD_VELOCITY, (29d)});
     public static final Matrix<N2,N1> PIVOT_LOWER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), new double[]{FIRING_STANDARD_VELOCITY, (55d)});
 

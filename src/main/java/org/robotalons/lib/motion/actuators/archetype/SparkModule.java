@@ -202,7 +202,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
   @Override
   public synchronized void periodic() {
     update();
-    TranslationalPosition += Units.rotationsPerMinuteToRadiansPerSecond(TRANSLATIONAL_ENCODER.getVelocity()) * discretize();
+    TranslationalPosition += (Units.rotationsPerMinuteToRadiansPerSecond(TRANSLATIONAL_ENCODER.getVelocity()) * discretize()) * MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
     synchronized(STATUS) {
       if (RotationalRelativeOffset == (null) && STATUS.RotationalAbsolutePosition.getRadians() != (0d)) {
         RotationalRelativeOffset = STATUS.RotationalAbsolutePosition.minus(STATUS.RotationalRelativePosition);
