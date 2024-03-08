@@ -50,7 +50,7 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
     TIMESTAMP_QUEUES = new ArrayList<>();
     SIGNAL_PROVIDERS = new ArrayList<>();
     Instance = (null);
-    Frequency = (500d);
+    Frequency = STANDARD_FREQUENCY;
   }
 
   @Override

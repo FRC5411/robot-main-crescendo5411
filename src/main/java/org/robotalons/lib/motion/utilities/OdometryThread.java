@@ -18,6 +18,8 @@ import java.util.concurrent.locks.Lock;
  * 
  */
 public sealed interface OdometryThread<SignalType> extends Runnable, Closeable permits CTREOdometryThread, REVOdometryThread {
+  // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
+  public static final Double STANDARD_FREQUENCY = (250d);
   // ---------------------------------------------------------------[Abstract]--------------------------------------------------------------//
   /**
    * Registers a new signal updated at a frequency with the frequency manager.

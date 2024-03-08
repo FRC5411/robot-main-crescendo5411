@@ -56,8 +56,8 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
     SIGNAL_QUEUES = new ArrayList<>();
     TIMESTAMP_QUEUES = new ArrayList<>();
     SIGNALS_LOCK = new ReentrantLock();
+    Frequency = STANDARD_FREQUENCY;
     Instance = (null);
-    Frequency = (500d);
     Flexible = (false);
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//

@@ -53,15 +53,16 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   private static final SwerveDrivePoseEstimator POSE_ESTIMATOR;
   private static final SysIdRoutine CHARACTERIZATION_ROUTINE;
   private static final SwerveDriveKinematics KINEMATICS;
+  private static final Thread ODOMETRY_PROCESSOR;
   private static final List<Module> MODULES;
   private static final Gyroscope GYROSCOPE;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
+  private static Operator<Keybindings,Preferences> CurrentOperator;
   private static List<SwerveModulePosition> CurrentPositions;
+  private static DrivebaseSubsystem Instance;
   private static DrivebaseState CurrentMode;
   private static Rotation2d CurrentRotation;
-  private static Operator<Keybindings,Preferences> CurrentOperator;
   private static Double CurrentTime;
-  private static DrivebaseSubsystem Instance;
   private static Boolean ModuleLocked;
   private static Boolean PathFlipped;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
@@ -98,21 +99,11 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       new Translation2d(-(Constants.Measurements.ROBOT_WIDTH_METERS)  / (2),
                         -(Constants.Measurements.ROBOT_LENGTH_METERS) / (2)));
     final var Estimated = VisionSubsystem.getApproximatedRobotPose();
-    if (Estimated.isPresent()) {
-      POSE_ESTIMATOR = new SwerveDrivePoseEstimator(
-        KINEMATICS,
-        GYROSCOPE.getYawRotation(),
-        getModulePositions(),
-        Estimated.get().toPose2d()
-      );
-    } else {
-      POSE_ESTIMATOR = new SwerveDrivePoseEstimator(
-        KINEMATICS,
-        GYROSCOPE.getYawRotation(),
-        getModulePositions(),
-        new Pose2d(new Translation2d(), CurrentRotation)
-      );
-    }
+    POSE_ESTIMATOR = new SwerveDrivePoseEstimator(
+      KINEMATICS, 
+      GYROSCOPE.getYawRotation(), 
+      getModulePositions(), 
+      Estimated.isPresent()? Estimated.get().toPose2d(): new Pose2d(new Translation2d(), GYROSCOPE.getYawRotation()));
     CurrentPositions = new ArrayList<>();
     MODULES.stream().map(Module::getPosition).forEachOrdered(CurrentPositions::add);
     CHARACTERIZATION_ROUTINE = new SysIdRoutine(
@@ -128,6 +119,65 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         (null),
         getInstance())
     );
+    ODOMETRY_PROCESSOR = new Thread(() -> {
+      while(Instance != null) {
+        synchronized(MODULES) {
+          final var Rotation = GYROSCOPE.getOdometryYawRotations();
+          final var Measured = MODULES.stream().map(Module::getPositionDeltas).toList();
+          final var Timestamps = MODULES.stream().map(Module::getPositionTimestamps).toList();
+          final var Partitions = Timestamps.stream().mapToInt(List::size).boxed().toList();
+          Partitions.stream().mapToInt(Integer::intValue).min().ifPresentOrElse((final int Size) -> {
+            for(Integer Timestamp = (0); Timestamp < Math.min(Size, Rotation.length); Timestamp++) {
+              try {
+                final var Positions = new SwerveModulePosition[MODULES.size()];
+                final var Deltas = new SwerveModulePosition[MODULES.size()];
+                for (Integer Module = (0); Module < MODULES.size(); Module++) {
+                  Positions[Module] = Measured.get(Module).get(Timestamp);
+                  Deltas[Module] = new SwerveModulePosition(
+                    Positions[Module].distanceMeters - CurrentPositions.get(Module).distanceMeters, 
+                    Positions[Module].angle);
+                  CurrentPositions.set(Module, Positions[Module]);
+                } if (GYROSCOPE.getConnected() && Rotation.length > (0)) {
+                  CurrentRotation = Rotation[Timestamp];
+                } else {
+                  final var Twist = KINEMATICS.toTwist2d(Deltas);
+                  CurrentRotation = CurrentRotation.plus(new Rotation2d(Twist.dtheta));
+                }
+                POSE_ESTIMATOR.updateWithTime(
+                  Timestamps.get(Partitions.indexOf(Size)).get(Timestamp),
+                  CurrentRotation, 
+                  Positions
+                );            
+              } catch (final IndexOutOfBoundsException | NullPointerException Ignored) {
+                break;
+              } 
+            }
+          },
+          () -> {
+            POSE_ESTIMATOR.updateWithTime(
+              Logger.getRealTimestamp() / (1e6),
+              CurrentRotation, 
+              getModulePositions()
+            );
+          });
+        }
+        VisionSubsystem.ALL_CAMERA_IDENTIFIERS.parallelStream().forEach((Identifier) -> {
+          final var Timestamps = VisionSubsystem.getRobotPositionTimestamps(Identifier);
+          final var Positions = VisionSubsystem.getRobotPositionDeltas(Identifier);
+          final var Deviation = VisionSubsystem.getStandardDeviations(Identifier);
+          IntStream.range((0), Math.min(Timestamps.length, Positions.length)).parallel().forEach((Index) -> {
+            POSE_ESTIMATOR.addVisionMeasurement(
+              Positions[Index].toPose2d(),
+              Timestamps[Index],
+              Deviation
+            );
+          });
+        });
+      }
+    });
+    ODOMETRY_PROCESSOR.setName(("OdometryProcessorThread"));
+    ODOMETRY_PROCESSOR.setDaemon((true));
+    ODOMETRY_PROCESSOR.start();
     Logger.recordOutput(("Drivebase/Measurements"),getModuleMeasurements());
     Logger.recordOutput(("Drivebase/Translation"), new Translation2d());
     Logger.recordOutput(("Drivebase/Rotation"), new Rotation2d());
@@ -145,58 +195,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     if (DriverStation.isDisabled()) {
       MODULES.forEach(Module::cease);
     }
-    synchronized(MODULES) {
-      final var Rotation = GYROSCOPE.getOdometryYawRotations();
-      final var Measured = MODULES.stream().map(Module::getPositionDeltas).toList();
-      final var Timestamps = MODULES.stream().map(Module::getPositionTimestamps).toList();
-      final var Partitions = Timestamps.stream().mapToInt(List::size).boxed().toList();
-      Partitions.stream().mapToInt(Integer::intValue).min().ifPresentOrElse((final int Size) -> {
-        for(Integer Timestamp = (0); Timestamp < Math.min(Size, Rotation.length); Timestamp++) {
-          try {
-            final var Positions = new SwerveModulePosition[MODULES.size()];
-            final var Deltas = new SwerveModulePosition[MODULES.size()];
-            for (Integer Module = (0); Module < MODULES.size(); Module++) {
-              Positions[Module] = Measured.get(Module).get(Timestamp);
-              Deltas[Module] = new SwerveModulePosition(
-                Positions[Module].distanceMeters - CurrentPositions.get(Module).distanceMeters, 
-                Positions[Module].angle);
-              CurrentPositions.set(Module, Positions[Module]);;
-            } if (GYROSCOPE.getConnected() && Rotation.length > (0)) {
-              CurrentRotation = Rotation[Timestamp];
-            } else {
-              final var Twist = KINEMATICS.toTwist2d(Deltas);
-              CurrentRotation = CurrentRotation.plus(new Rotation2d(Twist.dtheta));
-            }
-            POSE_ESTIMATOR.updateWithTime(
-              Timestamps.get(Partitions.indexOf(Size)).get(Timestamp),
-              CurrentRotation, 
-              Positions
-            );            
-          } catch (final IndexOutOfBoundsException | NullPointerException Ignored) {
-            break;
-          } 
-        }
-      },
-      () -> {
-        POSE_ESTIMATOR.updateWithTime(
-          Logger.getRealTimestamp() / (1e6),
-          CurrentRotation, 
-          getModulePositions()
-        );
-      });
-    }
-    VisionSubsystem.ALL_CAMERA_IDENTIFIERS.parallelStream().forEach((Identifier) -> {
-      final var Timestamps = VisionSubsystem.getRobotPositionTimestamps(Identifier);
-      final var Positions = VisionSubsystem.getRobotPositionDeltas(Identifier);
-      final var Deviation = VisionSubsystem.getStandardDeviations(Identifier);
-      IntStream.range((0), Math.min(Timestamps.length, Positions.length)).parallel().forEach((Index) -> {
-        POSE_ESTIMATOR.addVisionMeasurement(
-          Positions[Index].toPose2d(),
-          Timestamps[Index],
-          Deviation
-        );
-      });
-    });
     Objects.ODOMETRY_LOCK.unlock();
   }
 
@@ -234,6 +232,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       getModulePositions(),
       new Pose2d()
     );
+    Instance = (null);
+    ODOMETRY_PROCESSOR.interrupt();
   }
 
   /**
