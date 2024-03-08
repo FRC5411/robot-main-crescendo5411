@@ -42,8 +42,6 @@ import javax.management.InstanceNotFoundException;
  * @see RobotContainer
  */
 public final class Robot extends LoggedRobot {
-  // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static Boolean CurrentAutonomousMessagePrinted;
   private static Double CurrentAutonomousStartTime;
@@ -145,6 +143,7 @@ public final class Robot extends LoggedRobot {
     RobotContainer.getInstance();
     Shuffleboard.startRecording();
     DataLogManager.start();
+    DriverStation.silenceJoystickConnectionWarning((true));
   }
 
   @Override
