@@ -73,8 +73,8 @@ public class SimulatedModule<Controller extends DCMotorSim> extends Module {
       MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kI, 
       MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kD);
     
-    TRANSLATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(TRANSLATIONAL_CONTROLLER::getAngularPositionRad);
-    ROTATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(ROTATIONAL_CONTROLLER::getAngularPositionRad);
+    TRANSLATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(() -> TranslationalIntegratedPosition);
+    ROTATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(() -> RotationalIntegratedPosition);
     TIMESTAMP_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.timestamp();
     ODOMETRY_LOCK = new ReentrantLock();
 
@@ -123,8 +123,8 @@ public class SimulatedModule<Controller extends DCMotorSim> extends Module {
     final var Timestamp = discretize();
     ROTATIONAL_CONTROLLER.update(Timestamp);
     TRANSLATIONAL_CONTROLLER.update(Timestamp);
-    RotationalIntegratedPosition += ROTATIONAL_CONTROLLER.getAngularVelocityRPM() * (Timestamp);
-    TranslationalIntegratedPosition += TRANSLATIONAL_CONTROLLER.getAngularVelocityRPM() * (Timestamp);
+    RotationalIntegratedPosition += ROTATIONAL_CONTROLLER.getAngularVelocityRadPerSec() * (Timestamp);
+    TranslationalIntegratedPosition += TRANSLATIONAL_CONTROLLER.getAngularVelocityRadPerSec() * (Timestamp);
     update();
     synchronized(STATUS) {
       if (RotationalRelativeOffset == (null) && STATUS.RotationalAbsolutePosition.getRadians() != (0d)) {

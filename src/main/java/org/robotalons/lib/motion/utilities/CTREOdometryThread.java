@@ -5,6 +5,8 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 
 import org.littletonrobotics.junction.Logger;
+import org.robotalons.lib.utilities.Alert;
+import org.robotalons.lib.utilities.Alert.AlertType;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -107,42 +109,46 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
   @Override
   public void run() {
     while (this.isAlive()) {
-      SIGNALS_LOCK.lock();
       try {
-        if (Flexible) {
-          BaseStatusSignal.waitForAll((2d) / Frequency, SIGNAL_PROVIDERS.toArray(StatusSignal[]::new));
-        } else {
-          Thread.sleep((long) ((1000d) / Frequency));
-          SIGNAL_PROVIDERS.forEach(StatusSignal::refresh);
-        }
-      } catch (final InterruptedException Exception) {
-        Exception.printStackTrace();
-      } finally {
-        SIGNALS_LOCK.unlock();
-      }
-      ODOMETRY_LOCK.lock();
-      try {
-        final var Providers = SIGNAL_PROVIDERS.iterator();
-        final var Timestamp = new AtomicReference<>(Logger.getRealTimestamp() / (1e6));
-        final var Latency = new AtomicReference<>((0d));
-        SIGNAL_PROVIDERS.forEach((Signal) -> Latency.set(Latency.get() + Signal.getTimestamp().getLatency()));
-        if (!SIGNAL_PROVIDERS.isEmpty()) {
-          Timestamp.set(Timestamp.get() - Latency.get() / SIGNAL_PROVIDERS.size());
-        }
-        SIGNAL_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) -> {
-          synchronized(Queue) {
-            Queue.offer(Providers.next().getValue());
+        SIGNALS_LOCK.lock();
+        try {
+          if (Flexible) {
+            BaseStatusSignal.waitForAll((2d) / Frequency, SIGNAL_PROVIDERS.toArray(StatusSignal[]::new));
+          } else {
+            Thread.sleep((long) ((1000d) / Frequency));
+            SIGNAL_PROVIDERS.forEach(StatusSignal::refresh);
           }
-        });
-        TIMESTAMP_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) ->  {
-          synchronized(Queue) {
-            Queue.offer(Timestamp.get());
+        } catch (final InterruptedException Exception) {
+          Exception.printStackTrace();
+        } finally {
+          SIGNALS_LOCK.unlock();
+        }
+        ODOMETRY_LOCK.lock();
+        try {
+          final var Providers = SIGNAL_PROVIDERS.iterator();
+          final var Timestamp = new AtomicReference<>(Logger.getRealTimestamp() / (1e6));
+          final var Latency = new AtomicReference<>((0d));
+          SIGNAL_PROVIDERS.forEach((Signal) -> Latency.set(Latency.get() + Signal.getTimestamp().getLatency()));
+          if (!SIGNAL_PROVIDERS.isEmpty()) {
+            Timestamp.set(Timestamp.get() - Latency.get() / SIGNAL_PROVIDERS.size());
           }
-        });
-      } finally {
-        ODOMETRY_LOCK.unlock();
-      } if(this.isInterrupted()) {
-        break;
+          SIGNAL_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) -> {
+            synchronized(Queue) {
+              Queue.offer(Providers.next().getValue());
+            }
+          });
+          TIMESTAMP_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) ->  {
+            synchronized(Queue) {
+              Queue.offer(Timestamp.get());
+            }
+          });
+        } finally {
+          ODOMETRY_LOCK.unlock();
+        } if(this.isInterrupted()) {
+          break;
+        }
+      } catch (final Exception Ignored) {
+        new Alert(("Odometry Exception"), AlertType.ERROR);
       }
     }
   }  

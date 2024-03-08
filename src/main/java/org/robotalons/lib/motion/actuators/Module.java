@@ -28,7 +28,7 @@ public abstract class Module implements Closeable {
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   protected Rotation2d RotationalAbsoluteOffset = (null);
   protected Rotation2d RotationalRelativeOffset = (null);
-  protected SwerveModuleState Reference = (null);
+  protected SwerveModuleState Reference = new SwerveModuleState();
   protected ReferenceType ReferenceMode = ReferenceType.STATE_CONTROL;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**

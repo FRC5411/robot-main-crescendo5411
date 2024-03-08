@@ -4,6 +4,8 @@ package org.robotalons.lib.motion.utilities;
 import edu.wpi.first.wpilibj.Notifier;
 
 import org.littletonrobotics.junction.Logger;
+import org.robotalons.lib.utilities.Alert;
+import org.robotalons.lib.utilities.Alert.AlertType;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -94,22 +96,26 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
 
   @Override
   public synchronized void run() {
-    ODOMETRY_LOCK.lock();
     try {
-      final var Providers = SIGNAL_PROVIDERS.iterator();
-      final var Timestamp = Logger.getRealTimestamp() / (1e6);
-      SIGNAL_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) -> {
-        synchronized(Queue) {
-          Queue.offer(Providers.next().getAsDouble());
-        }
-      });
-      TIMESTAMP_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) ->  {
-        synchronized(Queue) {
-          Queue.offer(Timestamp);
-        }
-      });
-    } finally {
-      ODOMETRY_LOCK.unlock();
+      ODOMETRY_LOCK.lock();
+      try {
+        final var Providers = SIGNAL_PROVIDERS.iterator();
+        final var Timestamp = Logger.getRealTimestamp() / (1e6);
+        SIGNAL_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) -> {
+          synchronized(Queue) {
+            Queue.offer(Providers.next().getAsDouble());
+          }
+        });
+        TIMESTAMP_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) ->  {
+          synchronized(Queue) {
+            Queue.offer(Timestamp);
+          }
+        });
+      } finally {
+        ODOMETRY_LOCK.unlock();
+      }
+    } catch (final Exception Ignored) {
+      new Alert(("Odometry Exception"), AlertType.ERROR);
     }
   }
   
