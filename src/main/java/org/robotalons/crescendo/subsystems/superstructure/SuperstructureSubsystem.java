@@ -191,10 +191,9 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * @param Reference Desired rotation in radians
    */
   private static synchronized void set(final Rotation2d Reference) {
-    PIVOT_CONTROLLER.set(PIVOT_RATE_LIMITER.calculate(PIVOT_CONTROLLER_PID.calculate(
+    PIVOT_CONTROLLER.set(PIVOT_CONTROLLER_PID.calculate(
       Units.radiansToRotations(getPivotRotation()),
-      MathUtil.clamp(Reference.getRotations(),Measurements.PIVOT_MINIMUM_ROTATION,Measurements.PIVOT_MAXIMUM_ROTATION))
-    ));
+      MathUtil.clamp(Reference.getRotations(),Measurements.PIVOT_MINIMUM_ROTATION,Measurements.PIVOT_MAXIMUM_ROTATION)));
   }
 
   /**
