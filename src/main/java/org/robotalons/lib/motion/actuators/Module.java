@@ -200,7 +200,7 @@ public abstract class Module implements Closeable {
    * @return Rotational axis heading as a relative {@link Rotation2d} object
    */
   public Rotation2d getRelativeRotation() {
-    return STATUS.RotationalRelativePosition.plus(RotationalRelativeOffset);
+    return STATUS.RotationalRelativePosition.minus(RotationalRelativeOffset);
   }
 
   /**

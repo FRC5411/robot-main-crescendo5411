@@ -4,7 +4,6 @@ package org.robotalons.lib.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
 
-
 import org.littletonrobotics.junction.AutoLog;
 
 // ---------------------------------------------------------[CameraStatusContainer]----------------------------------------------------------//
