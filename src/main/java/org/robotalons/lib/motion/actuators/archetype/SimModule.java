@@ -9,7 +9,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-
 import org.littletonrobotics.junction.Logger;
 import org.robotalons.lib.motion.actuators.Module;
 
@@ -49,8 +48,6 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
 
   private final ModuleConfiguration<Controller> MODULE_CONSTANTS;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  private Double TranslationalIntegratedPosition;
-  private Double RotationalIntegratedPosition;
   private Double DiscretizationPreviousTimestamp;
   // -----------------------------------------------------------[Constructor(s)]------------------------------------------------------------//
   /**
@@ -60,7 +57,7 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
   public SimModule(final ModuleConfiguration<Controller> Constants) {
     super(Constants);
     MODULE_CONSTANTS = Constants;
-    TRANSLATIONAL_CONTROLLER = (Controller) MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER;
+    TRANSLATIONAL_CONTROLLER = (Controller) Constants.TRANSLATIONAL_CONTROLLER;
     TRANSLATIONAL_PID = new PIDController(
       MODULE_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS.kP,
       MODULE_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS.kI, 
@@ -69,20 +66,19 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
       MODULE_CONSTANTS.TRANSLATIONAL_KS_GAIN,
       MODULE_CONSTANTS.TRANSLATIONAL_KV_GAIN,
       MODULE_CONSTANTS.TRANSLATIONAL_KA_GAIN);
-    ROTATIONAL_CONTROLLER = (Controller) MODULE_CONSTANTS.ROTATIONAL_CONTROLLER;
+    ROTATIONAL_CONTROLLER = (Controller) Constants.ROTATIONAL_CONTROLLER;
     ROTATIONAL_PID = new PIDController(
       MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kP,
       MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kI, 
       MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kD);
     
-    TRANSLATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(() -> TranslationalIntegratedPosition);
-    ROTATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(() -> RotationalIntegratedPosition);
+    TRANSLATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(() -> TRANSLATIONAL_CONTROLLER.getAngularPositionRad());
+    ROTATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(() -> getAbsoluteRotation().getRadians());
     TIMESTAMP_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.timestamp();
     ODOMETRY_LOCK = new ReentrantLock();
 
-    RotationalAbsoluteOffset = MODULE_CONSTANTS.ROTATIONAL_ENCODER_OFFSET;
-    RotationalIntegratedPosition = new Rotation2d(Math.random() * 2d * Math.PI).getRadians();
-    TranslationalIntegratedPosition = new Rotation2d(Math.random() * 2d * Math.PI).getRadians();
+    RotationalAbsoluteOffset = new Rotation2d(Math.random() * 2d * Math.PI);
+    TRANSLATIONAL_CONTROLLER.setState((Math.random() * 2d * Math.PI), TRANSLATIONAL_CONTROLLER.getAngularVelocityRadPerSec());
 
     TIMESTAMPS = new ArrayList<>();
     DELTAS = new ArrayList<>();
@@ -120,12 +116,10 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
 
   @Override
   public synchronized void periodic() {
+    update();    
     final var Timestamp = discretize();
     ROTATIONAL_CONTROLLER.update(Timestamp);
     TRANSLATIONAL_CONTROLLER.update(Timestamp);
-    RotationalIntegratedPosition += ROTATIONAL_CONTROLLER.getAngularVelocityRadPerSec() * (Timestamp);
-    TranslationalIntegratedPosition += TRANSLATIONAL_CONTROLLER.getAngularVelocityRadPerSec() * (Timestamp) / MODULE_CONSTANTS.WHEEL_RADIUS_METERS * Math.cos(RotationalIntegratedPosition);
-    update();
     synchronized(STATUS) {
       if (RotationalRelativeOffset == (null) && STATUS.RotationalAbsolutePosition.getRadians() != (0d)) {
         RotationalRelativeOffset = STATUS.RotationalAbsolutePosition.minus(STATUS.RotationalRelativePosition);
@@ -134,10 +128,12 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
         case STATE_CONTROL:
           if(Reference != (null)) {
             if (Reference.angle != (null)) {
-              setRotationalVoltage(ROTATIONAL_PID.calculate(getAbsoluteRotation().getRadians(),Reference.angle.getRadians()));
+              setRotationalVoltage(ROTATIONAL_PID.calculate(getAbsoluteRotation().getRadians(), Reference.angle.getRadians()));
+            } else {
+              setRotationalVoltage((0d));
             }
             var Adjusted = (Reference.speedMetersPerSecond * Math.cos(ROTATIONAL_PID.getPositionError())) / MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
-            setTranslationalVoltage(-(TRANSLATIONAL_PID.calculate(Adjusted)) + (TRANSLATIONAL_FF.calculate(STATUS.TranslationalVelocityRadiansSecond, Adjusted)));          
+            setTranslationalVoltage((TRANSLATIONAL_PID.calculate(Adjusted)) + (TRANSLATIONAL_FF.calculate(STATUS.TranslationalVelocityRadiansSecond, Adjusted)));          
           }
           break;
         case DISABLED:
@@ -154,7 +150,7 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
             STATUS.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS,
             STATUS.OdometryRotationalPositionsRadians[Index]
           ));
-        });    
+        });              
       }
     }
   }
@@ -184,13 +180,13 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
     MODULE_CONSTANTS.STATUS_PROVIDER.getLock().lock();
     synchronized(STATUS) {
       STATUS.TranslationalPositionRadians = TRANSLATIONAL_CONTROLLER.getAngularPositionRad();
-      STATUS.TranslationalVelocityRadiansSecond = TRANSLATIONAL_CONTROLLER.getAngularPositionRad();
+      STATUS.TranslationalVelocityRadiansSecond = TRANSLATIONAL_CONTROLLER.getAngularVelocityRadPerSec();
       STATUS.TranslationalCurrentAmperage = TRANSLATIONAL_CONTROLLER.getCurrentDrawAmps();
 
+      STATUS.RotationalRelativePosition = new Rotation2d(ROTATIONAL_CONTROLLER.getAngularPositionRad()).plus(RotationalAbsoluteOffset);
+      STATUS.RotationalAbsolutePosition = new Rotation2d(ROTATIONAL_CONTROLLER.getAngularPositionRad());
       STATUS.RotationalVelocityRadiansSecond = ROTATIONAL_CONTROLLER.getAngularVelocityRadPerSec();
-      STATUS.RotationalAppliedAmperage = ROTATIONAL_CONTROLLER.getCurrentDrawAmps();      
-      STATUS.RotationalRelativePosition = new Rotation2d(RotationalIntegratedPosition);
-      STATUS.RotationalAbsolutePosition = new Rotation2d(RotationalIntegratedPosition);
+      STATUS.RotationalCurrentAmperage = ROTATIONAL_CONTROLLER.getCurrentDrawAmps();      
     
       synchronized(TIMESTAMP_QUEUE) {
         TIMESTAMPS.clear();
@@ -227,6 +223,7 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
    */
   @Override
   public synchronized void reset() {
+    Reference = new SwerveModuleState();
     update();
   }
 
@@ -238,14 +235,6 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
   @Override
   protected synchronized void setRotationalVoltage(final Double Voltage) {
     ROTATIONAL_CONTROLLER.setInputVoltage(MathUtil.clamp(Voltage != null? Voltage: 0d, (-12d), (12d)));
-  }
-  
-
-  // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
-  @Override
-  public SwerveModuleState set(final SwerveModuleState Reference) {
-    this.Reference = Reference;
-    return this.Reference;
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   @Override

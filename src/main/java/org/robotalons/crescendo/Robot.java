@@ -155,10 +155,10 @@ public final class Robot extends LoggedRobot {
       if (!CurrentAutonomous.isScheduled() && !CurrentAutonomousMessagePrinted) {
         if (DriverStation.isAutonomousEnabled()) {
           System.out.printf(
-              ("*** Auto finished in %.2f secs ***%n"), Timer.getFPGATimestamp() - CurrentAutonomousStartTime);
+              ("*** Auto finished in %.2f secs ***%n"), Logger.getRealTimestamp() / (1e6) - CurrentAutonomousStartTime);
         } else {
           System.out.printf(
-              ("*** Auto cancelled in %.2f secs ***%n"), Timer.getFPGATimestamp() - CurrentAutonomousStartTime);
+              ("*** Auto cancelled in %.2f secs ***%n"), Logger.getRealTimestamp() / (1e6) - CurrentAutonomousStartTime);
         }
         CurrentAutonomousMessagePrinted = true;
       }

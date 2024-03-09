@@ -147,9 +147,7 @@ public abstract class Module implements Closeable {
   /**
    * Zeroes the rotational relative to offset from the position of the absolute encoders.
    */
-  public synchronized void reset() {
-    update();
-  }
+  public abstract void reset();
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Provides the deltas, or captured data points from odometry from the most recent {@link #periodic()} cycle.
@@ -236,6 +234,6 @@ public abstract class Module implements Closeable {
   public SwerveModuleState getObserved() {
     return new SwerveModuleState(
       STATUS.TranslationalVelocityRadiansSecond * CONSTANTS.WHEEL_RADIUS_METERS, 
-      STATUS.RotationalRelativePosition);
+      STATUS.RotationalAbsolutePosition);
   }
 }
