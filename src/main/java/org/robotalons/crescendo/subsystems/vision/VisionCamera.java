@@ -4,7 +4,9 @@ package org.robotalons.crescendo.subsystems.vision;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
@@ -22,8 +24,8 @@ import org.robotalons.lib.vision.Camera;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.IntStream;
 // ---------------------------------------------------------[Photon Vision Module]--------------------------------------------------------//
 /**
  *
@@ -42,8 +44,6 @@ public final class VisionCamera extends Camera {
   private final Transform3d RELATIVE;  
   private final List<Double> TIMESTAMPS;
   private final List<Pose3d> POSES;
-  // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Vision Camera Constructor.
@@ -86,18 +86,25 @@ public final class VisionCamera extends Camera {
         
         getOptimalTarget().ifPresent((BestTarget) -> Logger.recordOutput(IDENTITY + "/OptimalTransform", BestTarget));
         getObjectFieldPose().ifPresent((TargetPose) -> Logger.recordOutput(IDENTITY + "/TargetPose", TargetPose));
-        Logger.recordOutput(IDENTITY + "/Target" + ']', getTargets().stream().map((Target) -> {
-          try {
-            return Target.get();
-          } catch(final NoSuchElementException Exception) {
-            return (null);
-          }
-        }).toArray(Transform3d[]::new));
+
+        final var Targets = getTargets();
+        IntStream.range((0),Targets.size()).forEach((Index) -> 
+          Targets.get(Index).ifPresent((Target) -> 
+            Logger.recordOutput(IDENTITY + "/Target[" + Index + ']', Target)
+        ));
+
         Logger.recordOutput(IDENTITY + "/HasTargets", hasTargets());
         Logger.recordOutput(IDENTITY + "/AmountTarget", getNumTargets());        
       }
-      //TODO: Update This
-      //Logger.processInputs(IDENTITY, CAMERA_STATUS);
+    }
+    synchronized(CAMERA_STATUS) {
+      getRobotPosition().ifPresentOrElse((Estimate) -> CAMERA_STATUS.RobotPose = Estimate.toPose2d(), () -> CAMERA_STATUS.RobotPose = new Pose2d());
+      CAMERA_STATUS.Connected = CAMERA.isConnected();
+      CAMERA_STATUS.Deltas = getRobotPositionDeltas();
+      CAMERA_STATUS.Timestamps = getRobotPositionTimestamps();
+      CAMERA_STATUS.Latency = getLatency();
+      CAMERA_STATUS.Name = CAMERA.getName();
+      Logger.processInputs(IDENTITY, CAMERA_STATUS);
     } 
   }
 
@@ -136,11 +143,10 @@ public final class VisionCamera extends Camera {
       Z_Estimates[Index] = Estimate.getZ();
     }
 
-    return MatBuilder.fill(Nat.N3(), Nat.N1(), new double[] {
+    return MatBuilder.fill(Nat.N3(), Nat.N1(),
       standardDeviation(X_Estimates),
       standardDeviation(Y_Estimates),
-      standardDeviation(Z_Estimates)
-    });
+      standardDeviation(Z_Estimates));
   }
  
   /**
@@ -176,19 +182,17 @@ public final class VisionCamera extends Camera {
   }
 
   @Override
-  public Pose3d[] getRobotPositionDeltas() {
-    final Pose3d[] Deltas = new Pose3d[POSES.size()];
-    for(Integer Index =  (0); Index < POSES.size(); Index++){
-      final var Previous = POSES.get(Index);
-      final var Current = POSES.get(Index+(1));
-      Deltas[Index] = new Pose3d(
+  public Pose2d[] getRobotPositionDeltas() {
+    final Pose2d[] Deltas = new Pose2d[POSES.size()];
+    for(Integer Index = (1); Index < POSES.size(); Index++){
+      final var Previous = POSES.get(Index - 1);
+      final var Current = POSES.get(Index);
+      Deltas[Index] = new Pose2d(
         Current.getX() - Previous.getX(),
         Current.getY() - Previous.getY(),
-        Current.getZ() - Previous.getZ(),
-        new Rotation3d(
+        new Rotation2d(
           Current.getRotation().getX() - Previous.getRotation().getX(),
-          Current.getRotation().getY() - Previous.getRotation().getY(),
-          Current.getRotation().getZ() - Previous.getRotation().getZ()
+          Current.getRotation().getY() - Previous.getRotation().getY()
         )
       );
     }
@@ -212,7 +216,7 @@ public final class VisionCamera extends Camera {
   }
 
   @Override
-  public Optional<Pose3d> getObjectFieldPose() {
+  public Optional<Pose2d> getObjectFieldPose() {
     if(CAMERA.isConnected()) {
       final var RobotEstimate = getRobotPosition();
       final var OptimalEstimate = getOptimalTarget();
@@ -224,7 +228,7 @@ public final class VisionCamera extends Camera {
         (OptimalEstimate.get().getY() + RobotEstimate.get().getY()),
         OptimalEstimate.get().getZ(),
         new Rotation3d()
-        ));
+      ).toPose2d());
     }
     return Optional.empty();
   }

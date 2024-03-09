@@ -42,10 +42,10 @@ public class Constants {
   }
 
   public static final class Ports {
-    public static final String FRONT_LEFT_CAMERA_NAME = ("SPEAKER_LEFT");    
-    public static final String FRONT_RIGHT_CAMERA_NAME = ("SPEAKER_RIGHT");    
+    public static final String FRONT_LEFT_CAMERA_NAME = ("Arducam_OV9782_USB_Camera");    
+    public static final String FRONT_RIGHT_CAMERA_NAME = ("Arducam_OV2311_USB_Camera");    
     public static final String REAR_LEFT_CAMERA_NAME = ("SOURCE");    
-    public static final String REAR_RIGHT_CAMERA_NAME = ("INTAKE");    
+    public static final String REAR_RIGHT_CAMERA_NAME = ("Microsoft_LifeCam_HD-3000");    
   }
 
   public static final class Objects {

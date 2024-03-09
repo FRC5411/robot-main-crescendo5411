@@ -2,6 +2,7 @@
 package org.robotalons.lib.vision;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
@@ -98,8 +99,8 @@ public abstract class Camera implements Closeable {
    * the desired object is the optimal target of this camera.
    * @return Position of the object relative to the field
    */
-  public Optional<Pose3d> getObjectFieldPose(){
-    return Optional.ofNullable(TARGET_STATUS.BestTargetPose);
+  public Optional<Pose2d> getObjectFieldPose(){
+    return Optional.ofNullable(TARGET_STATUS.BestTargetPose.toPose2d());
   }
 
   /**
@@ -132,7 +133,7 @@ public abstract class Camera implements Closeable {
    * Provides the robot relative (minus offset) position deltas from last update control cycle up to the current query.
    * @return List of Poses of the robot since the last control cycle
    */
-  public Pose3d[] getRobotPositionDeltas(){
+  public Pose2d[] getRobotPositionDeltas(){
     return CAMERA_STATUS.Deltas;
   };
 

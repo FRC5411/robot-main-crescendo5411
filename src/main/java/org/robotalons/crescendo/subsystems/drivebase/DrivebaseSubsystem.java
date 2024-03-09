@@ -167,7 +167,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
           final var Deviation = VisionSubsystem.getStandardDeviations(Identifier);
           IntStream.range((0), Math.min(Timestamps.length, Positions.length)).parallel().forEach((Index) -> {
             POSE_ESTIMATOR.addVisionMeasurement(
-              Positions[Index].toPose2d(),
+              Positions[Index],
               Timestamps[Index],
               Deviation
             );

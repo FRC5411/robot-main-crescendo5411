@@ -2,7 +2,8 @@
 package org.robotalons.lib.vision;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 
-import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Pose2d;
+
 
 import org.littletonrobotics.junction.AutoLog;
 
@@ -17,7 +18,7 @@ public class CameraStatusContainer {
   public String Name = ("");
   public boolean Connected = (false);
   public double Latency = (0d);
-  public Pose3d RobotPose = new Pose3d(0, 0, 0, null);
-  public Pose3d[] Deltas = new Pose3d[]{};
+  public Pose2d RobotPose = new Pose2d();
+  public Pose2d[] Deltas = new Pose2d[]{};
   public double[] Timestamps = new double[]{};
 }

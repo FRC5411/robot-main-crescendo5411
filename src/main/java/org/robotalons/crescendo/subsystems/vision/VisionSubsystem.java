@@ -1,6 +1,7 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.vision;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
@@ -165,7 +166,7 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
    * @param Identifier Camera identifier to query from.
    * @return List of Poses of the robot since the last control cycle.
    */
-  public static Pose3d[] getRobotPositionDeltas(final CameraIdentifier Identifier) {
+  public static Pose2d[] getRobotPositionDeltas(final CameraIdentifier Identifier) {
     return CAMERAS.get(Identifier.getValue()).getRobotPositionDeltas();
   }
 
@@ -192,7 +193,7 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
    * the desired object is the optimal target of this camera.
    * @return Position of the object relative to the field.
    */
-  public static Optional<Pose3d> getObjectFieldPose(){
+  public static Optional<Pose2d> getObjectFieldPose(){
     return CAMERAS.get(CameraIdentifier.INTAKE_CAMERA.getValue()).getObjectFieldPose();
   }
 
