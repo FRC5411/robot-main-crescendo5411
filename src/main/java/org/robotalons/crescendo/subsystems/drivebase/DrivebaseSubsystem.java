@@ -11,7 +11,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -109,7 +108,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         new Translation2d(
           Tag.getX() +
           (Measurements.ROBOT_RADIUS_METERS + 
-           Units.inchesToMeters((2.5)) +
           org.robotalons.crescendo.subsystems.superstructure.Constants.Measurements.OFFSET_WALL_METERS),
           Tag.getY()),
           GYROSCOPE.getYawRotation()));
@@ -451,8 +449,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       case OBJECT_ORIENTED:
         VisionSubsystem.getOptimalTarget(CameraIdentifier.INTAKE_CAMERA).ifPresentOrElse((Optimal) -> {
           set(new ChassisSpeeds(
-            Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
-            Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
+            -Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
+            -Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
             (-(Math.PI) + Optimal.getRotation().getRadians() * (GYROSCOPE.getYawRotation().getRadians() % 2 * Math.PI > Math.PI? (-1): (1))) * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY
           ));
         }, () -> {
@@ -462,15 +460,15 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         break;
       case ROBOT_ORIENTED:
         set(new ChassisSpeeds(
-          Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
-          Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
+          -Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
+          -Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
           -Rotation.getRadians() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY
         ));
         break;
       case FIELD_ORIENTED:
         set(ChassisSpeeds.fromFieldRelativeSpeeds(
-          Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
-          Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
+          -Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
+          -Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
           -Rotation.getRadians() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY,
           GYROSCOPE.getYawRotation()
         ));

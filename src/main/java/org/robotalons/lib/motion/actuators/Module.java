@@ -126,7 +126,8 @@ public abstract class Module implements Closeable {
    * @return An optimized version of the reference
    */
   public SwerveModuleState set(final SwerveModuleState Reference) {
-    this.Reference = SwerveModuleState.optimize(Reference, getAbsoluteRotation());
+    final var Difference = getRelativeRotation().minus(getAbsoluteRotation());
+    this.Reference = SwerveModuleState.optimize(Reference, (Math.round(Difference.getRadians()) == (0) || Math.round(Difference.getRadians()) == 2 * Math.PI)? (new Rotation2d(Math.PI)): (Difference));
     return this.Reference;
   }
 
@@ -200,7 +201,7 @@ public abstract class Module implements Closeable {
    * @return Rotational axis heading as a relative {@link Rotation2d} object
    */
   public Rotation2d getRelativeRotation() {
-    return STATUS.RotationalRelativePosition.plus(RotationalRelativeOffset);
+    return STATUS.RotationalRelativePosition;
   }
 
   /**

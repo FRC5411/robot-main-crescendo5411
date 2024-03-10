@@ -4,7 +4,6 @@ package org.robotalons.crescendo.subsystems.superstructure;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
@@ -29,7 +28,6 @@ import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.crescendo.subsystems.superstructure.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.superstructure.Constants.Ports;
 import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
-import org.robotalons.crescendo.subsystems.vision.VisionSubsystem.CameraIdentifier;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.trajectory.solving.TrajectoryObject;
 import org.robotalons.lib.utilities.Operator;
@@ -63,13 +61,14 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   private static SuperstructureSubsystem Instance;
   // ------------------------------------------------------------[Constructors]----------------------------------------------------------- //
   /**
+   * 
    * Cannon Subsystem Constructor
    */
   private SuperstructureSubsystem() {
     super(("Cannon Subsystem"));
   } static {
     Reference = new SwerveModuleState((0d), Rotation2d.fromRotations(Measurements.PIVOT_MINIMUM_ROTATION));
-    State = SuperstructureState.MANUAL;
+    State = SuperstructureState.SEMI;
     FIRING_CONTROLLERS = new Pair<TalonFX,TalonFX>(
       new TalonFX(Ports.FIRING_CONTROLLER_LEFT_ID),
       new TalonFX(Ports.FIRING_CONTROLLER_RIGHT_ID)
@@ -117,17 +116,15 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   @Override
   public synchronized void periodic() {
     Constants.Objects.ODOMETRY_LOCKER.lock();
-    final var Robot = new Pose3d(DrivebaseSubsystem.getPose()).transformBy(VisionSubsystem.getCameraTransform(CameraIdentifier.SPEAKER_LEFT_CAMERA));
     final var Target = VisionSubsystem.getAprilTagPose((DrivebaseSubsystem.getRotation().getRadians() % (2) * Math.PI >= Math.PI)? (3): (7)).get();
-    final var Interpolated = Measurements.PIVOT_FIRING_MAP.get(Math.hypot(
-      PhotonUtils.getDistanceToPose(Robot.toPose2d(), Target.toPose2d()) / Measurements.PIVOT_MAXIMUM_RANGE_METERS,
-      Measurements.SPEAKER_HEIGHT_METERS
-    ));
+    final var Distance = (PhotonUtils.getDistanceToPose(DrivebaseSubsystem.getPose(), Target.toPose2d()));
+    final var Interpolated = Measurements.PIVOT_FIRING_MAP.interpolate(
+      Measurements.PIVOT_LOWER_BOUND,
+      Measurements.PIVOT_UPPER_BOUND,
+      Math.hypot(Distance, Measurements.SPEAKER_HEIGHT_METERS) / Math.hypot(Measurements.PIVOT_MAXIMUM_RANGE_METERS, Measurements.SPEAKER_HEIGHT_METERS));
     if(Interpolated != (null)) {
-      final var Percentage = (
-        Math.abs(FIRING_VELOCITY.getValueAsDouble() / Interpolated.get((0), (0))) +
-        (Math.abs(Units.rotationsToDegrees(getPivotRotation())) / Interpolated.get((1), (0)))
-      ) / 2;
+      final var Percentage = 
+        (Math.abs(FIRING_VELOCITY.getValueAsDouble() / Interpolated.get((0), (0))) + (Math.abs(Units.rotationsToDegrees(getPivotRotation())) / Interpolated.get((1), (0)))) / 2;
       if(State == SuperstructureState.AUTO || State == SuperstructureState.SEMI) {
         Reference.angle = Rotation2d.fromRadians(Interpolated.get((1), (0)));
         if(State == SuperstructureState.AUTO) {
@@ -137,10 +134,12 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
           }
         }
       }
+      Logger.recordOutput(("Cannon/InterpolatedDistance"), Distance); 
       Logger.recordOutput(("Cannon/InterpolatedPercentile"), Percentage);
       Logger.recordOutput(("Cannon/InterpolatedVelocity"), Interpolated.get((0), (0)));
-      Logger.recordOutput(("Cannon/InterpolatedRotation"), Interpolated.get((1), (0)));      
+      Logger.recordOutput(("Cannon/InterpolatedRotation"), Units.radiansToDegrees(Interpolated.get((1), (0))));      
     } else {
+      Logger.recordOutput(("Cannon/InterpolatedDistance"), (0d)); 
       Logger.recordOutput(("Cannon/InterpolatedPercentile"), (0d));
       Logger.recordOutput(("Cannon/InterpolatedVelocity"), (0d));
       Logger.recordOutput(("Cannon/InterpolatedRotation"), (0d));
@@ -187,7 +186,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    */
   private static synchronized void set(final Rotation2d Reference) {
     PIVOT_CONTROLLER.set(PIVOT_CONTROLLER_PID.calculate(
-      Units.radiansToRotations(getPivotRotation()), MathUtil.clamp(Reference.getRotations(), Measurements.PIVOT_MINIMUM_ROTATION, Measurements.PIVOT_MAXIMUM_ROTATION)));
+      Units.radiansToRotations(-getPivotRotation()), MathUtil.clamp(Reference.getRotations(), Measurements.PIVOT_MINIMUM_ROTATION, Measurements.PIVOT_MAXIMUM_ROTATION)));
   }
 
   /**
@@ -195,7 +194,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * @param Reference Desired velocity in RPM
    */
   private static synchronized void set(final Double Reference) {
-    FIRING_CONTROLLERS.getFirst().setControl(new VelocityDutyCycle(Reference));
+    FIRING_CONTROLLERS.getFirst().setControl(new VelocityDutyCycle(-Reference));
     FIRING_CONTROLLERS.getSecond().setControl(new VelocityDutyCycle(Reference));
   }
 
@@ -262,6 +261,23 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
           () -> {
             INTAKE_CONTROLLER.set((0d));
             INDEXER_CONTROLLER.set((0d));
+          },
+          SuperstructureSubsystem.getInstance()
+        ));
+    });
+    with(() -> {
+      Operator.getKeybinding(Keybindings.CANNON_TOGGLE)
+        .onTrue(new InstantCommand(
+          () -> {
+            set(Measurements.FIRING_STANDARD_VELOCITY);
+          },
+          SuperstructureSubsystem.getInstance()
+        ));
+      Operator.getKeybinding(Keybindings.CANNON_TOGGLE)
+        .onFalse(new InstantCommand(
+          () -> {
+            FIRING_CONTROLLERS.getFirst().set((0d));
+            FIRING_CONTROLLERS.getSecond().set((0d));
           },
           SuperstructureSubsystem.getInstance()
         ));

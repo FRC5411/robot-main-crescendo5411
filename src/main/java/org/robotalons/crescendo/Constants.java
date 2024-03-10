@@ -118,7 +118,7 @@ public final class Constants {
           .add(Keybindings.CANNON_PIVOT_CENTERLINE, INPUT_METHOD.x())
           .add(Keybindings.CANNON_PIVOT_WINGLINE, INPUT_METHOD.y())
           .add(Keybindings.CANNON_PIVOT_MAXIMUM, INPUT_METHOD.rightBumper())
-          .add(Keybindings.CANNON_TOGGLE, INPUT_METHOD.leftBumper())
+          .add(Keybindings.CANNON_TOGGLE, Operators.Primary.INPUT_METHOD.leftBumper())
           .add(Keybindings.CLIMB_ROTATE_BACKWARD, INPUT_METHOD.povDown())
           .add(Keybindings.CLIMB_ROTATE_FORWARD, INPUT_METHOD.povUp())
           .add(Keybindings.INTAKE_TOGGLE, Operators.Primary.INPUT_METHOD.leftTrigger())

@@ -290,7 +290,7 @@ public final class VisionCamera extends Camera {
   //TODO Check pls Cody
   @Override
   public Optional<Transform2d> getOptimalTarget() {
-    if(CAMERA.getLatestResult().getBestTarget() == (null)){
+    if(CAMERA.getLatestResult().getBestTarget() == (null) ){
       return Optional.empty();
     }
 

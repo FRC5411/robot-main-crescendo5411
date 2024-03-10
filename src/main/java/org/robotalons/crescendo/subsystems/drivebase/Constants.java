@@ -33,8 +33,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public final class Constants {
 // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
   public static final class Simulation {
-    public static final Double TRANSLATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (0.025d);
-    public static final Double ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (0.004d);
+    public static final Double TRANSLATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (0.097120488d);
+    public static final Double ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (16.91004822d);
     public static final DCMotorSim TRANSLATIONAL_FLYWHEEL = new DCMotorSim(
       DCMotor.getNEO((1)),
       Measurements.ROBOT_LINEAR_GEAR_RATIO,
@@ -43,20 +43,10 @@ public final class Constants {
       DCMotor.getNEO((1)),
       Measurements.ROBOT_ROTATION_GEAR_RATIO,
       ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED);
-    public static final Double ROTATIONAL_P_GAIN = (2.7d);
-    public static final Double ROTATIONAL_I_GAIN = (0d);
-    public static final Double ROTATIONAL_D_GAIN = (0d); 
-    public static final Double LINEAR_P_GAIN = (0.02d);
-    public static final Double LINEAR_I_GAIN = (0d);
-    public static final Double LINEAR_D_GAIN = (0d);
-    public static final Double LINEAR_KS_GAIN = (0d);
-    public static final Double LINEAR_KV_GAIN = (0.15);
-    public static final Double LINEAR_KA_GAIN = (0d);
   }
 
-
   public static final class Measurements {
-    public static final Double ROBOT_WHEEL_DIAMETER_METERS = Units.inchesToMeters((4d));
+    public static final Double ROBOT_WHEEL_DIAMETER_METERS = Units.inchesToMeters((8d));
     public static final Double ROBOT_WHEEL_PERIMETER_METERS = ROBOT_WHEEL_DIAMETER_METERS * Math.PI;
 
     public static final Double ROBOT_LENGTH_METERS = Units.inchesToMeters((29.5d));
@@ -80,10 +70,10 @@ public final class Constants {
         public static final Integer ABSOLUTE_ENCODER_ID = (3);
         public static final Double ROTATIONAL_P_GAIN = (2.81d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
-        public static final Double ROTATIONAL_D_GAIN = (0.001d);
-        public static final Double ROTATIONAL_ENCODER_OFFSET = (-0.109854d);
+        public static final Double ROTATIONAL_D_GAIN = (0.0000001d);
+        public static final Double ROTATIONAL_ENCODER_OFFSET = (-0.108154d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
-        public static final Boolean LINEAR_INVERTED = (true);
+        public static final Boolean LINEAR_INVERTED = (false);
         public static final Double LINEAR_P_GAIN = (0.2d);
         public static final Double LINEAR_I_GAIN = (0d);
         public static final Double LINEAR_D_GAIN = (0d);
@@ -121,11 +111,11 @@ public final class Constants {
             Measurements.ROBOT_ROTATION_GEAR_RATIO,
             Simulation.ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED);
           SIM_CONSTANTS.ABSOLUTE_ENCODER_PORT = ABSOLUTE_ENCODER_ID;
-          SIM_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS = new PIDConstants(Simulation.LINEAR_P_GAIN, Simulation.LINEAR_I_GAIN, Simulation.LINEAR_D_GAIN);
-          SIM_CONSTANTS.ROTATIONAL_PID_CONSTANTS = new PIDConstants(Simulation.ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
-          SIM_CONSTANTS.TRANSLATIONAL_KS_GAIN = Simulation.LINEAR_KS_GAIN;
-          SIM_CONSTANTS.TRANSLATIONAL_KV_GAIN = Simulation.LINEAR_KV_GAIN;
-          SIM_CONSTANTS.TRANSLATIONAL_KA_GAIN = Simulation.LINEAR_KA_GAIN;
+          SIM_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS = new PIDConstants(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
+          SIM_CONSTANTS.ROTATIONAL_PID_CONSTANTS = new PIDConstants(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
+          SIM_CONSTANTS.TRANSLATIONAL_KS_GAIN = LINEAR_KS_GAIN;
+          SIM_CONSTANTS.TRANSLATIONAL_KV_GAIN = LINEAR_KV_GAIN;
+          SIM_CONSTANTS.TRANSLATIONAL_KA_GAIN = LINEAR_KA_GAIN;
           SIM_CONSTANTS.TRANSLATIONAL_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
           SIM_CONSTANTS.ROTATIONAL_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           SIM_CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
@@ -145,8 +135,8 @@ public final class Constants {
         public static final Integer ABSOLUTE_ENCODER_ID = (4);
         public static final Double ROTATIONAL_P_GAIN = (2.81d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
-        public static final Double ROTATIONAL_D_GAIN = (0.001d);
-        public static final Double ROTATIONAL_ENCODER_OFFSET = (0.059961d);
+        public static final Double ROTATIONAL_D_GAIN = (0.0000001d);
+        public static final Double ROTATIONAL_ENCODER_OFFSET = (-0.197266d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
         public static final Double LINEAR_P_GAIN = (0.2d);
@@ -186,11 +176,11 @@ public final class Constants {
             Measurements.ROBOT_ROTATION_GEAR_RATIO,
             Simulation.ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED);
           SIM_CONSTANTS.ABSOLUTE_ENCODER_PORT = ABSOLUTE_ENCODER_ID;
-          SIM_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS = new PIDConstants(Simulation.LINEAR_P_GAIN, Simulation.LINEAR_I_GAIN, Simulation.LINEAR_D_GAIN);
-          SIM_CONSTANTS.ROTATIONAL_PID_CONSTANTS = new PIDConstants(Simulation.ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
-          SIM_CONSTANTS.TRANSLATIONAL_KS_GAIN = Simulation.LINEAR_KS_GAIN;
-          SIM_CONSTANTS.TRANSLATIONAL_KV_GAIN = Simulation.LINEAR_KV_GAIN;
-          SIM_CONSTANTS.TRANSLATIONAL_KA_GAIN = Simulation.LINEAR_KA_GAIN;
+          SIM_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS = new PIDConstants(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
+          SIM_CONSTANTS.ROTATIONAL_PID_CONSTANTS = new PIDConstants(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
+          SIM_CONSTANTS.TRANSLATIONAL_KS_GAIN = LINEAR_KS_GAIN;
+          SIM_CONSTANTS.TRANSLATIONAL_KV_GAIN = LINEAR_KV_GAIN;
+          SIM_CONSTANTS.TRANSLATIONAL_KA_GAIN = LINEAR_KA_GAIN;
           SIM_CONSTANTS.TRANSLATIONAL_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
           SIM_CONSTANTS.ROTATIONAL_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           SIM_CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
@@ -210,8 +200,8 @@ public final class Constants {
         public static final Integer ABSOLUTE_ENCODER_ID = (5);
         public static final Double ROTATIONAL_P_GAIN = (2.81d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
-        public static final Double ROTATIONAL_D_GAIN = (0.001d);
-        public static final Double ROTATIONAL_ENCODER_OFFSET = (-0.170166d);
+        public static final Double ROTATIONAL_D_GAIN = (0.0000001d);
+        public static final Double ROTATIONAL_ENCODER_OFFSET = (0.326172d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
         public static final Double LINEAR_P_GAIN = (0.2d);
@@ -251,11 +241,11 @@ public final class Constants {
             Measurements.ROBOT_ROTATION_GEAR_RATIO,
             Simulation.ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED);
           SIM_CONSTANTS.ABSOLUTE_ENCODER_PORT = ABSOLUTE_ENCODER_ID;
-          SIM_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS = new PIDConstants(Simulation.LINEAR_P_GAIN, Simulation.LINEAR_I_GAIN, Simulation.LINEAR_D_GAIN);
-          SIM_CONSTANTS.ROTATIONAL_PID_CONSTANTS = new PIDConstants(Simulation.ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
-          SIM_CONSTANTS.TRANSLATIONAL_KS_GAIN = Simulation.LINEAR_KS_GAIN;
-          SIM_CONSTANTS.TRANSLATIONAL_KV_GAIN = Simulation.LINEAR_KV_GAIN;
-          SIM_CONSTANTS.TRANSLATIONAL_KA_GAIN = Simulation.LINEAR_KA_GAIN;
+          SIM_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS = new PIDConstants(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
+          SIM_CONSTANTS.ROTATIONAL_PID_CONSTANTS = new PIDConstants(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
+          SIM_CONSTANTS.TRANSLATIONAL_KS_GAIN = LINEAR_KS_GAIN;
+          SIM_CONSTANTS.TRANSLATIONAL_KV_GAIN = LINEAR_KV_GAIN;
+          SIM_CONSTANTS.TRANSLATIONAL_KA_GAIN = LINEAR_KA_GAIN;
           SIM_CONSTANTS.TRANSLATIONAL_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
           SIM_CONSTANTS.ROTATIONAL_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           SIM_CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
@@ -275,10 +265,10 @@ public final class Constants {
         public static final Integer ABSOLUTE_ENCODER_ID = (6);
         public static final Double ROTATIONAL_P_GAIN = (2.81d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
-        public static final Double ROTATIONAL_D_GAIN = (0.001d);
-        public static final Double ROTATIONAL_ENCODER_OFFSET = (-0.412842d);
-        public static final Boolean ROTATIONAL_INVERTED = (false);
-        public static final Boolean LINEAR_INVERTED = (true);
+        public static final Double ROTATIONAL_D_GAIN = (0.0000001d);
+        public static final Double ROTATIONAL_ENCODER_OFFSET = (0.090820d);
+        public static final Boolean ROTATIONAL_INVERTED = (true);
+        public static final Boolean LINEAR_INVERTED = (false);
         public static final Double LINEAR_P_GAIN = (0.2d);
         public static final Double LINEAR_I_GAIN = (0d);
         public static final Double LINEAR_D_GAIN = (0d);
@@ -316,11 +306,11 @@ public final class Constants {
             Measurements.ROBOT_ROTATION_GEAR_RATIO,
             Simulation.ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED);
           SIM_CONSTANTS.ABSOLUTE_ENCODER_PORT = ABSOLUTE_ENCODER_ID;
-          SIM_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS = new PIDConstants(Simulation.LINEAR_P_GAIN, Simulation.LINEAR_I_GAIN, Simulation.LINEAR_D_GAIN);
-          SIM_CONSTANTS.ROTATIONAL_PID_CONSTANTS = new PIDConstants(Simulation.ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
-          SIM_CONSTANTS.TRANSLATIONAL_KS_GAIN = Simulation.LINEAR_KS_GAIN;
-          SIM_CONSTANTS.TRANSLATIONAL_KV_GAIN = Simulation.LINEAR_KV_GAIN;
-          SIM_CONSTANTS.TRANSLATIONAL_KA_GAIN = Simulation.LINEAR_KA_GAIN;
+          SIM_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS = new PIDConstants(LINEAR_P_GAIN, LINEAR_I_GAIN, LINEAR_D_GAIN);
+          SIM_CONSTANTS.ROTATIONAL_PID_CONSTANTS = new PIDConstants(ROTATIONAL_P_GAIN, ROTATIONAL_I_GAIN, ROTATIONAL_D_GAIN);
+          SIM_CONSTANTS.TRANSLATIONAL_KS_GAIN = LINEAR_KS_GAIN;
+          SIM_CONSTANTS.TRANSLATIONAL_KV_GAIN = LINEAR_KV_GAIN;
+          SIM_CONSTANTS.TRANSLATIONAL_KA_GAIN = LINEAR_KA_GAIN;
           SIM_CONSTANTS.TRANSLATIONAL_GEAR_RATIO = Measurements.ROBOT_LINEAR_GEAR_RATIO;
           SIM_CONSTANTS.ROTATIONAL_GEAR_RATIO = Measurements.ROBOT_ROTATION_GEAR_RATIO;
           SIM_CONSTANTS.WHEEL_RADIUS_METERS = Measurements.ROBOT_WHEEL_DIAMETER_METERS / 2;
