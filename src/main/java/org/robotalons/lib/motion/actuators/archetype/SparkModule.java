@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
-
+import java.util.concurrent.atomic.DoubleAccumulator;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -45,6 +45,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
   private final SimpleMotorFeedforward TRANSLATIONAL_FF;
   private final RelativeEncoder TRANSLATIONAL_ENCODER;
   private final Queue<Double> TRANSLATIONAL_POSITION_QUEUE;
+  private final DoubleAccumulator TRANSLATIONAL_ACCUMULATOR;
 
   private final Controller ROTATIONAL_CONTROLLER;
   private final PIDController ROTATIONAL_PID;
@@ -61,8 +62,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
 
   private final ModuleConfiguration<Controller> MODULE_CONSTANTS;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  private volatile Double TranslationalPosition = (0d);
-  private volatile Double DiscretizationPreviousTimestamp = Logger.getRealTimestamp() / (1e6);
+  private volatile Double Timestamp = Logger.getRealTimestamp() / (1e6);
   // -----------------------------------------------------------[Constructor(s)]------------------------------------------------------------//
   /**
    * Spark Module Constructor
@@ -81,6 +81,10 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       MODULE_CONSTANTS.TRANSLATIONAL_KV_GAIN,
       MODULE_CONSTANTS.TRANSLATIONAL_KA_GAIN);
     TRANSLATIONAL_ENCODER = TRANSLATIONAL_CONTROLLER.getEncoder();
+
+    TRANSLATIONAL_ACCUMULATOR = new DoubleAccumulator(
+      (Accumulated, Velocity) -> Accumulated + Units.rotationsPerMinuteToRadiansPerSecond(Velocity) * discretize() * MODULE_CONSTANTS.WHEEL_RADIUS_METERS, (0d));
+
     ROTATIONAL_CONTROLLER = MODULE_CONSTANTS.ROTATIONAL_CONTROLLER;
     ROTATIONAL_PID = new PIDController(
       MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kP, 
@@ -92,7 +96,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     RotationalAbsoluteOffset = MODULE_CONSTANTS.ROTATIONAL_ENCODER_OFFSET;
     ODOMETRY_LOCK = new ReentrantLock();
 
-    TRANSLATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(() -> TranslationalPosition);
+    TRANSLATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(TRANSLATIONAL_ACCUMULATOR::get);
     ROTATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(() -> getAbsoluteRotation().getRadians());
     TIMESTAMP_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.timestamp();
     
@@ -191,12 +195,12 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
    */
   private synchronized Double discretize() {
     var DiscretizationTimestep = (0.0);
-    if (DiscretizationPreviousTimestamp.equals((0.0))) {
+    if (Timestamp.equals((0.0))) {
       DiscretizationTimestep = ((1.0) / (50.0));
     } else {
       final var MeasuredTime = Logger.getRealTimestamp() / (1e6);
-      DiscretizationTimestep = MeasuredTime - DiscretizationPreviousTimestamp;
-      DiscretizationPreviousTimestamp = MeasuredTime;
+      DiscretizationTimestep = MeasuredTime - Timestamp;
+      Timestamp = MeasuredTime;
     }    
     return DiscretizationTimestep;
   }
@@ -204,7 +208,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
   @Override
   public synchronized void periodic() {
     update();
-    TranslationalPosition += (Units.rotationsPerMinuteToRadiansPerSecond(TRANSLATIONAL_ENCODER.getVelocity()) * discretize()) * (MODULE_CONSTANTS.WHEEL_RADIUS_METERS * 2);
+    TRANSLATIONAL_ACCUMULATOR.accumulate(TRANSLATIONAL_ENCODER.getVelocity());
     synchronized(STATUS) {
       if (RotationalRelativeOffset == (null) && STATUS.RotationalAbsolutePosition.getRadians() != (0d)) {
         RotationalRelativeOffset = STATUS.RotationalAbsolutePosition.minus(STATUS.RotationalRelativePosition);
@@ -274,7 +278,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
         TRANSLATIONAL_CONTROLLER.getMotorTemperature();
 
       STATUS.RotationalAbsolutePosition = 
-        Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble()).minus(RotationalAbsoluteOffset);
+        Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble()).plus(RotationalAbsoluteOffset);
       STATUS.RotationalRelativePosition =
         Rotation2d.fromRotations(ROTATIONAL_ENCODER.getPosition() / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO);
       STATUS.RotationalVelocityRadiansSecond =
@@ -311,8 +315,8 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
             .toArray(Rotation2d[]::new);    
         ROTATIONAL_POSITION_QUEUE.clear();  
       }
+      Logger.processInputs("RealInputs/" + "MODULE (" + Integer.toString(MODULE_CONSTANTS.NUMBER) + ')', STATUS);
     }
-    Logger.processInputs("RealInputs/" + "MODULE (" + Integer.toString(MODULE_CONSTANTS.NUMBER) + ')', STATUS);
     MODULE_CONSTANTS.STATUS_PROVIDER.getLock().unlock();
     ODOMETRY_LOCK.unlock();
   }

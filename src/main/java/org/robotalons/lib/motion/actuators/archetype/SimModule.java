@@ -49,7 +49,7 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
 
   private final ModuleConfiguration<Controller> MODULE_CONSTANTS;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  private Double DiscretizationPreviousTimestamp;
+  private Double Timestamp;
   // -----------------------------------------------------------[Constructor(s)]------------------------------------------------------------//
   /**
    * Spark Module Constructor
@@ -84,7 +84,7 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
     TIMESTAMPS = new ArrayList<>();
     DELTAS = new ArrayList<>();
 
-    DiscretizationPreviousTimestamp = Logger.getRealTimestamp() / (1e6);
+    Timestamp = Logger.getRealTimestamp() / (1e6);
 
     configure();
   }
@@ -162,12 +162,12 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
    */
   private synchronized Double discretize() {
     var DiscretizationTimestep = (0.0);
-    if (DiscretizationPreviousTimestamp.equals((0.0))) {
+    if (Timestamp.equals((0.0))) {
       DiscretizationTimestep = ((1.0) / (50.0));
     } else {
       var MeasuredTime = Logger.getRealTimestamp() / (1e6);
-      DiscretizationTimestep = MeasuredTime - DiscretizationPreviousTimestamp;
-      DiscretizationPreviousTimestamp = MeasuredTime;
+      DiscretizationTimestep = MeasuredTime - Timestamp;
+      Timestamp = MeasuredTime;
     }    
     return DiscretizationTimestep;
   }

@@ -64,7 +64,7 @@ public final class Robot extends LoggedRobot {
   @Override
   @SuppressWarnings("ExtractMethodRecommender")
   public void robotInit() {
-    PhotonCamera.setVersionCheckEnabled((true));
+    PhotonCamera.setVersionCheckEnabled((false));
     Logger.recordMetadata(("ProjectName"), BuildMetadata.MAVEN_NAME);
     Logger.recordMetadata(("BuildDate"), BuildMetadata.BUILD_DATE);
     Logger.recordMetadata(("GitSHA"), BuildMetadata.GIT_SHA);

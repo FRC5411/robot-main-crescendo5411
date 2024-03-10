@@ -57,19 +57,19 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
 
   private static final DutyCycleEncoder PIVOT_ABSOLUTE_ENCODER;
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
+  private static volatile Operator<Keybindings,Preferences> Operator;  
+  private static volatile SwerveModuleState Reference;
+  private static volatile SuperstructureState State;
   private static SuperstructureSubsystem Instance;
-  private static volatile SwerveModuleState CurrentReference;
-  private static volatile SuperstructureState CurrentFiringMode;
-  private static volatile Operator<Keybindings,Preferences> CurrentOperator;
-    // ------------------------------------------------------------[Constructors]----------------------------------------------------------- //
+  // ------------------------------------------------------------[Constructors]----------------------------------------------------------- //
   /**
    * Cannon Subsystem Constructor
    */
   private SuperstructureSubsystem() {
     super(("Cannon Subsystem"));
   } static {
-    CurrentReference = new SwerveModuleState((0d), new Rotation2d(Measurements.PIVOT_MINIMUM_ROTATION));
-    CurrentFiringMode = SuperstructureState.SEMI;
+    Reference = new SwerveModuleState((0d), new Rotation2d(Measurements.PIVOT_MINIMUM_ROTATION));
+    State = SuperstructureState.SEMI;
     FIRING_CONTROLLERS = new Pair<TalonFX,TalonFX>(
       new TalonFX(Ports.FIRING_CONTROLLER_LEFT_ID),
       new TalonFX(Ports.FIRING_CONTROLLER_RIGHT_ID)
@@ -86,10 +86,11 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       .withKD(Measurements.FIRING_D_GAIN)
     );
 
-    FIRING_CONTROLLERS.getFirst().getConfigurator().apply(new TalonFXConfiguration().CurrentLimits.withSupplyCurrentLimit((45d)).withStatorCurrentLimit((40d)));
-    FIRING_CONTROLLERS.getSecond().getConfigurator().apply(new TalonFXConfiguration().CurrentLimits.withSupplyCurrentLimit((45d)).withStatorCurrentLimit((40d)));
+    FIRING_CONTROLLERS.getFirst().getConfigurator().apply(new TalonFXConfiguration().CurrentLimits.withSupplyCurrentLimit((25d)).withStatorCurrentLimit((20d)));
+    FIRING_CONTROLLERS.getSecond().getConfigurator().apply(new TalonFXConfiguration().CurrentLimits.withSupplyCurrentLimit((25d)).withStatorCurrentLimit((20d)));
     FIRING_VELOCITY = FIRING_CONTROLLERS.getFirst().getVelocity();
-    FIRING_CONTROLLERS.getSecond().setInverted((false));
+    FIRING_CONTROLLERS.getFirst().setInverted((false));
+    FIRING_CONTROLLERS.getSecond().setInverted((true));
 
     INDEXER_CONTROLLER = new CANSparkMax(Ports.INDEXER_CONTROLLER_ID, MotorType.kBrushless);
     INDEXER_CONTROLLER.setSmartCurrentLimit((20));
@@ -116,18 +117,20 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   @Override
   public synchronized void periodic() {
     Constants.Objects.ODOMETRY_LOCKER.lock();
-    final var Robot = new Pose3d(DrivebaseSubsystem.getPose()).transformBy(VisionSubsystem.getCameraTransform(CameraIdentifier.SOURCE_CAMERA));
+    final var Robot = new Pose3d(DrivebaseSubsystem.getPose()).transformBy(VisionSubsystem.getCameraTransform(CameraIdentifier.SPEAKER_LEFT_CAMERA));
     final var Target = VisionSubsystem.getAprilTagPose((DrivebaseSubsystem.getRotation().getRadians() % (2) * Math.PI >= Math.PI)? (3): (7)).get();
     final var Interpolated = Measurements.PIVOT_FIRING_MAP.get(Math.hypot(
       PhotonUtils.getDistanceToPose(Robot.toPose2d(), Target.toPose2d()) / Measurements.PIVOT_MAXIMUM_RANGE_METERS,
       Measurements.SPEAKER_HEIGHT_METERS
     ));
     if(Interpolated != (null)) {
-      final var Percentage = ((FIRING_VELOCITY.getValueAsDouble() / Interpolated.get((0), (0))) 
-                  + (Units.rotationsToDegrees(getPivotRotation()) / Interpolated.get((1), (0)))) / 2;
-      if(CurrentFiringMode == SuperstructureState.AUTO || CurrentFiringMode == SuperstructureState.SEMI) {
-        CurrentReference.angle = Rotation2d.fromRadians(-Interpolated.get((1), (0)));
-        if(CurrentFiringMode == SuperstructureState.AUTO) {
+      final var Percentage = (
+        Math.abs(FIRING_VELOCITY.getValueAsDouble() / Interpolated.get((0), (0))) +
+        (Math.abs(Units.rotationsToDegrees(getPivotRotation())) / Interpolated.get((1), (0)))
+      ) / 2;
+      if(State == SuperstructureState.AUTO || State == SuperstructureState.SEMI) {
+        Reference.angle = Rotation2d.fromRadians(-Interpolated.get((1), (0)));
+        if(State == SuperstructureState.AUTO) {
           if(Percentage < Measurements.ALLOWABLE_SHOT_PERCENTAGE) {
             set(Interpolated.get((0), (0)));
             INDEXER_CONTROLLER.set((-1d));
@@ -142,8 +145,8 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       Logger.recordOutput(("Cannon/InterpolatedVelocity"), (0d));
       Logger.recordOutput(("Cannon/InterpolatedRotation"), (0d));
     }
-    set(CurrentReference.angle);
-    Logger.recordOutput(("Cannon/Reference"), CurrentReference);
+    set(Reference.angle);
+    Logger.recordOutput(("Cannon/Reference"), Reference);
     Logger.recordOutput(("Cannon/MeasuredVelocity"), FIRING_VELOCITY.getValueAsDouble());
     Logger.recordOutput(("Cannon/MeasuredRotation"), -getPivotRotation());
     Constants.Objects.ODOMETRY_LOCKER.unlock();
@@ -184,8 +187,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    */
   private static synchronized void set(final Rotation2d Reference) {
     PIVOT_CONTROLLER.set(PIVOT_CONTROLLER_PID.calculate(
-      Units.radiansToRotations(getPivotRotation()),
-      MathUtil.clamp(Reference.getRotations(),Measurements.PIVOT_MINIMUM_ROTATION,Measurements.PIVOT_MAXIMUM_ROTATION)));
+      Units.radiansToRotations(getPivotRotation()), MathUtil.clamp(Reference.getRotations(), Measurements.PIVOT_MINIMUM_ROTATION, Measurements.PIVOT_MAXIMUM_ROTATION)));
   }
 
   /**
@@ -193,16 +195,16 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * @param Reference Desired velocity in RPM
    */
   private static synchronized void set(final Double Reference) {
-    FIRING_CONTROLLERS.getFirst().setControl(new VelocityDutyCycle(-Reference));
-    FIRING_CONTROLLERS.getSecond().setControl(new VelocityDutyCycle(-Reference));
+    FIRING_CONTROLLERS.getFirst().setControl(new VelocityDutyCycle(Reference));
+    FIRING_CONTROLLERS.getSecond().setControl(new VelocityDutyCycle(Reference));
   }
 
   /**
    * Mutates the cannon controller's current 'set-point' or reference {@link SwerveModuleState state}
-   * @param Reference Cannon's new Goal or 'set-point' reference
+   * @param Demand Cannon's new Goal or 'set-point' reference
    */
-  public static synchronized void set(final SwerveModuleState Reference) {
-    CurrentReference = Reference;
+  public static synchronized void set(final SwerveModuleState Demand) {
+    Reference = Demand;
   }
 
   /**
@@ -210,7 +212,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * @param Mode Mode of cannon control
    */
   public static synchronized void set(final SuperstructureState Mode) {
-    CurrentFiringMode = Mode;
+    State = Mode;
   }
 
   /**
@@ -227,9 +229,9 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
 
   @Override
   public void configure(final Operator<Keybindings, Preferences> Profile) {
-    CurrentOperator = Profile;
+    Operator = Profile;
     with(() -> {
-      CurrentOperator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
+      Operator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
         .onTrue(new InstantCommand(
           () -> {
             INTAKE_CONTROLLER.set((-1d));
@@ -237,7 +239,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
           },
           SuperstructureSubsystem.getInstance()
         ));
-      CurrentOperator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
+      Operator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
         .onFalse(new InstantCommand(
           () -> {
             INTAKE_CONTROLLER.set((0d));
@@ -247,7 +249,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       ));
     });
     with(() -> {
-      CurrentOperator.getKeybinding(Keybindings.INTAKE_TOGGLE)
+      Operator.getKeybinding(Keybindings.INTAKE_TOGGLE)
         .onTrue(new InstantCommand(
           () -> {
             INTAKE_CONTROLLER.set((1d));
@@ -255,7 +257,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
           },
           SuperstructureSubsystem.getInstance()
         ));
-      CurrentOperator.getKeybinding(Keybindings.INTAKE_TOGGLE)
+      Operator.getKeybinding(Keybindings.INTAKE_TOGGLE)
         .onFalse(new InstantCommand(
           () -> {
             INTAKE_CONTROLLER.set((0d));
@@ -276,16 +278,18 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       return Instance;
   }
 
+  @Override
+  public Operator<Keybindings, Preferences> getOperator() {
+    return Operator;
+  }
+  
   /**
    * Provides the current rotational reading of the pivot in rotations
    * @return Pivot rotational reading in radians
    */
   private static Double getPivotRotation() {
-    return Units.rotationsToRadians(-(PIVOT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.ABSOLUTE_ENCODER_OFFSET));
+    return Units.rotationsToRadians((PIVOT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.ABSOLUTE_ENCODER_OFFSET));
   }
 
-  @Override
-  public Operator<Keybindings, Preferences> getOperator() {
-    return CurrentOperator;
-  }
+
 }

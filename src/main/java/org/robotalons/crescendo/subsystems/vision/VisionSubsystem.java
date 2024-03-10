@@ -35,12 +35,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Preferences> {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private static List<Camera> CAMERAS;
-  // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  private static VisionSubsystem Instance;
   public static final List<CameraIdentifier> ALL_CAMERA_IDENTIFIERS = List.of(
     CameraIdentifier.SPEAKER_LEFT_CAMERA,
-    CameraIdentifier.SPEAKER_RIGHT_CAMERA
-  );
+    CameraIdentifier.SPEAKER_RIGHT_CAMERA,
+    CameraIdentifier.INTAKE_CAMERA
+  );  
+  // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
+  private static VisionSubsystem Instance;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Vision Subsystem Constructor.
@@ -50,7 +51,8 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
   } static {
     CAMERAS = List.of(
       Devices.FRONT_LEFT_CAMERA,
-      Devices.FRONT_RIGHT_CAMERA
+      Devices.FRONT_RIGHT_CAMERA,
+      Devices.REAR_RIGHT_CAMERA
     ); 
   }
   
@@ -94,7 +96,8 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
    */
   public enum CameraIdentifier {
     SPEAKER_LEFT_CAMERA((0)),
-    SPEAKER_RIGHT_CAMERA((1));
+    SPEAKER_RIGHT_CAMERA((1)),
+    INTAKE_CAMERA((2));
 
     private final Integer Value;
 
@@ -267,7 +270,6 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
     return CAMERAS.get(Identifier.getValue()).getNumTargets();
   }
 
-  //TODO:Fixed this Cody check pwease
   /**
    * Provides the robot-relative transformation to the best target within view of the camera that was called
    * @param Identifier Camera identifier to query from.

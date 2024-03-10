@@ -57,12 +57,10 @@ public final class SubsystemManager extends SubsystemBase {
     CANNON = SuperstructureSubsystem.getInstance();
     CLIMB = ClimbSubsystem.getInstance();
     VISION = VisionSubsystem.getInstance();
-    //TODO: <... Fetch Other Subsystem Instances>
     SUBSYSTEMS.add(DRIVEBASE);
     SUBSYSTEMS.add(CANNON);
     SUBSYSTEMS.add(CLIMB);
     SUBSYSTEMS.add(VISION);
-    //TODO: <... Add Other Subsystem Instances>
     AutoBuilder.configureHolonomic(
       DrivebaseSubsystem::getPose,
       DrivebaseSubsystem::set, 

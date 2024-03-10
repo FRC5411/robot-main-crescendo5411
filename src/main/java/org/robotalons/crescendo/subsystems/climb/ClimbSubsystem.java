@@ -48,9 +48,9 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
   private static final PIDController LEFT_PID;
   private static final PIDController RIGHT_PID;
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
-  private static ClimbSubsystem Instance;
-  private static volatile Operator<Keybindings, Preferences> CurrentOperator;
+  private static volatile Operator<Keybindings, Preferences> Operator;
   private static volatile Double Rotation;
+  private static ClimbSubsystem Instance;
   // ------------------------------------------------------------[Constructors]------------------------------------------------------------- //
 
   /**
@@ -59,7 +59,7 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
   public ClimbSubsystem() {
     super(("Climb Subsystem"));
   } static {
-    CurrentOperator = (null);
+    Operator = (null);
     LEFT_ARM = new CANSparkMax(Ports.LEFT_ARM_CONTROLLER_ID, MotorType.kBrushless);
     RIGHT_ARM = new CANSparkMax(Ports.RIGHT_ARM_CONTROLLER_ID, MotorType.kBrushless);
 
@@ -159,23 +159,23 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
   }
 
   public synchronized void configure(final Operator<Keybindings, Preferences> Operator) {
-    CurrentOperator = Operator;
+    ClimbSubsystem.Operator = Operator;
     with(() -> {
-      CurrentOperator.getKeybinding(Keybindings.CLIMB_ROTATE_FORWARD).onTrue(new InstantCommand(() -> {
+      ClimbSubsystem.Operator.getKeybinding(Keybindings.CLIMB_ROTATE_FORWARD).onTrue(new InstantCommand(() -> {
         LEFT_ARM.set((0.3d));
         RIGHT_ARM.set((0.3d));
       }, getInstance()));   
-      CurrentOperator.getKeybinding(Keybindings.CLIMB_ROTATE_FORWARD).onFalse(new InstantCommand(() -> {
+      ClimbSubsystem.Operator.getKeybinding(Keybindings.CLIMB_ROTATE_FORWARD).onFalse(new InstantCommand(() -> {
         LEFT_ARM.set((0d));
         RIGHT_ARM.set((0d));
       }, getInstance()));   
     });
     with(() -> {
-      CurrentOperator.getKeybinding(Keybindings.CLIMB_ROTATE_BACKWARD).whileTrue(new InstantCommand(() -> {
+      ClimbSubsystem.Operator.getKeybinding(Keybindings.CLIMB_ROTATE_BACKWARD).whileTrue(new InstantCommand(() -> {
         LEFT_ARM.set(-0.3d);
         RIGHT_ARM.set(-0.3d);
       }, getInstance()).repeatedly());
-      CurrentOperator.getKeybinding(Keybindings.CLIMB_ROTATE_BACKWARD).onFalse(new InstantCommand(() -> {
+      ClimbSubsystem.Operator.getKeybinding(Keybindings.CLIMB_ROTATE_BACKWARD).onFalse(new InstantCommand(() -> {
         LEFT_ARM.set((0d));
         RIGHT_ARM.set((0d));
       }, getInstance()));   
@@ -229,6 +229,11 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
       default:
         return (1e-6);
     }
+  }
+
+  @Override
+  public Operator<Keybindings, Preferences> getOperator() {
+    return Operator;
   }
 
   /**

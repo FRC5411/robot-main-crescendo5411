@@ -105,7 +105,6 @@ public final class Constants {
           .add(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (2e-2))
           .add(Preferences.ORIENTATION_DEADZONE, () -> (2e-2))
           .add(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.a())
-          .add(Keybindings.MODULE_LOCKING_TOGGLE, INPUT_METHOD.b())
           .add(Keybindings.ALIGNMENT_SPEAKER, INPUT_METHOD.x());
       }
 
@@ -138,7 +137,6 @@ public final class Constants {
     }
 
     public enum Keybindings {
-      MODULE_LOCKING_TOGGLE,
       ORIENTATION_TOGGLE,
       CLIMB_ROTATE_FORWARD,
       CLIMB_ROTATE_BACKWARD,
