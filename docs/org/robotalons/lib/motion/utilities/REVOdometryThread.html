@@ -44,7 +44,7 @@ loadScripts(document, 'script');</script>
 <ul class="sub-nav-list">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-summary">Field</a>&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method-summary">Method</a></li>
 </ul>
@@ -83,18 +83,31 @@ loadScripts(document, 'script');</script>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="OdometryThread.html" title="interface in org.robotalons.lib.motion.utilities">OdometryThread</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/DoubleSupplier.html" title="class or interface in java.util.function" class="external-link">DoubleSupplier</a>&gt;</span></div>
 <div class="block"><p>Provides an interface for asynchronously reading high-frequency measurements to a set of queues. This version is intended for devices
- like the SparkMax that require polling rather than a blocking thread. A Notifier thread is used to gather samples with consistent timing.</div>
+ like the SparkMax that require polling rather than a blocking thread. A Notifier thread is used to gather samples with consistent timing.
+ 
+ <p>This file was converted into List and Stream(able) objects (lists) for ease of interfacing with data, from Mechanical Advantage's original
+ implementation found <a href="https://github.com/Mechanical-Advantage/AdvantageKit/blob/main/example_projects/advanced_swerve_drive/src/main/java/frc/robot/subsystems/drive/SparkMaxOdometryThread.java">here</a>.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
 <ul class="see-list">
 <li><a href="OdometryThread.html" title="interface in org.robotalons.lib.motion.utilities"><code>OdometryThread</code></a></li>
+<li><code>Notifier</code></li>
 </ul>
 </dd>
 </dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- =========== FIELD SUMMARY =========== -->
+<li>
+<section class="field-summary" id="field-summary">
+<h2>Field Summary</h2>
+<div class="inherited-list">
+<h3 id="fields-inherited-from-class-org.robotalons.lib.motion.utilities.OdometryThread">Fields inherited from interface&nbsp;org.robotalons.lib.motion.utilities.<a href="OdometryThread.html" title="interface in org.robotalons.lib.motion.utilities">OdometryThread</a></h3>
+<code><a href="OdometryThread.html#STANDARD_FREQUENCY">STANDARD_FREQUENCY</a></code></div>
+</section>
+</li>
 <!-- ========== METHOD SUMMARY =========== -->
 <li>
 <section class="method-summary" id="method-summary">
