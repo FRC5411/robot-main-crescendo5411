@@ -1,6 +1,7 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo;
 import edu.wpi.first.hal.AllianceStationID;
+import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Threads;
@@ -100,9 +101,9 @@ public final class Robot extends LoggedRobot {
         break;
       case REPLAY:
         setUseTiming((false));
-        String logPath = LogFileUtil.findReplayLog();
-        Logger.setReplaySource(new WPILOGReader(logPath));
-        Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, ("_sim"))));
+        String Path = LogFileUtil.findReplayLog();
+        Logger.setReplaySource(new WPILOGReader(Path));
+        Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(Path, ("_sim"))));
         break;
     }
     Logger.start();
@@ -133,8 +134,7 @@ public final class Robot extends LoggedRobot {
             });
     if (Subsystems.TYPE == RobotType.SIMULATION) {
       DriverStationSim.setAllianceStationId(AllianceStationID.Blue1);
-    }
-
+    } 
     try {
       CTREOdometryThread.getInstance();
       REVOdometryThread.getInstance();
@@ -144,6 +144,7 @@ public final class Robot extends LoggedRobot {
     Shuffleboard.startRecording();
     DataLogManager.start();
     DriverStation.silenceJoystickConnectionWarning((true));
+    PortForwarder.add((5800), ("photonvision.local"), (5800));
   }
 
   @Override

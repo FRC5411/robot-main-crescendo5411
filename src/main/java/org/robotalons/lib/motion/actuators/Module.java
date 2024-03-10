@@ -208,7 +208,7 @@ public abstract class Module implements Closeable {
    * @return Rotational axis heading as an absolute {@link Rotation2d} object
    */
   public Rotation2d getAbsoluteRotation() {
-    return STATUS.RotationalAbsolutePosition.minus(RotationalAbsoluteOffset);
+    return STATUS.RotationalAbsolutePosition;
   }
 
   /**

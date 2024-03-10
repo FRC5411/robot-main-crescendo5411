@@ -249,7 +249,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   /**
    * Toggles between the possible states of orientation types
    */
-  public static synchronized void toggleOrientationType() {
+  public static synchronized void toggle() {
     switch (CurrentMode) {
       case ROBOT_ORIENTED:
         CurrentMode = DrivebaseState.FIELD_ORIENTED;
@@ -321,10 +321,11 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     with(() ->
       Operator.getKeybinding(Keybindings.ORIENTATION_TOGGLE)
         .onTrue(new InstantCommand(
-          DrivebaseSubsystem::toggleOrientationType,
+          DrivebaseSubsystem::toggle,
           DrivebaseSubsystem.getInstance()
         )));
 
+    //TODO: Find a way to not use #repeatedly
     with(() ->
       Operator.getKeybinding(Keybindings.ALIGNMENT_SPEAKER)
       .onTrue(new InstantCommand(
@@ -333,7 +334,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
           VisionSubsystem.getAprilTagPose(Rotation % 2 * Math.PI > Math.PI? (3): (7))
             .ifPresent((Pose) -> {
                 alignPose(Pose.toPose2d())
-              .onlyWhile(() -> Operator.getKeybinding(Keybindings.ORIENTATION_TOGGLE).getAsBoolean()).schedule();
+              .onlyWhile(() -> Operator.getKeybinding(Keybindings.ORIENTATION_TOGGLE).getAsBoolean()).repeatedly().schedule();
             });
         },
         VisionSubsystem.getInstance(),
@@ -347,7 +348,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
           VisionSubsystem.getAprilTagPose((9))
             .ifPresent((Pose) -> {
                 alignPose(Pose.toPose2d())
-              .onlyWhile(() -> Operator.getKeybinding(Keybindings.ORIENTATION_TOGGLE).getAsBoolean()).schedule();
+              .onlyWhile(() -> Operator.getKeybinding(Keybindings.ORIENTATION_TOGGLE).getAsBoolean()).repeatedly().schedule();
             });
         },
         VisionSubsystem.getInstance(),
@@ -361,7 +362,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
           VisionSubsystem.getOptimalTarget(CameraIdentifier.INTAKE_CAMERA)
             .ifPresent((Transformation) -> {
               alignTranslation(new Transform2d(Transformation.getTranslation(), Transformation.getRotation()))
-              .onlyWhile(() -> Operator.getKeybinding(Keybindings.ALIGNMENT_OBJECT).getAsBoolean()).schedule();
+              .onlyWhile(() -> Operator.getKeybinding(Keybindings.ALIGNMENT_OBJECT).getAsBoolean()).repeatedly().schedule();
             });
         },
         VisionSubsystem.getInstance(),
@@ -375,7 +376,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
           VisionSubsystem.getOptimalTarget(List.of(CameraIdentifier.SPEAKER_RIGHT_CAMERA, CameraIdentifier.SPEAKER_LEFT_CAMERA, CameraIdentifier.SPEAKER_RIGHT_CAMERA))
             .ifPresent((Transformation) -> {
                 alignTranslation(new Transform2d(Transformation.getTranslation(), Transformation.getRotation()))
-              .onlyWhile(() -> Operator.getKeybinding(Keybindings.ALIGNMENT_NEAREST).getAsBoolean()).schedule();
+              .onlyWhile(() -> Operator.getKeybinding(Keybindings.ALIGNMENT_NEAREST).getAsBoolean()).repeatedly().schedule();
             });
         },
         VisionSubsystem.getInstance(),

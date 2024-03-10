@@ -168,11 +168,11 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
     return CAMERAS.get(Identifier.getValue()).getRobotPositionDeltas();
   }
 
-  // /**
-  //  * Provides the robot relative position to a given object based on the estimated position of this camera and a transformation to a known object.
-  //  * @param Target Transformation to a given target anywhere on the field.
-  //  * @return Position of the object relative to the field.
-  //  */
+  /**
+   * Provides the robot relative position to a given object based on the estimated position of this camera and a transformation to a known object.
+   * @param Target Transformation to a given target anywhere on the field.
+   * @return Position of the object relative to the field.
+   */
   // public static Optional<Pose3d> getObjectFieldPose(final Transform3d Target){
   //   return CAMERAS.get(CameraIdentifier.INTAKE_CAMERA.getValue()).getObjectFieldPose(Target);
   // }
@@ -186,14 +186,14 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
     return CAMERAS.get(Identifier.getValue()).getStandardDeviations();
   }
 
-  // /**
-  //  * Provides the robot relative position to a given object based on the estimated position of this camera and a transformation assuming that.
-  //  * the desired object is the optimal target of this camera.
-  //  * @return Position of the object relative to the field.
-  //  */
-  // public static Optional<Pose2d> getObjectFieldPose(){
-  //   return CAMERAS.get(CameraIdentifier.INTAKE_CAMERA.getValue()).getObjectFieldPose();
-  // }
+  /**
+   * Provides the robot relative position to a given object based on the estimated position of this camera and a transformation assuming that.
+   * the desired object is the optimal target of this camera.
+   * @return Position of the object relative to the field.
+   */
+  public static Optional<Pose2d> getObjectFieldPose(){
+    return CAMERAS.get(CameraIdentifier.INTAKE_CAMERA.getValue()).getObjectFieldPose();
+  }
 
   /**
    * Provides a list of robot-relative transformations to the best target within view of the camera.

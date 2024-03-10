@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
-import java.util.concurrent.atomic.DoubleAccumulator;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -20,6 +20,7 @@ import com.revrobotics.RelativeEncoder;
 import org.littletonrobotics.junction.Logger;
 import org.robotalons.lib.motion.actuators.Module;
 
+import java.util.concurrent.atomic.DoubleAccumulator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -45,7 +46,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
   private final SimpleMotorFeedforward TRANSLATIONAL_FF;
   private final RelativeEncoder TRANSLATIONAL_ENCODER;
   private final Queue<Double> TRANSLATIONAL_POSITION_QUEUE;
-  private final DoubleAccumulator TRANSLATIONAL_ACCUMULATOR;
+  private final DoubleAccumulator TRANSLATIONAL_POSITION;
 
   private final Controller ROTATIONAL_CONTROLLER;
   private final PIDController ROTATIONAL_PID;
@@ -82,7 +83,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       MODULE_CONSTANTS.TRANSLATIONAL_KA_GAIN);
     TRANSLATIONAL_ENCODER = TRANSLATIONAL_CONTROLLER.getEncoder();
 
-    TRANSLATIONAL_ACCUMULATOR = new DoubleAccumulator(
+    TRANSLATIONAL_POSITION = new DoubleAccumulator(
       (Accumulated, Velocity) -> Accumulated + Units.rotationsPerMinuteToRadiansPerSecond(Velocity) * discretize() * MODULE_CONSTANTS.WHEEL_RADIUS_METERS, (0d));
 
     ROTATIONAL_CONTROLLER = MODULE_CONSTANTS.ROTATIONAL_CONTROLLER;
@@ -96,7 +97,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     RotationalAbsoluteOffset = MODULE_CONSTANTS.ROTATIONAL_ENCODER_OFFSET;
     ODOMETRY_LOCK = new ReentrantLock();
 
-    TRANSLATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(TRANSLATIONAL_ACCUMULATOR::get);
+    TRANSLATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(TRANSLATIONAL_POSITION::get);
     ROTATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(() -> getAbsoluteRotation().getRadians());
     TIMESTAMP_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.timestamp();
     
@@ -208,7 +209,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
   @Override
   public synchronized void periodic() {
     update();
-    TRANSLATIONAL_ACCUMULATOR.accumulate(TRANSLATIONAL_ENCODER.getVelocity());
+    TRANSLATIONAL_POSITION.accumulate(TRANSLATIONAL_ENCODER.getVelocity());
     synchronized(STATUS) {
       if (RotationalRelativeOffset == (null) && STATUS.RotationalAbsolutePosition.getRadians() != (0d)) {
         RotationalRelativeOffset = STATUS.RotationalAbsolutePosition.minus(STATUS.RotationalRelativePosition);
@@ -278,7 +279,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
         TRANSLATIONAL_CONTROLLER.getMotorTemperature();
 
       STATUS.RotationalAbsolutePosition = 
-        Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble()).plus(RotationalAbsoluteOffset);
+        Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble()).minus(RotationalAbsoluteOffset);
       STATUS.RotationalRelativePosition =
         Rotation2d.fromRotations(ROTATIONAL_ENCODER.getPosition() / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO);
       STATUS.RotationalVelocityRadiansSecond =
@@ -315,8 +316,8 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
             .toArray(Rotation2d[]::new);    
         ROTATIONAL_POSITION_QUEUE.clear();  
       }
-      Logger.processInputs("RealInputs/" + "MODULE (" + Integer.toString(MODULE_CONSTANTS.NUMBER) + ')', STATUS);
     }
+    Logger.processInputs("RealInputs/" + "MODULE (" + Integer.toString(MODULE_CONSTANTS.NUMBER) + ')', STATUS);
     MODULE_CONSTANTS.STATUS_PROVIDER.getLock().unlock();
     ODOMETRY_LOCK.unlock();
   }

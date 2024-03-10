@@ -68,8 +68,8 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   private SuperstructureSubsystem() {
     super(("Cannon Subsystem"));
   } static {
-    Reference = new SwerveModuleState((0d), new Rotation2d(Measurements.PIVOT_MINIMUM_ROTATION));
-    State = SuperstructureState.SEMI;
+    Reference = new SwerveModuleState((0d), Rotation2d.fromRotations(Measurements.PIVOT_MINIMUM_ROTATION));
+    State = SuperstructureState.MANUAL;
     FIRING_CONTROLLERS = new Pair<TalonFX,TalonFX>(
       new TalonFX(Ports.FIRING_CONTROLLER_LEFT_ID),
       new TalonFX(Ports.FIRING_CONTROLLER_RIGHT_ID)
@@ -129,7 +129,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
         (Math.abs(Units.rotationsToDegrees(getPivotRotation())) / Interpolated.get((1), (0)))
       ) / 2;
       if(State == SuperstructureState.AUTO || State == SuperstructureState.SEMI) {
-        Reference.angle = Rotation2d.fromRadians(-Interpolated.get((1), (0)));
+        Reference.angle = Rotation2d.fromRadians(Interpolated.get((1), (0)));
         if(State == SuperstructureState.AUTO) {
           if(Percentage < Measurements.ALLOWABLE_SHOT_PERCENTAGE) {
             set(Interpolated.get((0), (0)));
