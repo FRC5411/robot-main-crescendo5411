@@ -10,6 +10,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.SlotConfigs;
@@ -19,6 +20,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import java.util.concurrent.Executors;
 
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonUtils;
@@ -68,7 +71,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     super(("Cannon Subsystem"));
   } static {
     Reference = new SwerveModuleState((0d), Rotation2d.fromRotations(Measurements.PIVOT_MINIMUM_ROTATION));
-    State = SuperstructureState.SEMI;
+    State = SuperstructureState.MANUAL;
     FIRING_CONTROLLERS = new Pair<TalonFX,TalonFX>(
       new TalonFX(Ports.FIRING_CONTROLLER_LEFT_ID),
       new TalonFX(Ports.FIRING_CONTROLLER_RIGHT_ID)
@@ -226,11 +229,50 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     set(Reference);
   }
 
-  @Override
-  public void configure(final Operator<Keybindings, Preferences> Profile) {
-    Operator = Profile;
+  /**
+   * Utility method for quickly adding button bindings to reach a given rotation, and reset to default
+   * @param Keybinding Trigger to bind this association to
+   * @param Rotation   Value of rotation to bring to pivot to
+   * @param Velocity   Value of velocity to bring the firing controllers to
+   */
+  private void with(final Trigger Keybinding, final Double Rotation) {
     with(() -> {
-      Operator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
+      Keybinding.onTrue(new InstantCommand(
+        () -> {
+          Reference.angle = Rotation2d.fromRadians(Rotation);
+          FIRING_CONTROLLERS.getFirst().set(-Measurements.FIRING_STANDARD_VELOCITY);
+          FIRING_CONTROLLERS.getSecond().set(-Measurements.FIRING_STANDARD_VELOCITY);
+        },
+        SuperstructureSubsystem.getInstance()
+      ));
+      Keybinding.onFalse(new InstantCommand(
+        () -> {
+          Reference.angle = Rotation2d.fromRadians(Measurements.PIVOT_MINIMUM_ROTATION);
+          FIRING_CONTROLLERS.getFirst().set((0d));
+          FIRING_CONTROLLERS.getSecond().set((0d));
+        },
+        SuperstructureSubsystem.getInstance()
+      ));
+    });
+  }
+
+  @Override
+  public void configure(final Operator<Keybindings, Preferences> Operator) {
+    SuperstructureSubsystem.Operator = Operator;
+    with(
+      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_SUBWOOFER),
+      Measurements.SUBWOOFER_LINE);
+    with(
+      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_WINGLINE),
+      Measurements.WING_LINE);
+    with(
+      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_PODIUMLINE),
+      Measurements.PODIUM_LINE);
+    with(
+      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_STARTING_LINE),
+      Measurements.STARTING_LINE);
+    with(() -> {
+      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
         .onTrue(new InstantCommand(
           () -> {
             INTAKE_CONTROLLER.set((-1d));
@@ -238,7 +280,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
           },
           SuperstructureSubsystem.getInstance()
         ));
-      Operator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
+        SuperstructureSubsystem.Operator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
         .onFalse(new InstantCommand(
           () -> {
             INTAKE_CONTROLLER.set((0d));
@@ -248,7 +290,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       ));
     });
     with(() -> {
-      Operator.getKeybinding(Keybindings.INTAKE_TOGGLE)
+      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.INTAKE_TOGGLE)
         .onTrue(new InstantCommand(
           () -> {
             INTAKE_CONTROLLER.set((1d));
@@ -256,7 +298,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
           },
           SuperstructureSubsystem.getInstance()
         ));
-      Operator.getKeybinding(Keybindings.INTAKE_TOGGLE)
+        SuperstructureSubsystem.Operator.getKeybinding(Keybindings.INTAKE_TOGGLE)
         .onFalse(new InstantCommand(
           () -> {
             INTAKE_CONTROLLER.set((0d));
@@ -266,14 +308,14 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
         ));
     });
     with(() -> {
-      Operator.getKeybinding(Keybindings.CANNON_TOGGLE)
+      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_TOGGLE)
         .onTrue(new InstantCommand(
           () -> {
             set(Measurements.FIRING_STANDARD_VELOCITY);
           },
           SuperstructureSubsystem.getInstance()
         ));
-      Operator.getKeybinding(Keybindings.CANNON_TOGGLE)
+        SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_TOGGLE)
         .onFalse(new InstantCommand(
           () -> {
             FIRING_CONTROLLERS.getFirst().set((0d));

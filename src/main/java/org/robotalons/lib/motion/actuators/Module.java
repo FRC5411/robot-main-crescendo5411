@@ -126,8 +126,8 @@ public abstract class Module implements Closeable {
    * @return An optimized version of the reference
    */
   public SwerveModuleState set(final SwerveModuleState Reference) {
-    final var Difference = getRelativeRotation().minus(getAbsoluteRotation());
-    this.Reference = SwerveModuleState.optimize(Reference, (Math.round(Difference.getRadians()) == (0) || Math.round(Difference.getRadians()) == 2 * Math.PI)? (new Rotation2d(Math.PI)): (Difference));
+    final var Difference = getAbsoluteRotation().minus(Reference.angle);
+    this.Reference = SwerveModuleState.optimize(Reference, (Math.round(Difference.getRadians()) == (Math.PI / (2)))?  (new Rotation2d((0d))): (getAbsoluteRotation()));
     return this.Reference;
   }
 

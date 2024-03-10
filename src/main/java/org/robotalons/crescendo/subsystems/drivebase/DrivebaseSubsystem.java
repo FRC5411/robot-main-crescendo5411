@@ -308,10 +308,10 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         (Double) Operator.getPreference(Preferences.TRANSLATIONAL_Y_DEADZONE))),
         ((Boolean) Operator.getPreference(Preferences.SQUARED_INPUT))?
         new Rotation2d(
-            square(MathUtil.applyDeadband(-(Double) Operator.getPreference(Preferences.ORIENTATION_T_INPUT),
+            square(MathUtil.applyDeadband((Double) Operator.getPreference(Preferences.ORIENTATION_T_INPUT),
           (Double) Operator.getPreference(Preferences.ORIENTATION_DEADZONE)))):
         new Rotation2d(
-          (MathUtil.applyDeadband(-(Double) Operator.getPreference(Preferences.ORIENTATION_T_INPUT),
+          (MathUtil.applyDeadband((Double) Operator.getPreference(Preferences.ORIENTATION_T_INPUT),
         (Double) Operator.getPreference(Preferences.ORIENTATION_DEADZONE))))),
         DrivebaseSubsystem.getInstance()
     ));

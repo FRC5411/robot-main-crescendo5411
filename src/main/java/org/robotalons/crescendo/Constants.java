@@ -115,9 +115,8 @@ public final class Constants {
         public static final Operator<Keybindings,Preferences> PROFILE = new Operator<Keybindings,Preferences>(NAME)
           .add(Keybindings.CANNON_PIVOT_PODIUMLINE, INPUT_METHOD.a())
           .add(Keybindings.CANNON_PIVOT_SUBWOOFER, INPUT_METHOD.b())
-          .add(Keybindings.CANNON_PIVOT_CENTERLINE, INPUT_METHOD.x())
+          .add(Keybindings.CANNON_PIVOT_STARTING_LINE, INPUT_METHOD.x())
           .add(Keybindings.CANNON_PIVOT_WINGLINE, INPUT_METHOD.y())
-          .add(Keybindings.CANNON_PIVOT_MAXIMUM, INPUT_METHOD.rightBumper())
           .add(Keybindings.CANNON_TOGGLE, Operators.Primary.INPUT_METHOD.leftBumper())
           .add(Keybindings.CLIMB_ROTATE_BACKWARD, INPUT_METHOD.povDown())
           .add(Keybindings.CLIMB_ROTATE_FORWARD, INPUT_METHOD.povUp())
@@ -145,7 +144,7 @@ public final class Constants {
       CANNON_TOGGLE,
       CANNON_PIVOT_WINGLINE,
       CANNON_PIVOT_SUBWOOFER,
-      CANNON_PIVOT_CENTERLINE,
+      CANNON_PIVOT_STARTING_LINE,
       CANNON_PIVOT_PODIUMLINE,
       CANNON_PIVOT_MAXIMUM,
       ALIGNMENT_SPEAKER,

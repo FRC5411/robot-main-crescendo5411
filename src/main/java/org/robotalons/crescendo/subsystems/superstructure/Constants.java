@@ -43,6 +43,11 @@ public class Constants {
     public static final Double CANNON_LENGTH = (1d);
     public static final Boolean PIVOT_INVERTED = (false);
 
+    public static final Double SUBWOOFER_LINE = Units.degreesToRadians((51.7d));
+    public static final Double PODIUM_LINE = Units.degreesToRadians((25.7d));
+    public static final Double STARTING_LINE = Units.degreesToRadians((38.0d));
+    public static final Double WING_LINE = Units.degreesToRadians((16.1d));
+
     public static final Double PIVOT_MINIMUM_ROTATION = Units.degreesToRotations((5));
     public static final Double PIVOT_MAXIMUM_ROTATION = Units.degreesToRotations((70));
 
