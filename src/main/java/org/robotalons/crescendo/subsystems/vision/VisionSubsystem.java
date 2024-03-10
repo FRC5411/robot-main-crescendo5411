@@ -99,17 +99,17 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
     SPEAKER_RIGHT_CAMERA((1)),
     INTAKE_CAMERA((2));
 
-    private final Integer Value;
+    private final int Value;
 
-    CameraIdentifier(final Integer Value) {
+    CameraIdentifier(final int Value) {
       this.Value = Value;
     }
 
     /**
      * Provides the actual camera indexable value of this enum type can be used interchangeably with {@link #ordinal()}.
-     * @return Integer format of this camera number
+     * @return int format of this camera number
      */
-    public Integer getValue() {
+    public int getValue() {
       return this.Value;
     }
   }
@@ -129,7 +129,7 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
    * Retrieves the Pose3d of the robot that is averaged from the all camera estimations.
    * @return New approximation of Pose3d from robot. 
    */
-  public static Optional<Pose3d> getApproximatedRobotPose(){   
+  public static Optional<Pose3d> I(){   
     final Pose3d EstimatedPoseAverage = new Pose3d();
     final AtomicInteger ValidPoseCount = new AtomicInteger();
     CAMERAS.forEach((Camera) -> {
@@ -211,7 +211,7 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
    * @param Tag ID of the april tag
    * @return Position of the tag relative to the field.
    */
-  public static Optional<Pose3d> getAprilTagPose(final Integer Tag){
+  public static Optional<Pose3d> getAprilTagPose(final int Tag){
     return Measurements.FIELD_LAYOUT.getTagPose(Tag);
   }
 
@@ -266,7 +266,7 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
    * @param Identifier Camera identifier to query from.
    * @return Number of Targets found by camera
    */
-  public static Integer getNumTargets(final CameraIdentifier Identifier) {
+  public static int getNumTargets(final CameraIdentifier Identifier) {
     return CAMERAS.get(Identifier.getValue()).getNumTargets();
   }
 

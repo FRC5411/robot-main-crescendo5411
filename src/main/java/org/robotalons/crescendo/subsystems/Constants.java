@@ -17,22 +17,22 @@ import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 public class Constants {
   // -------------------------------------------------------------[Internal]---------------------------------------------------------------//
   public static final class Measurements {
-    public static final Double ROBOT_LENGTH_METERS = Units.inchesToMeters((29));        
-    public static final Double ROBOT_WIDTH_METERS = Units.inchesToMeters((29));
-    public static final Double ROBOT_RADIUS_METERS = Math.hypot(ROBOT_LENGTH_METERS / (2.0), ROBOT_WIDTH_METERS / (2.0));      
+    public static final double ROBOT_LENGTH_METERS = Units.inchesToMeters((29));        
+    public static final double ROBOT_WIDTH_METERS = Units.inchesToMeters((29));
+    public static final double ROBOT_RADIUS_METERS = Math.hypot(ROBOT_LENGTH_METERS / (2.0), ROBOT_WIDTH_METERS / (2.0));      
     
-    public static final Double ROBOT_MAXIMUM_LINEAR_VELOCITY = Units.feetToMeters((15.4d));
-    public static final Double ROBOT_MAXIMUM_ANGULAR_VELOCITY = ROBOT_MAXIMUM_LINEAR_VELOCITY / ROBOT_RADIUS_METERS;
+    public static final double ROBOT_MAXIMUM_LINEAR_VELOCITY = Units.feetToMeters((15.4d));
+    public static final double ROBOT_MAXIMUM_ANGULAR_VELOCITY = ROBOT_MAXIMUM_LINEAR_VELOCITY / ROBOT_RADIUS_METERS;
 
-    public static final Double ROBOT_MAXIMUM_LINEAR_ACCELERATION = Units.feetToMeters((9.5d));
-    public static final Double ROBOT_MAXIMUM_ANGULAR_ACCELERATION = ROBOT_MAXIMUM_LINEAR_VELOCITY / ROBOT_RADIUS_METERS;
+    public static final double ROBOT_MAXIMUM_LINEAR_ACCELERATION = Units.feetToMeters((9.5d));
+    public static final double ROBOT_MAXIMUM_ANGULAR_ACCELERATION = ROBOT_MAXIMUM_LINEAR_VELOCITY / ROBOT_RADIUS_METERS;
 
-    public static final Double ROBOT_TRANSLATION_KP = (1d);
-    public static final Double ROBOT_TRANSLATION_KI = (1d);
-    public static final Double ROBOT_TRANSLATION_KD = (1d);    
+    public static final double ROBOT_TRANSLATION_KP = (1d);
+    public static final double ROBOT_TRANSLATION_KI = (1d);
+    public static final double ROBOT_TRANSLATION_KD = (1d);    
 
-    public static final Double ROBOT_ROTATIONAL_KP = (1d);
-    public static final Double ROBOT_ROTATIONAL_KI = (1d);
-    public static final Double ROBOT_ROTATIONAL_KD = (1d);
+    public static final double ROBOT_ROTATIONAL_KP = (1d);
+    public static final double ROBOT_ROTATIONAL_KI = (1d);
+    public static final double ROBOT_ROTATIONAL_KD = (1d);
   }
 }

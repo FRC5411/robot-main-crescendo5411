@@ -135,7 +135,7 @@ public final class VisionCamera extends Camera {
     final var Y_Estimates = new double[POSES.size()];
     final var Z_Estimates = new double[POSES.size()];  
 
-    for(Integer Index = (0); Index < POSES.size(); Index++){
+    for(int Index = (0); Index < POSES.size(); Index++){
       final var Estimate = POSES.get(Index);
       X_Estimates[Index] = Estimate.getX();
       Y_Estimates[Index] = Estimate.getY();
@@ -184,7 +184,7 @@ public final class VisionCamera extends Camera {
   @Override
   public Pose2d[] getRobotPositionDeltas() {
     final Pose2d[] Deltas = new Pose2d[POSES.size()];
-    for(Integer Index = (0); Index < POSES.size() - (1); Index++){
+    for(int Index = (0); Index < POSES.size() - (1); Index++){
       final var Previous = POSES.get(Index);
       final var Current = POSES.get(Index + (1));
       Deltas[Index] = new Pose2d(
@@ -269,8 +269,8 @@ public final class VisionCamera extends Camera {
       List<Optional<Transform2d>> Targets2D = new ArrayList<>();
 
       for(int i = 0; i < Targets3D.size(); i++){
-        Double x = Targets3D.get(i).get().getX();
-        Double y = Targets3D.get(i).get().getY();
+        double x = Targets3D.get(i).get().getX();
+        double y = Targets3D.get(i).get().getY();
         
         Targets2D.set(i, Optional.of(new Transform2d(x, y, new Rotation2d())));
       }
@@ -303,12 +303,12 @@ public final class VisionCamera extends Camera {
   }
 
   @Override
-  public Double getLatency(){
+  public double getLatency(){
     return CAMERA.isConnected()? CAMERA.getLatestResult().getLatencyMillis(): (-1d);
   }
 
   @Override
-  public Boolean getConnected(){
+  public boolean getConnected(){
     return CAMERA.isConnected();
   }
 

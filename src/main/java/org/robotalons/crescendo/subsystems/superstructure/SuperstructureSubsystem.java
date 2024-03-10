@@ -125,7 +125,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       Math.hypot(Distance, Measurements.SPEAKER_HEIGHT_METERS) / Math.hypot(Measurements.PIVOT_MAXIMUM_RANGE_METERS, Measurements.SPEAKER_HEIGHT_METERS));
     if(Interpolated != (null)) {
       final var Percentage = 
-        (Math.abs(FIRING_VELOCITY.getValueAsDouble() / Interpolated.get((0), (0))) + (Math.abs(Units.rotationsToDegrees(getPivotRotation())) / Interpolated.get((1), (0)))) / 2;
+        (Math.abs(FIRING_VELOCITY.getValue() / Interpolated.get((0), (0))) + (Math.abs(Units.rotationsToDegrees(getPivotRotation())) / Interpolated.get((1), (0)))) / 2;
       if(State == SuperstructureState.AUTO || State == SuperstructureState.SEMI) {
         Reference.angle = Rotation2d.fromRadians(Interpolated.get((1), (0)));
         if(State == SuperstructureState.AUTO) {
@@ -147,7 +147,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     }
     set(Reference.angle);
     Logger.recordOutput(("Cannon/Reference"), Reference);
-    Logger.recordOutput(("Cannon/MeasuredVelocity"), FIRING_VELOCITY.getValueAsDouble());
+    Logger.recordOutput(("Cannon/MeasuredVelocity"), FIRING_VELOCITY.getValue());
     Logger.recordOutput(("Cannon/MeasuredRotation"), -getPivotRotation());
     Constants.Objects.ODOMETRY_LOCKER.unlock();
   }
@@ -161,7 +161,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * @return Note preset with the parameters
    */
   @SuppressWarnings("unused")
-  private static TrajectoryObject object(final Double Velocity, final Double Distance, final Double Height, final Rotation2d Rotation) {
+  private static TrajectoryObject object(final double Velocity, final double Distance, final double Height, final Rotation2d Rotation) {
     return TrajectoryObject.note(Velocity, Rotation, Measurements.CANNON_LENGTH, Distance, Height, (2000));
   }
 
@@ -194,7 +194,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * Mutates the current reference RPM of the cannon
    * @param Reference Desired velocity in RPM
    */
-  private static synchronized void set(final Double Reference) {
+  private static synchronized void set(final double Reference) {
     FIRING_CONTROLLERS.getFirst().setControl(new VelocityDutyCycle(-Reference));
     FIRING_CONTROLLERS.getSecond().setControl(new VelocityDutyCycle(-Reference));
   }
@@ -216,7 +216,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   }
 
   /**
-   * Mutates the cannon controller's current 'set-point' or reference state and mutates the cannon controller's current mode of operation
+   * Mutates the cannon controller's current 'set-point' or reference state and  mutates the cannon controller's current mode of operation
    * and how it should identify and calculate reference 'set-points'
    * @param Reference Cannon's new Goal or 'set-point' reference
    * @param Mode Mode of cannon control
@@ -233,7 +233,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * @param Rotation   Value of rotation to bring to pivot to
    * @param Velocity   Value of velocity to bring the firing controllers to
    */
-  private void with(final Trigger Keybinding, final Double Rotation) {
+  private void with(final Trigger Keybinding, final double Rotation) {
     with(() -> {
       Keybinding.onTrue(new InstantCommand(
         () -> {
@@ -343,7 +343,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * Provides the current rotational reading of the pivot in rotations
    * @return Pivot rotational reading in radians
    */
-  private static Double getPivotRotation() {
+  private static double getPivotRotation() {
     return Units.rotationsToRadians((PIVOT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.ABSOLUTE_ENCODER_OFFSET));
   }
 

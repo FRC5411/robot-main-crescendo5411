@@ -195,9 +195,9 @@ public abstract class Camera implements Closeable {
 
   /**
    * Provides the latency or 'lag' of the camera to retrieve information, should always be greater than 0d.
-   * @return Double representation of the latency to retrieve information
+   * @return double representation of the latency to retrieve information
    */
-  public Double getLatency() {
+  public double getLatency() {
     return CAMERA_STATUS.Latency;
   }
 
@@ -205,7 +205,7 @@ public abstract class Camera implements Closeable {
    * Provides a boolean representation of if the module is still connected to the system and all signals are okay.
    * @return Boolean representing Connectivity
    */
-  public Boolean getConnected() {
+  public boolean getConnected() {
     return CAMERA_STATUS.Connected;
   }
 }
