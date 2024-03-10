@@ -81,7 +81,7 @@ public final class Constants {
         public static final Double ROTATIONAL_P_GAIN = (2.81d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
         public static final Double ROTATIONAL_D_GAIN = (0.001d);
-        public static final Double ROTATIONAL_ENCODER_OFFSET = (0.400146d);
+        public static final Double ROTATIONAL_ENCODER_OFFSET = (0.390146d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
         public static final Double LINEAR_P_GAIN = (0.2d);

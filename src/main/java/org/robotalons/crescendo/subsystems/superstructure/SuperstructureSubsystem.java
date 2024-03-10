@@ -69,7 +69,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     super(("Cannon Subsystem"));
   } static {
     CurrentReference = new SwerveModuleState((0d), new Rotation2d(Measurements.PIVOT_MINIMUM_ROTATION));
-    CurrentFiringMode = SuperstructureState.MANUAL;
+    CurrentFiringMode = SuperstructureState.SEMI;
     FIRING_CONTROLLERS = new Pair<TalonFX,TalonFX>(
       new TalonFX(Ports.FIRING_CONTROLLER_LEFT_ID),
       new TalonFX(Ports.FIRING_CONTROLLER_RIGHT_ID)
@@ -126,7 +126,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       final var Percentage = ((FIRING_VELOCITY.getValueAsDouble() / Interpolated.get((0), (0))) 
                   + (Units.rotationsToDegrees(getPivotRotation()) / Interpolated.get((1), (0)))) / 2;
       if(CurrentFiringMode == SuperstructureState.AUTO || CurrentFiringMode == SuperstructureState.SEMI) {
-        CurrentReference.angle = Rotation2d.fromRadians(Units.radiansToRotations(Interpolated.get((1), (0))));
+        CurrentReference.angle = Rotation2d.fromRadians(-Interpolated.get((1), (0)));
         if(CurrentFiringMode == SuperstructureState.AUTO) {
           if(Percentage < Measurements.ALLOWABLE_SHOT_PERCENTAGE) {
             set(Interpolated.get((0), (0)));

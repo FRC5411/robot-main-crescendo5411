@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -99,11 +100,12 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       new Translation2d(-(Constants.Measurements.ROBOT_WIDTH_METERS)  / (2),
                         -(Constants.Measurements.ROBOT_LENGTH_METERS) / (2)));
     final var Estimated = VisionSubsystem.getApproximatedRobotPose();
+    final var Tag = org.robotalons.crescendo.subsystems.vision.Constants.Measurements.FIELD_LAYOUT.getTagPose((7)).get();
     POSE_ESTIMATOR = new SwerveDrivePoseEstimator(
       KINEMATICS, 
       GYROSCOPE.getYawRotation(), 
       getModulePositions(), 
-      Estimated.isPresent()? Estimated.get().toPose2d(): new Pose2d(new Translation2d(), GYROSCOPE.getYawRotation()));
+      Estimated.isPresent()? Estimated.get().toPose2d(): new Pose2d(new Translation2d(Tag.getX() + (Measurements.ROBOT_RADIUS_METERS + Units.inchesToMeters((2.5)) +org.robotalons.crescendo.subsystems.superstructure.Constants.Measurements.OFFSET_WALL_METERS),Tag.getY()), GYROSCOPE.getYawRotation()));
     CurrentPositions = new ArrayList<>();
     MODULES.stream().map(Module::getPosition).forEachOrdered(CurrentPositions::add);
     CHARACTERIZATION_ROUTINE = new SysIdRoutine(

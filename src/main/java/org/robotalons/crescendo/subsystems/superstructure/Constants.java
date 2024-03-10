@@ -59,8 +59,8 @@ public class Constants {
 
     public static final Double ALLOWABLE_SHOT_PERCENTAGE = (95e-2);
 
-    public static final Matrix<N2,N1> PIVOT_UPPER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), new double[]{FIRING_STANDARD_VELOCITY, (29d)});
-    public static final Matrix<N2,N1> PIVOT_LOWER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), new double[]{FIRING_STANDARD_VELOCITY, (55d)});
+    public static final Matrix<N2,N1> PIVOT_UPPER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), new double[]{FIRING_STANDARD_VELOCITY, (Units.degreesToRadians((29d)))});
+    public static final Matrix<N2,N1> PIVOT_LOWER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), new double[]{FIRING_STANDARD_VELOCITY, (Units.degreesToRadians((55d)))});
 
     public static final InterpolatingMatrixTreeMap<Double,N2,N1> PIVOT_FIRING_MAP = new InterpolatingMatrixTreeMap<>();
 
@@ -99,7 +99,7 @@ public class Constants {
      * @param Rotation  Measured shooter rotation in radians
      */
     private static void hyput(final Double Distance, final Double Velocity, final Double Rotation) {
-      put(Math.hypot(Distance + OFFSET_WALL_METERS, SPEAKER_HEIGHT_METERS), Velocity, Rotation);
+      put(Math.hypot(Distance + OFFSET_WALL_METERS, SPEAKER_HEIGHT_METERS), Velocity, Units.degreesToRadians(Rotation));
     }
   }
 
