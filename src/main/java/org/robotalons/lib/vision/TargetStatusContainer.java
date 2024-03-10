@@ -1,8 +1,8 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.lib.vision;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
 
 import org.littletonrobotics.junction.AutoLog;
 
@@ -14,9 +14,9 @@ import org.littletonrobotics.junction.AutoLog;
  */
 @AutoLog
 public class TargetStatusContainer {
-  public Pose3d BestTargetPose = new Pose3d(0, 0, 0, null);
-  public Transform3d OptimalTransform = new Transform3d(0, 0, 0, null);
-  public Transform3d[] Targets = new Transform3d[]{};
+  public Pose2d BestTargetPose = new Pose2d(0, 0, null);
+  public Transform2d OptimalTransform = new Transform2d(0, 0, null);
+  public Transform2d[] Targets = new Transform2d[]{};
   public boolean HasTargets = (false);
   public int TotalTargets = 0;
 }

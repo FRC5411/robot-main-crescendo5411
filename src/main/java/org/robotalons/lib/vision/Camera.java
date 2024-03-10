@@ -4,6 +4,7 @@ package org.robotalons.lib.vision;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -90,7 +91,7 @@ public abstract class Camera implements Closeable {
    * @param Target Transformation to a given target anywhere on the field
    * @return Position of the object relative to the field
    */
-  public Optional<Pose3d> getObjectFieldPose(final Transform3d Target){
+  public Optional<Pose2d> getObjectFieldPose(final Transform2d Target){
     return Optional.ofNullable(TARGET_STATUS.BestTargetPose);
   }
 
@@ -100,7 +101,7 @@ public abstract class Camera implements Closeable {
    * @return Position of the object relative to the field
    */
   public Optional<Pose2d> getObjectFieldPose(){
-    return Optional.ofNullable(TARGET_STATUS.BestTargetPose.toPose2d());
+    return Optional.ofNullable(TARGET_STATUS.BestTargetPose);
   }
 
   /**
@@ -155,8 +156,8 @@ public abstract class Camera implements Closeable {
    * Provides a list of robot-relative transformations to the best target within view of the camera
    * @return List of robot-relative target transformations
    */
-  public List<Optional<Transform3d>> getTargets(){
-    return Stream.of(TARGET_STATUS.Targets).map((Transformation) -> Transformation.plus(OFFSET)).map(Optional::ofNullable).toList();
+  public List<Optional<Transform2d>> getTargets(){
+    return Stream.of(TARGET_STATUS.Targets).map(Optional::ofNullable).toList();
   }
 
   /**
@@ -172,8 +173,8 @@ public abstract class Camera implements Closeable {
    * Provides the robot-relative transformation to the best target within view of the camera
    * @return Robot-relative best target transformation
    */
-  public Optional<Transform3d> getOptimalTarget(){
-    return Optional.ofNullable(TARGET_STATUS.OptimalTransform.plus(OFFSET));
+  public Optional<Transform2d> getOptimalTarget(){
+    return Optional.ofNullable(TARGET_STATUS.OptimalTransform);
   }
 
   /**
