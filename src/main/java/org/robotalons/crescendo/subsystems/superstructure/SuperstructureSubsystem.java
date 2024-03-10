@@ -21,8 +21,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import java.util.concurrent.Executors;
-
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonUtils;
 import org.robotalons.crescendo.Constants.Profiles.Keybindings;
@@ -198,7 +196,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    */
   private static synchronized void set(final Double Reference) {
     FIRING_CONTROLLERS.getFirst().setControl(new VelocityDutyCycle(-Reference));
-    FIRING_CONTROLLERS.getSecond().setControl(new VelocityDutyCycle(Reference));
+    FIRING_CONTROLLERS.getSecond().setControl(new VelocityDutyCycle(-Reference));
   }
 
   /**
