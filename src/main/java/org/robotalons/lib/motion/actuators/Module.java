@@ -20,8 +20,6 @@ import java.util.Objects;
  * 
  * @see ModuleStatusContainer
  * 
- * @author Cody Washington (@Jelatinone) 
- * 
  */
 public abstract class Module implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
@@ -147,7 +145,9 @@ public abstract class Module implements Closeable {
   /**
    * Zeroes the rotational relative to offset from the position of the absolute encoders.
    */
-  public abstract void reset();
+  public synchronized void reset() {
+    update();
+  }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Provides the deltas, or captured data points from odometry from the most recent {@link #periodic()} cycle.
@@ -200,7 +200,7 @@ public abstract class Module implements Closeable {
    * @return Rotational axis heading as a relative {@link Rotation2d} object
    */
   public Rotation2d getRelativeRotation() {
-    return STATUS.RotationalRelativePosition.minus(RotationalRelativeOffset);
+    return STATUS.RotationalRelativePosition.plus(RotationalRelativeOffset);
   }
 
   /**
@@ -234,6 +234,6 @@ public abstract class Module implements Closeable {
   public SwerveModuleState getObserved() {
     return new SwerveModuleState(
       STATUS.TranslationalVelocityRadiansSecond * CONSTANTS.WHEEL_RADIUS_METERS, 
-      STATUS.RotationalAbsolutePosition);
+      STATUS.RotationalRelativePosition);
   }
 }

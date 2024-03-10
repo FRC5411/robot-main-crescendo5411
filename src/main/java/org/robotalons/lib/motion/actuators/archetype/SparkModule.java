@@ -224,9 +224,6 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
             }
             var Adjusted = (Reference.speedMetersPerSecond * Math.cos(ROTATIONAL_PID.getPositionError())) / MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
             setTranslationalVoltage((TRANSLATIONAL_PID.calculate(Adjusted)) + (TRANSLATIONAL_FF.calculate(STATUS.TranslationalVelocityRadiansSecond, Adjusted)));          
-          } else {
-            setRotationalVoltage((0d));
-            setTranslationalVoltage((0d));
           }
           break;
         case DISABLED:
@@ -238,7 +235,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       }
       synchronized(POSITION_DELTAS) {
         POSITION_DELTAS.clear();
-        IntStream.range((0), Math.min(STATUS.OdometryTranslationalPositionsRadians.length, STATUS.OdometryRotationalPositionsRadians.length)).forEachOrdered((Index) -> {
+        IntStream.range((0), Math.min(STATUS.OdometryTranslationalPositionsRadians.length, STATUS.OdometryRotationalPositionsRadians.length)).parallel().forEach((Index) -> {
           POSITION_DELTAS.add(new SwerveModulePosition(
             STATUS.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS,
             STATUS.OdometryRotationalPositionsRadians[Index]
