@@ -170,3 +170,5 @@ out/
 **/simgui-ds.json
 **/simgui-window.json
 **/simgui.json
+**/ctre_sim
+/logs**

@@ -9,38 +9,46 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
 // -------------------------------------------------------------[Utilities Test]-----------------------------------------------------------//
 public final class UtilitiesTest {
+  // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
+  /**
+   * Utilizes CTRE utilities to guarantee that CTRE Error codes are properly interpreted and are thrown
+   */
+  @Test
+  static void CheckErrorCTRE() {
+    assertThrows((RuntimeException.class), () -> CheckCTRECode(ErrorCode.GeneralError));
+    assertThrows((RuntimeException.class), () -> CheckCTRECode(ErrorCode.FirmVersionCouldNotBeRetrieved));
+    assertDoesNotThrow(() -> CheckCTRECode(ErrorCode.OK));
+  }
 
-    /** Test CTRE Error Codes throw runtime expected exceptions */
-    @Test
-    void CheckErrorCTRE() {
-        assertThrows((RuntimeException.class), () -> CheckCTRECode(ErrorCode.GeneralError));
-        assertThrows(
-                (RuntimeException.class),
-                () -> CheckCTRECode(ErrorCode.FirmVersionCouldNotBeRetrieved));
-        assertDoesNotThrow(() -> CheckCTRECode(ErrorCode.OK));
+  /**
+   * Checks if a given CTRE error code is equivalent with an okay error code, if not, an exception is thrown
+   * @param Code Error code to check
+   */
+  private static void CheckCTRECode(final ErrorCode Code) {
+    if (Code != ErrorCode.OK) {
+      throw new RuntimeException(String.format(("%s: %s%n"), (""), Code.toString()));
     }
+  }
 
-    static void CheckCTRECode(final ErrorCode errorCode) {
-        if (errorCode != ErrorCode.OK) {
-            throw new RuntimeException(String.format("%s: %s%n", "", errorCode.toString()));
-        }
-    }
+  /**
+   * Utilizes REV utilities to guarantee that CTRE Error codes are properly interpreted and are thrown
+   */
+  @Test
+  static void CheckErrorREV() {
+    assertThrows((RuntimeException.class), () -> CheckREVCode(REVLibError.kError));
+    assertThrows((RuntimeException.class), () -> CheckREVCode(REVLibError.kCantFindFirmware));
+    assertDoesNotThrow(() -> CheckREVCode(REVLibError.kOk));
+  }
 
-    /** Test REVLib Error Codes throw runtime expected exceptions */
-    @Test
-    void CheckErrorREV() {
-        assertThrows((RuntimeException.class), () -> CheckREVLibCode(REVLibError.kError));
-        assertThrows(
-                (RuntimeException.class), () -> CheckREVLibCode(REVLibError.kCantFindFirmware));
-        assertDoesNotThrow(() -> CheckREVLibCode(REVLibError.kOk));
+  /**
+   * Checks if a given REVlib error code is equivalent with an okay error code, if not, an exception is thrown
+   * @param Code Error code to check
+   */
+  private static void CheckREVCode(final REVLibError Code) {
+    if (Code != REVLibError.kOk) {
+        throw new RuntimeException(String.format(("%s: %s"), (""), Code.toString()));
     }
-
-    static void CheckREVLibCode(final REVLibError error) {
-        if (error != REVLibError.kOk) {
-            throw new RuntimeException(String.format("%s: %s", "", error.toString()));
-        }
-    }
+  }
 }

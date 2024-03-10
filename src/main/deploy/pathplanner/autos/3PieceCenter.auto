@@ -1,0 +1,37 @@
+{
+  "version": 1.0,
+  "startingPose": null,
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "PreToNote2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note2ToNote6"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note6ToShoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ShootToNote7"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

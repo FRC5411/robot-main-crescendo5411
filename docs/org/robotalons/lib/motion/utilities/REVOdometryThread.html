@@ -44,7 +44,7 @@ loadScripts(document, 'script');</script>
 <ul class="sub-nav-list">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-summary">Field</a>&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method-summary">Method</a></li>
 </ul>
@@ -83,18 +83,31 @@ loadScripts(document, 'script');</script>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="OdometryThread.html" title="interface in org.robotalons.lib.motion.utilities">OdometryThread</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/DoubleSupplier.html" title="class or interface in java.util.function" class="external-link">DoubleSupplier</a>&gt;</span></div>
 <div class="block"><p>Provides an interface for asynchronously reading high-frequency measurements to a set of queues. This version is intended for devices
- like the SparkMax that require polling rather than a blocking thread. A Notifier thread is used to gather samples with consistent timing.</div>
+ like the SparkMax that require polling rather than a blocking thread. A Notifier thread is used to gather samples with consistent timing.
+ 
+ <p>This file was converted into List and Stream(able) objects (lists) for ease of interfacing with data, from Mechanical Advantage's original
+ implementation found <a href="https://github.com/Mechanical-Advantage/AdvantageKit/blob/main/example_projects/advanced_swerve_drive/src/main/java/frc/robot/subsystems/drive/SparkMaxOdometryThread.java">here</a>.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
 <ul class="see-list">
 <li><a href="OdometryThread.html" title="interface in org.robotalons.lib.motion.utilities"><code>OdometryThread</code></a></li>
+<li><code>Notifier</code></li>
 </ul>
 </dd>
 </dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- =========== FIELD SUMMARY =========== -->
+<li>
+<section class="field-summary" id="field-summary">
+<h2>Field Summary</h2>
+<div class="inherited-list">
+<h3 id="fields-inherited-from-class-org.robotalons.lib.motion.utilities.OdometryThread">Fields inherited from interface&nbsp;org.robotalons.lib.motion.utilities.<a href="OdometryThread.html" title="interface in org.robotalons.lib.motion.utilities">OdometryThread</a></h3>
+<code><a href="OdometryThread.html#STANDARD_FREQUENCY">STANDARD_FREQUENCY</a></code></div>
+</section>
+</li>
 <!-- ========== METHOD SUMMARY =========== -->
 <li>
 <section class="method-summary" id="method-summary">
@@ -112,14 +125,24 @@ implements <a href="OdometryThread.html" title="interface in org.robotalons.lib.
 <div class="block">Closes this instance and all held resources immediately, but does not render the class unusable hence forth and can be re-instantiated.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="REVOdometryThread.html" title="class in org.robotalons.lib.motion.utilities">REVOdometryThread</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#create(java.util.concurrent.locks.Lock)" class="member-name-link">create</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/locks/Lock.html" title="class or interface in java.util.concurrent.locks" class="external-link">Lock</a>&nbsp;OdometryLock)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#create(java.util.concurrent.locks.Lock)" class="member-name-link">create</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/locks/Lock.html" title="class or interface in java.util.concurrent.locks" class="external-link">Lock</a>&nbsp;Lock)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Creates a new instance of the existing utility class</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="REVOdometryThread.html" title="class in org.robotalons.lib.motion.utilities">REVOdometryThread</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getInstance()" class="member-name-link">getInstance</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getFrequency()" class="member-name-link">getFrequency</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Provides the frequency of this thread</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="REVOdometryThread.html" title="class in org.robotalons.lib.motion.utilities">REVOdometryThread</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getInstance()" class="member-name-link">getInstance</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Retrieves the existing instance of this static utility class</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/locks/Lock.html" title="class or interface in java.util.concurrent.locks" class="external-link">Lock</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLock()" class="member-name-link">getLock</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Provides the odometry lock of this thread</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Queue.html" title="class or interface in java.util" class="external-link">Queue</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#register(java.util.function.DoubleSupplier)" class="member-name-link">register</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/DoubleSupplier.html" title="class or interface in java.util.function" class="external-link">DoubleSupplier</a>&nbsp;Signal)</code></div>
@@ -135,6 +158,14 @@ implements <a href="OdometryThread.html" title="interface in org.robotalons.lib.
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#set(java.lang.Double)" class="member-name-link">set</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&nbsp;Frequency)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Mutates the current frequency of updating the odometry</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#start()" class="member-name-link">start</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Queue.html" title="class or interface in java.util" class="external-link">Queue</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#timestamp()" class="member-name-link">timestamp</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Provides the timestamps for the available odometry queues</div>
 </div>
 </div>
 </div>
@@ -167,6 +198,26 @@ implements <a href="OdometryThread.html" title="interface in org.robotalons.lib.
 <dt>Returns:</dt>
 <dd>The <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Queue.html" title="class or interface in java.util" class="external-link"><code>Queue</code></a> of signal values</dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="timestamp()">
+<h3>timestamp</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Queue.html" title="class or interface in java.util" class="external-link">Queue</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&gt;</span>&nbsp;<span class="element-name">timestamp</span>()</div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="OdometryThread.html#timestamp()">OdometryThread</a></code></span></div>
+<div class="block">Provides the timestamps for the available odometry queues</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="OdometryThread.html#timestamp()">timestamp</a></code>&nbsp;in interface&nbsp;<code><a href="OdometryThread.html" title="interface in org.robotalons.lib.motion.utilities">OdometryThread</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/DoubleSupplier.html" title="class or interface in java.util.function" class="external-link">DoubleSupplier</a>&gt;</code></dd>
+<dt>Returns:</dt>
+<dd>The <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Queue.html" title="class or interface in java.util" class="external-link"><code>Queue</code></a> of timestamp values</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="start()">
+<h3>start</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">start</span>()</div>
 </section>
 </li>
 <li>
@@ -203,6 +254,33 @@ implements <a href="OdometryThread.html" title="interface in org.robotalons.lib.
 </section>
 </li>
 <li>
+<section class="detail" id="create(java.util.concurrent.locks.Lock)">
+<h3>create</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="REVOdometryThread.html" title="class in org.robotalons.lib.motion.utilities">REVOdometryThread</a></span>&nbsp;<span class="element-name">create</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/locks/Lock.html" title="class or interface in java.util.concurrent.locks" class="external-link">Lock</a>&nbsp;Lock)</span></div>
+<div class="block">Creates a new instance of the existing utility class</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>Lock</code> - Valid reentrance locker for this type</dd>
+<dt>Returns:</dt>
+<dd>Utility class's instance</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getFrequency()">
+<h3>getFrequency</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a></span>&nbsp;<span class="element-name">getFrequency</span>()</div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="OdometryThread.html#getFrequency()">OdometryThread</a></code></span></div>
+<div class="block">Provides the frequency of this thread</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="OdometryThread.html#getFrequency()">getFrequency</a></code>&nbsp;in interface&nbsp;<code><a href="OdometryThread.html" title="interface in org.robotalons.lib.motion.utilities">OdometryThread</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/DoubleSupplier.html" title="class or interface in java.util.function" class="external-link">DoubleSupplier</a>&gt;</code></dd>
+<dt>Returns:</dt>
+<dd>Frequency as a double</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="set(java.lang.Double)">
 <h3>set</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">set</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&nbsp;Frequency)</span></div>
@@ -217,13 +295,16 @@ implements <a href="OdometryThread.html" title="interface in org.robotalons.lib.
 </section>
 </li>
 <li>
-<section class="detail" id="create(java.util.concurrent.locks.Lock)">
-<h3>create</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="REVOdometryThread.html" title="class in org.robotalons.lib.motion.utilities">REVOdometryThread</a></span>&nbsp;<span class="element-name">create</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/locks/Lock.html" title="class or interface in java.util.concurrent.locks" class="external-link">Lock</a>&nbsp;OdometryLock)</span></div>
-<div class="block">Creates a new instance of the existing utility class</div>
+<section class="detail" id="getLock()">
+<h3>getLock</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/locks/Lock.html" title="class or interface in java.util.concurrent.locks" class="external-link">Lock</a></span>&nbsp;<span class="element-name">getLock</span>()</div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="OdometryThread.html#getLock()">OdometryThread</a></code></span></div>
+<div class="block">Provides the odometry lock of this thread</div>
 <dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="OdometryThread.html#getLock()">getLock</a></code>&nbsp;in interface&nbsp;<code><a href="OdometryThread.html" title="interface in org.robotalons.lib.motion.utilities">OdometryThread</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/DoubleSupplier.html" title="class or interface in java.util.function" class="external-link">DoubleSupplier</a>&gt;</code></dd>
 <dt>Returns:</dt>
-<dd>Utility class's instance</dd>
+<dd>Lock which prevents method reentrance</dd>
 </dl>
 </section>
 </li>

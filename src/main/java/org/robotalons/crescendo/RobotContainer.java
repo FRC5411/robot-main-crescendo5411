@@ -1,11 +1,25 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo;
-// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.robotalons.crescendo.Constants.Profiles;
+import org.robotalons.crescendo.Constants.Profiles.Keybindings;
+import org.robotalons.crescendo.Constants.Profiles.Preferences;
+import org.robotalons.crescendo.subsystems.SubsystemManager;
+import org.robotalons.lib.utilities.Alert;
+import org.robotalons.lib.utilities.Alert.AlertType;
+import org.robotalons.lib.utilities.Operator;
+
+import java.util.ArrayList;
+import java.util.List;
 // -------------------------------------------------------------[Robot Container]-----------------------------------------------------------//
 /**
  *
@@ -16,29 +30,47 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public final class RobotContainer {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  public static final LoggedDashboardChooser<Command> CommandSelector;
+  public static final List<LoggedDashboardChooser<Operator<Keybindings, Preferences>>> OperatorSelectors;
+  public static LoggedDashboardChooser<Command> AutonomousSelector;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static RobotContainer Instance = (null);
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
+  
   private RobotContainer() {} static {
-    CommandSelector = new LoggedDashboardChooser<>(("Autonomous Command Selector"), AutoBuilder.buildAutoChooser());
-    configureDefaultCommands();
-    configurePilotKeybinds();
+    OperatorSelectors = new ArrayList<>();
+    SubsystemManager.getSubsystems().forEach((Subsystem) -> {
+      final var Selector = new SendableChooser<Operator<Keybindings, Preferences>>();
+      final var Default = Profiles.DEFAULT.get(Subsystem);
+      Profiles.OPERATORS.forEach((Profile) -> Selector.addOption(Profile.getName(), Profile));
+      Selector.setDefaultOption(Default.getName(), Default);
+      Selector.onChange(Subsystem::configure);
+      Subsystem.configure(Default);
+      OperatorSelectors.add(new LoggedDashboardChooser<Operator<Keybindings, Preferences>>(Subsystem.getName() + " Pilot Selector", Selector));
+    });
+    Profiles.OPERATORS.forEach((Profile) -> SmartDashboard.putData(Profile.getName(), Profile));
+    SubsystemManager.getInstance();
+    try {
+      AutonomousSelector = new LoggedDashboardChooser<>(("Autonomous Selector"), AutoBuilder.buildAutoChooser()); 
+    } catch (final Exception Ignored) {
+      new Alert(("Autonomous Configuration Failed"), AlertType.ERROR);
+      if(AutonomousSelector ==  (null)) {
+        final var Selector = new SendableChooser<Command>();
+        Selector.addOption(("Autonomous Configuration Failed"), new InstantCommand());
+        AutonomousSelector = new LoggedDashboardChooser<>(("Autonomous Selector"), Selector); 
+      }
+    }
+    @SuppressWarnings("resource")
+    final var m_led = new AddressableLED((9));
+    final var m_ledBuffer = new AddressableLEDBuffer((26));
+    m_led.setLength(m_ledBuffer.getLength());
+    m_led.setData(m_ledBuffer);
+    m_led.start();
+    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+      m_ledBuffer.setRGB(i, (0), (255), (0));
+   }
+   m_led.setData(m_ledBuffer);
   }
-  // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
-  /**
-   * Configures subsystem default commands
-   */
-  public static void configureDefaultCommands() {
 
-  }
-
-  /**
-   * Configures the bindings, and preferences for each subsystem driver
-   */
-  private static void configurePilotKeybinds() {
-
-  }  
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Retrieves the existing instance of this static utility class
