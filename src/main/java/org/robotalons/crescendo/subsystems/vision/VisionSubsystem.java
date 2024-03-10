@@ -3,6 +3,7 @@ package org.robotalons.crescendo.subsystems.vision;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -37,8 +38,6 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static VisionSubsystem Instance;
   public static final List<CameraIdentifier> ALL_CAMERA_IDENTIFIERS = List.of(
-    CameraIdentifier.SOURCE_CAMERA,
-    CameraIdentifier.INTAKE_CAMERA,
     CameraIdentifier.SPEAKER_LEFT_CAMERA,
     CameraIdentifier.SPEAKER_RIGHT_CAMERA
   );
@@ -51,9 +50,7 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
   } static {
     CAMERAS = List.of(
       Devices.FRONT_LEFT_CAMERA,
-      Devices.FRONT_RIGHT_CAMERA,
-      Devices.REAR_LEFT_CAMERA,
-      Devices.REAR_RIGHT_CAMERA
+      Devices.FRONT_RIGHT_CAMERA
     ); 
   }
   
@@ -97,9 +94,7 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
    */
   public enum CameraIdentifier {
     SPEAKER_LEFT_CAMERA((0)),
-    SPEAKER_RIGHT_CAMERA((1)),    
-    SOURCE_CAMERA((2)),
-    INTAKE_CAMERA((3));
+    SPEAKER_RIGHT_CAMERA((1));
 
     private final Integer Value;
 
@@ -170,14 +165,14 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
     return CAMERAS.get(Identifier.getValue()).getRobotPositionDeltas();
   }
 
-  /**
-   * Provides the robot relative position to a given object based on the estimated position of this camera and a transformation to a known object.
-   * @param Target Transformation to a given target anywhere on the field.
-   * @return Position of the object relative to the field.
-   */
-  public static Optional<Pose3d> getObjectFieldPose(final Transform3d Target){
-    return CAMERAS.get(CameraIdentifier.INTAKE_CAMERA.getValue()).getObjectFieldPose(Target);
-  }
+  // /**
+  //  * Provides the robot relative position to a given object based on the estimated position of this camera and a transformation to a known object.
+  //  * @param Target Transformation to a given target anywhere on the field.
+  //  * @return Position of the object relative to the field.
+  //  */
+  // public static Optional<Pose3d> getObjectFieldPose(final Transform3d Target){
+  //   return CAMERAS.get(CameraIdentifier.INTAKE_CAMERA.getValue()).getObjectFieldPose(Target);
+  // }
 
   /**
    * Provides the values of standard deviations of the most recent object detection result on the camera
@@ -188,14 +183,14 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
     return CAMERAS.get(Identifier.getValue()).getStandardDeviations();
   }
 
-  /**
-   * Provides the robot relative position to a given object based on the estimated position of this camera and a transformation assuming that.
-   * the desired object is the optimal target of this camera.
-   * @return Position of the object relative to the field.
-   */
-  public static Optional<Pose2d> getObjectFieldPose(){
-    return CAMERAS.get(CameraIdentifier.INTAKE_CAMERA.getValue()).getObjectFieldPose();
-  }
+  // /**
+  //  * Provides the robot relative position to a given object based on the estimated position of this camera and a transformation assuming that.
+  //  * the desired object is the optimal target of this camera.
+  //  * @return Position of the object relative to the field.
+  //  */
+  // public static Optional<Pose2d> getObjectFieldPose(){
+  //   return CAMERAS.get(CameraIdentifier.INTAKE_CAMERA.getValue()).getObjectFieldPose();
+  // }
 
   /**
    * Provides a list of robot-relative transformations to the best target within view of the camera.
@@ -231,9 +226,9 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
    * @param Cameras List of cameras to take data from, any copies of cameras identifiers are removed
    * @return if possible, 'most optimal' target transformation 
    */
-  public static Optional<Transform3d> getOptimalTarget(List<CameraIdentifier> Cameras) {
+  public static Optional<Transform2d> getOptimalTarget(List<CameraIdentifier> Cameras) {
     Cameras = Cameras.stream().distinct().toList();
-    Optional<Transform3d> Optimal = Optional.empty();
+    Optional<Transform2d> Optimal = Optional.empty();
     for(final var Identifier: Cameras) {
       final var RelativeOptimal = CAMERAS.get(Identifier.getValue()).getOptimalTarget();
       if(Optimal.isPresent() && RelativeOptimal.isPresent()) {
@@ -242,6 +237,7 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
         }
       }      
     }
+
     return Optimal;
   }
 
@@ -249,7 +245,7 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
    * Provides the 'most optimal' target transformation between all cameras, compared using the normalization of their respective transformations
    * @return if possible, 'most optimal' target transformation 
    */
-  public static Optional<Transform3d> getOptimalTarget() {
+  public static Optional<Transform2d> getOptimalTarget() {
     return getOptimalTarget(List.of(CameraIdentifier.values()));
   }
 
@@ -271,12 +267,13 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
     return CAMERAS.get(Identifier.getValue()).getNumTargets();
   }
 
+  //TODO:Fixed this Cody check pwease
   /**
    * Provides the robot-relative transformation to the best target within view of the camera that was called
    * @param Identifier Camera identifier to query from.
    * @return Robot-relative best target transformation
    */
-  public static Optional<Transform3d> getOptimalTarget(final CameraIdentifier Identifier) {
+  public static Optional<Transform2d> getOptimalTarget(final CameraIdentifier Identifier) {
     return CAMERAS.get(Identifier.getValue()).getOptimalTarget();
   }
 

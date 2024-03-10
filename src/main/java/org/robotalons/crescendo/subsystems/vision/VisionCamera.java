@@ -7,7 +7,7 @@ import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -24,8 +24,9 @@ import org.robotalons.lib.vision.Camera;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.stream.IntStream;
+
 // ---------------------------------------------------------[Photon Vision Module]--------------------------------------------------------//
 /**
  *
@@ -44,6 +45,8 @@ public final class VisionCamera extends Camera {
   private final Transform3d RELATIVE;  
   private final List<Double> TIMESTAMPS;
   private final List<Pose3d> POSES;
+  // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
+
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Vision Camera Constructor.
@@ -86,25 +89,18 @@ public final class VisionCamera extends Camera {
         
         getOptimalTarget().ifPresent((BestTarget) -> Logger.recordOutput(IDENTITY + "/OptimalTransform", BestTarget));
         getObjectFieldPose().ifPresent((TargetPose) -> Logger.recordOutput(IDENTITY + "/TargetPose", TargetPose));
-
-        final var Targets = getTargets();
-        IntStream.range((0),Targets.size()).forEach((Index) -> 
-          Targets.get(Index).ifPresent((Target) -> 
-            Logger.recordOutput(IDENTITY + "/Target[" + Index + ']', Target)
-        ));
-
+        Logger.recordOutput(IDENTITY + "/Target" + ']', getTargets().stream().map((Target) -> {
+          try {
+            return Target.get();
+          } catch(final NoSuchElementException Exception) {
+            return (null);
+          }
+        }).toArray(Transform3d[]::new));
         Logger.recordOutput(IDENTITY + "/HasTargets", hasTargets());
         Logger.recordOutput(IDENTITY + "/AmountTarget", getNumTargets());        
       }
-    }
-    synchronized(CAMERA_STATUS) {
-      getRobotPosition().ifPresentOrElse((Estimate) -> CAMERA_STATUS.RobotPose = Estimate.toPose2d(), () -> CAMERA_STATUS.RobotPose = new Pose2d());
-      CAMERA_STATUS.Connected = CAMERA.isConnected();
-      CAMERA_STATUS.Deltas = getRobotPositionDeltas();
-      CAMERA_STATUS.Timestamps = getRobotPositionTimestamps();
-      CAMERA_STATUS.Latency = getLatency();
-      CAMERA_STATUS.Name = CAMERA.getName();
-      Logger.processInputs(IDENTITY, CAMERA_STATUS);
+      //TODO: Update This
+      //Logger.processInputs(IDENTITY, CAMERA_STATUS);
     } 
   }
 
@@ -143,10 +139,11 @@ public final class VisionCamera extends Camera {
       Z_Estimates[Index] = Estimate.getZ();
     }
 
-    return MatBuilder.fill(Nat.N3(), Nat.N1(),
+    return MatBuilder.fill(Nat.N3(), Nat.N1(), new double[] {
       standardDeviation(X_Estimates),
       standardDeviation(Y_Estimates),
-      standardDeviation(Z_Estimates));
+      standardDeviation(Z_Estimates)
+    });
   }
  
   /**
@@ -184,9 +181,9 @@ public final class VisionCamera extends Camera {
   @Override
   public Pose2d[] getRobotPositionDeltas() {
     final Pose2d[] Deltas = new Pose2d[POSES.size()];
-    for(Integer Index = (1); Index < POSES.size(); Index++){
-      final var Previous = POSES.get(Index - 1);
-      final var Current = POSES.get(Index);
+    for(Integer Index = (0); Index < POSES.size() - (1); Index++){
+      final var Previous = POSES.get(Index);
+      final var Current = POSES.get(Index + (1));
       Deltas[Index] = new Pose2d(
         Current.getX() - Previous.getX(),
         Current.getY() - Previous.getY(),
@@ -196,6 +193,7 @@ public final class VisionCamera extends Camera {
         )
       );
     }
+
     return Deltas;
   }
 
@@ -215,52 +213,66 @@ public final class VisionCamera extends Camera {
     return Optional.empty();
   }
 
+  // TODO: Check to make sure that ur good with these being pose2d
   @Override
   public Optional<Pose2d> getObjectFieldPose() {
     if(CAMERA.isConnected()) {
       final var RobotEstimate = getRobotPosition();
       final var OptimalEstimate = getOptimalTarget();
+      
       if(RobotEstimate.isEmpty() || OptimalEstimate.isEmpty()){
         return Optional.empty();
       } 
-      return Optional.ofNullable(new Pose3d(
+      return Optional.ofNullable(new Pose2d(
         (OptimalEstimate.get().getX() + RobotEstimate.get().getX()),
         (OptimalEstimate.get().getY() + RobotEstimate.get().getY()),
-        OptimalEstimate.get().getZ(),
-        new Rotation3d()
-      ).toPose2d());
-    }
-    return Optional.empty();
-  }
-
-  @Override
-  public Optional<Pose3d> getObjectFieldPose(final Transform3d Target) {
-    if(CAMERA.isConnected()) {
-      Optional<Pose3d> RobotEstimate = getRobotPosition();
-      if(RobotEstimate.isEmpty()){
-        return Optional.empty();
-      }
-      return Optional.ofNullable(new Pose3d(
-        (Target.getX() + RobotEstimate.get().getX()),
-        (Target.getY() + RobotEstimate.get().getY()),
-        Target.getZ(),
-        new Rotation3d()
+        new Rotation2d()
       ));
     }
     return Optional.empty();
   }
 
   @Override
-  public List<Optional<Transform3d>> getTargets() {
+  public Optional<Pose2d> getObjectFieldPose(final Transform2d Target) {
+    if(CAMERA.isConnected()) {
+      final var RobotEstimate = getRobotPosition();
+      
+      if(RobotEstimate.isEmpty()){
+        return Optional.empty();
+      } 
+      return Optional.ofNullable(new Pose2d(
+        (Target.getX() + RobotEstimate.get().getX()),
+        (Target.getY() + RobotEstimate.get().getY()),
+        new Rotation2d()
+      ));
+    }
+    return Optional.empty();
+  }
+
+  //TODO: Check Cody to make sure ur fine with this
+  @Override
+  public List<Optional<Transform2d>> getTargets() {
     if(CAMERA.isConnected()) {
       final var LatestResult = CAMERA.getLatestResult().getTargets();
       if(LatestResult.isEmpty()){
         return List.of();
       }
-      return CAMERA.getLatestResult().getTargets().stream()
-        .map(PhotonTrackedTarget::getBestCameraToTarget)
-        .map(Optional::ofNullable)
-        .toList();
+
+      List<Optional<Transform3d>> Targets3D = CAMERA.getLatestResult().getTargets().stream()
+      .map(PhotonTrackedTarget::getBestCameraToTarget)
+      .map(Optional::ofNullable)
+      .toList();
+
+      List<Optional<Transform2d>> Targets2D = new ArrayList<>();
+
+      for(int i = 0; i < Targets3D.size(); i++){
+        Double x = Targets3D.get(i).get().getX();
+        Double y = Targets3D.get(i).get().getY();
+        
+        Targets2D.set(i, Optional.of(new Transform2d(x, y, new Rotation2d())));
+      }
+
+      return Targets2D;
     }
     return List.of();
   }
@@ -275,13 +287,16 @@ public final class VisionCamera extends Camera {
     return CAMERA.isConnected()? CAMERA.getLatestResult().getTargets().size(): (0);
   }
 
-
+  //TODO Check pls Cody
   @Override
-  public Optional<Transform3d> getOptimalTarget() {
+  public Optional<Transform2d> getOptimalTarget() {
     if(CAMERA.getLatestResult().getBestTarget() == (null)){
       return Optional.empty();
     }
-    return Optional.ofNullable(CAMERA.getLatestResult().getBestTarget().getBestCameraToTarget().plus(OFFSET));
+
+    Transform3d target3D = CAMERA.getLatestResult().getBestTarget().getBestCameraToTarget();
+
+    return Optional.ofNullable(new Transform2d(target3D.getX(), target3D.getY(), new Rotation2d()));
   }
 
   @Override
