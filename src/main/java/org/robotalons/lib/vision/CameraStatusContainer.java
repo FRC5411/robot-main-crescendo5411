@@ -20,4 +20,4 @@ public class CameraStatusContainer {
   public Pose2d RobotPose = new Pose2d();
   public Pose2d[] Deltas = new Pose2d[]{};
   public double[] Timestamps = new double[]{};
-}
+} 
