@@ -57,7 +57,7 @@ public final class VisionSubsystem {
     });
   }
 
-  public void close() {
+  public synchronized void close() {
     CAMERAS.forEach((Camera) -> {
       try {
         Camera.close();

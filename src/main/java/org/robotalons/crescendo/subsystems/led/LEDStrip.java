@@ -81,28 +81,27 @@ public final class LEDStrip{
       return this.Value;
     }
   }
-  //TODO: Add all patterns into enum
-  public enum PatternsIdentifier {
-  }
-  //TODO: Make Commands in future
+
   /**
     * Sets entire LED Strip to certain color
     * @param COLOR representing the color the entire LED Strip is set to
     */
-  public static void setColor(LEDIdentifier COLOR){
+  public void setColor(LEDIdentifier COLOR){
     for (int i = 0; i < M_BUFFER.getLength(); i++) {
       M_BUFFER.setHSV(i, COLOR.getHue(), COLOR.getSaturation(), COLOR.getValue());
     }
     M_LED.setData(M_BUFFER);
   }
+
   /**
    * @param COLOR representing the color the entire LED Strip is set to
    * @param INDEX represents certain LED in Strip
    */
-  public static void setColor(LEDIdentifier COLOR, int INDEX){
+  public void setColor(LEDIdentifier COLOR, int INDEX){
     M_BUFFER.setHSV(INDEX, COLOR.getHue(), COLOR.getSaturation(), COLOR.getValue());
     M_LED.setData(M_BUFFER);
   }
+
   //TODO: Create bounce method
   /**
    * Creates a bounce animation with a color block of length
@@ -110,14 +109,15 @@ public final class LEDStrip{
    * @param BACKGROUND representing the other color that will be between LEDSs
    * @param LENGTH how long the block that bounces is
    */
-  public static void setBounce(LEDIdentifier BOUNCE, LEDIdentifier BACKGROUND, int LENGTH){}
+  public void setBounce(LEDIdentifier BOUNCE, LEDIdentifier BACKGROUND, int LENGTH){}
+
   /**
    * Creates a flashing animation with a led strip
    * @param COLOR1 representing the color the entire LED Strip is set to, will be the starting color
    * @param COLOR2 representing the other color that will be between LEDSs, will be the color afterwards
    * @param TIME how long each color is set before switched in seconds
    */
-  public static void setFlash(LEDIdentifier COLOR1, LEDIdentifier COLOR2, int TIME){
+  public void setFlash(LEDIdentifier COLOR1, LEDIdentifier COLOR2, int TIME){
     setColor(COLOR1);
     executor.submit(() -> {
       try {
@@ -127,13 +127,14 @@ public final class LEDStrip{
       catch(final InterruptedException ignore){}
     });
   }
+
   /**
    * Creates a pattern in the LED strip that runs
    * @param HOPPER representing the other color that will hop through the strip
    * @param BACKGROUND representing the other color that will flash
    * @param TIME how long each set of color lasts in seconds
    */
-  public static void setHop(LEDIdentifier HOPPER, LEDIdentifier BACKGROUND, double TIME){
+  public void setHop(LEDIdentifier HOPPER, LEDIdentifier BACKGROUND, double TIME){
     setColor(BACKGROUND);
     final AtomicInteger i = new AtomicInteger(0);
     for(i.get(); i.get() < M_BUFFER.getLength(); i.incrementAndGet()){
@@ -149,6 +150,7 @@ public final class LEDStrip{
     });
     }
   }
+
   // @Override
   public void periodic() {
   }
