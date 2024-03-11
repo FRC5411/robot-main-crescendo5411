@@ -282,7 +282,5 @@ public class SwerveModule extends SubsystemBase{
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if (RotationalRelativeOffset == (null) && getAbsoluteEncoderRad() != (0d)) {
-      RotationalRelativeOffset = Status.RotationalAbsolutePosition.minus(Status.RotationalRelativePosition);}
   }
 }
