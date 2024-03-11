@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 import com.pathplanner.lib.util.PIDConstants;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.robotalons.lib.motion.actuators.Module;
 import org.robotalons.lib.motion.actuators.archetype.ModuleConfiguration;

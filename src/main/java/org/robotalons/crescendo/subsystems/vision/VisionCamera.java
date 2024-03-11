@@ -99,12 +99,8 @@ public final class VisionCamera extends Camera {
         Logger.recordOutput(IDENTITY + "/HasTargets", hasTargets());
         Logger.recordOutput(IDENTITY + "/AmountTarget", getNumTargets());        
       }
-
-
-
-      Logger.processInputs(IDENTITY, CAMERA_STATUS);
+      //Logger.processInputs(IDENTITY, CAMERA_STATUS);
     } 
-      Logger.recordOutput(IDENTITY, 12);
   }
 
   @Override

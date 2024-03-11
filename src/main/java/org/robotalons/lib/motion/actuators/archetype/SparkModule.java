@@ -10,18 +10,18 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.RelativeEncoder;
 
 import org.littletonrobotics.junction.Logger;
 import org.robotalons.lib.motion.actuators.Module;
 
-import java.util.concurrent.atomic.DoubleAccumulator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.atomic.DoubleAccumulator;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.IntStream;
@@ -143,7 +143,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       TRANSLATIONAL_CONTROLLER.setPeriodicFramePeriod(
           PeriodicFrame.kStatus2, (int) (1000d / MODULE_CONSTANTS.STATUS_PROVIDER.getFrequency()));
       ROTATIONAL_CONTROLLER.setPeriodicFramePeriod(
-          PeriodicFrame.kStatus2, (int) (1000d / MODULE_CONSTANTS.STATUS_PROVIDER.getFrequency()));      
+        PeriodicFrame.kStatus2, (int) (1000d / MODULE_CONSTANTS.STATUS_PROVIDER.getFrequency()));      
     });
 
     TRANSLATIONAL_CONTROLLER.setCANTimeout((0));
