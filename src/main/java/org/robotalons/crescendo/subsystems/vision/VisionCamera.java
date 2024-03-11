@@ -154,7 +154,7 @@ public final class VisionCamera extends Camera {
    * @return Standard deviation as a double value
    */
   private static double standardDeviation(double[] Numbers){
-    Double Mean = 0d, SummativeSquareDifference = 0d;
+    double Mean = 0d, SummativeSquareDifference = 0d;
     for(double Number : Numbers){
       Mean += Number;
     }
