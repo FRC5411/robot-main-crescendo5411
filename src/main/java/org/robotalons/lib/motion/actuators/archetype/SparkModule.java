@@ -20,7 +20,6 @@ import com.revrobotics.RelativeEncoder;
 import org.littletonrobotics.junction.Logger;
 import org.robotalons.lib.motion.actuators.Module;
 
-import java.util.concurrent.atomic.DoubleAccumulator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;

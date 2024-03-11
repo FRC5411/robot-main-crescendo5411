@@ -46,7 +46,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static CTREOdometryThread Instance;  
   private static Boolean Flexible;
-  private static Double Frequency;
+  private static double Frequency;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Phoenix Odometry Thread Constructor.
@@ -183,7 +183,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
   }
 
   @Override
-  public synchronized void set(final Double Frequency) {
+  public synchronized void set(final double Frequency) {
     CTREOdometryThread.Frequency = Frequency;
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
@@ -193,7 +193,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
   }
 
   @Override
-  public Double getFrequency() {
+  public double getFrequency() {
     return Frequency;
   }  
   

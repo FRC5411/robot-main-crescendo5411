@@ -46,7 +46,7 @@ public final class Constants {
   // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
   public static final class Subsystems {
     public static final SubsystemManager MANAGER = SubsystemManager.getInstance();
-    public static final Boolean IS_REAL_ROBOT = RobotBase.isReal();
+    public static final boolean IS_REAL_ROBOT = RobotBase.isReal();
     public static final RobotType TYPE = 
       (Logging.REPLAY_FROM_LOG)?
        (RobotType.REPLAY):
@@ -60,9 +60,9 @@ public final class Constants {
     public static final Map<RobotType,String> LOGGING_DEPOSIT = Map.of(
       RobotType.CONCRETE, ("/media/sda1/")
     );
-    public static final Boolean LOGGING_TURBO_MODE = (false);
-    public static final Boolean LOGGING_ENABLED = (false);
-    public static final Boolean REPLAY_FROM_LOG = (false);
+    public static final boolean LOGGING_TURBO_MODE = (false);
+    public static final boolean LOGGING_ENABLED = (false);
+    public static final boolean REPLAY_FROM_LOG = (false);
   }
 
   public static final class Odometry {
@@ -73,7 +73,7 @@ public final class Constants {
   }
 
   public static final class Ports {
-    public static final Integer POWER_DISTRIBUTION_HUB = (1);
+    public static final int POWER_DISTRIBUTION_HUB = (1);
   }
 
   public static final class Profiles { 
@@ -94,7 +94,7 @@ public final class Constants {
       
       public static final class Primary {
         private static final String NAME = ("ARMAAN K.");
-        private static final Integer INPUT_PORT = (0);
+        private static final int INPUT_PORT = (0);
         private static final CommandXboxController INPUT_METHOD = new CommandXboxController(INPUT_PORT);
         public static final Operator<Keybindings,Preferences> PROFILE = new Operator<Keybindings,Preferences>(NAME)
           .add(Preferences.TRANSLATION_X_INPUT, () -> -INPUT_METHOD.getRawAxis((1)))
@@ -110,7 +110,7 @@ public final class Constants {
 
       public static final class Secondary {
         private static final String NAME = ("ALEX P.");
-        private static final Integer INPUT_PORT = (1);
+        private static final int INPUT_PORT = (1);
         private static final CommandXboxController INPUT_METHOD = new CommandXboxController(INPUT_PORT);
         public static final Operator<Keybindings,Preferences> PROFILE = new Operator<Keybindings,Preferences>(NAME)
           .add(Keybindings.CANNON_PIVOT_PODIUMLINE, INPUT_METHOD.a())

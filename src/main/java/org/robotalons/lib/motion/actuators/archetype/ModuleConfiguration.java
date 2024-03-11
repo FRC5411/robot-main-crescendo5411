@@ -27,7 +27,7 @@ public class ModuleConfiguration<Controller> extends Module.Constants {
   public Controller TRANSLATIONAL_CONTROLLER;
   public Controller ROTATIONAL_CONTROLLER;
   public Integer ABSOLUTE_ENCODER_PORT;      
-  public Double TRANSLATIONAL_KS_GAIN;
-  public Double TRANSLATIONAL_KV_GAIN;
-  public Double TRANSLATIONAL_KA_GAIN;  
+  public double TRANSLATIONAL_KS_GAIN;
+  public double TRANSLATIONAL_KV_GAIN;
+  public double TRANSLATIONAL_KA_GAIN;  
 }

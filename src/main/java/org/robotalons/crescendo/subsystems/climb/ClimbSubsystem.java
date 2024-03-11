@@ -49,7 +49,7 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
   private static final PIDController RIGHT_PID;
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
   private static volatile Operator<Keybindings, Preferences> Operator;
-  private static volatile Double Rotation;
+  private static volatile double Rotation;
   private static ClimbSubsystem Instance;
   // ------------------------------------------------------------[Constructors]------------------------------------------------------------- //
 
@@ -112,19 +112,19 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
 
     RIGHT_ARM.setSoftLimit(
     SoftLimitDirection.kForward,
-    ((Double) Units.radiansToRotations(Measurements.MAXIMUM_ARM_ROTATION)).floatValue());
+    (float) Units.radiansToRotations(Measurements.MAXIMUM_ARM_ROTATION));
 
     RIGHT_ARM.setSoftLimit(
     SoftLimitDirection.kReverse,
-    ((Double) Units.radiansToRotations(Measurements.MINIMUM_ARM_ROTATION)).floatValue());
+    (float) Units.radiansToRotations(Measurements.MINIMUM_ARM_ROTATION));
 
     LEFT_ARM.setSoftLimit(
     SoftLimitDirection.kForward,
-    ((Double) Units.radiansToRotations(Measurements.MAXIMUM_ARM_ROTATION)).floatValue());
+    (float) Units.radiansToRotations(Measurements.MAXIMUM_ARM_ROTATION));
 
     LEFT_ARM.setSoftLimit(
     SoftLimitDirection.kReverse,
-    ((Double) Units.radiansToRotations(Measurements.MINIMUM_ARM_ROTATION)).floatValue());
+    (float) Units.radiansToRotations(Measurements.MINIMUM_ARM_ROTATION));
 
     LEFT_ARM.setInverted((true));
   }
@@ -195,7 +195,7 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
    * @param Direction Side of the climb subsystem being demanded
    * @param Demand    Queried load on the motor controller object, which must lie between -1 and +1
    */
-  public synchronized void set(final ClimbState Direction, final Double Demand) {
+  public synchronized void set(final ClimbState Direction, final double Demand) {
     switch(Direction) {
       case LEFT:
         LEFT_ARM.setVoltage(LEFT_PID.calculate(getPosition(ClimbState.LEFT), Demand) + LEFT_FF.calculate(Demand, (0)));
@@ -210,7 +210,7 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
    * Mutates the demand velocities of both sides of the climb subsystem
    * @param Demand Queried load on the motor controller object, which must lie between -1 and +1
    */
-  public synchronized void set(final Double Demand) {
+  public synchronized void set(final double Demand) {
   //   LEFT_ARM.setVoltage(LEFT_PID.calculate(getPosition(ClimbState.LEFT), Demand) + LEFT_FF.calculate(Demand, (0)));
   //   RIGHT_ARM.setVoltage(RIGHT_PID.calculate(getPosition(ClimbState.RIGHT), Demand) + RIGHT_FF.calculate(Demand, (0)));
   }
@@ -220,7 +220,7 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
    * @param Direction Side of the climb subsystem being demanded
    * @return Current absolute value of the absolute encoders, with a constant offset
    */
-  public static synchronized Double getPosition(final ClimbState Direction) {
+  public static synchronized double getPosition(final ClimbState Direction) {
     switch (Direction) {
       case LEFT:
         return LEFT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.LEFT_ENCODER_OFFSET;

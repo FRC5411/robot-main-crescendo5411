@@ -12,22 +12,22 @@ import edu.wpi.first.math.util.Units;
  * solved for.
  */
 public class TrajectoryObject {
-  public Double MU;
-  public Double MASS;  
-  public Double HORIZON;
-  public Double VERTICAL;
-  public Integer ITERATIONS;
-  public Double VERTICAL_AREA;
-  public Double HORIZONTAL_AREA;
-  public Double OFFSET_LENGTH;    
-  public Double INITIAL_VELOCITY;
+  public double MU;
+  public double MASS;  
+  public double HORIZON;
+  public double VERTICAL;
+  public int ITERATIONS;
+  public double VERTICAL_AREA;
+  public double HORIZONTAL_AREA;
+  public double OFFSET_LENGTH;    
+  public double INITIAL_VELOCITY;
   public Rotation2d INITIAL_ROTATION;
   public Rotation2d OPTIMIZED_ROTATION;
   
-  public static final Double NOTE_MU = (1.17d);
-  public static final Double NOTE_MASS = (2.35301e-1d);
-  public static final Double NOTE_INNER_RADIUS = Units.inchesToMeters((10d));
-  public static final Double NOTE_OUTER_RADIUS = Units.inchesToMeters((14d));
+  public static final double NOTE_MU = (1.17d);
+  public static final double NOTE_MASS = (2.35301e-1d);
+  public static final double NOTE_INNER_RADIUS = Units.inchesToMeters((10d));
+  public static final double NOTE_OUTER_RADIUS = Units.inchesToMeters((14d));
 
   /**
    * Constructs a note preset of a Trajectory Object
@@ -40,8 +40,8 @@ public class TrajectoryObject {
    * @return Note preset with the parameters
    */
   public static final TrajectoryObject note(
-      final Double Velocity, final Rotation2d Rotation, final Double Offset,
-      final Double Distance, final Double Height, final Integer Iterations) {
+      final double Velocity, final Rotation2d Rotation, final double Offset,
+      final double Distance, final double Height, final int Iterations) {
     var Object = new TrajectoryObject();
     Object.MU = NOTE_MU;
     Object.MASS = NOTE_MASS;

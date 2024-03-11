@@ -49,7 +49,7 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
 
   private final ModuleConfiguration<Controller> MODULE_CONSTANTS;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  private Double Timestamp;
+  private double Timestamp;
   // -----------------------------------------------------------[Constructor(s)]------------------------------------------------------------//
   /**
    * Spark Module Constructor
@@ -158,9 +158,9 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
 
   /**
    * Calculates the discretization timestep, {@code dt}, at this current time based on the FPGA clock.
-   * @return Double representation of the time passed between now and the last timestep.
+   * @return double representation of the time passed between now and the last timestep.
    */
-  private synchronized Double discretize() {
+  private synchronized double discretize() {
     var DiscretizationTimestep = (0.0);
     if (Timestamp.equals((0.0))) {
       DiscretizationTimestep = ((1.0) / (50.0));
@@ -193,7 +193,7 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
         TIMESTAMPS.clear();
         STATUS.OdometryTimestamps = 
           TIMESTAMP_QUEUE.stream()
-            .mapToDouble((final Double Value) -> {
+            .mapTodouble((final double Value) -> {
               TIMESTAMPS.add(Value);
               return Value.doubleValue();
             }).toArray();
@@ -202,14 +202,14 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
       synchronized(TRANSLATIONAL_POSITION_QUEUE) {
         STATUS.OdometryTranslationalPositionsRadians =
           TRANSLATIONAL_POSITION_QUEUE.stream()
-            .mapToDouble((final Double Value) -> Units.rotationsToRadians(Value) / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO)
+            .mapTodouble((final double Value) -> Units.rotationsToRadians(Value) / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO)
             .toArray();    
         TRANSLATIONAL_POSITION_QUEUE.clear();    
       }
       synchronized(ROTATIONAL_POSITION_QUEUE) {
         STATUS.OdometryRotationalPositionsRadians =
           ROTATIONAL_POSITION_QUEUE.stream()
-            .map((final Double Value) -> Rotation2d.fromRotations(Value / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO))
+            .map((final double Value) -> Rotation2d.fromRotations(Value / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO))
             .toArray(Rotation2d[]::new);    
         ROTATIONAL_POSITION_QUEUE.clear();  
       }
@@ -229,12 +229,12 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
   }
 
   @Override
-  protected synchronized void setTranslationalVoltage(final Double Voltage) {
+  protected synchronized void setTranslationalVoltage(final double Voltage) {
     TRANSLATIONAL_CONTROLLER.setInputVoltage(MathUtil.clamp(Voltage != null? Voltage: 0d, (-12d), (12d)));
   }
 
   @Override
-  protected synchronized void setRotationalVoltage(final Double Voltage) {
+  protected synchronized void setRotationalVoltage(final double Voltage) {
     ROTATIONAL_CONTROLLER.setInputVoltage(MathUtil.clamp(Voltage != null? Voltage: 0d, (-12d), (12d)));
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
