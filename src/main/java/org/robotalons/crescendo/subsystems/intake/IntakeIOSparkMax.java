@@ -15,6 +15,10 @@ public class IntakeIOSparkMax implements IntakeIO {
   private double appliedVolts = 0.0;
 
   public IntakeIOSparkMax() {
+    config();
+  }
+
+  public void config(){
     intakeMotor.clearFaults();
     intakeMotor.restoreFactoryDefaults();
 
@@ -23,13 +27,15 @@ public class IntakeIOSparkMax implements IntakeIO {
     intakeMotor.setIdleMode(IdleMode.kBrake);
 
     intakeMotor.burnFlash();
+
+    intakeMotor.setInverted(false);
   }
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
     inputs.voltsApplied = appliedVolts;
-    inputs.currentApplied = new double[] {intakeMotor.getOutputCurrent()};
-    inputs.temp = new double[] {intakeMotor.getMotorTemperature()};
+    inputs.currentApplied = intakeMotor.getOutputCurrent();
+    inputs.temp = intakeMotor.getMotorTemperature();
   }
 
   @Override

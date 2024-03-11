@@ -15,13 +15,18 @@ public class IndexerIOSparkMax implements IndexerIO {
     private double appliedVolts = 0.0;
 
   public IndexerIOSparkMax() {
-    indexerMotor.clearFaults();
-    indexerMotor.restoreFactoryDefaults();
+    config();
 
+  }
+
+  public void config(){
+    indexerMotor.clearFaults();
+
+    indexerMotor.restoreFactoryDefaults();
     indexerMotor.setSmartCurrentLimit(IndexerConstants.indexerCurrentLimit);
     indexerMotor.enableVoltageCompensation(12.0);
-    indexerMotor.setIdleMode(IdleMode.kBrake);
 
+    indexerMotor.setIdleMode(IdleMode.kBrake);
     indexerMotor.setInverted(false);
 
     indexerMotor.burnFlash();
@@ -30,8 +35,8 @@ public class IndexerIOSparkMax implements IndexerIO {
   @Override
   public void updateInputs(IndexerIOInputs inputs) {
     inputs.voltageApplied = appliedVolts;
-    inputs.currentApplied = new double[] {indexerMotor.getOutputCurrent()};
-    inputs.temp = new double[] {indexerMotor.getMotorTemperature()};
+    inputs.currentApplied = indexerMotor.getOutputCurrent();
+    inputs.temp = indexerMotor.getMotorTemperature();
   }
 
   @Override

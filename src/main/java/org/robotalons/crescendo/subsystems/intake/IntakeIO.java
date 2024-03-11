@@ -10,10 +10,10 @@ public interface IntakeIO {
   @AutoLog
   public static class IntakeIOInputs {
     public double voltsApplied = 0.0;
-    public double[] currentApplied = new double[] {0.0};
-    public double[] temp = new double[] {0.0};
+    public double currentApplied = 0.0;
+    public double temp = 0.0;
   }
-
+ 
   public default void updateInputs(IntakeIOInputs inputs) {}
 
   public default void setVolts(double volts) {}
