@@ -19,6 +19,10 @@ public abstract class ElevatorModule implements Closeable{
         public static final Integer CURRENT_LIMIT = (60);
         public static final Double GEAR_RATIO = (0.0);
         public static final Double BASE_HEIGHT = (0.0);
+        public static final Double MIN_HEIGHT = (0.0);
+        public static final Double MAX_HEIGHT = (0.0);
+        public static final Double MASS_KG = (0.0);
+        public static final Double RADIUS = (0.0);
     }
 
     public abstract void close();
