@@ -3,6 +3,7 @@ package org.robotalons.lib.motion.elevator;
 import java.io.Closeable;
 import java.util.Objects;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -30,6 +31,8 @@ public abstract class ElevatorModule implements Closeable{
     public abstract void update();
     public abstract void periodic();
 
-    protected abstract void setVoltage(int volts);
+    protected abstract void setVoltage(double volts);
     protected abstract void pidSet(double demand);
+    public abstract Rotation2d getAbsoluteRotation();
+    public abstract Rotation2d getRelativeRotation();
 }

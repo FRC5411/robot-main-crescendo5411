@@ -3,10 +3,12 @@ package org.robotalons.crescendo.subsystems.elevator;
 import org.robotalons.crescendo.subsystems.elevator.REVElevator.ElevatorModuleConstants;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import talon.motion.profile.ProfilePIDController;
 
 public class Constants {
     public class Ports {
@@ -47,10 +49,11 @@ public class Constants {
                 Measurements.Feedforward.KS,
                 Measurements.Feedforward.KG, 
                 Measurements.Feedforward.KV);
-            CONSTANTS.PID_CONTROLLER = new PIDController(
+            CONSTANTS.PID_CONTROLLER = new ProfiledPIDController(
                 Measurements.PID.KP,
                 Measurements.PID.KI,
-                Measurements.PID.KD);
+                Measurements.PID.KD,
+                new TrapezoidProfile.Constraints(1000.0, 500.0));
         }
     }
 }
