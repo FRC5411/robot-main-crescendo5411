@@ -1,86 +1,63 @@
-// ----------------------------------------------------------------[Package]----------------------------------------------------------------//
-package org.robotalons.crescendo;
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot;
+
+import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.Autos;
+import frc.robot.commands.ExampleCommand;
+import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.robotalons.crescendo.Constants.Profiles;
-import org.robotalons.crescendo.Constants.Profiles.Keybindings;
-import org.robotalons.crescendo.Constants.Profiles.Preferences;
-import org.robotalons.crescendo.subsystems.SubsystemManager;
-import org.robotalons.lib.utilities.Alert;
-import org.robotalons.lib.utilities.Alert.AlertType;
-import org.robotalons.lib.utilities.Operator;
-
-import java.util.ArrayList;
-import java.util.List;
-// -------------------------------------------------------------[Robot Container]-----------------------------------------------------------//
 /**
- *
- *
- * <h1>RobotContainer</h1>
- *
- * <p>Utility class which defines all modes of robot's event-cycle throughout it's lifetime.
+ * This class is where the bulk of the robot should be declared. Since Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * subsystems, commands, and trigger mappings) should be declared here.
  */
-public final class RobotContainer {
-  // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  public static final List<LoggedDashboardChooser<Operator<Keybindings, Preferences>>> OperatorSelectors;
-  public static LoggedDashboardChooser<Command> AutonomousSelector;
-  // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  private static RobotContainer Instance = (null);
-  // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
-  
-  private RobotContainer() {} static {
-    OperatorSelectors = new ArrayList<>();
-    SubsystemManager.getSubsystems().forEach((Subsystem) -> {
-      final var Selector = new SendableChooser<Operator<Keybindings, Preferences>>();
-      final var Default = Profiles.DEFAULT.get(Subsystem);
-      Profiles.OPERATORS.forEach((Profile) -> Selector.addOption(Profile.getName(), Profile));
-      Selector.setDefaultOption(Default.getName(), Default);
-      Selector.onChange(Subsystem::configure);
-      Subsystem.configure(Default);
-      OperatorSelectors.add(new LoggedDashboardChooser<Operator<Keybindings, Preferences>>(Subsystem.getName() + " Pilot Selector", Selector));
-    });
-    Profiles.OPERATORS.forEach((Profile) -> SmartDashboard.putData(Profile.getName(), Profile));
-    SubsystemManager.getInstance();
-    try {
-      AutonomousSelector = new LoggedDashboardChooser<>(("Autonomous Selector"), AutoBuilder.buildAutoChooser()); 
-    } catch (final Exception Ignored) {
-      new Alert(("Autonomous Configuration Failed"), AlertType.ERROR);
-      if(AutonomousSelector ==  (null)) {
-        final var Selector = new SendableChooser<Command>();
-        Selector.addOption(("Autonomous Configuration Failed"), new InstantCommand());
-        AutonomousSelector = new LoggedDashboardChooser<>(("Autonomous Selector"), Selector); 
-      }
-    }
-    //TODO: Remove Soon
-    @SuppressWarnings("resource")
-    final var m_led = new AddressableLED((9));
-    final var m_ledBuffer = new AddressableLEDBuffer((26));
-    m_led.setLength(m_ledBuffer.getLength());
-    m_led.setData(m_ledBuffer);
-    m_led.start();
-    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-      m_ledBuffer.setRGB(i, (0), (255), (0));
-   }
-   m_led.setData(m_ledBuffer);
+public class RobotContainer {
+  // The robot's subsystems and commands are defined here...
+  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+
+  // Replace with CommandPS4Controller or CommandJoystick if needed
+  private final CommandXboxController m_driverController =
+      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+
+  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  public RobotContainer() {
+    // Configure the trigger bindings
+    configureBindings();
   }
 
-  // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
-   * Retrieves the existing instance of this static utility class
-   * @return Utility class's instance
+   * Use this method to define your trigger->command mappings. Triggers can be created via the
+   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
+   * predicate, or via the named factories in {@link
+   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
+   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
+   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+   * joysticks}.
    */
-  public static synchronized RobotContainer getInstance() {
-      if (java.util.Objects.isNull(Instance)) {
-          Instance = new RobotContainer();
-      }
-      return Instance;
+  private void configureBindings() {
+    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+    new Trigger(m_exampleSubsystem::exampleCondition)
+        .onTrue(new ExampleCommand(m_exampleSubsystem));
+
+    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
+    // cancelling on release.
+    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+  }
+
+  /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *
+   * @return the command to run in autonomous
+   */
+  public Command getAutonomousCommand() {
+    // An example command will be run in autonomous
+    return Autos.exampleAuto(m_exampleSubsystem);
   }
 }
