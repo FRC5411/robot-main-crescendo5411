@@ -181,10 +181,10 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
             );
           });
         });
+        try {
+          Thread.sleep((1/500) * 1000);
+        } catch (final InterruptedException Ignored) {}        
       }
-      try {
-        Thread.sleep((200));
-      } catch (final InterruptedException Ignored) {}
     });
     ODOMETRY_PROCESSOR.setName(("OdometryProcessorThread"));
     ODOMETRY_PROCESSOR.setDaemon((true));
