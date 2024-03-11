@@ -26,10 +26,10 @@ public abstract class Module implements Closeable {
   protected final Constants CONSTANTS;  
   protected final ModuleStatusContainerAutoLogged STATUS = new ModuleStatusContainerAutoLogged();  
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
+  protected volatile SwerveModuleState Reference = new SwerveModuleState();
+  protected volatile ReferenceType ReferenceMode = ReferenceType.STATE_CONTROL;
   protected Rotation2d RotationalAbsoluteOffset = (null);
-  protected Rotation2d RotationalRelativeOffset = (null);
-  protected SwerveModuleState Reference = new SwerveModuleState();
-  protected ReferenceType ReferenceMode = ReferenceType.STATE_CONTROL;
+  protected Rotation2d RotationalRelativeOffset = (null);  
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Common Module Constructor.
@@ -126,8 +126,7 @@ public abstract class Module implements Closeable {
    * @return An optimized version of the reference
    */
   public SwerveModuleState set(final SwerveModuleState Reference) {
-    final var Difference = getAbsoluteRotation().minus(Reference.angle);
-    this.Reference = SwerveModuleState.optimize(Reference, (Math.round(Difference.getRadians()) == (Math.PI / (2)))?  (new Rotation2d((0d))): (getAbsoluteRotation()));
+    this.Reference = SwerveModuleState.optimize(Reference, STATUS.RotationalRelativePosition.plus(RotationalRelativeOffset));
     return this.Reference;
   }
 

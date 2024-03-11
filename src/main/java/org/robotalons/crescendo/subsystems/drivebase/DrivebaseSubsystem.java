@@ -126,7 +126,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         (null),
         getInstance())
     );
-    //PLUSSS ULTRAAA
     ODOMETRY_PROCESSOR = new Thread(() -> {
       while(Instance != null) {
         synchronized(MODULES) {
@@ -182,7 +181,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
           });
         });
         try {
-          Thread.sleep((1/500) * 1000);
+          Thread.sleep((1/500) * 10000);
         } catch (final InterruptedException Ignored) {}        
       }
     });
