@@ -27,20 +27,23 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // import frc.robot.Constants;
 // import frc.robot.Constants.Mode;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.robotalons.crescendo.ConstantStates;
 import org.robotalons.crescendo.Constants;
 
+
 /** Swerve drive */
-public class Drive extends SubsystemBase {
+public class Drive {
   private final double TRACK_WIDTH_X_M = Units.inchesToMeters(29.5);
   private final double TRACK_WIDTH_Y_M = Units.inchesToMeters(29.5);
   private final double DRIVEBASE_RADIUS_M =
       Math.hypot(TRACK_WIDTH_X_M / 2.0, TRACK_WIDTH_Y_M / 2.0);
-  private final double MAX_LINEAR_SPEED_MPS = Units.feetToMeters(14.0);
+  private final double MAX_LINEAR_SPEED_MPS = Units.feetToMeters(16.5);
   private final double MAX_ANGULAR_SPEED_MPS = MAX_LINEAR_SPEED_MPS / DRIVEBASE_RADIUS_M;
   // Second argument is the max accel
   private final ModuleLimits MODULE_LIMITS =
@@ -120,7 +123,7 @@ public class Drive extends SubsystemBase {
         () ->
             DriverStation.getAlliance().isPresent()
                 && DriverStation.getAlliance().get() == Alliance.Red,
-        this);
+        (Subsystem) this);
     Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
@@ -135,7 +138,7 @@ public class Drive extends SubsystemBase {
         });
   }
 
-  @Override
+
   public void periodic() {
     gyroIO.updateInputs(gyroIOInputs);
     for (var module : modules) {
@@ -259,7 +262,7 @@ public class Drive extends SubsystemBase {
 
   /** Set the pose of the robot */
   public void setPose(Pose2d pose) {
-    if (ConstantStates.States.currentMode == Mode.SIM) {
+    if (ConstantStates.currentMode == ConstantStates.Mode.SIM) {
       poseEstimator.resetPosition(pose.getRotation(), getModulePositions(), pose);
       odometry.resetPosition(pose.getRotation(), getModulePositions(), pose);
     } else {
@@ -338,10 +341,7 @@ public class Drive extends SubsystemBase {
     return KINEMATICS.toChassisSpeeds(getModuleStates());
   }
 
-  /** Returns the current desired chassis speeds of the robot */
-  public ChassisSpeeds getDesiredChassisSpeeds() {
-    return desiredChassisSpeeds;
-  }
+  
 
   /** Returns the positions of the modules on the drive */
   public Translation2d[] getModuleTranslations() {
@@ -382,4 +382,12 @@ public class Drive extends SubsystemBase {
   public Pose2d getFilteredPose() {
     return filteredPose;
   }
+
+
+public double getDesiredChassisSpeeds() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getDesiredChassisSpeeds'");
+}
+
+  
 }

@@ -3,7 +3,6 @@ package org.robotalons.crescendo.subsystems;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.util.Units;
 
-import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 // ---------------------------------------------------------------[Constants]---------------------------------------------------------------//
 /**
  *

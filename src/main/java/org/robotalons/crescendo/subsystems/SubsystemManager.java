@@ -19,10 +19,7 @@ import org.littletonrobotics.junction.Logger;
 import org.robotalons.crescendo.Constants.Profiles.Keybindings;
 import org.robotalons.crescendo.Constants.Profiles.Preferences;
 import org.robotalons.crescendo.subsystems.Constants.Measurements;
-import org.robotalons.crescendo.subsystems.climb.ClimbSubsystem;
-import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem;
-import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.pathfinding.LocalADStarAK;
 
@@ -42,10 +39,7 @@ import java.util.List;
 public final class SubsystemManager extends SubsystemBase {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   public static final List<TalonSubsystemBase<Keybindings,Preferences>> SUBSYSTEMS;
-  public static final TalonSubsystemBase<Keybindings,Preferences> DRIVEBASE;
   public static final TalonSubsystemBase<Keybindings,Preferences> CANNON;
-  public static final TalonSubsystemBase<Keybindings,Preferences> CLIMB;
-  public static final TalonSubsystemBase<Keybindings,Preferences> VISION;
   public static final Field2d FIELD;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static SubsystemManager Instance;
@@ -53,53 +47,16 @@ public final class SubsystemManager extends SubsystemBase {
   private SubsystemManager() {} static {
     SUBSYSTEMS = new ArrayList<>();
     FIELD = new Field2d();
-    DRIVEBASE = DrivebaseSubsystem.getInstance();
     CANNON = SuperstructureSubsystem.getInstance();
-    CLIMB = ClimbSubsystem.getInstance();
-    VISION = VisionSubsystem.getInstance();
-    SUBSYSTEMS.add(DRIVEBASE);
     SUBSYSTEMS.add(CANNON);
-    SUBSYSTEMS.add(CLIMB);
-    SUBSYSTEMS.add(VISION);
-    AutoBuilder.configureHolonomic(
-      DrivebaseSubsystem::getPose,
-      DrivebaseSubsystem::set, 
-      () -> DrivebaseSubsystem.getChassisSpeeds(),
-      DrivebaseSubsystem::set, 
-      new HolonomicPathFollowerConfig(
-        new PIDConstants(
-          Constants.Measurements.ROBOT_TRANSLATION_KP,
-          Constants.Measurements.ROBOT_TRANSLATION_KI,
-          Constants.Measurements.ROBOT_TRANSLATION_KP), 
-        new PIDConstants(
-          Constants.Measurements.ROBOT_ROTATIONAL_KP,
-          Constants.Measurements.ROBOT_ROTATIONAL_KI,
-          Constants.Measurements.ROBOT_ROTATIONAL_KD), 
-        Constants.Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
-        Constants.Measurements.ROBOT_RADIUS_METERS, 
-        new ReplanningConfig(
-          (true),
-          (true) 
-        )), 
-      () -> DrivebaseSubsystem.getPath(),
-      DRIVEBASE);
-    Pathfinding.setPathfinder(new LocalADStarAK());
-    PathPlannerLogging.setLogActivePathCallback(
-      (Trajectory) -> Logger.recordOutput(("Pathfinding/Trajectory"), Trajectory.toArray(new Pose2d[0])));
-    PathPlannerLogging.setLogTargetPoseCallback(
-      (Reference) -> Logger.recordOutput(("Pathfinding/Reference"), Reference));
-    DrivebaseSubsystem.getModules().forEach((Module) -> 
-      Module.set(org.robotalons.lib.motion.actuators.Module.ReferenceType.STATE_CONTROL));
-    Pathfinding.ensureInitialized();
-    Pathfinding.setStartPosition(DrivebaseSubsystem.getPose().getTranslation());
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
   public synchronized void periodic() {
-    FIELD.setRobotPose(DrivebaseSubsystem.getPose());
-    Pathfinding.setDynamicObstacles(
-      new ArrayList<>(),
-      DrivebaseSubsystem.getPose().getTranslation());
+    // FIELD.setRobotPose(DrivebaseSubsystem.getPose());
+    // Pathfinding.setDynamicObstacles(
+    //   new ArrayList<>(),
+    //   DrivebaseSubsystem.getPose().getTranslation());
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
@@ -125,9 +82,9 @@ public final class SubsystemManager extends SubsystemBase {
    * Provides the current chassis speeds
    * @return Chassis speeds of Robot drivebase
    */
-  public static ChassisSpeeds getChassisSpeeds() {
-    return DrivebaseSubsystem.getChassisSpeeds();
-  }
+  // public static ChassisSpeeds getChassisSpeeds() {
+  //   return DrivebaseSubsystem.getChassisSpeeds();
+  // }
 
   /**
    * Provides the employee subsystems managed my this subsystem manager

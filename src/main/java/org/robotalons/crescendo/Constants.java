@@ -6,10 +6,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import org.robotalons.crescendo.Robot.RobotType;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
-import org.robotalons.crescendo.subsystems.climb.ClimbSubsystem;
-import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
+import org.robotalons.crescendo.subsystems.drive.Drive;
+import org.robotalons.crescendo.subsystems.*;
 import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem;
-import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.REVOdometryThread;
@@ -84,9 +83,6 @@ public final class Constants {
       OPERATORS.add(Operators.Primary.PROFILE);
       OPERATORS.add(Operators.Secondary.PROFILE);
 
-      DEFAULT.put(ClimbSubsystem.getInstance(), Operators.Secondary.PROFILE);
-      DEFAULT.put(VisionSubsystem.getInstance(), Operators.Secondary.PROFILE);
-      DEFAULT.put(DrivebaseSubsystem.getInstance(), Operators.Primary.PROFILE);
       DEFAULT.put(SuperstructureSubsystem.getInstance(), Operators.Secondary.PROFILE);
     }
 

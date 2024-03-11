@@ -4,10 +4,10 @@
 
 package org.robotalons.crescendo.subsystems.drive;
 
-import org.robotalons.lib.utilities.LoggedTunableNumber;
-
 import com.ctre.phoenix6.hardware.CANcoder;
-
+import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
@@ -15,7 +15,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-
+import org.robotalons.lib.utilities.*;
 /** Class to interact with the physical swerve module structure, SDS L2+ */
 public class ModuleIOSparkMax implements ModuleIO {
   // TODO Update these for our latest swerve modules
