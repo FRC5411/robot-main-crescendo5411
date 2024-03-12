@@ -83,6 +83,8 @@ dependencies {
   implementation group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.0-alpha1'
   implementation group: 'com.jcabi', name: 'jcabi-aspects', version: '0.25.1'
 
+  implementation 'gov.nist.math:jama:1.0.3'
+
   roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
   roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
 
