@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package org.littletonrobotics.frc2024.subsystems.drive;
+package org.robotalons.crescendo.subsystems.drive;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -21,7 +21,6 @@ public class GyroIOPigeon2 implements GyroIO {
 
   private final Pigeon2 pigeon;
   private final StatusSignal<Double> yaw;
-  private final Queue<Double> yawPositionQueue;
   private final StatusSignal<Double> yawVelocity;
 
   public GyroIOPigeon2(boolean phoenixDrive) {
@@ -34,12 +33,6 @@ public class GyroIOPigeon2 implements GyroIO {
     yaw.setUpdateFrequency(DriveConstants.odometryFrequency);
     yawVelocity.setUpdateFrequency(100.0);
     pigeon.optimizeBusUtilization();
-    if (phoenixDrive) {
-      yawPositionQueue =
-          PhoenixOdometryThread.getInstance().registerSignal(pigeon, pigeon.getYaw());
-    } else {
-      yawPositionQueue = SparkMaxOdometryThread.getInstance().registerSignal(yaw::getValueAsDouble);
-    }
   }
 
   @Override
@@ -48,8 +41,5 @@ public class GyroIOPigeon2 implements GyroIO {
     inputs.yawPosition = Rotation2d.fromDegrees(yaw.getValueAsDouble());
     inputs.yawVelocityRadPerSec = Units.degreesToRadians(yawVelocity.getValueAsDouble());
 
-    inputs.odometryYawPositions =
-        yawPositionQueue.stream().map(Rotation2d::fromDegrees).toArray(Rotation2d[]::new);
-    yawPositionQueue.clear();
   }
 }

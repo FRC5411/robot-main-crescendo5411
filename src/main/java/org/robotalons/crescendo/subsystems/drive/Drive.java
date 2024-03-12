@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package org.littletonrobotics.frc2024.subsystems.drive;
+package org.robotalons.crescendo.subsystems.drive;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -33,15 +33,9 @@ import com.team254.lib.swerve.SwerveSetpoint;
 import org.robotalons.crescendo.subsystems.drive.ModuleLimits;
 
 import org.robotalons.crescendo.RobotState;
-import org.robotalons.crescendo.subsystems.drive.controllers.AutoAlignController;
-import org.robotalons.crescendo.subsystems.drive.controllers.HeadingController;
-import org.robotalons.crescendo.subsystems.drive.controllers.TeleopDriveController;
-import org.robotalons.crescendo.subsystems.drive.controllers.TrajectoryController;
-import org.robotalons.crescendo.subsystems.drive.trajectory.HolonomicTrajectory;
 import org.robotalons.crescendo.subsystems.leds.Leds;
-import org.robotalons.crescendo.util.EqualsUtil;
+import org.robotalons.crescendo.drive.EqualsUtil;
 import org.robotalons.crescendo.util.GeomUtil;
-import org.robotalons.crescendo.util.LoggedTunableNumber;
 import org.robotalons.crescendo.util.swerve.ModuleLimits;
 import org.robotalons.crescendo.util.swerve.SwerveSetpoint;
 import org.robotalons.crescendo.util.swerve.SwerveSetpointGenerator;
@@ -51,10 +45,6 @@ import org.littletonrobotics.junction.Logger;
 
 @ExtensionMethod({GeomUtil.class})
 public class Drive extends SubsystemBase {
-  private static final LoggedTunableNumber coastWaitTime =
-      new LoggedTunableNumber("Drive/CoastWaitTimeSeconds", 0.5);
-  private static final LoggedTunableNumber coastMetersPerSecThreshold =
-      new LoggedTunableNumber("Drive/CoastMetersPerSecThreshold", 0.05);
 
   public enum DriveMode {
     /** Driving with input from driver joysticks. (Default) */
