@@ -66,6 +66,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
     Frequency = STANDARD_FREQUENCY;
     Instance = (null);
     Flexible = (false);
+    Enabled = (true);
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
@@ -114,7 +115,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
 
   @Override
   public void run() {
-    while (this.isAlive()) {
+    while (this.isAlive() && !SIGNAL_PROVIDERS.isEmpty()) {
       try {
         SIGNALS_LOCK.lock();
         try {
@@ -136,9 +137,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
             final var Timestamp = new AtomicReference<>(Logger.getRealTimestamp() / (1e6));
             final var Latency = new AtomicReference<>((0d));
             SIGNAL_PROVIDERS.forEach((Signal) -> Latency.set(Latency.get() + Signal.getTimestamp().getLatency()));
-            if (!SIGNAL_PROVIDERS.isEmpty()) {
-              Timestamp.set(Timestamp.get() - Latency.get() / SIGNAL_PROVIDERS.size());
-            }
+            Timestamp.set(Timestamp.get() - Latency.get() / SIGNAL_PROVIDERS.size());
             SIGNAL_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) -> {
               synchronized(Queue) {
                 Queue.offer(Providers.next().getValue());
@@ -157,7 +156,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
         }           
       } catch (final Exception Ignored) {
         new Alert(("Odometry Exception"), AlertType.ERROR);
-      }    
+      }            
     }
   }  
 
@@ -173,8 +172,6 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
     Instance = new CTREOdometryThread(Lock);
     return Instance;
   }
-
-
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
   /**
    * Mutates the current status of the can bus to determine if it supports flexible data rates.
@@ -191,7 +188,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
 
   @Override
   public synchronized void setFrequency(final Double Frequency) {
-    CTREOdometryThread.Frequency = Frequency;
+    CTREOdometryThread.Frequency = Math.min(Frequency,(1000));
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   @Override

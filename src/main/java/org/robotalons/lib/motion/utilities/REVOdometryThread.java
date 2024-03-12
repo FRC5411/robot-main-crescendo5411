@@ -58,6 +58,7 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
     TIMESTAMP_QUEUES = new ArrayList<>();
     SIGNAL_PROVIDERS = new ArrayList<>();
     Instance = (null);
+    Enabled = (true);
     Frequency = STANDARD_FREQUENCY;
   }
 
@@ -104,7 +105,7 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
 
   @Override
   public synchronized void run() {
-    if(Enabled) {
+    if(Enabled && !SIGNAL_PROVIDERS.isEmpty()) {
       try {
         ODOMETRY_LOCK.lock();
         try {

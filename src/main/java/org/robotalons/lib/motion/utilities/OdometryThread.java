@@ -55,7 +55,8 @@ public sealed interface OdometryThread<SignalType> extends Runnable, Closeable p
 
 
   /**
-   * Mutates the current state of the thread to be enabled or disabled
+   * Mutates the current state of the thread to be enabled or disabled, note that this has different behavior from {@link #close}, 
+   * which stops this instance without the ability to re-enable it.
    * @param Enabled If this Thread is enabled or not
    */
   void setEnabled(final Boolean Enabled);
