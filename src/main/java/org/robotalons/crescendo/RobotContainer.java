@@ -87,7 +87,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("End Intake", new InstantCommand(() -> intake.set(0.0)));
         NamedCommands.registerCommand("Pivot Up", new InstantCommand(() -> cannon.pivotUp()));
         NamedCommands.registerCommand("Pivot Down", new InstantCommand(() -> cannon.pivotDown()));
-        
+
         configureButtonBindings();
   }
 

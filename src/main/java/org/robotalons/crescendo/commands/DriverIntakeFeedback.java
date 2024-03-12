@@ -3,7 +3,6 @@ package org.robotalons.crescendo.commands;
 import org.robotalons.crescendo.subsystems.intake.Intake;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.RuntimeType;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 
