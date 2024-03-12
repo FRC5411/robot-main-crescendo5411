@@ -1,113 +1,124 @@
-package org.robotalons.crescendo.subsystems.elevator;
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
 
+package org.robotalons.crescendo.subsystems.elevator;
 import java.util.Queue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.DoubleSupplier;
 
-import org.robotalons.crescendo.subsystems.drivebase.Constants.Simulation;
 import org.robotalons.lib.motion.elevator.ElevatorModule;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkMaxPIDController;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import talon.motion.profile.ProfilePIDController;
+
 
 public class REVElevator extends ElevatorModule{
-    
-    private final ElevatorModuleConstants CONSTANTS;
-    private DoubleSupplier APPLIED_VOLTS;
-    private final Queue<Double> POSITION_QUEUE;
-    private final Lock ODOMETRY_LOCK;
-    private Rotation2d SETPOINT;
-   
-    private double RotationalRelativePosition = 0;
-    private double RotationalAbsolutePosition = 0;
+  /** Creates a new ElevatorSubsystem. */
 
-    public REVElevator(ElevatorModuleConstants Constants) {
-        super(Constants);
-        CONSTANTS = Constants;
-        APPLIED_VOLTS = () -> (0);
-        SETPOINT = null;
-        ODOMETRY_LOCK = new ReentrantLock();
-        POSITION_QUEUE = org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD.register(() -> (STATUS.Position_RD));
-        
-    }
 
-    @Override
-    public void close() {
-        POSITION_QUEUE.clear();
-    }
+  private final REVElevatorConstants CONSTANTS;
+  private ElevatorStates STATE;
+  private final Queue<Double> POSITION_QUEUE;
+  private final Lock ODOMETRY_LOCK;
+  private Rotation2d SETPOINT;
+  private DoubleSupplier APPLIED_VOLTS;
 
-    @Override
-    public void cease() {
-        CONSTANTS.MOTOR.setState((0d),(0d));
-    }
 
-    @Override
-    public void update() {
-        CONSTANTS.MOTOR.update(CONSTANTS.LOOPPERIOD_SEC);
-        // code block modified from mechanical advantage
-        double angleDiffRad = CONSTANTS.ROTATIONAL_CONTROLLER.getAngularVelocityRadPerSec() * Simulation.SIMULATION_LOOPPERIOD_SEC;
-        RotationalRelativePosition += angleDiffRad;
-        RotationalAbsolutePosition += angleDiffRad;
-        // reverses negative rotation to positive
-        // ie -3.14 -> 3.14 (same position)
-        while (RotationalAbsolutePosition < 0) {
-            RotationalAbsolutePosition += 2.0 * Math.PI;
-        }
-        // lowers overshoot
-        // ie 7.85 - 3.14 = 3.92
-        while (RotationalAbsolutePosition > 2.0 * Math.PI) {
-            RotationalAbsolutePosition -=  Math.PI * 2;
-        }
-        STATUS.Position_RD = CONSTANTS.MOTOR.getVelocityMetersPerSecond() * CONSTANTS.LOOPPERIOD_SEC;
-        STATUS.Velocity_MpSec = CONSTANTS.MOTOR.getVelocityMetersPerSecond();
-        STATUS.Volts = APPLIED_VOLTS.getAsDouble();
-    }
+  public REVElevator(REVElevatorConstants Constants) {
+    super(Constants);
+    CONSTANTS = Constants;
+    STATE = ElevatorStates.RUNNING;
+    APPLIED_VOLTS = () -> 0;
+    ODOMETRY_LOCK = new ReentrantLock();
+    POSITION_QUEUE = org.robotalons.crescendo.Constants.Odometry.REV_ODOMETRY_THREAD.register(() -> (STATUS.Position_RD));
+  }
 
-    @Override
-    public void periodic() {
-        ODOMETRY_LOCK.lock();
-        double pidOutput = CONSTANTS.PID_CONTROLLER.calculate(
-            Math.toDegrees(STATUS.Position_RD), SETPOINT.getDegrees()
+  public synchronized void close() {
+    POSITION_QUEUE.clear();
+    CONSTANTS.elevatorMotor.close();
+  }
+
+  @Override
+  public void cease() {
+    CONSTANTS.elevatorMotor.stopMotor();
+  }
+
+  @Override
+  public void update() {
+    STATUS.Position_RD = CONSTANTS.encoder.get() * CONSTANTS.GEAR_RATIO;
+    STATUS.Velocity_MpSec = STATUS.Position_RD * Math.PI / 180 ;
+    STATUS.Volts = APPLIED_VOLTS.getAsDouble();
+    STATUS.OdometryPosition_RD = 
+        POSITION_QUEUE.stream()
+            .mapToDouble((Double value) -> Units.rotationsToRadians(value) / CONSTANTS.GEAR_RATIO)
+            .toArray();
+  }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+    // Logger.recordOutput("Elevator/Speed (-1 =< x <= 1 )", elevatorMotor.get());
+    // Logger.recordOutput("Elevator/Velocity (RD per sec)", encoder.getDistancePerPulse());
+    // Logger.recordOutput("Elevator/Position (RD)", encoder.getDistance() * (2.0 * Math.PI /4096.0) / Measurements.GEAR_RATIO);
+    // Logger.recordOutput("Elevator/Volts", elevatorMotor.getBusVoltage());
+
+    ODOMETRY_LOCK.lock();
+    switch (STATE) {
+      case RUNNING:
+        double pidOutput = CONSTANTS.pidController.calculate(
+          Math.toDegrees(STATUS.Position_RD),
+          SETPOINT.getDegrees()
         );
-        double feedForwardOutput = CONSTANTS.ELEVATOR_FEEDFORWARD.calculate(
-            Math.toRadians(CONSTANTS.PID_CONTROLLER.getSetpoint().position),
-            CONSTANTS.PID_CONTROLLER.getSetpoint().velocity
+        double feedForwardOutput = CONSTANTS.feedforward.calculate(
+          Math.toRadians(CONSTANTS.pidController.getSetpoint().position),
+          CONSTANTS.pidController.getSetpoint().velocity
         );
         setVoltage(pidOutput + feedForwardOutput);
+        break;
+      case DISABLED:
+        cease();
+      case CLOSED:
+        close();
+        break;
     }
-    // --------------------------------------------------------------[Internal]---------------------------------------------------------------//  
-    public static final class ElevatorModuleConstants extends Constants {
-        public ElevatorSim MOTOR;
-        public Double LOOPPERIOD_SEC = (0.2);
-        public ElevatorFeedforward ELEVATOR_FEEDFORWARD;
-        public ProfiledPIDController PID_CONTROLLER;
-    }
+    ODOMETRY_LOCK.unlock();
+  }
+  // --------------------------------------------------------------[Internal]---------------------------------------------------------------//  
+  public static final class REVElevatorConstants extends Constants {
+    public CANSparkMax elevatorMotor;
+    public Encoder encoder;
+    public ElevatorFeedforward feedforward;
+    public ProfiledPIDController pidController;
+  }
 
-    
-    // @Override
-    // public Rotation2d getRelativeRotation() {
-    //     return (Status.RotationalRelativePosition.plus(Azimuth_Offset));
-    // }
-    // --------------------------------------------------------------[Methods]---------------------------------------------------------------//  
-    @Override
-    protected void setVoltage(double volts) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setVoltage'");
-    }
 
-    @Override
-    protected void pidSet(double demand) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'pidSet'");
-    }
-    
+  // --------------------------------------------------------------[Methods]---------------------------------------------------------------//  
+  
+    // public void pidSet(double demand){
+  //   pidController.setReference(
+  //     demand,
+  //     ControlType.kPosition,
+  //     (69),
+  //     feedforward.calculate(encoder.getDistance() * (2.0 * Math.PI /4096.0) / Measurements.GEAR_RATIO, Measurements.BASE_HEIGHT), 
+  //     SparkMaxPIDController.ArbFFUnits.kVoltage);
+
+  // }
+  
+  @Override
+  protected void setVoltage(double volts) {
+    CONSTANTS.elevatorMotor.set(MathUtil.clamp(volts,-12, 12));
+  }
+
+  @Override
+  protected void setState(ElevatorStates state) {
+    STATE = state;
+  }
 }

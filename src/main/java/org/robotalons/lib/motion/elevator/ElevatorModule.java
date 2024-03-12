@@ -3,9 +3,6 @@ package org.robotalons.lib.motion.elevator;
 import java.io.Closeable;
 import java.util.Objects;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public abstract class ElevatorModule implements Closeable{
     // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
@@ -17,13 +14,18 @@ public abstract class ElevatorModule implements Closeable{
     }
 
     public static class Constants{
-        public static final Integer CURRENT_LIMIT = (60);
-        public static final Double GEAR_RATIO = (0.0);
-        public static final Double BASE_HEIGHT = (0.0);
-        public static final Double MIN_HEIGHT = (0.0);
-        public static final Double MAX_HEIGHT = (0.0);
-        public static final Double MASS_KG = (0.0);
-        public static final Double RADIUS = (0.0);
+        public  final Integer CURRENT_LIMIT = (60);
+        public  final Double GEAR_RATIO = (0.0);
+        public  final Double BASE_HEIGHT = (0.0);
+        public  final Double MIN_HEIGHT = (0.0);
+        public  final Double MAX_HEIGHT = (0.0);
+        public  final Double MASS_KG = (0.0);
+        public  final Double RADIUS = (0.0);
+    }
+    public static enum ElevatorStates{
+        DISABLED,
+        CLOSED,
+        RUNNING
     }
 
     public abstract void close();
@@ -32,7 +34,6 @@ public abstract class ElevatorModule implements Closeable{
     public abstract void periodic();
 
     protected abstract void setVoltage(double volts);
-    protected abstract void pidSet(double demand);
-    public abstract Rotation2d getAbsoluteRotation();
-    public abstract Rotation2d getRelativeRotation();
+    // protected abstract void pidSet(double demand);
+    protected abstract void setState(ElevatorStates state);
 }
