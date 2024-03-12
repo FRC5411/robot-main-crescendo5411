@@ -4,27 +4,37 @@
 
 package org.robotalons.crescendo.subsystems.indexer;
 
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase {
-  private IndexerIO indexerIO;
-  private IndexerIOInputsAutoLogged indexerIOInputs = new IndexerIOInputsAutoLogged();
 
-  public Indexer(IndexerIO indexerIO) {
-    this.indexerIO = indexerIO;
+  private CANSparkMax indexerMotor = new CANSparkMax(IndexerConstants.indexerID, MotorType.kBrushless);
+
+
+  public Indexer() {
+    config();
   }
 
-  @Override
-  public void periodic() {
-    indexerIO.updateInputs(indexerIOInputs);
+  public void config(){
+    indexerMotor.clearFaults();
+
+    indexerMotor.restoreFactoryDefaults();
+    indexerMotor.setSmartCurrentLimit(IndexerConstants.indexerCurrentLimit);
+    indexerMotor.enableVoltageCompensation(12.0);
+
+    indexerMotor.setIdleMode(IdleMode.kBrake);
+    indexerMotor.setInverted(false);
+
+    indexerMotor.burnFlash();
   }
 
-  public void stopMotors() {
-    indexerIO.setVolts(0.0);
+  public void set(double speed){
+    indexerMotor.set(speed);
   }
 
-  public void setIndexerVolts(double volts) {
-    indexerIO.setVolts(volts);
-  }
-
+  
 }

@@ -1,246 +1,111 @@
-// ----------------------------------------------------------------[Package]----------------------------------------------------------------//
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 package org.robotalons.crescendo;
-import edu.wpi.first.hal.AllianceStationID;
-import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Threads;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.simulation.DriverStationSim;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import org.littletonrobotics.junction.LoggedRobot;
+
+import edu.wpi.first.cscore.VideoSource;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-import org.littletonrobotics.junction.LogFileUtil;
-import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.wpilog.WPILOGReader;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-import org.littletonrobotics.urcl.URCL;
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonVersion;
-import org.robotalons.crescendo.Constants.Logging;
-import org.robotalons.crescendo.Constants.Subsystems;
-import org.robotalons.lib.motion.utilities.CTREOdometryThread;
-import org.robotalons.lib.motion.utilities.REVOdometryThread;
-import org.robotalons.lib.utilities.Alert;
-import org.robotalons.lib.utilities.Alert.AlertType;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.BiConsumer;
-import javax.management.InstanceNotFoundException;
-// -----------------------------------------------------------------[Robot]----------------------------------------------------------------//
 /**
- *
- *
- * <h1>Robot</h1>
- *
- * <p>Utility class which defines all modes of robot's event-cycle throughout it's lifetime.
- *
- * @see RobotContainer
+ * The VM is configured to automatically run this class, and to call the functions corresponding to
+ * each mode, as described in the TimedRobot documentation. If you change the name of this class or
+ * the package after creating this project, you must also update the build.gradle file in the
+ * project.
  */
-public final class Robot extends LoggedRobot {
-  // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  private static Boolean CurrentAutonomousMessagePrinted;
-  private static Double CurrentAutonomousStartTime;
-  private static Command CurrentAutonomous;
-  private static Robot Instance;
-  // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
-  private Robot() {} static {
-    CurrentAutonomous = (null);
-  }
-  // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
+public class Robot extends TimedRobot {
+  private Command m_autonomousCommand;
+
+  private RobotContainer m_robotContainer;
   /**
-   * Describes the type of robot being initialized
+   * This function is run when the robot is first started up and should be used for any
+   * initialization code.
    */
-  public enum RobotType {
-    SIMULATION,
-    CONCRETE,
-    REPLAY
-  }
-  // ---------------------------------------------------------------[Robot]-----------------------------------------------------------------//
   @Override
-  @SuppressWarnings("ExtractMethodRecommender")
   public void robotInit() {
-    PhotonCamera.setVersionCheckEnabled((false));
-    Logger.recordMetadata(("ProjectName"), BuildMetadata.MAVEN_NAME);
-    Logger.recordMetadata(("BuildDate"), BuildMetadata.BUILD_DATE);
-    Logger.recordMetadata(("GitSHA"), BuildMetadata.GIT_SHA);
-    Logger.recordMetadata(("GitDate"), BuildMetadata.GIT_DATE);
-    Logger.recordMetadata(("GitBranch"), BuildMetadata.GIT_BRANCH);
-    Logger.recordMetadata(("PhotonBuildDate"), PhotonVersion.buildDate);
-    Logger.recordMetadata(("PhotonVersion"), PhotonVersion.versionString);
-    Logger.recordMetadata(("PhotonIsRelease"), Boolean.toString(PhotonVersion.isRelease));
-    switch (BuildMetadata.DIRTY) {
-      case 0:
-        Logger.recordMetadata(("Changes"), ("Committed"));
-        new Alert(("GIT VCS CHANGES COMMITTED"), AlertType.INFO);
-        break;
-      case 1:
-        Logger.recordMetadata(("Changes"), ("Uncommitted"));
-        new Alert(("GIT VCS CHANGES NOT COMMITTED"), AlertType.INFO);
-        break;
-      default:
-        Logger.recordMetadata(("Changes"), ("Unknown"));
-        new Alert(("GIT VCS ERROR OR BUILD ISSUE"), AlertType.INFO);
-        break;
-    }
-    switch (Constants.Subsystems.TYPE) {
-      case CONCRETE:
-        if (Logging.LOGGING_ENABLED) {
-          String Folder = Constants.Logging.LOGGING_DEPOSIT.get(RobotType.CONCRETE);
-          Logger.addDataReceiver(new WPILOGWriter(Folder));
-        }  
-        Logger.addDataReceiver(new NT4Publisher());
-        break;
-      case SIMULATION:
-        Logger.addDataReceiver(new NT4Publisher());
-        break;
-      case REPLAY:
-        setUseTiming((false));
-        String logPath = LogFileUtil.findReplayLog();
-        Logger.setReplaySource(new WPILOGReader(logPath));
-        Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, ("_sim"))));
-        break;
-    }
-    Logger.start();
-    Map<String, Integer> CommandMap = new HashMap<>();
-    BiConsumer<Command, Boolean> LoggerFunction =
-        (Command command, Boolean active) -> {
-          String CommandName = command.getName();
-          int InstanceCount = CommandMap.getOrDefault(CommandName, (0)) + (active ? 1 : -1);
-          CommandMap.put(CommandName, InstanceCount);
-          Logger.recordOutput(
-              "CommandsUnique/" + CommandName + "_" + Integer.toHexString(command.hashCode()), active);
-          Logger.recordOutput("CommandsAll/" + CommandName, InstanceCount > (0));
-        };
-    CommandScheduler.getInstance()
-        .onCommandInitialize(
-            (Command command) -> {
-              LoggerFunction.accept(command, (true));
-            });
-    CommandScheduler.getInstance()
-        .onCommandFinish(
-            (Command command) -> {
-              LoggerFunction.accept(command, (false));
-            });
-    CommandScheduler.getInstance()
-        .onCommandInterrupt(
-            (Command command) -> {
-              LoggerFunction.accept(command, (false));
-            });
-    if (Subsystems.TYPE == RobotType.SIMULATION) {
-      DriverStationSim.setAllianceStationId(AllianceStationID.Blue1);
-    }
-
-    try {
-      CTREOdometryThread.getInstance();
-      REVOdometryThread.getInstance();
-    } catch (final InstanceNotFoundException Exception) {}
-    Logger.registerURCL(URCL.startExternal());
-    RobotContainer.getInstance();
-    Shuffleboard.startRecording();
-    DataLogManager.start();
-    DriverStation.silenceJoystickConnectionWarning((true));
+    //DataLogManager.start();
+    //URCL.start();
+   
+    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
+    // autonomous chooser on the dashboard.
+    m_robotContainer = new RobotContainer();
   }
 
+  /**
+   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
+   * that you want ran during disabled, autonomous, teleoperated and test.
+   *
+   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
+   * SmartDashboard integrated updating.
+   */
   @Override
   public void robotPeriodic() {
-    Threads.setCurrentThreadPriority((true), (99));
+    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
+    // commands, running already-scheduled commands, removing finished or interrupted commands,
+    // and running subsystem periodic() methods.  This must be called from the robot's periodic
+    // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    SmartDashboard.updateValues();
-    if (CurrentAutonomous != (null)) {
-      if (!CurrentAutonomous.isScheduled() && !CurrentAutonomousMessagePrinted) {
-        if (DriverStation.isAutonomousEnabled()) {
-          System.out.printf(
-              ("*** Auto finished in %.2f secs ***%n"), Logger.getRealTimestamp() / (1e6) - CurrentAutonomousStartTime);
-        } else {
-          System.out.printf(
-              ("*** Auto cancelled in %.2f secs ***%n"), Logger.getRealTimestamp() / (1e6) - CurrentAutonomousStartTime);
-        }
-        CurrentAutonomousMessagePrinted = true;
-      }
-    }
-    Logger.recordOutput(("Match Time"), DriverStation.getMatchTime());
   }
 
-  // ------------------------------------------------------------[Simulation]---------------------------------------------------------------//
+  /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void simulationInit() {}
-
-  @Override
-  public void simulationPeriodic() {}
-
-  // -------------------------------------------------------------[Disabled]----------------------------------------------------------------//
-  @Override
-  public void disabledInit() {
-    CommandScheduler.getInstance().cancelAll();
-  }
+  public void disabledInit() {}
 
   @Override
   public void disabledPeriodic() {}
 
-  @Override
-  public void disabledExit() {
-      super.disabledExit();
-  }
-
-  // ------------------------------------------------------------[Autonomous]---------------------------------------------------------------//
+  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    CurrentAutonomousMessagePrinted = (false);
-    CurrentAutonomousStartTime = Timer.getFPGATimestamp();
-    CurrentAutonomous = RobotContainer.AutonomousSelector.get();
-    if(!java.util.Objects.isNull(CurrentAutonomous)) {
-      CurrentAutonomous.schedule();
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+    // schedule the autonomous command (example)
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.schedule();
     }
   }
 
+  /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {}
 
   @Override
-  public void autonomousExit() {
-    if(!java.util.Objects.isNull(CurrentAutonomous)) {
-      CurrentAutonomous.cancel();
+  public void teleopInit() {
+
+    // This makes sure that the autonomous stops running when
+    // teleop starts running. If you want the autonomous to
+    // continue until interrupted by another command, remove
+    // this line or comment it out.
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.cancel();
     }
+    CommandScheduler.getInstance().cancelAll();
   }
 
-  // -----------------------------------------------------------[Teleoperated]--------------------------------------------------------------//
-  @Override
-  public void teleopInit() {}
-
+  /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {}
 
   @Override
-  public void teleopExit() {}
+  public void testInit() {
+    // Cancels all running commands at the start of test mode.
+    CommandScheduler.getInstance().cancelAll();
+  }
 
-  // ----------------------------------------------------------------[Test]------------------------------------------------------------------//
+  /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {}
 
+  /** This function is called once when the robot is first started up. */
   @Override
-  public void testInit() {
-      super.testInit();
-  }
+  public void simulationInit() {}
 
+  /** This function is called periodically whilst in simulation. */
   @Override
-  public void testExit() {
-      super.testExit();
-  }
-
-  // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
-  /**
-   * Retrieves the existing instance of this static utility class
-   * @return Utility class's instance
-   */
-  public static synchronized Robot getInstance() {
-      if (java.util.Objects.isNull(Instance)) {
-          Instance = new Robot();
-      }
-      return Instance;
-  }
+  public void simulationPeriodic() {}
 }

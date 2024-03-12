@@ -1,27 +1,25 @@
-// ----------------------------------------------------------------[Package]----------------------------------------------------------------//
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 package org.robotalons.crescendo;
 
-// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj.RobotBase;
 
-// -----------------------------------------------------------------[Main]------------------------------------------------------------------//
 /**
- *
- *
- * <h1>Main</h1>
- *
- * <p>Robot Project runner class, responsible for robot initialization by starting the
- * Driverstation, CameraServer, and HAL services.
- *
- * @see Robot
+ * Do NOT add any static variables to this class, or any initialization at all. Unless you know what
+ * you are doing, do not modify this file except to change the parameter class to the startRobot
+ * call.
  */
 public final class Main {
+  private Main() {}
 
-    /**
-     * Initializes the robot and underlying systems
-     * @param Options Additional options applied via the command line
-     */
-    public static void main(String... Options) {
-        RobotBase.startRobot(Robot::getInstance);
-    }
+  /**
+   * Main initialization function. Do not perform any initialization here.
+   *
+   * <p>If you change your main robot class, change the parameter type.
+   */
+  public static void main(String... args) {
+    RobotBase.startRobot(Robot::new);
+  }
 }
