@@ -112,7 +112,6 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     PIVOT_CONTROLLER.setInverted(Measurements.PIVOT_INVERTED);
     PIVOT_ABSOLUTE_ENCODER = new DutyCycleEncoder(Ports.PIVOT_ABSOLUTE_ENCODER_ID);
   }
-
   // ---------------------------------------------------------------[Methods]--------------------------------------------------------------- //
   @Override
   public synchronized void periodic() {
@@ -126,14 +125,19 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     if(Interpolated != (null)) {
       final var Percentage = 
         (Math.abs(FIRING_VELOCITY.getValueAsDouble() / Interpolated.get((0), (0))) + (Math.abs(Units.rotationsToDegrees(getPivotRotation())) / Interpolated.get((1), (0)))) / 2;
-      if(State == SuperstructureState.AUTO || State == SuperstructureState.SEMI) {
-        Reference.angle = Rotation2d.fromRadians(Interpolated.get((1), (0)));
-        if(State == SuperstructureState.AUTO) {
+      switch(State) {
+        case AUTO:
+          Reference.angle = Rotation2d.fromRadians(Interpolated.get((1), (0)));
           if(Percentage < Measurements.ALLOWABLE_SHOT_PERCENTAGE) {
             set(Interpolated.get((0), (0)));
             INDEXER_CONTROLLER.set((-1d));
           }
-        }
+          break;
+        case SEMI:
+          Reference.angle = Rotation2d.fromRadians(Interpolated.get((1), (0)));
+          break;
+        case MANUAL:
+          break;
       }
       Logger.recordOutput(("Cannon/InterpolatedDistance"), Distance); 
       Logger.recordOutput(("Cannon/InterpolatedPercentile"), Percentage);
