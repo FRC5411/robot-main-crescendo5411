@@ -294,14 +294,14 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       new InstantCommand(() ->
       DrivebaseSubsystem.set(((Boolean) Operator.getPreference(Preferences.SQUARED_INPUT))?
         new Translation2d(
-            square(MathUtil.applyDeadband(-(Double) Operator.getPreference(Preferences.TRANSLATION_X_INPUT),
+            square(MathUtil.applyDeadband((Double) Operator.getPreference(Preferences.TRANSLATION_X_INPUT),
           (Double) Operator.getPreference(Preferences.TRANSLATIONAL_X_DEADZONE))),
-            square(MathUtil.applyDeadband(-(Double) Operator.getPreference(Preferences.TRANSLATION_Y_INPUT),
+            square(MathUtil.applyDeadband((Double) Operator.getPreference(Preferences.TRANSLATION_Y_INPUT),
           (Double) Operator.getPreference(Preferences.TRANSLATIONAL_Y_DEADZONE)))):
         new Translation2d(
-          MathUtil.applyDeadband(-(Double) Operator.getPreference(Preferences.TRANSLATION_X_INPUT),
+          MathUtil.applyDeadband((Double) Operator.getPreference(Preferences.TRANSLATION_X_INPUT),
         (Double) Operator.getPreference(Preferences.TRANSLATIONAL_X_DEADZONE)),
-          MathUtil.applyDeadband(-(Double) Operator.getPreference(Preferences.TRANSLATION_Y_INPUT),
+          MathUtil.applyDeadband((Double) Operator.getPreference(Preferences.TRANSLATION_Y_INPUT),
         (Double) Operator.getPreference(Preferences.TRANSLATIONAL_Y_DEADZONE))),
         ((Boolean) Operator.getPreference(Preferences.SQUARED_INPUT))?
         new Rotation2d(
