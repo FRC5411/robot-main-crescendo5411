@@ -2,9 +2,12 @@ package org.robotalons.crescendo.subsystems.cannon;
 
 import org.robotalons.lib.cannon.Math.LauncherInterpolation;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -28,6 +31,8 @@ public class CannonSubsystem extends PIDSubsystem{
     private final double FINAL_UNIT_CIRCLE_OFFSET =  Math.toRadians(80);
     private final double SUBWOOFER_DEGREES = 56;
     private final Pigeon2 encoder = new Pigeon2(10);
+    private TalonFXConfiguration leftMotorConfigs, rightMotorConfig;
+
 
     public CannonSubsystem() {
         super(new PIDController(0, 0, 0));
@@ -38,6 +43,18 @@ public class CannonSubsystem extends PIDSubsystem{
         m_pivot = new CANSparkMax(32, MotorType.kBrushless);
         pivotMap = new LauncherInterpolation();
         pivotEncoder = new DutyCycleEncoder(0);
+
+        leftMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        leftMotorConfigs.CurrentLimits.SupplyCurrentLimit = 40;
+        leftMotorConfigs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+
+        rightMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        rightMotorConfig.CurrentLimits.SupplyCurrentLimit = 40;
+        rightMotorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
+        m_bottomShooter.getConfigurator();
+        m_topShooter.getConfigurator();
+
 
         configMotors();
         getController().setSetpoint(Math.toRadians(getPigeonMeasurement()));
