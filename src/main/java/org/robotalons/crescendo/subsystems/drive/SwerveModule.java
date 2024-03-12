@@ -19,10 +19,10 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SwerveModule extends SubsystemBase{
@@ -44,8 +44,7 @@ public class SwerveModule extends SubsystemBase{
 
     private final PIDController DRIVE_PID;
     private final PIDController ASIMUTH_PID;
-    private final SimpleMotorFeedforward DRIVE_F;
-
+    private final SimpleMotorFeedforward DRIVE_FF;
 
     public SwerveModule(int Drive_ID, int Asimuth_ID, boolean Drive_Flipped, boolean Asimuth_Flipped, int NUM, double OFFSET, int Encoder_ID, boolean Encoder_Reversed){
         DRIVE_FLIPPED = Drive_Flipped;
@@ -64,99 +63,100 @@ public class SwerveModule extends SubsystemBase{
         DRIVE_ENCODER = DRIVE_MOTOR.getEncoder();
         ASIMUTH_ENCODER = ASIMUTH_MOTOR.getEncoder();
 
+        config();
 
         if(NUMBER == 0){
             DRIVE_PID = new PIDController(
-                Constants.Measurements.Modules.FL.LINEAR_P_GAIN,
-                Constants.Measurements.Modules.FL.LINEAR_I_GAIN,
-                Constants.Measurements.Modules.FL.LINEAR_D_GAIN
+                Constants.Measurements.Modules.FL.DRIVE_P_GAIN,
+                Constants.Measurements.Modules.FL.DRIVE_I_GAIN,
+                Constants.Measurements.Modules.FL.DRIVE_D_GAIN
                 );
             ASIMUTH_PID = new PIDController(
-                Constants.Measurements.Modules.FL.ROTATIONAL_P_GAIN,
-                Constants.Measurements.Modules.FL.ROTATIONAL_I_GAIN,
-                Constants.Measurements.Modules.FL.ROTATIONAL_D_GAIN
+                Constants.Measurements.Modules.FL.ASIMUTH_P_GAIN,
+                Constants.Measurements.Modules.FL.ASIMUTH_I_GAIN,
+                Constants.Measurements.Modules.FL.ASIMUTH_D_GAIN
             );
 
-            DRIVE_F = new SimpleMotorFeedforward(
-                Constants.Measurements.Modules.FL.LINEAR_KS_GAIN,
-                Constants.Measurements.Modules.FL.LINEAR_KV_GAIN,
-                Constants.Measurements.Modules.FL.LINEAR_KA_GAIN
+            DRIVE_FF = new SimpleMotorFeedforward(
+                Constants.Measurements.Modules.FL.DRIVE_KS_GAIN,
+                Constants.Measurements.Modules.FL.DRIVE_KV_GAIN,
+                Constants.Measurements.Modules.FL.DRIVE_KA_GAIN
             );
         }
 
         else if(NUMBER == 1){
             DRIVE_PID = new PIDController(
-                Constants.Measurements.Modules.FR.LINEAR_P_GAIN,
-                Constants.Measurements.Modules.FR.LINEAR_I_GAIN,
-                Constants.Measurements.Modules.FR.LINEAR_D_GAIN
+                Constants.Measurements.Modules.FR.DRIVE_P_GAIN,
+                Constants.Measurements.Modules.FR.DRIVE_I_GAIN,
+                Constants.Measurements.Modules.FR.DRIVE_D_GAIN
                 );
             ASIMUTH_PID = new PIDController(
-                Constants.Measurements.Modules.FR.ROTATIONAL_P_GAIN,
-                Constants.Measurements.Modules.FR.ROTATIONAL_I_GAIN,
-                Constants.Measurements.Modules.FR.ROTATIONAL_D_GAIN
+                Constants.Measurements.Modules.FR.ASIMUTH_P_GAIN,
+                Constants.Measurements.Modules.FR.ASIMUTH_I_GAIN,
+                Constants.Measurements.Modules.FR.ASIMUTH_D_GAIN
             );
 
-            DRIVE_F = new SimpleMotorFeedforward(
-                Constants.Measurements.Modules.FR.LINEAR_KS_GAIN,
-                Constants.Measurements.Modules.FR.LINEAR_KV_GAIN,
-                Constants.Measurements.Modules.FR.LINEAR_KA_GAIN
+            DRIVE_FF = new SimpleMotorFeedforward(
+                Constants.Measurements.Modules.FR.DRIVE_KS_GAIN,
+                Constants.Measurements.Modules.FR.DRIVE_KV_GAIN,
+                Constants.Measurements.Modules.FR.DRIVE_KA_GAIN
             );
         }
 
         else if(NUMBER == 2){
             DRIVE_PID = new PIDController(
-                Constants.Measurements.Modules.RL.LINEAR_P_GAIN,
-                Constants.Measurements.Modules.RL.LINEAR_I_GAIN,
-                Constants.Measurements.Modules.RL.LINEAR_D_GAIN
+                Constants.Measurements.Modules.RL.DRIVE_P_GAIN,
+                Constants.Measurements.Modules.RL.DRIVE_I_GAIN,
+                Constants.Measurements.Modules.RL.DRIVE_D_GAIN
                 );
             ASIMUTH_PID = new PIDController(
-                Constants.Measurements.Modules.RL.ROTATIONAL_P_GAIN,
-                Constants.Measurements.Modules.RL.ROTATIONAL_I_GAIN,
-                Constants.Measurements.Modules.RL.ROTATIONAL_D_GAIN
+                Constants.Measurements.Modules.RL.ASIMUTH_P_GAIN,
+                Constants.Measurements.Modules.RL.ASIMUTH_I_GAIN,
+                Constants.Measurements.Modules.RL.ASIMUTH_D_GAIN
             );
 
-            DRIVE_F = new SimpleMotorFeedforward(
-                Constants.Measurements.Modules.RL.LINEAR_KS_GAIN,
-                Constants.Measurements.Modules.RL.LINEAR_KV_GAIN,
-                Constants.Measurements.Modules.RL.LINEAR_KA_GAIN
+            DRIVE_FF = new SimpleMotorFeedforward(
+                Constants.Measurements.Modules.RL.DRIVE_KS_GAIN,
+                Constants.Measurements.Modules.RL.DRIVE_KV_GAIN,
+                Constants.Measurements.Modules.RL.DRIVE_KA_GAIN
             );
         }
 
         else if(NUMBER == 3){
             DRIVE_PID = new PIDController(
-                Constants.Measurements.Modules.RR.LINEAR_P_GAIN,
-                Constants.Measurements.Modules.RR.LINEAR_I_GAIN,
-                Constants.Measurements.Modules.RR.LINEAR_D_GAIN
+                Constants.Measurements.Modules.RR.DRIVE_P_GAIN,
+                Constants.Measurements.Modules.RR.DRIVE_I_GAIN,
+                Constants.Measurements.Modules.RR.DRIVE_D_GAIN
                 );
             ASIMUTH_PID = new PIDController(
-                Constants.Measurements.Modules.RR.ROTATIONAL_P_GAIN,
-                Constants.Measurements.Modules.RR.ROTATIONAL_I_GAIN,
-                Constants.Measurements.Modules.RR.ROTATIONAL_D_GAIN
+                Constants.Measurements.Modules.RR.ASIMUTH_P_GAIN,
+                Constants.Measurements.Modules.RR.ASIMUTH_I_GAIN,
+                Constants.Measurements.Modules.RR.ASIMUTH_D_GAIN
             );
 
-            DRIVE_F = new SimpleMotorFeedforward(
-                Constants.Measurements.Modules.RR.LINEAR_KS_GAIN,
-                Constants.Measurements.Modules.RR.LINEAR_KV_GAIN,
-                Constants.Measurements.Modules.RR.LINEAR_KA_GAIN
+            DRIVE_FF = new SimpleMotorFeedforward(
+                Constants.Measurements.Modules.RR.DRIVE_KS_GAIN,
+                Constants.Measurements.Modules.RR.DRIVE_KV_GAIN,
+                Constants.Measurements.Modules.RR.DRIVE_KA_GAIN
             );
         }
 
         else{
              DRIVE_PID = new PIDController(
-                Constants.Measurements.Modules.RR.LINEAR_P_GAIN,
-                Constants.Measurements.Modules.RR.LINEAR_I_GAIN,
-                Constants.Measurements.Modules.RR.LINEAR_D_GAIN
+                Constants.Measurements.Modules.RR.DRIVE_P_GAIN,
+                Constants.Measurements.Modules.RR.DRIVE_I_GAIN,
+                Constants.Measurements.Modules.RR.DRIVE_D_GAIN
                 );
             ASIMUTH_PID = new PIDController(
-                Constants.Measurements.Modules.RR.ROTATIONAL_P_GAIN,
-                Constants.Measurements.Modules.RR.ROTATIONAL_I_GAIN,
-                Constants.Measurements.Modules.RR.ROTATIONAL_D_GAIN
+                Constants.Measurements.Modules.RR.ASIMUTH_P_GAIN,
+                Constants.Measurements.Modules.RR.ASIMUTH_I_GAIN,
+                Constants.Measurements.Modules.RR.ASIMUTH_D_GAIN
             );
 
-            DRIVE_F = new SimpleMotorFeedforward(
-                Constants.Measurements.Modules.RR.LINEAR_KS_GAIN,
-                Constants.Measurements.Modules.RR.LINEAR_KV_GAIN,
-                Constants.Measurements.Modules.RR.LINEAR_KA_GAIN
+            DRIVE_FF = new SimpleMotorFeedforward(
+                Constants.Measurements.Modules.RR.DRIVE_KS_GAIN,
+                Constants.Measurements.Modules.RR.DRIVE_KV_GAIN,
+                Constants.Measurements.Modules.RR.DRIVE_KA_GAIN
             );           
         }
 
@@ -167,7 +167,7 @@ public class SwerveModule extends SubsystemBase{
         ASIMUTH_MOTOR.stopMotor();
     }
 
-    private synchronized void configure() {
+    private synchronized void config() {
         cease();
 
         DRIVE_MOTOR.restoreFactoryDefaults();
@@ -255,7 +255,7 @@ public class SwerveModule extends SubsystemBase{
       DRIVE_MOTOR.setVoltage(MathUtil.clamp(Voltage, (-12d), (12d)));
     }
 
-    public void setRotationalVoltage(final Double Voltage) {
+    public void setASIMUTHVoltage(final Double Voltage) {
       ASIMUTH_MOTOR.setVoltage(MathUtil.clamp(Voltage, (-12d), (12d)));
     }
 
@@ -265,7 +265,7 @@ public class SwerveModule extends SubsystemBase{
     }
 
     public SwerveModuleState getState() {
-        return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getTurningPosition()));
+      return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getTurningPosition()));
     }
 
     public void setDesiredState(SwerveModuleState state) {
@@ -274,13 +274,26 @@ public class SwerveModule extends SubsystemBase{
             return;
         }
         state = SwerveModuleState.optimize(state, getState().angle);
-
-        DRIVE_MOTOR.set(state.speedMetersPerSecond / Constants.Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY);
+        DRIVE_MOTOR.set(state.speedMetersPerSecond / Constants.Measurements.ROBOT_MAXIMUM_DRIVE_VELOCITY);
         ASIMUTH_MOTOR.set(ASIMUTH_PID.calculate(getTurningPosition(), state.angle.getRadians()));
+    }
+
+    public void calculateDrivePID(double setpoint){
+      DRIVE_MOTOR.set(DRIVE_PID.calculate(getDrivePosition(), setpoint));
+    }
+
+    public void calculateAsimuthPID(double setpoint){
+      ASIMUTH_MOTOR.set(ASIMUTH_PID.calculate(getTurningPosition(), setpoint));
+    }
+    
+    //TODO: Fix to return proper posistion
+    public SwerveModulePosition getModulePosition() {
+      return new SwerveModulePosition();
     }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
   }
 }

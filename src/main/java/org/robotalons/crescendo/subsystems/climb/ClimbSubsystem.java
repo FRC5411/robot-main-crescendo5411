@@ -4,7 +4,6 @@
 
 package org.robotalons.crescendo.subsystems.climb;
 
-import org.littletonrobotics.junction.Logger;
 import org.robotalons.crescendo.subsystems.climb.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.climb.Constants.Ports;
 
@@ -115,7 +114,6 @@ public class ClimbSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    Logger.recordOutput("Climb/ Left Arm Posistion", getPosition(0));
-    Logger.recordOutput("Climb/ Right Arm Posistion", getPosition(1));
+
   }
 }
