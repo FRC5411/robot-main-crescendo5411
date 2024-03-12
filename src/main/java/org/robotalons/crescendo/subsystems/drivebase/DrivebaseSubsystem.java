@@ -53,7 +53,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   private static final SwerveDrivePoseEstimator POSE_ESTIMATOR;
   private static final SysIdRoutine CHARACTERIZATION_ROUTINE;
   private static final SwerveDriveKinematics KINEMATICS;
-  private static final Thread ODOMETRY_PROCESSOR;
+  //private static final Thread ODOMETRY_PROCESSOR;
   private static final List<Module> MODULES;
   private static final Gyroscope GYROSCOPE;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
@@ -110,7 +110,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
           (Measurements.ROBOT_RADIUS_METERS + 
           org.robotalons.crescendo.subsystems.superstructure.Constants.Measurements.OFFSET_WALL_METERS),
           Tag.getY()),
-          GYROSCOPE.getYawRotation()));
+          GYROSCOPE.getYawRotation())); //TODO: Temporary Pose Starting Location
     ModulePositions = new ArrayList<>();
     MODULES.stream().map(Module::getPosition).forEachOrdered(ModulePositions::add);
     CHARACTERIZATION_ROUTINE = new SysIdRoutine(
@@ -126,15 +126,15 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         (null),
         getInstance())
     );
-    ODOMETRY_PROCESSOR = new Thread(() -> {
-      while(Instance != null) {
-        try {
-          Thread.sleep((1/500) * 10000);
-        } catch (final InterruptedException Ignored) {}        
-      }
-    });
-    ODOMETRY_PROCESSOR.setName(("OdometryProcessorThread"));
-    ODOMETRY_PROCESSOR.setDaemon((true));
+    // ODOMETRY_PROCESSOR = new Thread(() -> {
+    //   while(Instance != null) {
+    //     try {
+    //       Thread.sleep((1/500) * 10000);
+    //     } catch (final InterruptedException Ignored) {}        
+    //   }
+    // });
+    // ODOMETRY_PROCESSOR.setName(("OdometryProcessorThread"));
+    // ODOMETRY_PROCESSOR.setDaemon((true));
     //ODOMETRY_PROCESSOR.start();
     Logger.recordOutput(("Drivebase/Measurements"),getModuleMeasurements());
     Logger.recordOutput(("Drivebase/Translation"), new Translation2d());
@@ -243,7 +243,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       new Pose2d()
     );
     Instance = (null);
-    ODOMETRY_PROCESSOR.interrupt();
+    //ODOMETRY_PROCESSOR.interrupt();
   }
 
   /**
@@ -428,17 +428,13 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    * @param Demand Chassis speeds object which represents the demand speeds of the drivebase
    */
   public static synchronized void set(final ChassisSpeeds Demand) {
-    if (Demand.omegaRadiansPerSecond > (1e-6) && Demand.vxMetersPerSecond > (1e-6) && Demand.vyMetersPerSecond > (1e-6)) {
-      set();
-    } else {
-      var Discrete = ChassisSpeeds.discretize(Demand, discretize());
-      var Reference = KINEMATICS.toSwerveModuleStates(Discrete);
-      SwerveDriveKinematics.desaturateWheelSpeeds(
-        Reference, Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY);
-      Logger.recordOutput(("Drivebase/Translation"), new Translation2d(Discrete.vxMetersPerSecond, Discrete.vyMetersPerSecond));
-      Logger.recordOutput(("Drivebase/Rotation"), new Rotation2d(Discrete.omegaRadiansPerSecond));
-      set(List.of(Reference));
-    }
+    var Discrete = ChassisSpeeds.discretize(Demand, discretize());
+    var Reference = KINEMATICS.toSwerveModuleStates(Discrete);
+    SwerveDriveKinematics.desaturateWheelSpeeds(
+      Reference, Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY);
+    Logger.recordOutput(("Drivebase/Translation"), new Translation2d(Discrete.vxMetersPerSecond, Discrete.vyMetersPerSecond));
+    Logger.recordOutput(("Drivebase/Rotation"), new Rotation2d(Discrete.omegaRadiansPerSecond));
+    set(List.of(Reference));
   }
 
   /**
