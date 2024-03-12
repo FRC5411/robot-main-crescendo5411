@@ -41,6 +41,7 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   private final Notifier NOTIFIER;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static REVOdometryThread Instance;
+  private static Boolean Enabled;
   private static Double Frequency;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
@@ -103,26 +104,28 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
 
   @Override
   public synchronized void run() {
-    try {
-      ODOMETRY_LOCK.lock();
+    if(Enabled) {
       try {
-        final var Providers = SIGNAL_PROVIDERS.iterator();
-        final var Timestamp = Logger.getRealTimestamp() / (1e6);
-        SIGNAL_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) -> {
-          synchronized(Queue) {
-            Queue.offer(Providers.next().getAsDouble());
-          }
-        });
-        TIMESTAMP_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) ->  {
-          synchronized(Queue) {
-            Queue.offer(Timestamp);
-          }
-        });
-      } finally {
-        ODOMETRY_LOCK.unlock();
-      }
-    } catch (final Exception Ignored) {
-      new Alert(("Odometry Exception"), AlertType.ERROR);
+        ODOMETRY_LOCK.lock();
+        try {
+          final var Providers = SIGNAL_PROVIDERS.iterator();
+          final var Timestamp = Logger.getRealTimestamp() / (1e6);
+          SIGNAL_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) -> {
+            synchronized(Queue) {
+              Queue.offer(Providers.next().getAsDouble());
+            }
+          });
+          TIMESTAMP_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) ->  {
+            synchronized(Queue) {
+              Queue.offer(Timestamp);
+            }
+          });
+        } finally {
+          ODOMETRY_LOCK.unlock();
+        }
+      } catch (final Exception Ignored) {
+        new Alert(("Odometry Exception"), AlertType.ERROR);
+      }      
     }
   }
   
@@ -146,12 +149,18 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
   
   @Override
-  public synchronized void set(final Double Frequency) {
+  public synchronized void setFrequency(final Double Frequency) {
     ODOMETRY_LOCK.lock();
     REVOdometryThread.Frequency = Frequency;
     NOTIFIER.stop();
     NOTIFIER.startPeriodic(Frequency);
     ODOMETRY_LOCK.unlock();
+  }
+
+
+  @Override
+  public synchronized void setEnabled(final Boolean Enabled) {
+    REVOdometryThread.Enabled = Enabled;
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   @Override

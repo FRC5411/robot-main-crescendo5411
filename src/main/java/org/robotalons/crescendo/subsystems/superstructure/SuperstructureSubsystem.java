@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.SlotConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -87,7 +86,8 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       .withKD(Measurements.FIRING_D_GAIN)
     );
 
-    BaseStatusSignal.setUpdateFrequencyForAll((50), FIRING_CONTROLLERS.getFirst().getVelocity(), FIRING_CONTROLLERS.getSecond().getVelocity());
+    FIRING_CONTROLLERS.getFirst().getVelocity().setUpdateFrequency((50));
+    FIRING_CONTROLLERS.getSecond().getVelocity().setUpdateFrequency((50));
     FIRING_CONTROLLERS.getFirst().optimizeBusUtilization();
     FIRING_CONTROLLERS.getSecond().optimizeBusUtilization();
 

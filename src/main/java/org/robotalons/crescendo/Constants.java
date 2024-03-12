@@ -68,8 +68,14 @@ public final class Constants {
   public static final class Odometry {
     public static final Lock CTRE_ODOMETRY_LOCK = new ReentrantLock();
     public static final Lock REV_ODOMETRY_LOCK = new ReentrantLock();
+    public static final Boolean CTRE_ODOMETRY_ENABLED = (true);
+    public static final Boolean REV_ODOMETRY_ENABLED = (true);
     public static final CTREOdometryThread CTRE_ODOMETRY_THREAD = CTREOdometryThread.create(CTRE_ODOMETRY_LOCK);
     public static final REVOdometryThread REV_ODOMETRY_THREAD = REVOdometryThread.create(REV_ODOMETRY_LOCK);
+    static {
+      CTRE_ODOMETRY_THREAD.setEnabled(CTRE_ODOMETRY_ENABLED);
+      REV_ODOMETRY_THREAD.setEnabled(REV_ODOMETRY_ENABLED);
+    }
   }
 
   public static final class Ports {

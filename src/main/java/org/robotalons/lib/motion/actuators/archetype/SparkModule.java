@@ -9,7 +9,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
@@ -96,6 +95,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     RotationalAbsoluteOffset = MODULE_CONSTANTS.ROTATIONAL_ENCODER_OFFSET;
     ODOMETRY_LOCK = new ReentrantLock();
 
+    //TODO: Possible CAN Fix
     TRANSLATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(TRANSLATIONAL_POSITION::get);
     ROTATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(() -> getAbsoluteRotation().getRadians());
     TIMESTAMP_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.timestamp();
@@ -103,7 +103,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     TIMESTAMPS = new ArrayList<>();
     POSITION_DELTAS = new ArrayList<>();
 
-    BaseStatusSignal.setUpdateFrequencyForAll((25), ABSOLUTE_ENCODER.getAbsolutePosition());
+    ABSOLUTE_ENCODER.getAbsolutePosition().setUpdateFrequency((25));
     ABSOLUTE_ENCODER.optimizeBusUtilization();
 
     configure();
@@ -119,6 +119,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     TRANSLATIONAL_CONTROLLER.restoreFactoryDefaults();
     ROTATIONAL_CONTROLLER.restoreFactoryDefaults();
 
+    //TODO: Possible CAN Fix
     TRANSLATIONAL_CONTROLLER.setCANTimeout((250));
     ROTATIONAL_CONTROLLER.setCANTimeout((250));
 
@@ -143,6 +144,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
 
     ROTATIONAL_PID.enableContinuousInput(-Math.PI, Math.PI);
 
+    //TODO: Possible CAN Fix
     IntStream.range((0),(4)).forEach((Index) -> {
       TRANSLATIONAL_CONTROLLER.setPeriodicFramePeriod(
           PeriodicFrame.kStatus2, (int) (1000d / MODULE_CONSTANTS.STATUS_PROVIDER.getFrequency()));

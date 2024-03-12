@@ -51,7 +51,14 @@ public sealed interface OdometryThread<SignalType> extends Runnable, Closeable p
    * Mutates the current frequency of updating the odometry
    * @param Frequency Frequency of odometry updates in Hertz
    */
-  void set(final Double Frequency);
+  void setFrequency(final Double Frequency);
+
+
+  /**
+   * Mutates the current state of the thread to be enabled or disabled
+   * @param Enabled If this Thread is enabled or not
+   */
+  void setEnabled(final Boolean Enabled);
 
   /**
    * Provides the odometry lock of this thread

@@ -46,6 +46,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static CTREOdometryThread Instance;  
   private static Boolean Flexible;
+  private static Boolean Enabled;
   private static Double Frequency;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
@@ -90,15 +91,14 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
   }
 
   public synchronized void close() throws IOException {
+    SIGNALS_LOCK.lock();
+    ODOMETRY_LOCK.lock();
     SIGNAL_QUEUES.clear();
     SIGNAL_PROVIDERS.clear();
-    try {
-      super.join();
-    } catch (final InterruptedException Exception) {
-      Exception.printStackTrace();
-    }     
+    ODOMETRY_LOCK.unlock();
+    SIGNALS_LOCK.unlock();
+    interrupt();
     Instance = (null);
-    this.interrupt();
   }
 
   public synchronized Queue<Double> timestamp() {
@@ -124,38 +124,40 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
             Thread.sleep((long) ((1000d) / Frequency));
             SIGNAL_PROVIDERS.forEach(StatusSignal::refresh);
           }
-        } catch (final InterruptedException Exception) {
-          Exception.printStackTrace();
+        } catch (final InterruptedException Ignored) {
+          new Alert(("Odometry Interrupted"), AlertType.ERROR);
         } finally {
           SIGNALS_LOCK.unlock();
         }
-        ODOMETRY_LOCK.lock();
-        try {
-          final var Providers = SIGNAL_PROVIDERS.iterator();
-          final var Timestamp = new AtomicReference<>(Logger.getRealTimestamp() / (1e6));
-          final var Latency = new AtomicReference<>((0d));
-          SIGNAL_PROVIDERS.forEach((Signal) -> Latency.set(Latency.get() + Signal.getTimestamp().getLatency()));
-          if (!SIGNAL_PROVIDERS.isEmpty()) {
-            Timestamp.set(Timestamp.get() - Latency.get() / SIGNAL_PROVIDERS.size());
-          }
-          SIGNAL_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) -> {
-            synchronized(Queue) {
-              Queue.offer(Providers.next().getValue());
+        if(Enabled) {
+          ODOMETRY_LOCK.lock();
+          try {
+            final var Providers = SIGNAL_PROVIDERS.iterator();
+            final var Timestamp = new AtomicReference<>(Logger.getRealTimestamp() / (1e6));
+            final var Latency = new AtomicReference<>((0d));
+            SIGNAL_PROVIDERS.forEach((Signal) -> Latency.set(Latency.get() + Signal.getTimestamp().getLatency()));
+            if (!SIGNAL_PROVIDERS.isEmpty()) {
+              Timestamp.set(Timestamp.get() - Latency.get() / SIGNAL_PROVIDERS.size());
             }
-          });
-          TIMESTAMP_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) ->  {
-            synchronized(Queue) {
-              Queue.offer(Timestamp.get());
-            }
-          });
-        } finally {
-          ODOMETRY_LOCK.unlock();
-        } if(this.isInterrupted()) {
+            SIGNAL_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) -> {
+              synchronized(Queue) {
+                Queue.offer(Providers.next().getValue());
+              }
+            });
+            TIMESTAMP_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) ->  {
+              synchronized(Queue) {
+                Queue.offer(Timestamp.get());
+              }
+            });
+          } finally {
+            ODOMETRY_LOCK.unlock();
+          }          
+        } if(isInterrupted()) {
           break;
-        }
+        }           
       } catch (final Exception Ignored) {
         new Alert(("Odometry Exception"), AlertType.ERROR);
-      }
+      }    
     }
   }  
 
@@ -176,14 +178,19 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
   /**
    * Mutates the current status of the can bus to determine if it supports flexible data rates.
-   * @param IsFlexible If the CAN bus of devices is flexible
+   * @param Flexible If the CAN bus of devices is flexible
    */
-  public synchronized void set(final Boolean IsFlexible) {
-    Flexible = IsFlexible;
+  public synchronized void setFlexibility(final Boolean Flexible) {
+    CTREOdometryThread.Flexible = Flexible;
   }
 
   @Override
-  public synchronized void set(final Double Frequency) {
+  public synchronized void setEnabled(final Boolean Enabled) {
+    CTREOdometryThread.Enabled = Enabled;
+  }
+
+  @Override
+  public synchronized void setFrequency(final Double Frequency) {
     CTREOdometryThread.Frequency = Frequency;
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
