@@ -12,6 +12,9 @@ import org.robotalons.crescendo.subsystems.climb.ClimbSubsystem;
 import org.robotalons.crescendo.subsystems.drive.Swerve;
 import org.robotalons.crescendo.subsystems.indexer.Indexer;
 import org.robotalons.crescendo.subsystems.intake.Intake;
+import org.robotalons.crescendo.subsystems.led.LEDStrip;
+import org.robotalons.crescendo.subsystems.led.LEDSubsystem;
+import org.robotalons.crescendo.subsystems.led.LEDStrip.LEDIdentifier;
 import org.robotalons.lib.controller.AxisButton;
 
 import com.pathplanner.lib.auto.NamedCommands;
@@ -35,6 +38,8 @@ public class RobotContainer {
     private final int translationAxis = XboxController.Axis.kLeftY.value;
     private final int strafeAxis = XboxController.Axis.kLeftX.value;
     private final int rotationAxis = XboxController.Axis.kRightX.value;
+
+    private final LEDStrip LEDS = new LEDStrip(26, 9);
 
     private final Joystick driver = new Joystick(0);
     private final Joystick operator = new Joystick(1);
@@ -104,6 +109,9 @@ public class RobotContainer {
         );
 
         configureButtonBindings();
+
+        LEDS.setColor(LEDIdentifier.DARK_BLUE);
+        
   }
 
 
