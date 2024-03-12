@@ -4,9 +4,6 @@
 
 package org.robotalons.crescendo;
 
-import org.littletonrobotics.junction.LoggedRobot;
-
-import edu.wpi.first.cscore.VideoSource;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
