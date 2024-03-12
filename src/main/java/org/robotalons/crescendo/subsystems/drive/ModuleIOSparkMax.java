@@ -5,9 +5,9 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package org.littletonrobotics.frc2024.subsystems.drive;
+package org.robotalons.crescendo.subsystems.drive;
 
-import static org.littletonrobotics.frc2024.subsystems.drive.DriveConstants.*;
+import static org.robotalons.crescendo.subsystems.drive.DriveConstants.*;
 
 import com.revrobotics.*;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -17,7 +17,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotController;
-import java.util.Queue;
 import java.util.function.Supplier;
 
 public class ModuleIOSparkMax implements ModuleIO {
@@ -31,10 +30,6 @@ public class ModuleIOSparkMax implements ModuleIO {
   // Controllers
   private final PIDController driveController;
   private final PIDController turnController;
-
-  // Queues
-  private final Queue<Double> drivePositionQueue;
-  private final Queue<Double> turnPositionQueue;
 
   private final Rotation2d absoluteEncoderOffset;
   private final Supplier<Rotation2d> absoluteEncoderValue;
@@ -112,17 +107,6 @@ public class ModuleIOSparkMax implements ModuleIO {
     inputs.turnAppliedVolts = turnMotor.getAppliedOutput() * turnMotor.getBusVoltage();
     inputs.turnSupplyCurrentAmps = turnMotor.getOutputCurrent();
 
-    inputs.odometryDrivePositionsMeters =
-        drivePositionQueue.stream()
-            .mapToDouble(
-                motorPositionRevs ->
-                    Units.rotationsToRadians(motorPositionRevs / moduleConstants.driveReduction())
-                        * driveConfig.wheelRadius())
-            .toArray();
-    inputs.odometryTurnPositions =
-        turnPositionQueue.stream().map(Rotation2d::fromRadians).toArray(Rotation2d[]::new);
-    drivePositionQueue.clear();
-    turnPositionQueue.clear();
   }
 
   @Override
