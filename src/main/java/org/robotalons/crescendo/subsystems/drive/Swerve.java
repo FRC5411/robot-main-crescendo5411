@@ -27,7 +27,7 @@ public class Swerve extends SubsystemBase {
   private static SwerveModule RR_MODULE;
   private static Pose2d INITAL;
   private static Pigeon2 GYRO;
-  private static SwerveDriveKinematics KINEMATICS;
+  public static SwerveDriveKinematics KINEMATICS;
   private static SwerveDriveKinematicsConstraint CONSTRAINTS;
   private static SwerveDrivePoseEstimator POSE_ESTIMATOR;
   private static SwerveModule[] MODULES;
@@ -145,7 +145,7 @@ public class Swerve extends SubsystemBase {
     return Rotation2d.fromDegrees(getHeading());
   }
 
-  public void resetOdometry() {
+  public void zeroHeading() {
     resetPosistion(getRotation2d());
   }
 
