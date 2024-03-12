@@ -106,7 +106,7 @@ public final class Robot extends LoggedRobot {
         Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(Path, ("_sim"))));
         break;
     }
-    Logger.start();
+    //Logger.start(); //TODO: Re-enable
     Map<String, Integer> CommandMap = new HashMap<>();
     BiConsumer<Command, Boolean> LoggerFunction =
         (Command command, Boolean active) -> {

@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
@@ -101,6 +102,9 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     
     TIMESTAMPS = new ArrayList<>();
     POSITION_DELTAS = new ArrayList<>();
+
+    BaseStatusSignal.setUpdateFrequencyForAll((25), ABSOLUTE_ENCODER.getAbsolutePosition());
+    ABSOLUTE_ENCODER.optimizeBusUtilization();
 
     configure();
   }

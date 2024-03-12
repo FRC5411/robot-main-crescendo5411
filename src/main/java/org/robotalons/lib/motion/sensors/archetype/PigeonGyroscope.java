@@ -4,6 +4,7 @@ package org.robotalons.lib.motion.sensors.archetype;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
@@ -47,6 +48,8 @@ public class PigeonGyroscope extends Gyroscope {
     YAW_ROTATION.setUpdateFrequency(Provider.getFrequency());
     YAW_VELOCITY.setUpdateFrequency((100d));
     YAW_ROTATION_QUEUE = Provider.register(GYROSCOPE.getYaw());
+    GYROSCOPE.optimizeBusUtilization();
+    BaseStatusSignal.setUpdateFrequencyForAll((50), GYROSCOPE.getYaw());
   }
 
   public synchronized void close() {

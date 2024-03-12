@@ -32,11 +32,11 @@ public class Constants {
 
     public static final Double PIVOT_P_GAIN = (3.75d);
     public static final Double PIVOT_I_GAIN = (0d);
-    public static final Double PIVOT_D_GAIN = (0.001d);
+    public static final Double PIVOT_D_GAIN = (0.35d);
 
     public static final Double FIRING_P_GAIN = (10d);
     public static final Double FIRING_I_GAIN = (0d);
-    public static final Double FIRING_D_GAIN = (0.0001d);
+    public static final Double FIRING_D_GAIN = (0.001d);
 
     public static final Double FIRING_STANDARD_VELOCITY = (2000d);
 

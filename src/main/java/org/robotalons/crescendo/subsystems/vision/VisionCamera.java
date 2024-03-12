@@ -212,7 +212,6 @@ public final class VisionCamera extends Camera {
     return Optional.empty();
   }
 
-  // TODO: Check to make sure that ur good with these being pose2d
   @Override
   public Optional<Pose2d> getObjectFieldPose() {
     if(CAMERA.isConnected()) {
@@ -248,7 +247,6 @@ public final class VisionCamera extends Camera {
     return Optional.empty();
   }
 
-  //TODO: Check Cody to make sure ur fine with this
   @Override
   public List<Optional<Transform2d>> getTargets() {
     if(CAMERA.isConnected()) {
@@ -286,7 +284,6 @@ public final class VisionCamera extends Camera {
     return CAMERA.isConnected()? CAMERA.getLatestResult().getTargets().size(): (0);
   }
 
-  //TODO Check pls Cody
   @Override
   public Optional<Transform2d> getOptimalTarget() {
     if(CAMERA.getLatestResult().getBestTarget() == (null) ){

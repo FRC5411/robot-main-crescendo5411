@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.SlotConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -86,10 +87,14 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       .withKD(Measurements.FIRING_D_GAIN)
     );
 
+    BaseStatusSignal.setUpdateFrequencyForAll((50), FIRING_CONTROLLERS.getFirst().getVelocity(), FIRING_CONTROLLERS.getSecond().getVelocity());
+    FIRING_CONTROLLERS.getFirst().optimizeBusUtilization();
+    FIRING_CONTROLLERS.getSecond().optimizeBusUtilization();
+
     FIRING_CONTROLLERS.getFirst().getConfigurator().apply(new TalonFXConfiguration().CurrentLimits.withSupplyCurrentLimit((25d)).withStatorCurrentLimit((20d)));
     FIRING_CONTROLLERS.getSecond().getConfigurator().apply(new TalonFXConfiguration().CurrentLimits.withSupplyCurrentLimit((25d)).withStatorCurrentLimit((20d)));
     FIRING_VELOCITY = FIRING_CONTROLLERS.getFirst().getVelocity();
-    FIRING_CONTROLLERS.getFirst().setInverted((false));
+    FIRING_CONTROLLERS.getFirst().setInverted((true));
     FIRING_CONTROLLERS.getSecond().setInverted((true));
 
     INDEXER_CONTROLLER = new CANSparkMax(Ports.INDEXER_CONTROLLER_ID, MotorType.kBrushless);
@@ -199,8 +204,8 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * @param Reference Desired velocity in RPM
    */
   private static synchronized void set(final Double Reference) {
-    FIRING_CONTROLLERS.getFirst().setControl(new VelocityDutyCycle(-Reference));
-    FIRING_CONTROLLERS.getSecond().setControl(new VelocityDutyCycle(-Reference));
+    FIRING_CONTROLLERS.getFirst().setControl(new VelocityDutyCycle((Reference)));
+    FIRING_CONTROLLERS.getSecond().setControl(new VelocityDutyCycle((Reference)));
   }
 
   /**
@@ -242,8 +247,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       Keybinding.onTrue(new InstantCommand(
         () -> {
           Reference.angle = Rotation2d.fromRadians(Rotation);
-          FIRING_CONTROLLERS.getFirst().set(-Measurements.FIRING_STANDARD_VELOCITY);
-          FIRING_CONTROLLERS.getSecond().set(-Measurements.FIRING_STANDARD_VELOCITY);
+          set(Measurements.FIRING_STANDARD_VELOCITY);
         },
         SuperstructureSubsystem.getInstance()
       ));
