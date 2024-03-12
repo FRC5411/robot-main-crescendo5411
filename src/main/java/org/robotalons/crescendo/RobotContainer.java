@@ -6,7 +6,10 @@ package org.robotalons.crescendo;
 
 
 import org.robotalons.crescendo.commands.DriverIntakeFeedback;
+import org.robotalons.crescendo.commands.SwerveDriveCommand;
 import org.robotalons.crescendo.subsystems.cannon.CannonSubsystem;
+import org.robotalons.crescendo.subsystems.climb.ClimbSubsystem;
+import org.robotalons.crescendo.subsystems.drive.Swerve;
 import org.robotalons.crescendo.subsystems.indexer.Indexer;
 import org.robotalons.crescendo.subsystems.intake.Intake;
 import org.robotalons.lib.controller.AxisButton;
@@ -70,6 +73,8 @@ public class RobotContainer {
     private final CannonSubsystem cannon = new CannonSubsystem();
     private final Indexer indexer = new Indexer();
     private final Intake intake = new Intake();
+    private final Swerve swerve = new Swerve();
+    private final ClimbSubsystem climb = new ClimbSubsystem();
 
     
 
@@ -88,27 +93,37 @@ public class RobotContainer {
         NamedCommands.registerCommand("Pivot Up", new InstantCommand(() -> cannon.pivotUp()));
         NamedCommands.registerCommand("Pivot Down", new InstantCommand(() -> cannon.pivotDown()));
 
+        swerve.setDefaultCommand(
+            new SwerveDriveCommand(
+                swerve, 
+                () -> -driver.getRawAxis(translationAxis), 
+                () -> -driver.getRawAxis(strafeAxis), 
+                () -> -driver.getRawAxis(rotationAxis), 
+                () -> false
+            )
+        );
+
         configureButtonBindings();
   }
 
 
   private void configureButtonBindings() {
-        /* Driver Buttons */
         
-        //INTAKE
+        //INTAKE IN
         driveLeftTrigger.onTrue(new InstantCommand(() -> intake.set(1.0), intake));
         driveLeftTrigger.onFalse(new InstantCommand(() -> intake.set(0.0), intake));
         driveLeftTrigger.onTrue(new InstantCommand(() -> indexer.set(1.0), indexer));
         driveLeftTrigger.onFalse(new InstantCommand(() -> indexer.set(0.0), indexer));
         opLeftBumper.whileTrue(new DriverIntakeFeedback(intake, driver, operator));
 
-                
+        //INTAKE OUT
+   
         driveRightTrigger.onTrue(new InstantCommand(() -> intake.set(-1.0), intake));
         driveRightTrigger.onFalse(new InstantCommand(() -> intake.set(0.0), intake));
         driveRightTrigger.onTrue(new InstantCommand(() -> indexer.set(-1.0), indexer));
         driveRightTrigger.onFalse(new InstantCommand(() -> indexer.set(0.0), indexer));
  
-        //CANNON
+        //CANNON MANUAL
         opX.onTrue(new InstantCommand(() -> cannon.launchWithVolts()));
         opX.onFalse(new InstantCommand(() -> cannon.stopLaunchWithVolts()));
         opX.whileFalse(Commands.runOnce(() ->cannon.setSetpointDegrees(22),cannon));
@@ -123,6 +138,12 @@ public class RobotContainer {
         povDown.onTrue(new InstantCommand(() ->cannon.pivotDown(),cannon));
         povDown.onFalse(new InstantCommand(() ->cannon.pivotStop(),cannon));
 
+        //CLIMB MANUAL
+        driveA.whileTrue(new InstantCommand(() -> climb.set(0.2)));
+        driveA.whileFalse(new InstantCommand(() -> climb.set(0.0)));
+
+        driveB.whileTrue(new InstantCommand(() -> climb.set(-0.2)));
+        driveB.whileFalse(new InstantCommand(() -> climb.set(0.0)));
 
         
     }

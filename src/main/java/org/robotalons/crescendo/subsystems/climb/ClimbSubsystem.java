@@ -51,6 +51,11 @@ public class ClimbSubsystem extends SubsystemBase {
     configure();
   }
 
+  public void setManualClimb(double speed){
+    LEFT_ARM.set(speed);
+    RIGHT_ARM.set(-speed);
+  }
+
   public synchronized void set(final int Direction, final Double Demand) {
     if(Direction == 0){
       LEFT_ARM.setVoltage(LEFT_PID.calculate(getPosition(0), Demand) + LEFT_FF.calculate(Demand, (0)));}
