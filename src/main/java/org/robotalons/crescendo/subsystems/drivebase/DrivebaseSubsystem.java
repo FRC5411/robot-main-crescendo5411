@@ -128,58 +128,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     );
     ODOMETRY_PROCESSOR = new Thread(() -> {
       while(Instance != null) {
-        synchronized(MODULES) {
-          final var Rotation = GYROSCOPE.getOdometryYawRotations();
-          final var Measured = MODULES.stream().map(Module::getPositionDeltas).toList();
-          final var Timestamps = MODULES.stream().map(Module::getPositionTimestamps).toList();
-          final var Partitions = Timestamps.stream().mapToInt(List::size).boxed().toList();
-          Partitions.stream().mapToInt(Integer::intValue).min().ifPresentOrElse((final int Size) -> {
-            for(Integer Timestamp = (0); Timestamp < Math.min(Size, Rotation.length); Timestamp++) {
-              try {
-                final var Positions = new SwerveModulePosition[MODULES.size()];
-                final var Deltas = new SwerveModulePosition[MODULES.size()];
-                for (Integer Module = (0); Module < MODULES.size(); Module++) {
-                  Positions[Module] = Measured.get(Module).get(Timestamp);
-                  Deltas[Module] = new SwerveModulePosition(
-                    Positions[Module].distanceMeters - ModulePositions.get(Module).distanceMeters, 
-                    Positions[Module].angle);
-                  ModulePositions.set(Module, Positions[Module]);
-                } if (GYROSCOPE.getConnected() && Rotation.length > (0)) {
-                  GyroscopeRotation = Rotation[Timestamp];
-                } else {
-                  final var Twist = KINEMATICS.toTwist2d(Deltas);
-                  GyroscopeRotation = GyroscopeRotation.plus(new Rotation2d(Twist.dtheta));
-                }
-                POSE_ESTIMATOR.updateWithTime(
-                  Timestamps.get(Partitions.indexOf(Size)).get(Timestamp),
-                  GyroscopeRotation, 
-                  Positions
-                );            
-              } catch (final IndexOutOfBoundsException | NullPointerException Ignored) {
-                break;
-              } 
-            }
-          },
-          () -> {
-            POSE_ESTIMATOR.updateWithTime(
-              Logger.getRealTimestamp() / (1e6),
-              GyroscopeRotation, 
-              getModulePositions()
-            );
-          });
-        }
-        VisionSubsystem.ALL_CAMERA_IDENTIFIERS.parallelStream().forEach((Identifier) -> {
-          final var Timestamps = VisionSubsystem.getRobotPositionTimestamps(Identifier);
-          final var Positions = VisionSubsystem.getRobotPositionDeltas(Identifier);
-          final var Deviation = VisionSubsystem.getStandardDeviations(Identifier);
-          IntStream.range((0), Math.min(Timestamps.length, Positions.length)).parallel().forEach((Index) -> {
-            POSE_ESTIMATOR.addVisionMeasurement(
-              Positions[Index],
-              Timestamps[Index],
-              Deviation
-            );
-          });
-        });
         try {
           Thread.sleep((1/500) * 10000);
         } catch (final InterruptedException Ignored) {}        
@@ -187,7 +135,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     });
     ODOMETRY_PROCESSOR.setName(("OdometryProcessorThread"));
     ODOMETRY_PROCESSOR.setDaemon((true));
-    ODOMETRY_PROCESSOR.start();
+    //ODOMETRY_PROCESSOR.start();
     Logger.recordOutput(("Drivebase/Measurements"),getModuleMeasurements());
     Logger.recordOutput(("Drivebase/Translation"), new Translation2d());
     Logger.recordOutput(("Drivebase/Rotation"), new Rotation2d());
@@ -205,6 +153,58 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     if (DriverStation.isDisabled()) {
       MODULES.forEach(Module::cease);
     }
+    synchronized(MODULES) {
+      final var Rotation = GYROSCOPE.getOdometryYawRotations();
+      final var Measured = MODULES.stream().map(Module::getPositionDeltas).toList();
+      final var Timestamps = MODULES.stream().map(Module::getPositionTimestamps).toList();
+      final var Partitions = Timestamps.stream().mapToInt(List::size).boxed().toList();
+      Partitions.stream().mapToInt(Integer::intValue).min().ifPresentOrElse((final int Size) -> {
+        for(Integer Timestamp = (0); Timestamp < Math.min(Size, Rotation.length); Timestamp++) {
+          try {
+            final var Positions = new SwerveModulePosition[MODULES.size()];
+            final var Deltas = new SwerveModulePosition[MODULES.size()];
+            for (Integer Module = (0); Module < MODULES.size(); Module++) {
+              Positions[Module] = Measured.get(Module).get(Timestamp);
+              Deltas[Module] = new SwerveModulePosition(
+                Positions[Module].distanceMeters - ModulePositions.get(Module).distanceMeters, 
+                Positions[Module].angle);
+              ModulePositions.set(Module, Positions[Module]);
+            } if (GYROSCOPE.getConnected() && Rotation.length > (0)) {
+              GyroscopeRotation = Rotation[Timestamp];
+            } else {
+              final var Twist = KINEMATICS.toTwist2d(Deltas);
+              GyroscopeRotation = GyroscopeRotation.plus(new Rotation2d(Twist.dtheta));
+            }
+            POSE_ESTIMATOR.updateWithTime(
+              Timestamps.get(Partitions.indexOf(Size)).get(Timestamp),
+              GyroscopeRotation, 
+              Positions
+            );            
+          } catch (final IndexOutOfBoundsException | NullPointerException Ignored) {
+            break;
+          } 
+        }
+      },
+      () -> {
+        POSE_ESTIMATOR.updateWithTime(
+          Logger.getRealTimestamp() / (1e6),
+          GyroscopeRotation, 
+          getModulePositions()
+        );
+      });
+    }
+    VisionSubsystem.ALL_CAMERA_IDENTIFIERS.parallelStream().forEach((Identifier) -> {
+      final var Timestamps = VisionSubsystem.getRobotPositionTimestamps(Identifier);
+      final var Positions = VisionSubsystem.getRobotPositionDeltas(Identifier);
+      final var Deviation = VisionSubsystem.getStandardDeviations(Identifier);
+      IntStream.range((0), Math.min(Timestamps.length, Positions.length)).parallel().forEach((Index) -> {
+        POSE_ESTIMATOR.addVisionMeasurement(
+          Positions[Index],
+          Timestamps[Index],
+          Deviation
+        );
+      });
+    });
     Objects.ODOMETRY_LOCK.unlock(); 
   }
 
