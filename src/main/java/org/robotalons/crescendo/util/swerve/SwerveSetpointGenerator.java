@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package org.littletonrobotics.frc2024.util.swerve;
+package org.robotalons.crescendo.util.swerve;
 
 import static org.littletonrobotics.frc2024.util.EqualsUtil.*;
 
@@ -21,8 +21,8 @@ import java.util.Optional;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.ExtensionMethod;
-import org.littletonrobotics.frc2024.util.EqualsUtil;
-import org.littletonrobotics.frc2024.util.GeomUtil;
+import org.robotalons.crescendo.util.EqualsUtil;
+import org.robotalons.crescendo.util.GeomUtil;
 
 /**
  * "Inspired" by FRC team 254. See the license file in the root directory of this project.

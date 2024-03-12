@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package org.littletonrobotics.frc2024.util.swerve;
+package org.robotalons.crescendo.util.swerve;
 
 public record ModuleLimits(
     double maxDriveVelocity, double maxDriveAcceleration, double maxSteeringVelocity) {}
