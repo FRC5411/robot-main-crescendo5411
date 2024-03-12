@@ -8,8 +8,8 @@
 package org.robotalons.crescendo;
 
 import edu.wpi.first.wpilibj.RobotBase;
-import org.littletonrobotics.frc2024.util.Alert;
-import org.littletonrobotics.frc2024.util.Alert.AlertType;
+import org.robotalons.crescendo.util.Alert;
+import org.robotalons.crescendo.util.Alert.AlertType;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean

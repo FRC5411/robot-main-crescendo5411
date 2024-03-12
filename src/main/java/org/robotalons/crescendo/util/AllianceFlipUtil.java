@@ -13,7 +13,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import org.littletonrobotics.frc2024.FieldConstants;
+import org.robotalons.crescendo.FieldConstants;
 import org.littletonrobotics.vehicletrajectoryservice.VehicleTrajectoryServiceOuterClass;
 import org.littletonrobotics.vehicletrajectoryservice.VehicleTrajectoryServiceOuterClass.VehicleState;
 
