@@ -5,54 +5,29 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package org.littletonrobotics.frc2024.subsystems.drive;
-
-import static org.littletonrobotics.frc2024.subsystems.drive.DriveConstants.driveConfig;
-import static org.littletonrobotics.frc2024.subsystems.drive.DriveConstants.moduleConstants;
+package org.robotalons.crescendo.subsystems.drive;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import lombok.Getter;
-import org.littletonrobotics.frc2024.util.Alert;
-import org.littletonrobotics.frc2024.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
-  private static final LoggedTunableNumber drivekP =
-      new LoggedTunableNumber("Drive/Module/DrivekP", moduleConstants.drivekP());
-  private static final LoggedTunableNumber drivekD =
-      new LoggedTunableNumber("Drive/Module/DrivekD", moduleConstants.drivekD());
-  private static final LoggedTunableNumber drivekS =
-      new LoggedTunableNumber("Drive/Module/DrivekS", moduleConstants.ffkS());
-  private static final LoggedTunableNumber drivekV =
-      new LoggedTunableNumber("Drive/Module/DrivekV", moduleConstants.ffkV());
-  private static final LoggedTunableNumber turnkP =
-      new LoggedTunableNumber("Drive/Module/TurnkP", moduleConstants.turnkP());
-  private static final LoggedTunableNumber turnkD =
-      new LoggedTunableNumber("Drive/Module/TurnkD", moduleConstants.turnkD());
   private static final String[] moduleNames = new String[] {"FL", "FR", "BL", "BR"};
 
   private final int index;
   private final ModuleIO io;
   private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
   private SimpleMotorFeedforward ff =
-      new SimpleMotorFeedforward(moduleConstants.ffkS(), moduleConstants.ffkV(), 0.0);
+      new SimpleMotorFeedforward(DriveConstants.moduleConstants.ffkS(), DriveConstants.moduleConstants.ffkV(), 0.0);
   @Getter private SwerveModuleState setpointState = new SwerveModuleState();
-
-  // Alerts
-  private final Alert driveMotorDisconnected;
-  private final Alert turnMotorDisconnected;
+  
 
   public Module(ModuleIO io, int index) {
     this.io = io;
     this.index = index;
-
-    driveMotorDisconnected =
-        new Alert(moduleNames[index] + " drive motor disconnected!", Alert.AlertType.WARNING);
-    turnMotorDisconnected =
-        new Alert(moduleNames[index] + " turn motor disconnected!", Alert.AlertType.WARNING);
   }
 
   /** Called while blocking odometry thread */
@@ -60,20 +35,6 @@ public class Module {
     io.updateInputs(inputs);
     Logger.processInputs("Drive/Module" + index, inputs);
 
-    // Update ff and controllers
-    LoggedTunableNumber.ifChanged(
-        hashCode(),
-        () -> ff = new SimpleMotorFeedforward(drivekS.get(), drivekV.get(), 0),
-        drivekS,
-        drivekV);
-    LoggedTunableNumber.ifChanged(
-        hashCode(), () -> io.setDrivePID(drivekP.get(), 0, drivekD.get()), drivekP, drivekD);
-    LoggedTunableNumber.ifChanged(
-        hashCode(), () -> io.setTurnPID(turnkP.get(), 0, turnkD.get()), turnkP, turnkD);
-
-    // Display alerts
-    driveMotorDisconnected.set(!inputs.driveMotorConnected);
-    turnMotorDisconnected.set(!inputs.turnMotorConnected);
   }
 
   /** Runs to {@link SwerveModuleState} */
@@ -82,9 +43,9 @@ public class Module {
     double wheelTorqueNm =
         torqueFF.speedMetersPerSecond; // Using SwerveModuleState for torque for easy logging
     io.runDriveVelocitySetpoint(
-        setpoint.speedMetersPerSecond / driveConfig.wheelRadius(),
-        ff.calculate(setpoint.speedMetersPerSecond / driveConfig.wheelRadius())
-            + ((wheelTorqueNm / moduleConstants.driveReduction()) * moduleConstants.ffkT()));
+        setpoint.speedMetersPerSecond / DriveConstants.driveConfig.wheelRadius(),
+        ff.calculate(setpoint.speedMetersPerSecond / DriveConstants.driveConfig.wheelRadius())
+            + ((wheelTorqueNm / DriveConstants.moduleConstants.driveReduction()) * DriveConstants.moduleConstants.ffkT()));
     io.runTurnPositionSetpoint(setpoint.angle.getRadians());
   }
 
@@ -124,12 +85,12 @@ public class Module {
 
   /** Get position of wheel in meters. */
   public double getPositionMeters() {
-    return inputs.drivePositionRads * driveConfig.wheelRadius();
+    return inputs.drivePositionRads * DriveConstants.driveConfig.wheelRadius();
   }
 
   /** Get velocity of wheel in m/s. */
   public double getVelocityMetersPerSec() {
-    return inputs.driveVelocityRadsPerSec * driveConfig.wheelRadius();
+    return inputs.driveVelocityRadsPerSec * DriveConstants.driveConfig.wheelRadius();
   }
 
   /** Get current {@link SwerveModulePosition} of module. */

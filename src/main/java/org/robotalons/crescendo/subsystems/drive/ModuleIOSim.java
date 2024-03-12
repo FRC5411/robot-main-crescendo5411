@@ -8,7 +8,6 @@
 package org.robotalons.crescendo.subsystems.drive;
 
 import org.robotalons.crescendo.Constants;
-import org.robotalons.crescendo.subsystems.drive.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -16,12 +15,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import org.robotalons.crescendo.subsystems.drive.DriveConstants.*;
 
 public class ModuleIOSim implements ModuleIO {
   private final DCMotorSim driveSim =
-      new DCMotorSim(DCMotor.getKrakenX60Foc(1), moduleConstants.driveReduction(), 0.025);
+      new DCMotorSim(DCMotor.getKrakenX60Foc(1), DriveConstants.moduleConstants.driveReduction(), 0.025);
   private final DCMotorSim turnSim =
-      new DCMotorSim(DCMotor.getKrakenX60Foc(1), moduleConstants.turnReduction(), 0.004);
+      new DCMotorSim(DCMotor.getKrakenX60Foc(1), DriveConstants.moduleConstants.turnReduction(), 0.004);
 
   private final PIDController driveFeedback =
       new PIDController(0.0, 0.0, 0.0, Constants.loopPeriodSecs);
@@ -59,7 +59,7 @@ public class ModuleIOSim implements ModuleIO {
     inputs.turnSupplyCurrentAmps = Math.abs(turnSim.getCurrentDrawAmps());
 
     inputs.odometryDrivePositionsMeters =
-        new double[] {driveSim.getAngularPositionRad() * driveConfig.wheelRadius()};
+        new double[] {driveSim.getAngularPositionRad() * DriveConstants.driveConfig.wheelRadius()};
     inputs.odometryTurnPositions =
         new Rotation2d[] {Rotation2d.fromRadians(turnSim.getAngularPositionRad())};
   }
