@@ -164,6 +164,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     Logger.recordOutput(("Cannon/Reference"), Reference);
     Logger.recordOutput(("Cannon/MeasuredVelocity"), FIRING_VELOCITY.getValueAsDouble());
     Logger.recordOutput(("Cannon/MeasuredRotation"), -getPivotRotation());
+    Logger.recordOutput(("Cannon/IndexerCurrent"), INDEXER_CONTROLLER.getOutputCurrent());
     Constants.Objects.ODOMETRY_LOCKER.unlock();
   }
 

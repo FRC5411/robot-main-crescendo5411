@@ -158,7 +158,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     ROTATIONAL_CONTROLLER.burnFlash();
     ODOMETRY_LOCK.unlock();
 
-
+    reset();
   }
 
   @Override
