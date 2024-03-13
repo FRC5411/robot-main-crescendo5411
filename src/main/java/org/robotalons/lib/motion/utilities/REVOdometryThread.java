@@ -64,7 +64,7 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
 
   @Override
   public synchronized Queue<Double> register(final DoubleSupplier Signal) {
-    Queue<Double> Queue = new ArrayDeque<>((100));
+    Queue<Double> Queue = new ArrayDeque<>((STANDARD_QUEUE_SIZE));
     ODOMETRY_LOCK.lock();
     try {
       SIGNAL_PROVIDERS.add(Signal);
@@ -77,7 +77,7 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
 
   @Override
   public synchronized Queue<Double> timestamp() {
-    Queue<Double> Queue = new ArrayDeque<>((100));
+    Queue<Double> Queue = new ArrayDeque<>((STANDARD_QUEUE_SIZE));
     ODOMETRY_LOCK.lock();
     try {
       TIMESTAMP_QUEUES.add(Queue);

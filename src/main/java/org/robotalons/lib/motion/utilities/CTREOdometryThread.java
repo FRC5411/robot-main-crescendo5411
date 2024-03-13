@@ -78,7 +78,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
   
   @Override
   public synchronized Queue<Double> register(final StatusSignal<Double> Signal) {
-    Queue<Double> Queue = new ArrayDeque<>((100));
+    Queue<Double> Queue = new ArrayDeque<>(STANDARD_QUEUE_SIZE);
     SIGNALS_LOCK.lock();
     ODOMETRY_LOCK.lock();
     try {
@@ -103,7 +103,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
   }
 
   public synchronized Queue<Double> timestamp() {
-    Queue<Double> Queue = new ArrayDeque<>((100));
+    Queue<Double> Queue = new ArrayDeque<>(STANDARD_QUEUE_SIZE);
     ODOMETRY_LOCK.lock();
     try {
       TIMESTAMP_QUEUES.add(Queue);

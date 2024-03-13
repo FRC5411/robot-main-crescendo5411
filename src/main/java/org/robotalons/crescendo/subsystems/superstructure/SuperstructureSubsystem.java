@@ -3,7 +3,6 @@ package org.robotalons.crescendo.subsystems.superstructure;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -207,8 +206,8 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * @param Reference Desired velocity in RPM
    */
   private static synchronized void set(final Double Reference) {
-    FIRING_CONTROLLERS.getFirst().setControl(new VelocityDutyCycle((Reference)));
-    FIRING_CONTROLLERS.getSecond().setControl(new VelocityDutyCycle((Reference)));
+    FIRING_CONTROLLERS.getFirst().setControl(new VelocityDutyCycle((Reference / (60d))));
+    FIRING_CONTROLLERS.getSecond().setControl(new VelocityDutyCycle((Reference / (60d))));
   }
 
   /**
@@ -238,20 +237,6 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     set(Mode);
     set(Reference);
   }
-
-  public void pivotUp() {
-    PIVOT_CONTROLLER.setVoltage(2);
-}
-
-public void pivotDown() {
-
-  PIVOT_CONTROLLER.setVoltage(-2);
-
-}
-
-public void pivotStop() {
-    PIVOT_CONTROLLER.setVoltage(0); 
-}
 
   /**
    * Utility method for quickly adding button bindings to reach a given rotation, and reset to default
