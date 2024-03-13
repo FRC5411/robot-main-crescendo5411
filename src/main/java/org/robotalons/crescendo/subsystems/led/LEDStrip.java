@@ -68,7 +68,7 @@ public class LEDStrip extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    while(SuperstructureSubsystem.getBeamSensorState()){
+    while(SuperstructureSubsystem.getNoteDetector().get()){
       blinkGreen();
     }
   }
