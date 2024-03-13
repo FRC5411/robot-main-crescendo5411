@@ -29,6 +29,7 @@ import org.photonvision.PhotonUtils;
 import org.robotalons.crescendo.Constants.Profiles.Keybindings;
 import org.robotalons.crescendo.Constants.Profiles.Preferences;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
+import org.robotalons.crescendo.subsystems.elevator.Elevator;
 import org.robotalons.crescendo.subsystems.superstructure.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.superstructure.Constants.Ports;
 import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
@@ -65,6 +66,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   private static SuperstructureSubsystem Instance;
   // private static DigitalInput beamBreakSensorIntake = new DigitalInput(3);
   private static DigitalInput beamBreakSensorIndexer = new DigitalInput(1);
+  private static Elevator elevator = new Elevator();
 
 
   // ------------------------------------------------------------[Constructors]----------------------------------------------------------- //
@@ -296,7 +298,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
         .onTrue(new InstantCommand(
           () -> {
-            INTAKE_CONTROLLER.set((-1d));
+            INTAKE_CONTROLLER.set((1d));
             INDEXER_CONTROLLER.set((-1d));
           },
           SuperstructureSubsystem.getInstance()
@@ -312,16 +314,13 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     });
     with(() -> {
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.INTAKE_TOGGLE)
-        .whileTrue(new InstantCommand(
+        .onTrue(new InstantCommand(
           () -> {
-              runIntake();
+            INTAKE_CONTROLLER.set((1d));
+            INDEXER_CONTROLLER.set((1d));
           },
           SuperstructureSubsystem.getInstance()
-        ).andThen(new InstantCommand(() -> {
-          INDEXER_CONTROLLER.set(-0.1d);
-        }, getInstance()).withTimeout((.5d))).finallyDo(() -> {
-          INDEXER_CONTROLLER.set(0d);
-        }));
+        ));
         SuperstructureSubsystem.Operator.getKeybinding(Keybindings.INTAKE_TOGGLE)
         .onFalse(new InstantCommand(
           () -> {
@@ -329,9 +328,60 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
             INDEXER_CONTROLLER.set((0d));
           },
           SuperstructureSubsystem.getInstance()
-        ));
+      ));
     });
-
+    with(() -> {
+      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.ELEVATOR_UP)
+        .onTrue(new InstantCommand(
+          () -> {
+            Elevator.setElevator(0.5);
+          },
+          SuperstructureSubsystem.getInstance()
+        ));
+        SuperstructureSubsystem.Operator.getKeybinding(Keybindings.ELEVATOR_UP)
+        .onFalse(new InstantCommand(
+          () -> {
+            Elevator.setElevator(0);
+          },
+          SuperstructureSubsystem.getInstance()
+      ));
+    });
+    with(() -> {
+      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.ELEVATOR_DOWN)
+        .onTrue(new InstantCommand(
+          () -> {
+            Elevator.setElevator(-0.3);
+          },
+          SuperstructureSubsystem.getInstance()
+        ));
+        SuperstructureSubsystem.Operator.getKeybinding(Keybindings.ELEVATOR_DOWN)
+        .onFalse(new InstantCommand(
+          () -> {
+            Elevator.setElevator(0);
+          },
+          SuperstructureSubsystem.getInstance()
+      ));
+    });
+    with(() -> {
+      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.ELEVATOR_OUTTAKE)
+        .onTrue(new InstantCommand(
+          () -> {
+            INTAKE_CONTROLLER.set((1d));
+            INDEXER_CONTROLLER.set((-1d));
+            Elevator.setRoller(1.0);
+          },
+          SuperstructureSubsystem.getInstance()
+        ));
+        SuperstructureSubsystem.Operator.getKeybinding(Keybindings.ELEVATOR_OUTTAKE)
+        .onFalse(new InstantCommand(
+          () -> {
+            INTAKE_CONTROLLER.set((0d));
+            INDEXER_CONTROLLER.set((0d));
+            Elevator.setRoller(0);
+          },
+          SuperstructureSubsystem.getInstance()
+      ));
+    });
     with(() -> {
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.SHOOT_TOGGLE)
         .whileTrue(new InstantCommand(
