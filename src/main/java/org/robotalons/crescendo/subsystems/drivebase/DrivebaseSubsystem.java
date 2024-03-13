@@ -264,7 +264,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     return SubsystemManager.pathfind(
       Source.transformBy(
       new Transform2d(
-        getPath()? -Measurements.ROBOT_RADIUS_METERS: Measurements.ROBOT_RADIUS_METERS,
+        getFlipped()? -Measurements.ROBOT_RADIUS_METERS: Measurements.ROBOT_RADIUS_METERS,
         (0d),
         new Rotation2d())),
       (0d));
@@ -319,7 +319,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       Operator.getKeybinding(Keybindings.ALIGNMENT_SPEAKER)
       .onTrue(new InstantCommand(
         () -> 
-          VisionSubsystem.getAprilTagPose(getPath()? (3): (7))
+          VisionSubsystem.getAprilTagPose(getFlipped()? (3): (7))
             .ifPresent((Pose) -> {
                 alignPose(Pose.toPose2d())
               .onlyIf(() -> Operator.getKeybinding(Keybindings.ORIENTATION_TOGGLE).getAsBoolean()).schedule();
@@ -481,7 +481,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    */
   public static synchronized void set(final Pose2d Pose) {
     synchronized(POSE_ESTIMATOR) {
-      POSE_ESTIMATOR.resetPosition(GYROSCOPE.getYawRotation(),getModulePositions(),getPose());
+      POSE_ESTIMATOR.resetPosition(GYROSCOPE.getYawRotation(), getModulePositions(),getPose());
     }
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
@@ -502,7 +502,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    * Provides a boolean representation of if the pathfinding should flip paths or not.
    * @return Boolean of if Pathfinding is flipped or not
    */
-  public static Boolean getPath() {
+  public static Boolean getFlipped() {
     return FlippedEnabled;
   }
 

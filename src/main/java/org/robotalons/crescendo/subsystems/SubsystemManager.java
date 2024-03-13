@@ -82,7 +82,7 @@ public final class SubsystemManager extends SubsystemBase {
           (true),
           (true) 
         )), 
-      () -> DrivebaseSubsystem.getPath(),
+      () -> DrivebaseSubsystem.getFlipped(),
       DRIVEBASE);
     Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
@@ -98,9 +98,7 @@ public final class SubsystemManager extends SubsystemBase {
   @Override
   public synchronized void periodic() {
     FIELD.setRobotPose(DrivebaseSubsystem.getPose());
-    Pathfinding.setDynamicObstacles(
-      new ArrayList<>(),
-      DrivebaseSubsystem.getPose().getTranslation());
+    //Pathfinding.setDynamicObstacles(new ArrayList<>(), DrivebaseSubsystem.getPose().getTranslation());
   }
 
   /**

@@ -125,9 +125,11 @@ public abstract class Module implements Closeable {
    * @param Reference Module's new Goal or 'set-point' reference
    * @return An optimized version of the reference
    */
-  public SwerveModuleState set(final SwerveModuleState Reference) {
-    this.Reference = SwerveModuleState.optimize(Reference, STATUS.RotationalRelativePosition.plus(RotationalRelativeOffset == (null)? new Rotation2d(): RotationalRelativeOffset));
-    return this.Reference;
+  public synchronized SwerveModuleState set(final SwerveModuleState Reference) {
+    synchronized(this.Reference) {
+      this.Reference = SwerveModuleState.optimize(Reference, STATUS.RotationalRelativePosition.plus(RotationalRelativeOffset == (null)? new Rotation2d(): RotationalRelativeOffset));
+      return this.Reference;      
+    }
   }
 
   /**
@@ -216,7 +218,7 @@ public abstract class Module implements Closeable {
    * Provides the current linear position
    * @return Linear position in meters
    */
-  public Double getLinearVelocity() {
+  public Double getTranslationalVelocity() {
     return STATUS.TranslationalVelocityRadiansSecond * CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
   }
 
@@ -224,7 +226,7 @@ public abstract class Module implements Closeable {
    * Provides the current linear velocity
    * @return Linear velocity in meters per second
    */
-  public Double getLinearPosition() {
+  public Double getTranslationalPosition() {
     return STATUS.TranslationalPositionRadians * CONSTANTS.WHEEL_RADIUS_METERS;
   }
 
