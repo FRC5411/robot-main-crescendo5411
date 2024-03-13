@@ -128,7 +128,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     );
     ODOMETRY_PROCESSOR = new Notifier(DrivebaseSubsystem::process);
     ODOMETRY_PROCESSOR.setName(("OdometryProcessor"));
-    ODOMETRY_PROCESSOR.startPeriodic((1/100));
+    ODOMETRY_PROCESSOR.startPeriodic((1/50));
     Logger.recordOutput(("Drivebase/Measurements"),getModuleMeasurements());
     Logger.recordOutput(("Drivebase/Translation"), new Translation2d());
     Logger.recordOutput(("Drivebase/Rotation"), new Rotation2d());
@@ -140,7 +140,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    * Processes Module and Gyroscope data from a single control loop of module data
    */
   public static synchronized void process() {
-    Objects.ODOMETRY_LOCK.lock();
     synchronized(MODULES) {
       final var Rotation = GYROSCOPE.getOdometryYawRotations();
       final var Measured = MODULES.stream().map(Module::getPositionDeltas).toList();
@@ -193,12 +192,12 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         );
       });
     });
-    Objects.ODOMETRY_LOCK.unlock();
   }
 
 
   @Override
   public synchronized void periodic() {
+    Objects.ODOMETRY_LOCK.lock();
     MODULES.forEach(Module::periodic);
     GYROSCOPE.update();
     Logger.recordOutput(("Drivebase/Measurements"),getModuleMeasurements());
@@ -206,6 +205,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     if (DriverStation.isDisabled()) {
       MODULES.forEach(Module::cease);
     }
+    Objects.ODOMETRY_LOCK.unlock();
   }
 
   /**

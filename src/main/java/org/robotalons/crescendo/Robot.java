@@ -22,6 +22,7 @@ import org.littletonrobotics.urcl.URCL;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonVersion;
 import org.robotalons.crescendo.Constants.Logging;
+import org.robotalons.crescendo.Constants.Odometry;
 import org.robotalons.crescendo.Constants.Subsystems;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.REVOdometryThread;
@@ -178,6 +179,8 @@ public final class Robot extends LoggedRobot {
   @Override
   public void disabledInit() {
     CommandScheduler.getInstance().cancelAll();
+    Odometry.CTRE_ODOMETRY_THREAD.setEnabled((false));
+    Odometry.REV_ODOMETRY_THREAD.setEnabled((false));
   }
 
   @Override
@@ -185,7 +188,8 @@ public final class Robot extends LoggedRobot {
 
   @Override
   public void disabledExit() {
-      super.disabledExit();
+    Odometry.CTRE_ODOMETRY_THREAD.setEnabled((true));
+    Odometry.REV_ODOMETRY_THREAD.setEnabled((true));
   }
 
   // ------------------------------------------------------------[Autonomous]---------------------------------------------------------------//
