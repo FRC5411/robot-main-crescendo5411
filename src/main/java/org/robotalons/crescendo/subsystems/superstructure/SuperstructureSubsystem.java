@@ -64,7 +64,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   private static volatile SwerveModuleState Reference;
   private static volatile SuperstructureState State;
   private static SuperstructureSubsystem Instance;
-  private static DigitalInput beamBreakSensor = new DigitalInput(1);
+  private static DigitalInput beamBreakSensorIndexer = new DigitalInput(1);
 
   // ------------------------------------------------------------[Constructors]----------------------------------------------------------- //
   /**
@@ -118,7 +118,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     PIVOT_CONTROLLER_PID = new ProfiledPIDController(
       Measurements.PIVOT_P_GAIN,
       Measurements.PIVOT_I_GAIN,
-      Measurements.PIVOT_D_GAIN, new TrapezoidProfile.Constraints(4, 4));
+      Measurements.PIVOT_D_GAIN, new TrapezoidProfile.Constraints(5, 5));
     PIVOT_CONTROLLER.setInverted(Measurements.PIVOT_INVERTED);
     PIVOT_ABSOLUTE_ENCODER = new DutyCycleEncoder(Ports.PIVOT_ABSOLUTE_ENCODER_ID);
   }
@@ -251,13 +251,13 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * @param Rotation   Value of rotation to bring to pivot to
    * @param Velocity   Value of velocity to bring the firing controllers to
    */
-  private void with(final Trigger Keybinding, final Double Rotation, final Double RPM) {
+  private void with(final Trigger Keybinding, final Double Rotation, final Double percent) {
     with(() -> {
       Keybinding.whileTrue(new InstantCommand(
         () -> {
           Reference.angle = Rotation2d.fromRadians(Rotation);
-          FIRING_CONTROLLERS.getFirst().set((0.6d));
-          FIRING_CONTROLLERS.getSecond().set((0.6d));
+          FIRING_CONTROLLERS.getFirst().set((percent));
+          FIRING_CONTROLLERS.getSecond().set((percent));
         },
         SuperstructureSubsystem.getInstance()
       ));
@@ -277,16 +277,16 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     SuperstructureSubsystem.Operator = Operator;
     with(
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_SUBWOOFER),
-      Measurements.SUBWOOFER_LINE, Measurements.SUBWOOFER_RPM / 60);
+      Measurements.SUBWOOFER_LINE,0.6);
     with(
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_WINGLINE),
-      Measurements.WING_LINE, Measurements.SUBWOOFER_RPM);
+      Measurements.WING_LINE, 0.8);
     with(
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_PODIUMLINE),
-      Measurements.PODIUM_LINE, Measurements.SUBWOOFER_RPM);
+      Measurements.PODIUM_LINE, 0.6);
     with(
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_STARTING_LINE),
-      Measurements.STARTING_LINE, Measurements.SUBWOOFER_RPM);
+      Measurements.STARTING_LINE, 0.6);
     with(() -> {
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
         .onTrue(new InstantCommand(
