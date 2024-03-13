@@ -3,7 +3,6 @@ package org.robotalons.crescendo.subsystems.superstructure;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -58,13 +57,14 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   private static final CANSparkMax PIVOT_CONTROLLER;
   private static final ProfiledPIDController PIVOT_CONTROLLER_PID;
 
+  private static final DigitalInput BEAM_BREAK_SENSOR = new DigitalInput((1));
+
   private static final DutyCycleEncoder PIVOT_ABSOLUTE_ENCODER;
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
   private static volatile Operator<Keybindings,Preferences> Operator;  
   private static volatile SwerveModuleState Reference;
   private static volatile SuperstructureState State;
   private static SuperstructureSubsystem Instance;
-  private static DigitalInput beamBreakSensor = new DigitalInput(1);
 
   // ------------------------------------------------------------[Constructors]----------------------------------------------------------- //
   /**
@@ -241,10 +241,6 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     set(Reference);
   }
 
-  public static synchronized DigitalInput getNoteDetector(){
-    return beamBreakSensorIndexer;
-  }
-
   /**
    * Utility method for quickly adding button bindings to reach a given rotation, and reset to default
    * @param Keybinding Trigger to bind this association to
@@ -340,6 +336,14 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     return Operator;
   }
   
+  /**
+   * Provides the current output of the Indexer Beam Break sensor
+   * @return Boolean representation of the beam break sensor
+   */
+  public static synchronized Boolean getBeamSensorState(){
+    return BEAM_BREAK_SENSOR.get();
+  }
+
   /**
    * Provides the current rotational reading of the pivot in rotations
    * @return Pivot rotational reading in radians
