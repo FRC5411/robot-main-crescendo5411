@@ -1,8 +1,5 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo;
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -65,23 +62,6 @@ public final class RobotContainer {
         AutonomousSelector = new LoggedDashboardChooser<>(("Autonomous Selector"), Selector); 
       }
     }
-    //TODO: Remove Soon
-    @SuppressWarnings("resource")
-    final var m_led = new AddressableLED((0));
-    final var m_ledBuffer = new AddressableLEDBuffer((26));
-    m_led.setLength(m_ledBuffer.getLength());
-    m_led.setData(m_ledBuffer);
-    m_led.start();
-    //if(beamBreak1.get() || beamBreak2.get()){
-    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-      m_ledBuffer.setRGB(i, (0), (255), (0));
-   }
-   //else{
-    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-    m_ledBuffer.setRGB(i, (255), (0), (255));
-    }
-  //}
-   m_led.setData(m_ledBuffer);
   }
 
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//

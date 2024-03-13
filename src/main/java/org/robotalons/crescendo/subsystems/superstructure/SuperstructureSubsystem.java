@@ -3,7 +3,6 @@ package org.robotalons.crescendo.subsystems.superstructure;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -64,7 +63,9 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   private static volatile SwerveModuleState Reference;
   private static volatile SuperstructureState State;
   private static SuperstructureSubsystem Instance;
+  // private static DigitalInput beamBreakSensorIntake = new DigitalInput(3);
   private static DigitalInput beamBreakSensorIndexer = new DigitalInput(1);
+
 
   // ------------------------------------------------------------[Constructors]----------------------------------------------------------- //
   /**
@@ -118,7 +119,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     PIVOT_CONTROLLER_PID = new ProfiledPIDController(
       Measurements.PIVOT_P_GAIN,
       Measurements.PIVOT_I_GAIN,
-      Measurements.PIVOT_D_GAIN, new TrapezoidProfile.Constraints(5, 5));
+      Measurements.PIVOT_D_GAIN, new TrapezoidProfile.Constraints(4, 4));
     PIVOT_CONTROLLER.setInverted(Measurements.PIVOT_INVERTED);
     PIVOT_ABSOLUTE_ENCODER = new DutyCycleEncoder(Ports.PIVOT_ABSOLUTE_ENCODER_ID);
   }
@@ -153,16 +154,20 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       Logger.recordOutput(("Cannon/InterpolatedPercentile"), Percentage);
       Logger.recordOutput(("Cannon/InterpolatedVelocity"), Interpolated.get((0), (0)));
       Logger.recordOutput(("Cannon/InterpolatedRotation"), Units.radiansToDegrees(Interpolated.get((1), (0))));      
+      Logger.recordOutput(("Has Note"), beamBreakSensorIndexer.get());
     } else {
       Logger.recordOutput(("Cannon/InterpolatedDistance"), (0d)); 
       Logger.recordOutput(("Cannon/InterpolatedPercentile"), (0d));
       Logger.recordOutput(("Cannon/InterpolatedVelocity"), (0d));
       Logger.recordOutput(("Cannon/InterpolatedRotation"), (0d));
+      Logger.recordOutput(("Has Note"), false);
     }
     set(Reference.angle);
     Logger.recordOutput(("Cannon/Reference"), Reference);
     Logger.recordOutput(("Cannon/MeasuredVelocity"), FIRING_VELOCITY.getValueAsDouble());
     Logger.recordOutput(("Cannon/MeasuredRotation"), -getPivotRotation());
+    Logger.recordOutput(("Cannon/IndexerCurrent"), INDEXER_CONTROLLER.getOutputCurrent());
+    Logger.recordOutput(("Has Note"), beamBreakSensorIndexer.get());
     Constants.Objects.ODOMETRY_LOCKER.unlock();
   }
 
@@ -307,13 +312,16 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     });
     with(() -> {
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.INTAKE_TOGGLE)
-        .onTrue(new InstantCommand(
+        .whileTrue(new InstantCommand(
           () -> {
-            INTAKE_CONTROLLER.set((1d));
-            INDEXER_CONTROLLER.set((1d));
+              runIntake();
           },
           SuperstructureSubsystem.getInstance()
-        ));
+        ).andThen(new InstantCommand(() -> {
+          INDEXER_CONTROLLER.set(-0.1d);
+        }, getInstance()).withTimeout((.5d))).finallyDo(() -> {
+          INDEXER_CONTROLLER.set(0d);
+        }));
         SuperstructureSubsystem.Operator.getKeybinding(Keybindings.INTAKE_TOGGLE)
         .onFalse(new InstantCommand(
           () -> {
@@ -323,6 +331,36 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
           SuperstructureSubsystem.getInstance()
         ));
     });
+
+    with(() -> {
+      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.SHOOT_TOGGLE)
+        .whileTrue(new InstantCommand(
+          () -> { 
+              INTAKE_CONTROLLER.set((1d));
+              INDEXER_CONTROLLER.set((1d));
+          },
+          SuperstructureSubsystem.getInstance()
+        ));
+        SuperstructureSubsystem.Operator.getKeybinding(Keybindings.SHOOT_TOGGLE)
+        .onFalse(new InstantCommand(
+          () -> {
+            INTAKE_CONTROLLER.set((0d));
+            INDEXER_CONTROLLER.set((0d));
+          },
+          SuperstructureSubsystem.getInstance()
+        ));
+    });
+  }
+
+  public static void runIntake(){
+    if(!beamBreakSensorIndexer.get()){
+      INTAKE_CONTROLLER.set(1);
+      INDEXER_CONTROLLER.set(1);
+    }
+    else{
+      INTAKE_CONTROLLER.set(0);
+      INDEXER_CONTROLLER.set(0);
+    }
   }
   // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
   /**
