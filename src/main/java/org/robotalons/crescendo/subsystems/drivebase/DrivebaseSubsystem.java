@@ -429,7 +429,11 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     var Discrete = ChassisSpeeds.discretize(Demand, discretize());
     var Reference = KINEMATICS.toSwerveModuleStates(Discrete);
     SwerveDriveKinematics.desaturateWheelSpeeds(
-      Reference, PrecisionEnabled? Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY * (2e-2): Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY);
+      Reference,
+      Demand,
+      PrecisionEnabled? Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY * (2e-2): Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
+      PrecisionEnabled? Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY * (2e-2): Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
+      PrecisionEnabled? Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY * (2e-2): Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY);
     Logger.recordOutput(("Drivebase/Translation"), new Translation2d(Discrete.vxMetersPerSecond, Discrete.vyMetersPerSecond));
     Logger.recordOutput(("Drivebase/Rotation"), new Rotation2d(Discrete.omegaRadiansPerSecond));
     set(List.of(Reference));
