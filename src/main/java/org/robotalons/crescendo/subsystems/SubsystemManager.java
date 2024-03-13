@@ -65,8 +65,10 @@ public final class SubsystemManager extends SubsystemBase {
     AutoBuilder.configureHolonomic(
       DrivebaseSubsystem::getPose,
       DrivebaseSubsystem::set, 
-      () -> DrivebaseSubsystem.getChassisSpeeds(),
-      DrivebaseSubsystem::set, 
+      DrivebaseSubsystem::getChassisSpeeds,
+      (final ChassisSpeeds Demand) -> {
+        DrivebaseSubsystem.set(Demand.times(-1));
+      }, 
       new HolonomicPathFollowerConfig(
         new PIDConstants(
           Constants.Measurements.ROBOT_TRANSLATION_KP,
