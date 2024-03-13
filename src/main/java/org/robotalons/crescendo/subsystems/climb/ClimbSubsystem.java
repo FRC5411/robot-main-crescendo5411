@@ -227,7 +227,7 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
       case RIGHT:
         return RIGHT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.RIGHT_ENCODER_OFFSET;
       default:
-        return (1e-6);
+        return (null);
     }
   }
 
