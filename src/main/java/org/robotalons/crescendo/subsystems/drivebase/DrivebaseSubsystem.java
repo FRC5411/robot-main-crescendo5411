@@ -243,6 +243,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       new Pose2d()
     );
     Instance = (null);
+    ODOMETRY_PROCESSOR.stop();
+    ODOMETRY_PROCESSOR.close();
   }
 
   /**

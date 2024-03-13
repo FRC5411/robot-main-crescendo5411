@@ -152,7 +152,7 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   @Override
   public synchronized void setFrequency(final Double Frequency) {
     ODOMETRY_LOCK.lock();
-    REVOdometryThread.Frequency = Frequency;
+    REVOdometryThread.Frequency = Math.min(Frequency, (1000d));
     NOTIFIER.stop();
     NOTIFIER.startPeriodic(Frequency);
     ODOMETRY_LOCK.unlock();

@@ -115,48 +115,50 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
 
   @Override
   public void run() {
-    while (this.isAlive() && !SIGNAL_PROVIDERS.isEmpty()) {
-      try {
-        SIGNALS_LOCK.lock();
+    while (this.isAlive()) {
+      if(!SIGNAL_PROVIDERS.isEmpty()) {
         try {
-          if (Flexible) {
-            BaseStatusSignal.waitForAll((2d) / Frequency, SIGNAL_PROVIDERS.toArray(StatusSignal[]::new));
-          } else {
-            Thread.sleep((long) ((1000d) / Frequency));
-            SIGNAL_PROVIDERS.forEach(StatusSignal::refresh);
-          }
-        } catch (final InterruptedException Ignored) {
-          new Alert(("Odometry Interrupted"), AlertType.ERROR);
-        } finally {
-          SIGNALS_LOCK.unlock();
-        }
-        if(Enabled) {
-          ODOMETRY_LOCK.lock();
+          SIGNALS_LOCK.lock();
           try {
-            final var Providers = SIGNAL_PROVIDERS.iterator();
-            final var Timestamp = new AtomicReference<>(Logger.getRealTimestamp() / (1e6));
-            final var Latency = new AtomicReference<>((0d));
-            SIGNAL_PROVIDERS.forEach((Signal) -> Latency.set(Latency.get() + Signal.getTimestamp().getLatency()));
-            Timestamp.set(Timestamp.get() - Latency.get() / SIGNAL_PROVIDERS.size());
-            SIGNAL_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) -> {
-              synchronized(Queue) {
-                Queue.offer(Providers.next().getValue());
-              }
-            });
-            TIMESTAMP_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) ->  {
-              synchronized(Queue) {
-                Queue.offer(Timestamp.get());
-              }
-            });
+            if (Flexible) {
+              BaseStatusSignal.waitForAll((2d) / Frequency, SIGNAL_PROVIDERS.toArray(StatusSignal[]::new));
+            } else {
+              Thread.sleep((long) ((1000d) / Frequency));
+              SIGNAL_PROVIDERS.forEach(StatusSignal::refresh);
+            }
+          } catch (final InterruptedException Ignored) {
+            new Alert(("Odometry Interrupted"), AlertType.ERROR);
           } finally {
-            ODOMETRY_LOCK.unlock();
-          }          
-        } if(isInterrupted()) {
-          break;
-        }           
-      } catch (final Exception Ignored) {
-        new Alert(("Odometry Exception"), AlertType.ERROR);
-      }            
+            SIGNALS_LOCK.unlock();
+          }
+          if(Enabled) {
+            ODOMETRY_LOCK.lock();
+            try {
+              final var Providers = SIGNAL_PROVIDERS.iterator();
+              final var Timestamp = new AtomicReference<>(Logger.getRealTimestamp() / (1e6));
+              final var Latency = new AtomicReference<>((0d));
+              SIGNAL_PROVIDERS.forEach((Signal) -> Latency.set(Latency.get() + Signal.getTimestamp().getLatency()));
+              Timestamp.set(Timestamp.get() - Latency.get() / SIGNAL_PROVIDERS.size());
+              SIGNAL_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) -> {
+                synchronized(Queue) {
+                  Queue.offer(Providers.next().getValue());
+                }
+              });
+              TIMESTAMP_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) ->  {
+                synchronized(Queue) {
+                  Queue.offer(Timestamp.get());
+                }
+              });
+            } finally {
+              ODOMETRY_LOCK.unlock();
+            }          
+          } if(isInterrupted()) {
+            break;
+          }           
+        } catch (final Exception Ignored) {
+          new Alert(("Odometry Exception"), AlertType.ERROR);
+        }         
+      }
     }
   }  
 
@@ -188,7 +190,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
 
   @Override
   public synchronized void setFrequency(final Double Frequency) {
-    CTREOdometryThread.Frequency = Math.min(Frequency,(1000));
+    CTREOdometryThread.Frequency = Math.min(Frequency, (1000d));
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   @Override

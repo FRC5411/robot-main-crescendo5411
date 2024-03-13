@@ -33,8 +33,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public final class Constants {
 // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
   public static final class Simulation {
-    public static final Double TRANSLATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (0.097120488d);
-    public static final Double ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (16.91004822d);
+    public static final Double TRANSLATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (0.025d);
+    public static final Double ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED = (0.004d);
     public static final DCMotorSim TRANSLATIONAL_FLYWHEEL = new DCMotorSim(
       DCMotor.getNEO((1)),
       Measurements.ROBOT_LINEAR_GEAR_RATIO,
@@ -43,6 +43,18 @@ public final class Constants {
       DCMotor.getNEO((1)),
       Measurements.ROBOT_ROTATION_GEAR_RATIO,
       ROTATIONAL_FLYWHEEL_KG_PER_METER_SQUARED);
+
+    public static final Double ROTATIONAL_P_GAIN = (10d);
+    public static final Double ROTATIONAL_I_GAIN = (0d);
+    public static final Double ROTATIONAL_D_GAIN = (0d);
+
+    public static final Double LINEAR_KS_GAIN = (0d);
+    public static final Double LINEAR_KV_GAIN = (0.13);
+    public static final Double LINEAR_KA_GAIN = (0d);
+    public static final Double LINEAR_P_GAIN = (0.1d);
+    public static final Double LINEAR_I_GAIN = (0d);
+    public static final Double LINEAR_D_GAIN = (0d);
+    
   }
 
   public static final class Measurements {
@@ -70,7 +82,7 @@ public final class Constants {
         public static final Integer ABSOLUTE_ENCODER_ID = (3);
         public static final Double ROTATIONAL_P_GAIN = (2.81d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
-        public static final Double ROTATIONAL_D_GAIN = (0.0000001d);
+        public static final Double ROTATIONAL_D_GAIN = (0d);
         public static final Double ROTATIONAL_ENCODER_OFFSET = (0.403320d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
@@ -135,7 +147,7 @@ public final class Constants {
         public static final Integer ABSOLUTE_ENCODER_ID = (4);
         public static final Double ROTATIONAL_P_GAIN = (2.81d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
-        public static final Double ROTATIONAL_D_GAIN = (0.0000001d);
+        public static final Double ROTATIONAL_D_GAIN = (0d);
         public static final Double ROTATIONAL_ENCODER_OFFSET = (0.298340d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
@@ -200,7 +212,7 @@ public final class Constants {
         public static final Integer ABSOLUTE_ENCODER_ID = (5);
         public static final Double ROTATIONAL_P_GAIN = (2.81d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
-        public static final Double ROTATIONAL_D_GAIN = (0.0000001d);
+        public static final Double ROTATIONAL_D_GAIN = (0d);
         public static final Double ROTATIONAL_ENCODER_OFFSET = (-0.164795d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
@@ -265,7 +277,7 @@ public final class Constants {
         public static final Integer ABSOLUTE_ENCODER_ID = (6);
         public static final Double ROTATIONAL_P_GAIN = (2.81d);
         public static final Double ROTATIONAL_I_GAIN = (0d);
-        public static final Double ROTATIONAL_D_GAIN = (0.0000001d);
+        public static final Double ROTATIONAL_D_GAIN = (0d);
         public static final Double ROTATIONAL_ENCODER_OFFSET = (-0.412842d);
         public static final Boolean ROTATIONAL_INVERTED = (true);
         public static final Boolean LINEAR_INVERTED = (false);
