@@ -305,7 +305,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         (Double) Operator.getPreference(Preferences.TRANSLATIONAL_Y_DEADZONE))),
         ((Boolean) Operator.getPreference(Preferences.SQUARED_INPUT))?
         new Rotation2d(
-            square(MathUtil.applyDeadband((Double) Operator.getPreference(Preferences.ORIENTATION_T_INPUT),
+            square(-MathUtil.applyDeadband((Double) Operator.getPreference(Preferences.ORIENTATION_T_INPUT),
           (Double) Operator.getPreference(Preferences.ORIENTATION_DEADZONE)))):
         new Rotation2d(
           (MathUtil.applyDeadband((Double) Operator.getPreference(Preferences.ORIENTATION_T_INPUT),
@@ -428,7 +428,11 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     var Discrete = ChassisSpeeds.discretize(Demand, discretize());
     var Reference = KINEMATICS.toSwerveModuleStates(Discrete);
     SwerveDriveKinematics.desaturateWheelSpeeds(
-      Reference, Precision? Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY * (2e-2): Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY);
+      Reference,
+      Demand,
+      Precision? Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY * (2e-2): Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
+      Precision? Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY * (2e-2): Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
+      Precision? Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY * (2e-2): Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY);
     Logger.recordOutput(("Drivebase/Translation"), new Translation2d(Discrete.vxMetersPerSecond, Discrete.vyMetersPerSecond));
     Logger.recordOutput(("Drivebase/Rotation"), new Rotation2d(Discrete.omegaRadiansPerSecond));
     set(List.of(Reference));

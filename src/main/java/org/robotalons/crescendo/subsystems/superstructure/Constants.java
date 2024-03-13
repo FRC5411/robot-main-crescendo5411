@@ -30,9 +30,9 @@ public class Constants {
 
     public static final Double PIVOT_GEAR_RATIO = (1d);
 
-    public static final Double PIVOT_P_GAIN = (3.75d);
+    public static final Double PIVOT_P_GAIN = (4.5d);
     public static final Double PIVOT_I_GAIN = (0d);
-    public static final Double PIVOT_D_GAIN = (0.35d);
+    public static final Double PIVOT_D_GAIN = (0.7d);
 
     public static final Double FIRING_P_GAIN = (0.02d);
     public static final Double FIRING_I_GAIN = (0d);
