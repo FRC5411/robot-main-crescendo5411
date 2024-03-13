@@ -16,11 +16,12 @@ public final class ExecutionTest {
    * Instantiates a new robot, asserts that no errors are thrown within the alloted time limit.
    */
   @Test
-  static synchronized void CheckErrorMain() {
+  synchronized void CheckErrorMain() {
     final var Executor = Executors.newFixedThreadPool((1));
     final var Task = Executor.submit(() -> {
       org.robotalons.crescendo.Main.main();
     });
+    //TODO: Enable Teleop During Testing
     Executor.shutdown();
     assertDoesNotThrow(() -> {
       try {

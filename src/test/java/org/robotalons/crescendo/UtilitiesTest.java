@@ -16,7 +16,7 @@ public final class UtilitiesTest {
    * Utilizes CTRE utilities to guarantee that CTRE Error codes are properly interpreted and are thrown
    */
   @Test
-  static void CheckErrorCTRE() {
+  void CheckErrorCTRE() {
     assertThrows((RuntimeException.class), () -> CheckCTRECode(ErrorCode.GeneralError));
     assertThrows((RuntimeException.class), () -> CheckCTRECode(ErrorCode.FirmVersionCouldNotBeRetrieved));
     assertDoesNotThrow(() -> CheckCTRECode(ErrorCode.OK));
@@ -36,7 +36,7 @@ public final class UtilitiesTest {
    * Utilizes REV utilities to guarantee that CTRE Error codes are properly interpreted and are thrown
    */
   @Test
-  static void CheckErrorREV() {
+  void CheckErrorREV() {
     assertThrows((RuntimeException.class), () -> CheckREVCode(REVLibError.kError));
     assertThrows((RuntimeException.class), () -> CheckREVCode(REVLibError.kCantFindFirmware));
     assertDoesNotThrow(() -> CheckREVCode(REVLibError.kOk));
