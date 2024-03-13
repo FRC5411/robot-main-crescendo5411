@@ -240,7 +240,6 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
         }
       }      
     }
-
     return Optimal;
   }
 
@@ -267,7 +266,7 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
    * @return Number of Targets found by camera
    */
   public static Integer getNumTargets(final CameraIdentifier Identifier) {
-    return CAMERAS.get(Identifier.getValue()).getNumTargets();
+    return CAMERAS.get(Identifier.getValue()).getTargetCount();
   }
 
   /**

@@ -44,10 +44,7 @@ public class PigeonGyroscope extends Gyroscope {
     YAW_VELOCITY = GYROSCOPE.getAngularVelocityZWorld();
     GYROSCOPE.getConfigurator().apply(new Pigeon2Configuration());
     GYROSCOPE.getConfigurator().setYaw((0d));
-    YAW_ROTATION.setUpdateFrequency(Provider.getFrequency());
-    YAW_VELOCITY.setUpdateFrequency((100d));
     YAW_ROTATION_QUEUE = Provider.register(GYROSCOPE.getYaw());
-  
     GYROSCOPE.getYaw().setUpdateFrequency((50));
     GYROSCOPE.optimizeBusUtilization();
   }

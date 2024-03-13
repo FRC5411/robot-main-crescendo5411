@@ -13,6 +13,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 
 import org.littletonrobotics.junction.Logger;
@@ -272,8 +273,9 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       STATUS.TranslationalAppliedVoltage = 
         MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER.getAppliedOutput() * MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER.getBusVoltage();
       STATUS.TranslationalCurrentAmperage = MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER.getOutputCurrent();
-      STATUS.TranslationTemperatureCelsius =
+      STATUS.TranslationalTemperatureCelsius =
         TRANSLATIONAL_CONTROLLER.getMotorTemperature();
+      STATUS.TranslationalConnected = TRANSLATIONAL_CONTROLLER.getLastError() == REVLibError.kOk;
 
       STATUS.RotationalAbsolutePosition = 
         Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble()).minus(RotationalAbsoluteOffset);
@@ -286,6 +288,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       STATUS.RotationalCurrentAmperage = MODULE_CONSTANTS.ROTATIONAL_CONTROLLER.getOutputCurrent();
       STATUS.RotationalTemperatureCelsius = 
         ROTATIONAL_CONTROLLER.getMotorTemperature();
+      STATUS.RotationalConnected = ROTATIONAL_CONTROLLER.getLastError() == REVLibError.kOk;
 
       synchronized(TIMESTAMP_QUEUE) {
         synchronized(TIMESTAMPS) {

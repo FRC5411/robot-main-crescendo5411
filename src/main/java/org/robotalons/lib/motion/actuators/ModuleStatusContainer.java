@@ -19,7 +19,8 @@ public class ModuleStatusContainer {
   public double TranslationalVelocityRadiansSecond = (0d);
   public double TranslationalAppliedVoltage = (0d);
   public double TranslationalCurrentAmperage = (0d);
-  public double TranslationTemperatureCelsius = (0d);
+  public double TranslationalTemperatureCelsius = (0d);
+  public boolean TranslationalConnected = (false);
 
   public Rotation2d RotationalAbsolutePosition = new Rotation2d();
   public Rotation2d RotationalRelativePosition = new Rotation2d();
@@ -27,6 +28,7 @@ public class ModuleStatusContainer {
   public double RotationalAppliedVoltage = (0d);
   public double RotationalCurrentAmperage = (0d);
   public double RotationalTemperatureCelsius = (0d);
+  public boolean RotationalConnected = (false);
 
   public double[] OdometryTimestamps = new double[] {};
   public double[] OdometryTranslationalPositionsRadians = new double[] {};

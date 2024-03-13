@@ -19,12 +19,13 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.robotalons.crescendo.subsystems.vision.Constants.Measurements;
+import org.robotalons.lib.utilities.MathUtilities;
 import org.robotalons.lib.vision.Camera;
 
+import java.util.Objects;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 // ---------------------------------------------------------[Photon Vision Module]--------------------------------------------------------//
@@ -45,8 +46,6 @@ public final class VisionCamera extends Camera {
   private final Transform3d RELATIVE;  
   private final List<Double> TIMESTAMPS;
   private final List<Pose3d> POSES;
-  // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Vision Camera Constructor.
@@ -69,7 +68,7 @@ public final class VisionCamera extends Camera {
 
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
-  public void periodic(){
+  public synchronized void periodic(){
     if(CAMERA.isConnected()) {
       update();    
       getRobotPosition().ifPresent((Pose) -> POSE_ESTIMATOR.setLastPose(Pose));
@@ -77,29 +76,24 @@ public final class VisionCamera extends Camera {
   }
 
   @Override
-  public void update() {
+  public synchronized void update() {
     synchronized(CAMERA) {
       if(CAMERA.isConnected()) {
-        Logger.recordOutput(IDENTITY + "/Connected", getConnected());
-        Logger.recordOutput(IDENTITY + "/Latency", getLatency());
-
-        getRobotPosition().ifPresent((Pose) -> Logger.recordOutput(IDENTITY + "/RobotPose", Pose));
-        Logger.recordOutput(IDENTITY + "/Deltas", getRobotPositionDeltas());
-        Logger.recordOutput(IDENTITY + "/Timestamps", getRobotPositionTimestamps());
-        
-        getOptimalTarget().ifPresent((BestTarget) -> Logger.recordOutput(IDENTITY + "/OptimalTransform", BestTarget));
-        getObjectFieldPose().ifPresent((TargetPose) -> Logger.recordOutput(IDENTITY + "/TargetPose", TargetPose));
-        Logger.recordOutput(IDENTITY + "/Target" + ']', getTargets().stream().map((Target) -> {
-          try {
-            return Target.get();
-          } catch(final NoSuchElementException Exception) {
-            return (null);
-          }
-        }).toArray(Transform3d[]::new));
-        Logger.recordOutput(IDENTITY + "/HasTargets", hasTargets());
-        Logger.recordOutput(IDENTITY + "/AmountTarget", getNumTargets());        
+        synchronized(STATUS) {
+          STATUS.Connected = CAMERA.isConnected();
+          STATUS.Deltas = getRobotPositionDeltas();
+          STATUS.Robot = POSE_ESTIMATOR.getReferencePose().toPose2d();
+          STATUS.Timestamps = getRobotPositionTimestamps();
+          STATUS.Latency = CAMERA.getLatestResult().getLatencyMillis();
+          Logger.processInputs(IDENTITY + "/Camera", STATUS);
+          getOptimalTarget().ifPresent((Target) -> {
+            STATUS.OptimalTargetTransform = Target;
+            STATUS.OptimalTargetPose = getObjectFieldPose(Target).get();
+          });
+          STATUS.RealizedTargets = getTargets().stream().toArray(Transform2d[]::new);
+          Logger.processInputs(IDENTITY + "/Target", STATUS);
+        }
       }
-      //Logger.processInputs(IDENTITY, CAMERA_STATUS);
     } 
   }
 
@@ -139,29 +133,12 @@ public final class VisionCamera extends Camera {
     }
 
     return MatBuilder.fill(Nat.N3(), Nat.N1(), new double[] {
-      standardDeviation(X_Estimates),
-      standardDeviation(Y_Estimates),
-      standardDeviation(Z_Estimates)
+      MathUtilities.standardDeviation(X_Estimates),
+      MathUtilities.standardDeviation(Y_Estimates),
+      MathUtilities.standardDeviation(Z_Estimates)
     });
   }
  
-  /**
-   * Provides the standard deviation for a given set of numbers 
-   * @param Numbers Collection (array) of data to find the standard deviation of
-   * @return Standard deviation as a double value
-   */
-  private static double standardDeviation(double[] Numbers){
-    Double Mean = 0d, SummativeSquareDifference = 0d;
-    for(double Number : Numbers){
-      Mean += Number;
-    }
-    Mean /= Numbers.length;
-    for(double Number : Numbers){
-      SummativeSquareDifference += Math.pow((Number - Mean), (2));
-    }
-    return Math.sqrt(SummativeSquareDifference / Numbers.length - 1);
-  }
-
   @Override
   public Optional<Matrix<N3, N3>> getCameraMatrix() {
     return CAMERA.isConnected()? CAMERA.getCameraMatrix(): Optional.empty();
@@ -234,7 +211,6 @@ public final class VisionCamera extends Camera {
   public Optional<Pose2d> getObjectFieldPose(final Transform2d Target) {
     if(CAMERA.isConnected()) {
       final var RobotEstimate = getRobotPosition();
-      
       if(RobotEstimate.isEmpty()){
         return Optional.empty();
       } 
@@ -248,40 +224,33 @@ public final class VisionCamera extends Camera {
   }
 
   @Override
-  public List<Optional<Transform2d>> getTargets() {
+  public List<Transform2d> getTargets() {
     if(CAMERA.isConnected()) {
       final var LatestResult = CAMERA.getLatestResult().getTargets();
       if(LatestResult.isEmpty()){
         return List.of();
       }
-
-      List<Optional<Transform3d>> Targets3D = CAMERA.getLatestResult().getTargets().stream()
-      .map(PhotonTrackedTarget::getBestCameraToTarget)
-      .map(Optional::ofNullable)
-      .toList();
-
-      List<Optional<Transform2d>> Targets2D = new ArrayList<>();
-
-      for(int i = 0; i < Targets3D.size(); i++){
-        Double x = Targets3D.get(i).get().getX();
-        Double y = Targets3D.get(i).get().getY();
-        
-        Targets2D.set(i, Optional.of(new Transform2d(x, y, new Rotation2d())));
-      }
-
-      return Targets2D;
+      return CAMERA.getLatestResult().getTargets().stream()
+        .map(PhotonTrackedTarget::getBestCameraToTarget)
+        .filter(Objects::isNull)
+        .map((Target) -> scope(new Transform2d(Target.getTranslation().toTranslation2d(), Target.getRotation().toRotation2d())))
+        .toList();
     }
     return List.of();
   }
-
-  @Override
-  public boolean hasTargets(){
-    return CAMERA.isConnected()? CAMERA.getLatestResult().hasTargets(): (false);
-  }
-
-  @Override
-  public int getNumTargets(){
-    return CAMERA.isConnected()? CAMERA.getLatestResult().getTargets().size(): (0);
+  
+  /**
+   * Changes the scope of this Transformation to be robot-relative as opposed to it's original, camera-relative form.
+   * @param Transformation Original Transformation, camera-relative
+   * @return Robot-relative transformation, if the input was not null
+   */
+  private Transform2d scope(final Transform2d Transformation) {
+    try {
+      final var Imprint = RELATIVE.times((-1));
+      return Transformation.plus(new Transform2d(Imprint.getTranslation().toTranslation2d(), Imprint.getRotation().toRotation2d()));      
+    } catch(final NullPointerException Ignored) {
+      return (null);
+    }
   }
 
   @Override
@@ -289,16 +258,10 @@ public final class VisionCamera extends Camera {
     if(CAMERA.getLatestResult().getBestTarget() == (null) ){
       return Optional.empty();
     }
-
-    Transform3d target3D = CAMERA.getLatestResult().getBestTarget().getBestCameraToTarget();
-
-    return Optional.ofNullable(new Transform2d(target3D.getX(), target3D.getY(), new Rotation2d()));
+    Transform3d Target = CAMERA.getLatestResult().getBestTarget().getBestCameraToTarget();
+    return Optional.ofNullable(scope(new Transform2d(Target.getTranslation().toTranslation2d(), Target.getRotation().toRotation2d())));
   }
 
-  @Override
-  public Double getLatency(){
-    return CAMERA.isConnected()? CAMERA.getLatestResult().getLatencyMillis(): (-1d);
-  }
 
   @Override
   public Boolean getConnected(){
