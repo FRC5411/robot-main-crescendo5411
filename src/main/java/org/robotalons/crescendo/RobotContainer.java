@@ -14,6 +14,7 @@ import org.robotalons.crescendo.Constants.Profiles;
 import org.robotalons.crescendo.Constants.Profiles.Keybindings;
 import org.robotalons.crescendo.Constants.Profiles.Preferences;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
+import org.robotalons.crescendo.subsystems.led.LEDStrip;
 import org.robotalons.lib.utilities.Alert;
 import org.robotalons.lib.utilities.Alert.AlertType;
 import org.robotalons.lib.utilities.Operator;
@@ -34,6 +35,7 @@ public final class RobotContainer {
   public static LoggedDashboardChooser<Command> AutonomousSelector;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static RobotContainer Instance = (null);
+  LEDStrip STRIP = new LEDStrip(26, 0);
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   
   private RobotContainer() {} static {
