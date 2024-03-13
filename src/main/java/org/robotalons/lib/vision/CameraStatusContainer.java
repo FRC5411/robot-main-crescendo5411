@@ -15,12 +15,12 @@ import org.littletonrobotics.junction.AutoLog;
  */
 @AutoLog
 public class CameraStatusContainer {
-  public boolean Connected = (false);
-  public double Latency = (-1);
-  public Pose2d Robot = new Pose2d();
-  public Pose2d OptimalTargetPose = new Pose2d();
-  public Transform2d OptimalTargetTransform = new Transform2d();
-  public Transform2d[] RealizedTargets = new Transform2d[]{};
-  public Pose2d[] Deltas = new Pose2d[]{};
-  public double[] Timestamps = new double[]{};
+  public volatile boolean Connected = (false);
+  public volatile double Latency = (-1);
+  public volatile Pose2d Robot = new Pose2d();
+  public volatile Pose2d OptimalTargetPose = new Pose2d();
+  public volatile Transform2d OptimalTargetTransform = new Transform2d();
+  public volatile Transform2d[] RealizedTargets = new Transform2d[]{};
+  public volatile Pose2d[] Deltas = new Pose2d[]{};
+  public volatile double[] Timestamps = new double[]{};
 } 
