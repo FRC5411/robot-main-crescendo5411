@@ -158,7 +158,7 @@ public final class Constants {
       ALIGNMENT_SPEAKER,
       ALIGNMENT_AMP,
       ALIGNMENT_OBJECT,
-      ALIGNMENT_NEAREST,
+      ALIGNMENT_NEAREST
     }
   }
 }

@@ -44,11 +44,16 @@ public class Constants {
     public static final Boolean PIVOT_INVERTED = (false);
 
     public static final Double SUBWOOFER_LINE = Units.degreesToRadians((46.7d));
-    public static final Double PODIUM_LINE = Units.degreesToRadians((25.7d));
     public static final Double STARTING_LINE = Units.degreesToRadians((38.0d));
+    public static final Double PODIUM_LINE = Units.degreesToRadians((25.7d));
     public static final Double WING_LINE = Units.degreesToRadians((16.1d));
 
-    public static final Double PIVOT_MINIMUM_ROTATION = Units.degreesToRotations((5));
+    public static final Double SUBWOOFER_RPM = 750d;
+    public static final Double STARTING_LINE_RPM = 1250d;
+    public static final Double PODIUM_LINE_RPM = 1750d;
+    public static final Double WING_LINE_RPM = 2500d;
+
+    public static final Double PIVOT_MINIMUM_ROTATION = Units.degreesToRotations((10));
     public static final Double PIVOT_MAXIMUM_ROTATION = Units.degreesToRotations((70));
 
     public static final Double FIRING_IDLE_PERCENT = (.175d);

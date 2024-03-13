@@ -4,8 +4,10 @@ package org.robotalons.crescendo.subsystems.superstructure;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -52,7 +54,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   private static final StatusSignal<Double> FIRING_VELOCITY;
 
   private static final CANSparkMax PIVOT_CONTROLLER;
-  private static final PIDController PIVOT_CONTROLLER_PID;
+  private static final ProfiledPIDController PIVOT_CONTROLLER_PID;
 
   private static final DutyCycleEncoder PIVOT_ABSOLUTE_ENCODER;
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
@@ -110,10 +112,11 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
 
     PIVOT_CONTROLLER = new CANSparkMax(Ports.PIVOT_CONTROLLER_ID, MotorType.kBrushless);
     PIVOT_CONTROLLER.setSmartCurrentLimit((40));
-    PIVOT_CONTROLLER_PID = new PIDController(
+    PIVOT_CONTROLLER_PID = new ProfiledPIDController(
       Measurements.PIVOT_P_GAIN,
       Measurements.PIVOT_I_GAIN,
-      Measurements.PIVOT_D_GAIN);
+      Measurements.PIVOT_D_GAIN, 
+      new TrapezoidProfile.Constraints(2, 2));
     PIVOT_CONTROLLER.setInverted(Measurements.PIVOT_INVERTED);
     PIVOT_ABSOLUTE_ENCODER = new DutyCycleEncoder(Ports.PIVOT_ABSOLUTE_ENCODER_ID);
   }
@@ -236,26 +239,40 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     set(Reference);
   }
 
+  public void pivotUp() {
+    PIVOT_CONTROLLER.setVoltage(2);
+}
+
+public void pivotDown() {
+
+  PIVOT_CONTROLLER.setVoltage(-2);
+
+}
+
+public void pivotStop() {
+    PIVOT_CONTROLLER.setVoltage(0); 
+}
+
   /**
    * Utility method for quickly adding button bindings to reach a given rotation, and reset to default
    * @param Keybinding Trigger to bind this association to
    * @param Rotation   Value of rotation to bring to pivot to
    * @param Velocity   Value of velocity to bring the firing controllers to
    */
-  private void with(final Trigger Keybinding, final Double Rotation) {
+  private void with(final Trigger Keybinding, final Double Rotation, final Double RPM) {
     with(() -> {
       Keybinding.onTrue(new InstantCommand(
         () -> {
           Reference.angle = Rotation2d.fromRadians(Rotation);
-          set(Measurements.FIRING_STANDARD_VELOCITY);
+          set(RPM);
         },
         SuperstructureSubsystem.getInstance()
       ));
       Keybinding.onFalse(new InstantCommand(
         () -> {
           Reference.angle = Rotation2d.fromRadians(Measurements.PIVOT_MINIMUM_ROTATION);
-          FIRING_CONTROLLERS.getFirst().set((0d));
-          FIRING_CONTROLLERS.getSecond().set((0d));
+          FIRING_CONTROLLERS.getFirst().set((Measurements.FIRING_IDLE_PERCENT));
+          FIRING_CONTROLLERS.getSecond().set((Measurements.FIRING_IDLE_PERCENT));
         },
         SuperstructureSubsystem.getInstance()
       ));
@@ -267,16 +284,24 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     SuperstructureSubsystem.Operator = Operator;
     with(
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_SUBWOOFER),
-      Measurements.SUBWOOFER_LINE);
+      Measurements.SUBWOOFER_LINE,
+      Measurements.SUBWOOFER_RPM
+      );
     with(
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_WINGLINE),
-      Measurements.WING_LINE);
+      Measurements.WING_LINE,
+      Measurements.SUBWOOFER_RPM
+      );
     with(
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_PODIUMLINE),
-      Measurements.PODIUM_LINE);
+      Measurements.PODIUM_LINE,
+      Measurements.SUBWOOFER_RPM
+      );
     with(
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_STARTING_LINE),
-      Measurements.STARTING_LINE);
+      Measurements.STARTING_LINE,
+      Measurements.SUBWOOFER_RPM
+      );
     with(() -> {
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
         .onTrue(new InstantCommand(
