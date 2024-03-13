@@ -11,7 +11,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.subsystems.drive;
+package org.robotalons.crescendo.subsystems.drive;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -36,7 +36,7 @@ import edu.wpi.first.math.util.Units;
  */
 public class ModuleIOSparkMax implements ModuleIO {
   // Gear ratios for SDS MK4i L2, adjust as necessary
-  private static final double DRIVE_GEAR_RATIO = (50.0 / 14.0) * (16.0 / 28.0) * (45.0 / 15.0);
+  private static final double DRIVE_GEAR_RATIO = 6.12d;
   private static final double TURN_GEAR_RATIO = 150.0 / 7.0;
 
   private final CANSparkMax driveSparkMax;
@@ -53,27 +53,27 @@ public class ModuleIOSparkMax implements ModuleIO {
     switch (index) {
       case 0:
         driveSparkMax = new CANSparkMax(11, MotorType.kBrushless);
-        turnSparkMax = new CANSparkMax(21, MotorType.kBrushless);
-        turnAbsoluteEncoder = new CANcoder(31);
-        absoluteEncoderOffset = Rotation2d.fromRotations(0.062256 + 0.5 - .005); // 3.6432044694
+        turnSparkMax = new CANSparkMax(15, MotorType.kBrushless);
+        turnAbsoluteEncoder = new CANcoder(3);
+        absoluteEncoderOffset = Rotation2d.fromRotations(0.403320d); // 3.6432044694
         break;
       case 1:
         driveSparkMax = new CANSparkMax(12, MotorType.kBrushless);
-        turnSparkMax = new CANSparkMax(22, MotorType.kBrushless);
-        turnAbsoluteEncoder = new CANcoder(32);
-        absoluteEncoderOffset = Rotation2d.fromRotations(-0.472412 + 0.5); // 0.17793980789
+        turnSparkMax = new CANSparkMax(16, MotorType.kBrushless);
+        turnAbsoluteEncoder = new CANcoder(4);
+        absoluteEncoderOffset = Rotation2d.fromRotations(0.298340d); // 0.17793980789
         break;
       case 2:
         driveSparkMax = new CANSparkMax(13, MotorType.kBrushless);
-        turnSparkMax = new CANSparkMax(23, MotorType.kBrushless);
-        turnAbsoluteEncoder = new CANcoder(33);
-        absoluteEncoderOffset = Rotation2d.fromRotations(0.407471 + 0.5); // 5.72021190366
+        turnSparkMax = new CANSparkMax(17, MotorType.kBrushless);
+        turnAbsoluteEncoder = new CANcoder(5);
+        absoluteEncoderOffset = Rotation2d.fromRotations(-0.164795d); // 5.72021190366
         break;
       case 3:
         driveSparkMax = new CANSparkMax(14, MotorType.kBrushless);
-        turnSparkMax = new CANSparkMax(24, MotorType.kBrushless);
-        turnAbsoluteEncoder = new CANcoder(34);
-        absoluteEncoderOffset = Rotation2d.fromRotations(0.259277 + 0.5 + 0.005); // 4.92100958214
+        turnSparkMax = new CANSparkMax(18, MotorType.kBrushless);
+        turnAbsoluteEncoder = new CANcoder(6);
+        absoluteEncoderOffset = Rotation2d.fromRotations(-0.412842d); // 4.92100958214
         break;
       default:
         throw new RuntimeException("Invalid module index");

@@ -11,15 +11,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-<<<<<<< Updated upstream
 package org.robotalons.crescendo;
-
-import edu.wpi.first.wpilibj.RobotBase;
-import org.robotalons.crescendo.util.Alert;
-import org.robotalons.crescendo.util.Alert.AlertType;
-=======
-package frc.robot;
->>>>>>> Stashed changes
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
