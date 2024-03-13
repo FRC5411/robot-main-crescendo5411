@@ -22,10 +22,10 @@ import org.robotalons.crescendo.subsystems.vision.Constants.Measurements;
 import org.robotalons.lib.utilities.MathUtilities;
 import org.robotalons.lib.vision.Camera;
 
-import java.util.Objects;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 // ---------------------------------------------------------[Photon Vision Module]--------------------------------------------------------//

@@ -109,20 +109,26 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code>double</code></div>
 <div class="col-second even-row-color"><code><a href="#RotationalAppliedVoltage" class="member-name-link">RotationalAppliedVoltage</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>double</code></div>
-<div class="col-second odd-row-color"><code><a href="#RotationalCurrentAmperage" class="member-name-link">RotationalCurrentAmperage</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>edu.wpi.first.math.geometry.Rotation2d</code></div>
-<div class="col-second even-row-color"><code><a href="#RotationalRelativePosition" class="member-name-link">RotationalRelativePosition</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>double</code></div>
-<div class="col-second odd-row-color"><code><a href="#RotationalTemperatureCelsius" class="member-name-link">RotationalTemperatureCelsius</a></code></div>
+<div class="col-first odd-row-color"><code>boolean</code></div>
+<div class="col-second odd-row-color"><code><a href="#RotationalConnected" class="member-name-link">RotationalConnected</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>double</code></div>
-<div class="col-second even-row-color"><code><a href="#RotationalVelocityRadiansSecond" class="member-name-link">RotationalVelocityRadiansSecond</a></code></div>
+<div class="col-second even-row-color"><code><a href="#RotationalCurrentAmperage" class="member-name-link">RotationalCurrentAmperage</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>edu.wpi.first.math.geometry.Rotation2d</code></div>
+<div class="col-second odd-row-color"><code><a href="#RotationalRelativePosition" class="member-name-link">RotationalRelativePosition</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>double</code></div>
+<div class="col-second even-row-color"><code><a href="#RotationalTemperatureCelsius" class="member-name-link">RotationalTemperatureCelsius</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>double</code></div>
-<div class="col-second odd-row-color"><code><a href="#TranslationalAppliedVoltage" class="member-name-link">TranslationalAppliedVoltage</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#RotationalVelocityRadiansSecond" class="member-name-link">RotationalVelocityRadiansSecond</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>double</code></div>
+<div class="col-second even-row-color"><code><a href="#TranslationalAppliedVoltage" class="member-name-link">TranslationalAppliedVoltage</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>boolean</code></div>
+<div class="col-second odd-row-color"><code><a href="#TranslationalConnected" class="member-name-link">TranslationalConnected</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>double</code></div>
 <div class="col-second even-row-color"><code><a href="#TranslationalCurrentAmperage" class="member-name-link">TranslationalCurrentAmperage</a></code></div>
@@ -131,10 +137,10 @@ loadScripts(document, 'script');</script>
 <div class="col-second odd-row-color"><code><a href="#TranslationalPositionRadians" class="member-name-link">TranslationalPositionRadians</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>double</code></div>
-<div class="col-second even-row-color"><code><a href="#TranslationalVelocityRadiansSecond" class="member-name-link">TranslationalVelocityRadiansSecond</a></code></div>
+<div class="col-second even-row-color"><code><a href="#TranslationalTemperatureCelsius" class="member-name-link">TranslationalTemperatureCelsius</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>double</code></div>
-<div class="col-second odd-row-color"><code><a href="#TranslationTemperatureCelsius" class="member-name-link">TranslationTemperatureCelsius</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#TranslationalVelocityRadiansSecond" class="member-name-link">TranslationalVelocityRadiansSecond</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
@@ -195,9 +201,15 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="TranslationTemperatureCelsius">
-<h3>TranslationTemperatureCelsius</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">TranslationTemperatureCelsius</span></div>
+<section class="detail" id="TranslationalTemperatureCelsius">
+<h3>TranslationalTemperatureCelsius</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">TranslationalTemperatureCelsius</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="TranslationalConnected">
+<h3>TranslationalConnected</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">TranslationalConnected</span></div>
 </section>
 </li>
 <li>
@@ -234,6 +246,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="RotationalTemperatureCelsius">
 <h3>RotationalTemperatureCelsius</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">RotationalTemperatureCelsius</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="RotationalConnected">
+<h3>RotationalConnected</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">RotationalConnected</span></div>
 </section>
 </li>
 <li>
