@@ -4,6 +4,7 @@ import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -44,14 +45,16 @@ import javax.management.InstanceNotFoundException;
  * @see RobotContainer
  */
 public final class Robot extends LoggedRobot {
+  // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
+  private static final Alert BATTERY_VOLTAGE_ALERT = new Alert(("Battery Voltage Low"), AlertType.WARNING);
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  private static Boolean CurrentAutonomousMessagePrinted;
-  private static Double CurrentAutonomousStartTime;
-  private static Command CurrentAutonomous;
+  private static Command AutonomousCurrent;  
+  private static Boolean MessagePrinted;
+  private static Double StartTimestamp;
   private static Robot Instance;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private Robot() {} static {
-    CurrentAutonomous = (null);
+    AutonomousCurrent = (null);
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
   /**
@@ -78,15 +81,14 @@ public final class Robot extends LoggedRobot {
     switch (BuildMetadata.DIRTY) {
       case 0:
         Logger.recordMetadata(("Changes"), ("Committed"));
-        new Alert(("GIT VCS CHANGES COMMITTED"), AlertType.INFO);
         break;
       case 1:
         Logger.recordMetadata(("Changes"), ("Uncommitted"));
-        new Alert(("GIT VCS CHANGES NOT COMMITTED"), AlertType.INFO);
+        new Alert(("GIT VCS Changes Not Committed"), AlertType.INFO);
         break;
       default:
         Logger.recordMetadata(("Changes"), ("Unknown"));
-        new Alert(("GIT VCS ERROR OR BUILD ISSUE"), AlertType.INFO);
+        new Alert(("GIT VCS Changes Unknown"), AlertType.INFO);
         break;
     }
     switch (Constants.Subsystems.TYPE) {
@@ -141,6 +143,7 @@ public final class Robot extends LoggedRobot {
       REVOdometryThread.getInstance();
     } catch (final InstanceNotFoundException Exception) {}
     Logger.registerURCL(URCL.startExternal());
+    RobotController.setBrownoutVoltage((9d));
     RobotContainer.getInstance();
     Shuffleboard.startRecording();
     DataLogManager.start();
@@ -151,21 +154,23 @@ public final class Robot extends LoggedRobot {
   @Override
   public void robotPeriodic() {
     Threads.setCurrentThreadPriority((true), (99));
+    BATTERY_VOLTAGE_ALERT.set(RobotController.getBatteryVoltage() < (11.5d));
     CommandScheduler.getInstance().run();
     SmartDashboard.updateValues();
-    if (CurrentAutonomous != (null)) {
-      if (!CurrentAutonomous.isScheduled() && !CurrentAutonomousMessagePrinted) {
+    if (AutonomousCurrent != (null)) {
+      if (!AutonomousCurrent.isScheduled() && !MessagePrinted) {
         if (DriverStation.isAutonomousEnabled()) {
           System.out.printf(
-              ("*** Auto finished in %.2f secs ***%n"), Logger.getRealTimestamp() / (1e6) - CurrentAutonomousStartTime);
+              ("*** Auto finished in %.2f secs ***%n"), Logger.getRealTimestamp() / (1e6) - StartTimestamp);
         } else {
           System.out.printf(
-              ("*** Auto cancelled in %.2f secs ***%n"), Logger.getRealTimestamp() / (1e6) - CurrentAutonomousStartTime);
+              ("*** Auto cancelled in %.2f secs ***%n"), Logger.getRealTimestamp() / (1e6) - StartTimestamp);
         }
-        CurrentAutonomousMessagePrinted = true;
+        MessagePrinted = (true);
       }
     }
     Logger.recordOutput(("Match Time"), DriverStation.getMatchTime());
+    Threads.setCurrentThreadPriority((true), (10));
   }
 
   // ------------------------------------------------------------[Simulation]---------------------------------------------------------------//
@@ -195,11 +200,11 @@ public final class Robot extends LoggedRobot {
   // ------------------------------------------------------------[Autonomous]---------------------------------------------------------------//
   @Override
   public void autonomousInit() {
-    CurrentAutonomousMessagePrinted = (false);
-    CurrentAutonomousStartTime = Timer.getFPGATimestamp();
-    CurrentAutonomous = RobotContainer.AutonomousSelector.get();
-    if(!java.util.Objects.isNull(CurrentAutonomous)) {
-      CurrentAutonomous.schedule();
+    MessagePrinted = (false);
+    StartTimestamp = Timer.getFPGATimestamp();
+    AutonomousCurrent = RobotContainer.AutonomousSelector.get();
+    if(!java.util.Objects.isNull(AutonomousCurrent)) {
+      AutonomousCurrent.schedule();
     }
   }
 
@@ -208,8 +213,8 @@ public final class Robot extends LoggedRobot {
 
   @Override
   public void autonomousExit() {
-    if(!java.util.Objects.isNull(CurrentAutonomous)) {
-      CurrentAutonomous.cancel();
+    if(!java.util.Objects.isNull(AutonomousCurrent)) {
+      AutonomousCurrent.cancel();
     }
   }
 

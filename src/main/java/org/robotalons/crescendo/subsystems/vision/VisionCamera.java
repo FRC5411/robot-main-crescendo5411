@@ -255,7 +255,8 @@ public final class VisionCamera extends Camera {
 
   @Override
   public Optional<Transform2d> getOptimalTarget() {
-    if(CAMERA.getLatestResult().getBestTarget() == (null) ){
+    final var Latest = CAMERA.getLatestResult();
+    if(!Latest.hasTargets()){
       return Optional.empty();
     }
     Transform3d Target = CAMERA.getLatestResult().getBestTarget().getBestCameraToTarget();

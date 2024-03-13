@@ -66,7 +66,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   private static DrivebaseState CurrentMode;
   private static Double Timestamp;
   private static Boolean FlippedEnabled;
-  private static Boolean PrecisionEnabled;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Drivebase Subsystem Constructor.
@@ -80,7 +79,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     FlippedEnabled = (DriverStation.getAlliance().isPresent()? (DriverStation.getAlliance().get().equals(Alliance.Red)): (false));
     GyroscopeRotation = GYROSCOPE.getYawRotation();
     Timestamp = Logger.getRealTimestamp() / (1e6);
-    PrecisionEnabled = (false);
     MODULES = List.of(
       Devices.FRONT_LEFT_MODULE,
       Devices.FRONT_RIGHT_MODULE,
@@ -243,7 +241,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   /**
    * Toggles between the possible states of orientation types
    */
-  public static synchronized void toggleState() {
+  public static synchronized void toggle() {
     switch (CurrentMode) {
       case ROBOT_ORIENTED:
         CurrentMode = DrivebaseState.FIELD_ORIENTED;
@@ -255,13 +253,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         CurrentMode = DrivebaseState.ROBOT_ORIENTED;
         break;
     }
-  }
-
-  /**
-   * Toggles between the possible types of precision output
-   */
-  public static synchronized void togglePrecision() {
-    PrecisionEnabled = !PrecisionEnabled;
   }
 
   /**
@@ -320,18 +311,10 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     with(() ->
       Operator.getKeybinding(Keybindings.ORIENTATION_TOGGLE)
         .onTrue(new InstantCommand(
-          DrivebaseSubsystem::toggleState,
-          DrivebaseSubsystem.getInstance()
-        )));
-
-    with(() ->
-      Operator.getKeybinding(Keybindings.PRECISION_TOGGLE)
-        .onTrue(new InstantCommand(
-          DrivebaseSubsystem::togglePrecision,
+          DrivebaseSubsystem::toggle,
           DrivebaseSubsystem.getInstance()
         )));
   
-
     with(() ->
       Operator.getKeybinding(Keybindings.ALIGNMENT_SPEAKER)
       .onTrue(new InstantCommand(
@@ -424,9 +407,9 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     SwerveDriveKinematics.desaturateWheelSpeeds(
       Reference,
       Demand,
-      PrecisionEnabled? Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY * (2e-2): Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
-      PrecisionEnabled? Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY * (2e-2): Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
-      PrecisionEnabled? Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY * (2e-2): Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY);
+      Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
+      Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
+      Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY);
     Logger.recordOutput(("Drivebase/Translation"), new Translation2d(Discrete.vxMetersPerSecond, Discrete.vyMetersPerSecond));
     Logger.recordOutput(("Drivebase/Rotation"), new Rotation2d(Discrete.omegaRadiansPerSecond));
     set(List.of(Reference));
