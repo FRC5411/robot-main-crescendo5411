@@ -1,7 +1,5 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo;
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -50,7 +48,9 @@ public final class RobotContainer {
     Profiles.OPERATORS.forEach((Profile) -> SmartDashboard.putData(Profile.getName(), Profile));
     SubsystemManager.getInstance();
     try {
-      AutonomousSelector = new LoggedDashboardChooser<>(("Autonomous Selector"), AutoBuilder.buildAutoChooser()); 
+      final var Selector = AutoBuilder.buildAutoChooser();
+      Selector.onChange(SubsystemManager::set);
+      AutonomousSelector = new LoggedDashboardChooser<>(("Autonomous Selector"), Selector); 
     } catch (final Exception Ignored) {
       new Alert(("Autonomous Configuration Failed"), AlertType.ERROR);
       if(AutonomousSelector ==  (null)) {
@@ -59,17 +59,6 @@ public final class RobotContainer {
         AutonomousSelector = new LoggedDashboardChooser<>(("Autonomous Selector"), Selector); 
       }
     }
-    //TODO: Remove Soon
-    @SuppressWarnings("resource")
-    final var m_led = new AddressableLED((9));
-    final var m_ledBuffer = new AddressableLEDBuffer((26));
-    m_led.setLength(m_ledBuffer.getLength());
-    m_led.setData(m_ledBuffer);
-    m_led.start();
-    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-      m_ledBuffer.setRGB(i, (0), (255), (0));
-   }
-   m_led.setData(m_ledBuffer);
   }
 
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//

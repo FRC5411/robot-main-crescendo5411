@@ -97,20 +97,13 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       new Translation2d(-(Constants.Measurements.ROBOT_WIDTH_METERS)  / (2),
                         -(Constants.Measurements.ROBOT_LENGTH_METERS) / (2)));
     final var Estimated = VisionSubsystem.getApproximatedRobotPose();
-    final var Tag = org.robotalons.crescendo.subsystems.vision.Constants.Measurements.FIELD_LAYOUT.getTagPose((7)).get();
     POSE_ESTIMATOR = new SwerveDrivePoseEstimator(
       KINEMATICS, 
       GYROSCOPE.getYawRotation(), 
       getModulePositions(), 
       Estimated.isPresent()? 
       Estimated.get().toPose2d(): 
-      new Pose2d(
-        new Translation2d(
-          Tag.getX() +
-          (Measurements.ROBOT_RADIUS_METERS + 
-          org.robotalons.crescendo.subsystems.superstructure.Constants.Measurements.OFFSET_WALL_METERS),
-          Tag.getY()),
-          GYROSCOPE.getYawRotation()));
+      new Pose2d());
     ModulePositions = new ArrayList<>();
     MODULES.stream().map(Module::getPosition).forEachOrdered(ModulePositions::add);
     CHARACTERIZATION_ROUTINE = new SysIdRoutine(
@@ -346,7 +339,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
           VisionSubsystem.getAprilTagPose(getPath()? (3): (7))
             .ifPresent((Pose) -> {
                 alignPose(Pose.toPose2d())
-              .onlyWhile(() -> Operator.getKeybinding(Keybindings.ORIENTATION_TOGGLE).getAsBoolean()).schedule();
+              .onlyIf(() -> Operator.getKeybinding(Keybindings.ORIENTATION_TOGGLE).getAsBoolean()).schedule();
             }),
         VisionSubsystem.getInstance(),
         DrivebaseSubsystem.getInstance()
@@ -359,7 +352,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
           VisionSubsystem.getAprilTagPose((9))
             .ifPresent((Pose) -> {
                 alignPose(Pose.toPose2d())
-              .onlyWhile(() -> Operator.getKeybinding(Keybindings.ORIENTATION_TOGGLE).getAsBoolean()).schedule();
+              .onlyIf(() -> Operator.getKeybinding(Keybindings.ORIENTATION_TOGGLE).getAsBoolean()).schedule();
             }),
         VisionSubsystem.getInstance(),
         DrivebaseSubsystem.getInstance()
@@ -372,7 +365,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
           VisionSubsystem.getOptimalTarget(CameraIdentifier.INTAKE_CAMERA)
             .ifPresent((Transformation) -> {
               alignTransformation(new Transform2d(Transformation.getTranslation(), Transformation.getRotation()))
-              .onlyWhile(() -> Operator.getKeybinding(Keybindings.ALIGNMENT_OBJECT).getAsBoolean()).schedule();
+              .onlyIf(() -> Operator.getKeybinding(Keybindings.ALIGNMENT_OBJECT).getAsBoolean()).schedule();
             }),
         VisionSubsystem.getInstance(),
         DrivebaseSubsystem.getInstance()
@@ -385,7 +378,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
           VisionSubsystem.getOptimalTarget(List.of(CameraIdentifier.SPEAKER_RIGHT_CAMERA, CameraIdentifier.SPEAKER_LEFT_CAMERA, CameraIdentifier.SPEAKER_RIGHT_CAMERA))
             .ifPresent((Transformation) -> {
                 alignTransformation(new Transform2d(Transformation.getTranslation(), Transformation.getRotation()))
-              .onlyWhile(() -> Operator.getKeybinding(Keybindings.ALIGNMENT_NEAREST).getAsBoolean()).schedule();
+              .onlyIf(() -> Operator.getKeybinding(Keybindings.ALIGNMENT_NEAREST).getAsBoolean()).schedule();
             }),
         VisionSubsystem.getInstance(),
         DrivebaseSubsystem.getInstance()

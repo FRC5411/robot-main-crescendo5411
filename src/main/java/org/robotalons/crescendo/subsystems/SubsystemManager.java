@@ -49,6 +49,7 @@ public final class SubsystemManager extends SubsystemBase {
   public static final Field2d FIELD;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static SubsystemManager Instance;
+  private static volatile Command Autonomous;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private SubsystemManager() {} static {
     SUBSYSTEMS = new ArrayList<>();
@@ -101,7 +102,7 @@ public final class SubsystemManager extends SubsystemBase {
       new ArrayList<>(),
       DrivebaseSubsystem.getPose().getTranslation());
   }
-  // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
+
   /**
    * Pathfinds and autonomously achieves the robot chassis to a give pose position; with a given end velocity
    * @param Pose     Ending pose of the robot, the position for the chassis to achieve
@@ -119,8 +120,20 @@ public final class SubsystemManager extends SubsystemBase {
       ),
       Terminal
     );
+  }  
+  // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
+  /**
+   * Mutates the currently running autonomous command
+   * @param Autonomous New Autonomous command
+   */
+  public static synchronized void set(final Command Autonomous) {
+    SubsystemManager.Autonomous.cancel();
+    SubsystemManager.Autonomous = Autonomous;
+    if(SubsystemManager.Autonomous.isScheduled()) {
+      Autonomous.schedule();
+    }
   }
-
+  // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Provides the current chassis speeds
    * @return Chassis speeds of Robot drivebase
