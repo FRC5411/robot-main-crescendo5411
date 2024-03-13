@@ -3,10 +3,12 @@ package org.robotalons.crescendo.subsystems.superstructure;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -53,7 +55,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   private static final StatusSignal<Double> FIRING_VELOCITY;
 
   private static final CANSparkMax PIVOT_CONTROLLER;
-  private static final PIDController PIVOT_CONTROLLER_PID;
+  private static final ProfiledPIDController PIVOT_CONTROLLER_PID;
 
   private static final DutyCycleEncoder PIVOT_ABSOLUTE_ENCODER;
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
@@ -61,6 +63,10 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   private static volatile SwerveModuleState Reference;
   private static volatile SuperstructureState State;
   private static SuperstructureSubsystem Instance;
+  // private static DigitalInput beamBreakSensorIntake = new DigitalInput(3);
+  private static DigitalInput beamBreakSensorIndexer = new DigitalInput(1);
+
+
   // ------------------------------------------------------------[Constructors]----------------------------------------------------------- //
   /**
    * 
@@ -98,8 +104,8 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     FIRING_CONTROLLERS.getSecond().setInverted((true));
 
     INDEXER_CONTROLLER = new CANSparkMax(Ports.INDEXER_CONTROLLER_ID, MotorType.kBrushless);
-    INDEXER_CONTROLLER.setSmartCurrentLimit((20));
-    INDEXER_CONTROLLER.setSecondaryCurrentLimit((30));
+    INDEXER_CONTROLLER.setSmartCurrentLimit((40));
+    INDEXER_CONTROLLER.setSecondaryCurrentLimit((50));
     INDEXER_CONTROLLER.setIdleMode(IdleMode.kBrake);
     INDEXER_CONTROLLER.setInverted((false));
 
@@ -110,10 +116,10 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
 
     PIVOT_CONTROLLER = new CANSparkMax(Ports.PIVOT_CONTROLLER_ID, MotorType.kBrushless);
     PIVOT_CONTROLLER.setSmartCurrentLimit((40));
-    PIVOT_CONTROLLER_PID = new PIDController(
+    PIVOT_CONTROLLER_PID = new ProfiledPIDController(
       Measurements.PIVOT_P_GAIN,
       Measurements.PIVOT_I_GAIN,
-      Measurements.PIVOT_D_GAIN);
+      Measurements.PIVOT_D_GAIN, new TrapezoidProfile.Constraints(3, 3));
     PIVOT_CONTROLLER.setInverted(Measurements.PIVOT_INVERTED);
     PIVOT_ABSOLUTE_ENCODER = new DutyCycleEncoder(Ports.PIVOT_ABSOLUTE_ENCODER_ID);
   }
@@ -242,20 +248,21 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * @param Rotation   Value of rotation to bring to pivot to
    * @param Velocity   Value of velocity to bring the firing controllers to
    */
-  private void with(final Trigger Keybinding, final Double Rotation) {
+  private void with(final Trigger Keybinding, final Double Rotation, final Double RPM) {
     with(() -> {
-      Keybinding.onTrue(new InstantCommand(
+      Keybinding.whileTrue(new InstantCommand(
         () -> {
           Reference.angle = Rotation2d.fromRadians(Rotation);
-          set(Measurements.FIRING_STANDARD_VELOCITY);
+          FIRING_CONTROLLERS.getFirst().set((0.6d));
+          FIRING_CONTROLLERS.getSecond().set((0.6d));
         },
         SuperstructureSubsystem.getInstance()
       ));
-      Keybinding.onFalse(new InstantCommand(
+      Keybinding.whileFalse(new InstantCommand(
         () -> {
           Reference.angle = Rotation2d.fromRadians(Measurements.PIVOT_MINIMUM_ROTATION);
-          FIRING_CONTROLLERS.getFirst().set((0d));
-          FIRING_CONTROLLERS.getSecond().set((0d));
+          FIRING_CONTROLLERS.getFirst().set((0.1d));
+          FIRING_CONTROLLERS.getSecond().set((0.1d));
         },
         SuperstructureSubsystem.getInstance()
       ));
@@ -267,16 +274,16 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     SuperstructureSubsystem.Operator = Operator;
     with(
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_SUBWOOFER),
-      Measurements.SUBWOOFER_LINE);
+      Measurements.SUBWOOFER_LINE, Measurements.SUBWOOFER_RPM / 60);
     with(
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_WINGLINE),
-      Measurements.WING_LINE);
+      Measurements.WING_LINE, Measurements.SUBWOOFER_RPM);
     with(
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_PODIUMLINE),
-      Measurements.PODIUM_LINE);
+      Measurements.PODIUM_LINE, Measurements.SUBWOOFER_RPM);
     with(
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_STARTING_LINE),
-      Measurements.STARTING_LINE);
+      Measurements.STARTING_LINE, Measurements.SUBWOOFER_RPM);
     with(() -> {
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
         .onTrue(new InstantCommand(
@@ -297,13 +304,16 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     });
     with(() -> {
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.INTAKE_TOGGLE)
-        .onTrue(new InstantCommand(
+        .whileTrue(new InstantCommand(
           () -> {
-            INTAKE_CONTROLLER.set((1d));
-            INDEXER_CONTROLLER.set((1d));
+              runIntake();
           },
           SuperstructureSubsystem.getInstance()
-        ));
+        ).andThen(new InstantCommand(() -> {
+          INDEXER_CONTROLLER.set(-0.1d);
+        }, getInstance()).withTimeout((.5d))).finallyDo(() -> {
+          INDEXER_CONTROLLER.set(0d);
+        }));
         SuperstructureSubsystem.Operator.getKeybinding(Keybindings.INTAKE_TOGGLE)
         .onFalse(new InstantCommand(
           () -> {
@@ -313,23 +323,36 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
           SuperstructureSubsystem.getInstance()
         ));
     });
+
     with(() -> {
-      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_TOGGLE)
-        .onTrue(new InstantCommand(
-          () -> {
-            set(Measurements.FIRING_STANDARD_VELOCITY);
+      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.SHOOT_TOGGLE)
+        .whileTrue(new InstantCommand(
+          () -> { 
+              INTAKE_CONTROLLER.set((1d));
+              INDEXER_CONTROLLER.set((1d));
           },
           SuperstructureSubsystem.getInstance()
         ));
-        SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_TOGGLE)
+        SuperstructureSubsystem.Operator.getKeybinding(Keybindings.SHOOT_TOGGLE)
         .onFalse(new InstantCommand(
           () -> {
-            FIRING_CONTROLLERS.getFirst().set((0d));
-            FIRING_CONTROLLERS.getSecond().set((0d));
+            INTAKE_CONTROLLER.set((0d));
+            INDEXER_CONTROLLER.set((0d));
           },
           SuperstructureSubsystem.getInstance()
         ));
     });
+  }
+
+  public static void runIntake(){
+    if(!beamBreakSensorIndexer.get()){
+      INTAKE_CONTROLLER.set(1);
+      INDEXER_CONTROLLER.set(1);
+    }
+    else{
+      INTAKE_CONTROLLER.set(0);
+      INDEXER_CONTROLLER.set(0);
+    }
   }
   // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
   /**

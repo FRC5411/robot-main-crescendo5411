@@ -107,6 +107,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     ABSOLUTE_ENCODER.optimizeBusUtilization();
 
     configure();
+    reset();
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   /**
