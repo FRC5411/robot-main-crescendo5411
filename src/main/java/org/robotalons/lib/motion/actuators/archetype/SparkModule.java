@@ -6,7 +6,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -108,6 +107,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     ABSOLUTE_ENCODER.optimizeBusUtilization();
 
     configure();
+    reset();
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   /**
@@ -159,8 +159,6 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     TRANSLATIONAL_CONTROLLER.burnFlash();
     ROTATIONAL_CONTROLLER.burnFlash();
     ODOMETRY_LOCK.unlock();
-
-
   }
 
   @Override
@@ -181,15 +179,6 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
   public synchronized void cease() {
     TRANSLATIONAL_CONTROLLER.stopMotor();
     ROTATIONAL_CONTROLLER.stopMotor();
-  }
-
-  /**
-   * Zeroes the azimuth relatively offset from the position of the absolute encoders.
-   */
-  @Override
-  public synchronized void reset() {
-    update();
-    Reference = new SwerveModuleState();
   }
 
   /**

@@ -147,6 +147,7 @@ public abstract class Module implements Closeable {
    */
   public synchronized void reset() {
     update();
+    Reference = new SwerveModuleState();
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
