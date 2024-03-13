@@ -1,6 +1,9 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo;
+// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import org.junit.jupiter.api.Test;
+import org.littletonrobotics.junction.inputs.LoggedDriverStation;
+import org.littletonrobotics.junction.inputs.LoggedDriverStation.DriverStationInputs;
 
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.Executors;
@@ -22,13 +25,16 @@ public final class ExecutionTest {
     final var Task = Executor.submit(() -> {
       org.robotalons.crescendo.Main.main();
     });
-   //TODO: Enable Teleop During Testing
-    Executor.shutdown();
     assertDoesNotThrow(() -> {
       try {
+        final var Field = LoggedDriverStation.class.getField(("dsInputs"));
+        final var Faked = new DriverStationInputs();
+        Faked.enabled = (true);
+        Field.setAccessible((true));
+        Field.set((null), Faked);
         Task.get(TEST_DURATION, TimeUnit.MILLISECONDS);
         Executor.shutdownNow();
-      } catch(final CancellationException | SecurityException | TimeoutException Ignored) {}
+      } catch(final CancellationException | TimeoutException | SecurityException | NoSuchFieldException | IllegalAccessException Ignored) {}
     });
     
   }

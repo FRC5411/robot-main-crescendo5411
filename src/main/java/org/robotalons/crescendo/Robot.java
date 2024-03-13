@@ -50,11 +50,13 @@ public final class Robot extends LoggedRobot {
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static Command AutonomousCurrent;  
   private static Boolean MessagePrinted;
+  private static Boolean LocalLogging;
   private static Double StartTimestamp;
   private static Robot Instance;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private Robot() {} static {
     AutonomousCurrent = (null);
+    LocalLogging = (true);
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
   /**
@@ -109,7 +111,10 @@ public final class Robot extends LoggedRobot {
         Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(Path, ("_sim"))));
         break;
     }
-    Logger.start();
+    if(LocalLogging) {
+      Logger.start();
+    }
+   
     Map<String, Integer> CommandMap = new HashMap<>();
     BiConsumer<Command, Boolean> LoggerFunction =
         (Command command, Boolean active) -> {

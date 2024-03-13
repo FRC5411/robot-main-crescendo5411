@@ -63,7 +63,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   private static List<SwerveModulePosition> ModulePositions;
   private static Rotation2d GyroscopeRotation;
   private static DrivebaseSubsystem Instance;
-  private static DrivebaseState CurrentMode;
+  private static DrivebaseState State;
   private static Double Timestamp;
   private static Boolean FlippedEnabled;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
@@ -75,8 +75,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   } static {
     Instance = new DrivebaseSubsystem();
     GYROSCOPE = Constants.Devices.GYROSCOPE;
-    CurrentMode = DrivebaseState.ROBOT_ORIENTED;
-    FlippedEnabled = (DriverStation.getAlliance().isPresent()? (DriverStation.getAlliance().get().equals(Alliance.Red)): (false));
+    State = DrivebaseState.ROBOT_ORIENTED;
+    FlippedEnabled = (DriverStation.getAlliance().isPresent()? (DriverStation.getAlliance().get().equals(Alliance.Red)): (true));
     GyroscopeRotation = GYROSCOPE.getYawRotation();
     Timestamp = Logger.getRealTimestamp() / (1e6);
     MODULES = List.of(
@@ -242,15 +242,15 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    * Toggles between the possible states of orientation types
    */
   public static synchronized void toggle() {
-    switch (CurrentMode) {
+    switch (State) {
       case ROBOT_ORIENTED:
-        CurrentMode = DrivebaseState.FIELD_ORIENTED;
+        State = DrivebaseState.FIELD_ORIENTED;
         break;
       case FIELD_ORIENTED:
-        CurrentMode = DrivebaseState.OBJECT_ORIENTED;
+        State = DrivebaseState.OBJECT_ORIENTED;
         break;
       case OBJECT_ORIENTED:
-        CurrentMode = DrivebaseState.ROBOT_ORIENTED;
+        State = DrivebaseState.ROBOT_ORIENTED;
         break;
     }
   }
@@ -421,7 +421,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    * @param Rotation    Demand rotation in two-dimensional space
    */
   public static synchronized void set(final Translation2d Translation, final Rotation2d Rotation) {
-    switch(CurrentMode) {
+    switch(State) {
       case OBJECT_ORIENTED:
         VisionSubsystem.getOptimalTarget(CameraIdentifier.INTAKE_CAMERA).ifPresentOrElse((Optimal) -> {
           set(new ChassisSpeeds(
@@ -430,7 +430,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
             (-(Math.PI) + Optimal.getRotation().getRadians() * (GYROSCOPE.getYawRotation().getRadians() % 2 * Math.PI > Math.PI? (-1): (1))) * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY
           ));
         }, () -> {
-          CurrentMode = DrivebaseState.ROBOT_ORIENTED;
+          State = DrivebaseState.ROBOT_ORIENTED;
           set(Translation, Rotation);
         });
         break;

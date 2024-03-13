@@ -36,14 +36,14 @@ public final class RobotContainer {
   
   private RobotContainer() {} static {
     OperatorSelectors = new ArrayList<>();
-    SubsystemManager.getSubsystems().forEach((Subsystem) -> {
+    SubsystemManager.getSubsystems().stream().forEachOrdered((Subsystem) -> {
       final var Selector = new SendableChooser<Operator<Keybindings, Preferences>>();
       final var Default = Profiles.DEFAULT.get(Subsystem);
       Profiles.OPERATORS.forEach((Profile) -> Selector.addOption(Profile.getName(), Profile));
       Selector.setDefaultOption(Default.getName(), Default);
       Selector.onChange(Subsystem::configure);
       Subsystem.configure(Default);
-      OperatorSelectors.add(new LoggedDashboardChooser<Operator<Keybindings, Preferences>>(Subsystem.getName() + " Pilot Selector", Selector));
+      OperatorSelectors.add(new LoggedDashboardChooser<Operator<Keybindings, Preferences>>(Subsystem.getName() + " Operator Selector", Selector));
     });
     Profiles.OPERATORS.forEach((Profile) -> SmartDashboard.putData(Profile.getName(), Profile));
     SubsystemManager.getInstance();
