@@ -61,6 +61,8 @@ public final class RobotContainer {
         AutonomousSelector = new LoggedDashboardChooser<>(("Autonomous Selector"), Selector); 
       }
     }
+
+    LEDStrip.blinkGreen();
     //TODO: Remove Soon
     @SuppressWarnings("resource")
     final var m_led = new AddressableLED((9));
