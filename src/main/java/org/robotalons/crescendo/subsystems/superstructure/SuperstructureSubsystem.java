@@ -243,6 +243,10 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     set(Reference);
   }
 
+  public static synchronized DigitalInput getNoteDetector(){
+    return beamBreakSensorIndexer;
+  }
+
   /**
    * Utility method for quickly adding button bindings to reach a given rotation, and reset to default
    * @param Keybinding Trigger to bind this association to
