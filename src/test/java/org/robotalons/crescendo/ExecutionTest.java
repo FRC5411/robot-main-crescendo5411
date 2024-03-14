@@ -20,9 +20,7 @@ public final class ExecutionTest {
     RuntimeExecutor.execute(() -> {
       try {
         RuntimeExecutor.wait();
-      } catch(final Exception Ignored) {
-        Ignored.printStackTrace();
-      }
+      } catch(final Exception Ignored) {}
     });
     final var RuntimeInputs = LoggedDriverStation.class.getDeclaredField(("dsInputs"));
     RuntimeInputs.setAccessible((true));
@@ -32,9 +30,7 @@ public final class ExecutionTest {
     RuntimeExecutor.execute(() -> {
       try {
         RuntimeExecutor.notify();
-      } catch(final Exception Ignored) {
-        Ignored.printStackTrace();
-      }
+      } catch(final Exception Ignored) {}
     });
     TimeUnit.MILLISECONDS.sleep(TEST_RUNTIME_DURATION);
     RuntimeExecutor.shutdownNow();
