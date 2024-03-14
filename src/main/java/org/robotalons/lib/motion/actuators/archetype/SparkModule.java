@@ -122,7 +122,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     BaseStatusSignal.setUpdateFrequencyForAll((25), ABSOLUTE_ENCODER.getAbsolutePosition());
     ABSOLUTE_ENCODER.optimizeBusUtilization();
 
-    ABSOLUTE_ENCODER.getAbsolutePosition().waitForUpdate((0.1d));
+    ABSOLUTE_ENCODER.getAbsolutePosition().refresh();
     configure();
     reset();
   }
@@ -292,7 +292,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
         TRANSLATIONAL_CONTROLLER.getMotorTemperature();
 
       STATUS.RotationalAbsolutePosition = 
-        Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().waitForUpdate((0.1d)).getValueAsDouble()).minus(RotationalAbsoluteOffset);
+        Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().refresh().getValueAsDouble()).minus(RotationalAbsoluteOffset);
       STATUS.RotationalRelativePosition =
         Rotation2d.fromRotations(ROTATIONAL_ENCODER.getPosition() / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO);
       STATUS.RotationalVelocityRadiansSecond =
