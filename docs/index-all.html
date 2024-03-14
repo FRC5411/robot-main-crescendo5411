@@ -244,14 +244,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Provides the value of a given keybinding from this operator's keybinding map</div>
 </dd>
-<dt><a href="org/robotalons/lib/motion/actuators/Module.html#getLinearPosition()" class="member-name-link">getLinearPosition()</a> - Method in class org.robotalons.lib.motion.actuators.<a href="org/robotalons/lib/motion/actuators/Module.html" title="class in org.robotalons.lib.motion.actuators">Module</a></dt>
-<dd>
-<div class="block">Provides the current linear velocity</div>
-</dd>
-<dt><a href="org/robotalons/lib/motion/actuators/Module.html#getLinearVelocity()" class="member-name-link">getLinearVelocity()</a> - Method in class org.robotalons.lib.motion.actuators.<a href="org/robotalons/lib/motion/actuators/Module.html" title="class in org.robotalons.lib.motion.actuators">Module</a></dt>
-<dd>
-<div class="block">Provides the current linear position</div>
-</dd>
 <dt><a href="org/robotalons/lib/motion/utilities/CTREOdometryThread.html#getLock()" class="member-name-link">getLock()</a> - Method in class org.robotalons.lib.motion.utilities.<a href="org/robotalons/lib/motion/utilities/CTREOdometryThread.html" title="class in org.robotalons.lib.motion.utilities">CTREOdometryThread</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/robotalons/lib/motion/utilities/OdometryThread.html#getLock()" class="member-name-link">getLock()</a> - Method in interface org.robotalons.lib.motion.utilities.<a href="org/robotalons/lib/motion/utilities/OdometryThread.html" title="interface in org.robotalons.lib.motion.utilities">OdometryThread</a></dt>
@@ -373,6 +365,14 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Provides a list of robot-relative transformations to the best target within view of the camera</div>
 </dd>
+<dt><a href="org/robotalons/lib/motion/actuators/Module.html#getTranslationalPosition()" class="member-name-link">getTranslationalPosition()</a> - Method in class org.robotalons.lib.motion.actuators.<a href="org/robotalons/lib/motion/actuators/Module.html" title="class in org.robotalons.lib.motion.actuators">Module</a></dt>
+<dd>
+<div class="block">Provides the current linear velocity</div>
+</dd>
+<dt><a href="org/robotalons/lib/motion/actuators/Module.html#getTranslationalVelocity()" class="member-name-link">getTranslationalVelocity()</a> - Method in class org.robotalons.lib.motion.actuators.<a href="org/robotalons/lib/motion/actuators/Module.html" title="class in org.robotalons.lib.motion.actuators">Module</a></dt>
+<dd>
+<div class="block">Provides the current linear position</div>
+</dd>
 <dt><a href="org/robotalons/lib/motion/sensors/Gyroscope.html#getYawRotation()" class="member-name-link">getYawRotation()</a> - Method in class org.robotalons.lib.motion.sensors.<a href="org/robotalons/lib/motion/sensors/Gyroscope.html" title="class in org.robotalons.lib.motion.sensors">Gyroscope</a></dt>
 <dd>
 <div class="block">Provides the most-recent measurement yaw from recent <a href="org/robotalons/lib/motion/sensors/Gyroscope.html#update()"><code>Gyroscope.update()</code></a> cycle.</div>
@@ -383,8 +383,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="org/robotalons/lib/motion/sensors/Gyroscope.html" class="type-name-link" title="class in org.robotalons.lib.motion.sensors">Gyroscope</a> - Class in <a href="org/robotalons/lib/motion/sensors/package-summary.html">org.robotalons.lib.motion.sensors</a></dt>
 <dd>
-<div class="block">Singular unit which assists in the control of motion throughout the competition field, which provides implementation for sensing heading
- and direction of a given drivebase.</div>
+<div class="block">s</div>
 </dd>
 <dt><a href="org/robotalons/lib/motion/sensors/Gyroscope.html#%3Cinit%3E()" class="member-name-link">Gyroscope()</a> - Constructor for class org.robotalons.lib.motion.sensors.<a href="org/robotalons/lib/motion/sensors/Gyroscope.html" title="class in org.robotalons.lib.motion.sensors">Gyroscope</a></dt>
 <dd>&nbsp;</dd>
@@ -600,10 +599,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Zeroes the rotational relative to offset from the position of the absolute encoders.</div>
 </dd>
-<dt><a href="org/robotalons/lib/motion/actuators/archetype/SparkModule.html#reset()" class="member-name-link">reset()</a> - Method in class org.robotalons.lib.motion.actuators.archetype.<a href="org/robotalons/lib/motion/actuators/archetype/SparkModule.html" title="class in org.robotalons.lib.motion.actuators.archetype">SparkModule</a></dt>
-<dd>
-<div class="block">Zeroes the azimuth relatively offset from the position of the absolute encoders.</div>
-</dd>
 <dt><a href="org/robotalons/lib/motion/actuators/Module.html#reset()" class="member-name-link">reset()</a> - Method in class org.robotalons.lib.motion.actuators.<a href="org/robotalons/lib/motion/actuators/Module.html" title="class in org.robotalons.lib.motion.actuators">Module</a></dt>
 <dd>
 <div class="block">Zeroes the rotational relative to offset from the position of the absolute encoders.</div>
@@ -760,6 +755,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Spark Module Constructor</div>
 </dd>
 <dt><a href="org/robotalons/lib/motion/utilities/OdometryThread.html#STANDARD_FREQUENCY" class="member-name-link">STANDARD_FREQUENCY</a> - Static variable in interface org.robotalons.lib.motion.utilities.<a href="org/robotalons/lib/motion/utilities/OdometryThread.html" title="interface in org.robotalons.lib.motion.utilities">OdometryThread</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/robotalons/lib/motion/utilities/OdometryThread.html#STANDARD_QUEUE_SIZE" class="member-name-link">STANDARD_QUEUE_SIZE</a> - Static variable in interface org.robotalons.lib.motion.utilities.<a href="org/robotalons/lib/motion/utilities/OdometryThread.html" title="interface in org.robotalons.lib.motion.utilities">OdometryThread</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/robotalons/lib/utilities/MathUtilities.html#standardDeviation(double%5B%5D)" class="member-name-link">standardDeviation(double[])</a> - Static method in class org.robotalons.lib.utilities.<a href="org/robotalons/lib/utilities/MathUtilities.html" title="class in org.robotalons.lib.utilities">MathUtilities</a></dt>
 <dd>
