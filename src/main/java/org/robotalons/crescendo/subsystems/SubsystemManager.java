@@ -66,9 +66,7 @@ public final class SubsystemManager extends SubsystemBase {
       DrivebaseSubsystem::getPose,
       DrivebaseSubsystem::set, 
       DrivebaseSubsystem::getChassisSpeeds,
-      (final ChassisSpeeds Demand) -> {
-        DrivebaseSubsystem.set(Demand.times(-1));
-      }, 
+      (final ChassisSpeeds Demand) -> DrivebaseSubsystem.set(Demand.times(-1)), 
       new HolonomicPathFollowerConfig(
         new PIDConstants(
           Constants.Measurements.ROBOT_TRANSLATION_KP,

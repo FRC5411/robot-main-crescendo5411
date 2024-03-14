@@ -16,17 +16,17 @@ public final class UtilitiesTest {
    * Utilizes CTRE utilities to guarantee that CTRE Error codes are properly interpreted and are thrown
    */
   @Test
-  void CheckErrorCTRE() {
-    assertThrows((RuntimeException.class), () -> CheckCTRECode(ErrorCode.GeneralError));
-    assertThrows((RuntimeException.class), () -> CheckCTRECode(ErrorCode.FirmVersionCouldNotBeRetrieved));
-    assertDoesNotThrow(() -> CheckCTRECode(ErrorCode.OK));
+  void checkErrorCTRE() {
+    assertThrows((RuntimeException.class), () -> checkCTRECode(ErrorCode.GeneralError));
+    assertThrows((RuntimeException.class), () -> checkCTRECode(ErrorCode.FirmVersionCouldNotBeRetrieved));
+    assertDoesNotThrow(() -> checkCTRECode(ErrorCode.OK));
   }
 
   /**
    * Checks if a given CTRE error code is equivalent with an okay error code, if not, an exception is thrown
    * @param Code Error code to check
    */
-  private static void CheckCTRECode(final ErrorCode Code) {
+  private static void checkCTRECode(final ErrorCode Code) {
     if (Code != ErrorCode.OK) {
       throw new RuntimeException(String.format(("%s: %s%n"), (""), Code.toString()));
     }
@@ -36,17 +36,17 @@ public final class UtilitiesTest {
    * Utilizes REV utilities to guarantee that CTRE Error codes are properly interpreted and are thrown
    */
   @Test
-  void CheckErrorREV() {
-    assertThrows((RuntimeException.class), () -> CheckREVCode(REVLibError.kError));
-    assertThrows((RuntimeException.class), () -> CheckREVCode(REVLibError.kCantFindFirmware));
-    assertDoesNotThrow(() -> CheckREVCode(REVLibError.kOk));
+  void checkErrorREV() {
+    assertThrows((RuntimeException.class), () -> checkREVCode(REVLibError.kError));
+    assertThrows((RuntimeException.class), () -> checkREVCode(REVLibError.kCantFindFirmware));
+    assertDoesNotThrow(() -> checkREVCode(REVLibError.kOk));
   }
 
   /**
    * Checks if a given REVlib error code is equivalent with an okay error code, if not, an exception is thrown
    * @param Code Error code to check
    */
-  private static void CheckREVCode(final REVLibError Code) {
+  private static void checkREVCode(final REVLibError Code) {
     if (Code != REVLibError.kOk) {
         throw new RuntimeException(String.format(("%s: %s"), (""), Code.toString()));
     }

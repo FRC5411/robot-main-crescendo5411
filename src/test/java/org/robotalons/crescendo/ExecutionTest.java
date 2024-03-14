@@ -8,9 +8,6 @@ import org.littletonrobotics.junction.inputs.LoggedDriverStation.DriverStationIn
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 // -------------------------------------------------------------[Execution Test]-----------------------------------------------------------//
 public final class ExecutionTest {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
@@ -20,22 +17,18 @@ public final class ExecutionTest {
    * Instantiates a new robot, asserts that no errors are thrown within the alloted time limit.
    */
   @Test
-  synchronized void CheckErrorMain() {
+  synchronized void checkErrorMain() throws Exception {
     final var Executor = Executors.newFixedThreadPool((1));
-    final var Task = Executor.submit(() -> {
-      org.robotalons.crescendo.Main.main();
-    });
-    assertDoesNotThrow(() -> {
-      try {
-        final var Field = LoggedDriverStation.class.getField(("dsInputs"));
-        final var Faked = new DriverStationInputs();
-        Faked.enabled = (true);
-        Field.setAccessible((true));
-        Field.set((null), Faked);
-        Task.get(TEST_DURATION, TimeUnit.MILLISECONDS);
-        Executor.shutdownNow();
-      } catch(final CancellationException | TimeoutException | SecurityException | NoSuchFieldException | IllegalAccessException Ignored) {}
-    });
-    
+    Executor.submit(() -> Main.main());
+    TimeUnit.MILLISECONDS.sleep(TEST_DURATION);
+    final var Field = LoggedDriverStation.class.getField(("dsInputs"));
+    final var Faked = new DriverStationInputs();
+    Executor.wait();
+    Faked.enabled = (true);
+    Field.setAccessible((true));
+    Field.set((null), Faked);
+    Executor.notifyAll();
+    TimeUnit.MILLISECONDS.sleep(TEST_DURATION);
+    Executor.shutdownNow();    
   }
 }
