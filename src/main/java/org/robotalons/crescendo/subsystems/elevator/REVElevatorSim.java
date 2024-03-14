@@ -1,17 +1,17 @@
 package org.robotalons.crescendo.subsystems.elevator;
 
-import java.util.Queue;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.DoubleSupplier;
-
-import org.robotalons.lib.motion.elevator.ElevatorModule;
-
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+
+import org.robotalons.lib.motion.elevator.ElevatorModule;
+
+import java.util.Queue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.DoubleSupplier;
 
 public class REVElevatorSim extends ElevatorModule{
     
@@ -90,15 +90,21 @@ public class REVElevatorSim extends ElevatorModule{
     
     // --------------------------------------------------------------[Methods]---------------------------------------------------------------//  
     @Override
-    protected void setVoltage(double volts) {
+    public void setVoltage(double volts) {
         APPLIED_VOLTS = () -> volts;
         CONSTANTS.MOTOR.setInput(volts);
     }
 
 
     @Override
-    protected void setState(ElevatorStates state) {
+    public void setState(ElevatorStates state) {
         STATE = state;
+    }
+
+    @Override
+    public void setRollerVoltage(double volts) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setRollerVoltage'");
     }
     
 }

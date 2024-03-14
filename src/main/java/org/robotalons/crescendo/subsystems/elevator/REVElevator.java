@@ -3,15 +3,6 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package org.robotalons.crescendo.subsystems.elevator;
-import java.util.Queue;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.DoubleSupplier;
-
-import org.robotalons.lib.motion.elevator.ElevatorModule;
-
-import com.revrobotics.CANSparkMax;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -19,10 +10,17 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Encoder;
 
+import com.revrobotics.CANSparkMax;
+
+import org.robotalons.lib.motion.elevator.ElevatorModule;
+
+import java.util.Queue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.DoubleSupplier;
+
 
 public class REVElevator extends ElevatorModule{
-  /** Creates a new ElevatorSubsystem. */
-
 
   private final REVElevatorConstants CONSTANTS;
   private ElevatorStates STATE;
@@ -94,6 +92,7 @@ public class REVElevator extends ElevatorModule{
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//  
   public static final class REVElevatorConstants extends Constants {
     public CANSparkMax elevatorMotor;
+    public CANSparkMax rollerMotor;
     public Encoder encoder;
     public ElevatorFeedforward feedforward;
     public ProfiledPIDController pidController;
@@ -113,12 +112,18 @@ public class REVElevator extends ElevatorModule{
   // }
   
   @Override
-  protected void setVoltage(double volts) {
+  public void setVoltage(double volts) {
     CONSTANTS.elevatorMotor.set(MathUtil.clamp(volts,-12, 12));
   }
 
+  public void setRollerVoltage(double volts){
+    CONSTANTS.rollerMotor.set(MathUtil.clamp(volts,-12, 12));
+  }
+
   @Override
-  protected void setState(ElevatorStates state) {
+  public void setState(ElevatorStates state) {
     STATE = state;
   }
+
+
 }

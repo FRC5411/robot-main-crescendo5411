@@ -1,25 +1,27 @@
 package org.robotalons.crescendo.subsystems.elevator;
 
-import org.robotalons.crescendo.subsystems.elevator.REVElevator.REVElevatorConstants;
-import org.robotalons.crescendo.subsystems.elevator.REVElevatorSim.REVElevatorSimConstants;
-
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import org.robotalons.crescendo.subsystems.elevator.REVElevator.REVElevatorConstants;
+import org.robotalons.crescendo.subsystems.elevator.REVElevatorSim.REVElevatorSimConstants;
+import org.robotalons.lib.motion.elevator.ElevatorModule;
 
 
 public class Constants {
     public class Ports {
-        public static final Integer ELEVATOR_PORT = (0);
+        public static final Integer ELEVATOR_PORT = (51);
+        public static final Integer ROLLER_PORT = (52);
         public class Encoder{
             public static final Integer CHANNEL_A = (1);
             public static final Integer CHANNEL_B = (2);
@@ -77,6 +79,12 @@ public class Constants {
             CONSTANTS.elevatorMotor.clearFaults();
             CONSTANTS.elevatorMotor.setSmartCurrentLimit(Constants.Measurements.CURRENT_LIMIT);
 
+            CONSTANTS.rollerMotor = new CANSparkMax(Constants.Ports.ROLLER_PORT,MotorType.kBrushless);
+            CONSTANTS.rollerMotor.setIdleMode(IdleMode.kBrake);
+            CONSTANTS.rollerMotor.restoreFactoryDefaults();
+            CONSTANTS.rollerMotor.clearFaults();
+            CONSTANTS.rollerMotor.setSmartCurrentLimit(Constants.Measurements.CURRENT_LIMIT);
+
             CONSTANTS.encoder = new Encoder(Constants.Ports.Encoder.CHANNEL_A,Constants.Ports.Encoder.CHANNEL_B);
             CONSTANTS.pidController = new ProfiledPIDController(
                 Measurements.PID.KP,
@@ -89,4 +97,11 @@ public class Constants {
               Measurements.Feedforward.KV);
         }
     }
+
+    public static final class Devices{
+        public static final ElevatorModule ELEVATOR_MODULE = 
+            (RobotBase.isSimulation())?  
+            (new REVElevatorSim(SimMotor.CONSTANTS)):
+            (new REVElevator(RealMotor.CONSTANTS));
+    } 
 }

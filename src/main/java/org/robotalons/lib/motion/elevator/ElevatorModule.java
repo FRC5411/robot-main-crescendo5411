@@ -33,7 +33,8 @@ public abstract class ElevatorModule implements Closeable{
     public abstract void update();
     public abstract void periodic();
 
-    protected abstract void setVoltage(double volts);
+    public abstract void setVoltage(double volts);
+    public abstract void setRollerVoltage(double volts);
     // protected abstract void pidSet(double demand);
-    protected abstract void setState(ElevatorStates state);
+    public abstract void setState(ElevatorStates state);
 }
