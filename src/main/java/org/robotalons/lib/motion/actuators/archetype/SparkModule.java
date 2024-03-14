@@ -10,6 +10,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
@@ -103,6 +105,8 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     ROTATIONAL_ENCODER = ROTATIONAL_CONTROLLER.getEncoder();
 
     ABSOLUTE_ENCODER = new CANcoder(MODULE_CONSTANTS.ABSOLUTE_ENCODER_PORT,  ("drivetrain/shooter"));
+    ABSOLUTE_ENCODER.getConfigurator().apply(new MagnetSensorConfigs());
+    ABSOLUTE_ENCODER.getConfigurator().apply(new CANcoderConfiguration());
     ABSOLUTE_ENCODER.getAbsolutePosition().waitForUpdate((1));
     ABSOLUTE_ENCODER.clearStickyFaults();
 
