@@ -39,6 +39,8 @@ import java.util.stream.IntStream;
  */
 public class SparkModule<Controller extends CANSparkMax> extends Module {
   // --------------------------------------------------------------[Constants]----------------------------------------------------------------//
+  private static final Long ABSOLUTE_ENCODER_WAIT_TIMEOUT = (1000L);
+
   private final Controller TRANSLATIONAL_CONTROLLER;
   private final PIDController TRANSLATIONAL_PID;
   private final SimpleMotorFeedforward TRANSLATIONAL_FF;
@@ -69,6 +71,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
    */
   public SparkModule(final ModuleConfiguration<Controller> Constants) {
     super(Constants);
+
     this.MODULE_CONSTANTS = Constants;
     TRANSLATIONAL_CONTROLLER = MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER;
     TRANSLATIONAL_PID = new PIDController(
@@ -92,10 +95,13 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     ROTATIONAL_ENCODER = ROTATIONAL_CONTROLLER.getEncoder();
     ABSOLUTE_ENCODER = new CANcoder(MODULE_CONSTANTS.ABSOLUTE_ENCODER_PORT);
 
+    try {
+      wait(ABSOLUTE_ENCODER_WAIT_TIMEOUT);
+    } catch (final InterruptedException Ignored) {}
+
     RotationalAbsoluteOffset = MODULE_CONSTANTS.ROTATIONAL_ENCODER_OFFSET;
     ODOMETRY_LOCK = new ReentrantLock();
 
-    //TODO: Possible CAN Fix
     TRANSLATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(TRANSLATIONAL_POSITION::get);
     ROTATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(() -> getAbsoluteRotation().getRadians());
     TIMESTAMP_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.timestamp();
@@ -120,7 +126,6 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     TRANSLATIONAL_CONTROLLER.restoreFactoryDefaults();
     ROTATIONAL_CONTROLLER.restoreFactoryDefaults();
 
-    //TODO: Possible CAN Fix
     TRANSLATIONAL_CONTROLLER.setCANTimeout((250));
     ROTATIONAL_CONTROLLER.setCANTimeout((250));
 
@@ -145,7 +150,6 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
 
     ROTATIONAL_PID.enableContinuousInput(-Math.PI, Math.PI);
 
-    //TODO: Possible CAN Fix
     IntStream.range((0),(4)).forEach((Index) -> {
       TRANSLATIONAL_CONTROLLER.setPeriodicFramePeriod(
           PeriodicFrame.kStatus2, (int) (1000d / MODULE_CONSTANTS.STATUS_PROVIDER.getFrequency()));
