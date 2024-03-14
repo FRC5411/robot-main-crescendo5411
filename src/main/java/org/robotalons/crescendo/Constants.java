@@ -101,9 +101,9 @@ public final class Constants {
           .add(Preferences.TRANSLATION_Y_INPUT, () -> -INPUT_METHOD.getRawAxis((0)))
           .add(Preferences.ORIENTATION_T_INPUT, () -> INPUT_METHOD.getRawAxis((4)))
           .add(Preferences.SQUARED_INPUT, () -> (true))
-          .add(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (2e-2))
-          .add(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (2e-2))
-          .add(Preferences.ORIENTATION_DEADZONE, () -> (2e-2))
+          .add(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (2e-1))
+          .add(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (2e-1))
+          .add(Preferences.ORIENTATION_DEADZONE, () -> (2e-1))
           .add(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.a())
           .add(Keybindings.PRECISION_TOGGLE, INPUT_METHOD.y())
           .add(Keybindings.ALIGNMENT_SPEAKER, INPUT_METHOD.x());

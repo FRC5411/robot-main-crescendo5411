@@ -40,6 +40,8 @@ import java.util.stream.IntStream;
  */
 public class SparkModule<Controller extends CANSparkMax> extends Module {
   // --------------------------------------------------------------[Constants]----------------------------------------------------------------//
+  private static final Long ABSOLUTE_ENCODER_WAIT_TIMEOUT = (1000L);
+
   private final Controller TRANSLATIONAL_CONTROLLER;
   private final PIDController TRANSLATIONAL_PID;
   private final SimpleMotorFeedforward TRANSLATIONAL_FF;
@@ -92,6 +94,10 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kD);
     ROTATIONAL_ENCODER = ROTATIONAL_CONTROLLER.getEncoder();
     ABSOLUTE_ENCODER = new CANcoder(MODULE_CONSTANTS.ABSOLUTE_ENCODER_PORT);
+
+    try {
+      wait(ABSOLUTE_ENCODER_WAIT_TIMEOUT);
+    } catch (final InterruptedException Ignored) {}
 
     RotationalAbsoluteOffset = MODULE_CONSTANTS.ROTATIONAL_ENCODER_OFFSET;
     ODOMETRY_LOCK = new ReentrantLock();
