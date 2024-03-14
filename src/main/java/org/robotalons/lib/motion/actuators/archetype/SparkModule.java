@@ -40,7 +40,7 @@ import java.util.stream.IntStream;
  */
 public class SparkModule<Controller extends CANSparkMax> extends Module {
   // --------------------------------------------------------------[Constants]----------------------------------------------------------------//
-  private static final Long ABSOLUTE_ENCODER_WAIT_TIMEOUT = (1000L);
+  private static final Long ABSOLUTE_ENCODER_WAIT_TIMEOUT = (100L);
 
   private final Controller TRANSLATIONAL_CONTROLLER;
   private final PIDController TRANSLATIONAL_PID;
@@ -77,9 +77,10 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       Thread.sleep(ABSOLUTE_ENCODER_WAIT_TIMEOUT);
     } catch (final InterruptedException Ignored) {}
 
-
     this.MODULE_CONSTANTS = Constants;
     TRANSLATIONAL_CONTROLLER = MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER;
+    TRANSLATIONAL_CONTROLLER.clearFaults();
+
     TRANSLATIONAL_PID = new PIDController(
       MODULE_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS.kP, 
       MODULE_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS.kI, 
@@ -94,12 +95,16 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       (Accumulated, Velocity) -> Accumulated -= Units.rotationsPerMinuteToRadiansPerSecond(Velocity) * discretize() * MODULE_CONSTANTS.WHEEL_RADIUS_METERS, (0d));
 
     ROTATIONAL_CONTROLLER = MODULE_CONSTANTS.ROTATIONAL_CONTROLLER;
+    ROTATIONAL_CONTROLLER.clearFaults();
     ROTATIONAL_PID = new PIDController(
       MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kP, 
       MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kI, 
       MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kD);
     ROTATIONAL_ENCODER = ROTATIONAL_CONTROLLER.getEncoder();
-    ABSOLUTE_ENCODER = new CANcoder(MODULE_CONSTANTS.ABSOLUTE_ENCODER_PORT,  "drivetrain/shooter");
+
+    ABSOLUTE_ENCODER = new CANcoder(MODULE_CONSTANTS.ABSOLUTE_ENCODER_PORT,  ("drivetrain/shooter"));
+    ABSOLUTE_ENCODER.getAbsolutePosition().waitForUpdate((1));
+    ABSOLUTE_ENCODER.clearStickyFaults();
 
     RotationalAbsoluteOffset = MODULE_CONSTANTS.ROTATIONAL_ENCODER_OFFSET;
     ODOMETRY_LOCK = new ReentrantLock();
@@ -283,7 +288,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
         TRANSLATIONAL_CONTROLLER.getMotorTemperature();
 
       STATUS.RotationalAbsolutePosition = 
-        Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble()).minus(RotationalAbsoluteOffset);
+        Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().waitForUpdate((1/27)).getValueAsDouble()).minus(RotationalAbsoluteOffset);
       STATUS.RotationalRelativePosition =
         Rotation2d.fromRotations(ROTATIONAL_ENCODER.getPosition() / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO);
       STATUS.RotationalVelocityRadiansSecond =
