@@ -107,7 +107,6 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     ABSOLUTE_ENCODER = new CANcoder(MODULE_CONSTANTS.ABSOLUTE_ENCODER_PORT,  ("drivetrain/shooter"));
     ABSOLUTE_ENCODER.getConfigurator().apply(new MagnetSensorConfigs());
     ABSOLUTE_ENCODER.getConfigurator().apply(new CANcoderConfiguration());
-    ABSOLUTE_ENCODER.getAbsolutePosition().waitForUpdate((1));
     ABSOLUTE_ENCODER.clearStickyFaults();
 
     RotationalAbsoluteOffset = MODULE_CONSTANTS.ROTATIONAL_ENCODER_OFFSET;
@@ -123,6 +122,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     BaseStatusSignal.setUpdateFrequencyForAll((25), ABSOLUTE_ENCODER.getAbsolutePosition());
     ABSOLUTE_ENCODER.optimizeBusUtilization();
 
+    ABSOLUTE_ENCODER.getAbsolutePosition().waitForUpdate((0.1d));
     configure();
     reset();
   }
@@ -292,7 +292,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
         TRANSLATIONAL_CONTROLLER.getMotorTemperature();
 
       STATUS.RotationalAbsolutePosition = 
-        Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().waitForUpdate((1/27)).getValueAsDouble()).minus(RotationalAbsoluteOffset);
+        Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().waitForUpdate((0.1d)).getValueAsDouble()).minus(RotationalAbsoluteOffset);
       STATUS.RotationalRelativePosition =
         Rotation2d.fromRotations(ROTATIONAL_ENCODER.getPosition() / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO);
       STATUS.RotationalVelocityRadiansSecond =
