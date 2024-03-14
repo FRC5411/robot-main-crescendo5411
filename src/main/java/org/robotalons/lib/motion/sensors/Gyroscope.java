@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 import java.io.Closeable;
 // ---------------------------------------------------------------[Gyroscope]---------------------------------------------------------------//
-/**
+/**s
  *
  *
  * <p>Singular unit which assists in the control of motion throughout the competition field, which provides implementation for sensing heading

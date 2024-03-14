@@ -22,6 +22,7 @@ import java.util.concurrent.locks.Lock;
 public sealed interface OdometryThread<SignalType> extends Runnable, Closeable permits CTREOdometryThread, REVOdometryThread {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   public static final Double STANDARD_FREQUENCY = (250d);
+  public static final Integer STANDARD_QUEUE_SIZE = (10);
   // ---------------------------------------------------------------[Abstract]--------------------------------------------------------------//
   /**
    * Registers a new signal updated at a frequency with the frequency manager.
@@ -51,7 +52,15 @@ public sealed interface OdometryThread<SignalType> extends Runnable, Closeable p
    * Mutates the current frequency of updating the odometry
    * @param Frequency Frequency of odometry updates in Hertz
    */
-  void set(final Double Frequency);
+  void setFrequency(final Double Frequency);
+
+
+  /**
+   * Mutates the current state of the thread to be enabled or disabled, note that this has different behavior from {@link #close}, 
+   * which stops this instance without the ability to re-enable it.
+   * @param Enabled If this Thread is enabled or not
+   */
+  void setEnabled(final Boolean Enabled);
 
   /**
    * Provides the odometry lock of this thread

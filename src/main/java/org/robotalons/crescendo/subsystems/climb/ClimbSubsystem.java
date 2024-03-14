@@ -8,10 +8,10 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMax.SoftLimitDirection;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 
 import org.littletonrobotics.junction.Logger;
@@ -227,7 +227,7 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
       case RIGHT:
         return RIGHT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.RIGHT_ENCODER_OFFSET;
       default:
-        return (1e-6);
+        return (null);
     }
   }
 

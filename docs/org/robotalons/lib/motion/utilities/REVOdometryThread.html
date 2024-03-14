@@ -105,7 +105,7 @@ implements <a href="OdometryThread.html" title="interface in org.robotalons.lib.
 <h2>Field Summary</h2>
 <div class="inherited-list">
 <h3 id="fields-inherited-from-class-org.robotalons.lib.motion.utilities.OdometryThread">Fields inherited from interface&nbsp;org.robotalons.lib.motion.utilities.<a href="OdometryThread.html" title="interface in org.robotalons.lib.motion.utilities">OdometryThread</a></h3>
-<code><a href="OdometryThread.html#STANDARD_FREQUENCY">STANDARD_FREQUENCY</a></code></div>
+<code><a href="OdometryThread.html#STANDARD_FREQUENCY">STANDARD_FREQUENCY</a>, <a href="OdometryThread.html#STANDARD_QUEUE_SIZE">STANDARD_QUEUE_SIZE</a></code></div>
 </section>
 </li>
 <!-- ========== METHOD SUMMARY =========== -->
@@ -155,16 +155,22 @@ implements <a href="OdometryThread.html" title="interface in org.robotalons.lib.
 <div class="block">Offers each relevant queue to the relevant signal value</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#set(java.lang.Double)" class="member-name-link">set</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&nbsp;Frequency)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setEnabled(java.lang.Boolean)" class="member-name-link">setEnabled</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&nbsp;Enabled)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Mutates the current frequency of updating the odometry</div>
+<div class="block">Mutates the current state of the thread to be enabled or disabled, note that this has different behavior from <a href="OdometryThread.html#close()"><code>OdometryThread.close()</code></a>, 
+ which stops this instance without the ability to re-enable it.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#start()" class="member-name-link">start</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Queue.html" title="class or interface in java.util" class="external-link">Queue</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#timestamp()" class="member-name-link">timestamp</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setFrequency(java.lang.Double)" class="member-name-link">setFrequency</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&nbsp;Frequency)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Mutates the current frequency of updating the odometry</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#start()" class="member-name-link">start</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Queue.html" title="class or interface in java.util" class="external-link">Queue</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#timestamp()" class="member-name-link">timestamp</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Provides the timestamps for the available odometry queues</div>
 </div>
 </div>
@@ -281,16 +287,31 @@ implements <a href="OdometryThread.html" title="interface in org.robotalons.lib.
 </section>
 </li>
 <li>
-<section class="detail" id="set(java.lang.Double)">
-<h3>set</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">set</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&nbsp;Frequency)</span></div>
-<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="OdometryThread.html#set(java.lang.Double)">OdometryThread</a></code></span></div>
+<section class="detail" id="setFrequency(java.lang.Double)">
+<h3>setFrequency</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setFrequency</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&nbsp;Frequency)</span></div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="OdometryThread.html#setFrequency(java.lang.Double)">OdometryThread</a></code></span></div>
 <div class="block">Mutates the current frequency of updating the odometry</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="OdometryThread.html#set(java.lang.Double)">set</a></code>&nbsp;in interface&nbsp;<code><a href="OdometryThread.html" title="interface in org.robotalons.lib.motion.utilities">OdometryThread</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/DoubleSupplier.html" title="class or interface in java.util.function" class="external-link">DoubleSupplier</a>&gt;</code></dd>
+<dd><code><a href="OdometryThread.html#setFrequency(java.lang.Double)">setFrequency</a></code>&nbsp;in interface&nbsp;<code><a href="OdometryThread.html" title="interface in org.robotalons.lib.motion.utilities">OdometryThread</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/DoubleSupplier.html" title="class or interface in java.util.function" class="external-link">DoubleSupplier</a>&gt;</code></dd>
 <dt>Parameters:</dt>
 <dd><code>Frequency</code> - Frequency of odometry updates in Hertz</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="setEnabled(java.lang.Boolean)">
+<h3>setEnabled</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setEnabled</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&nbsp;Enabled)</span></div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="OdometryThread.html#setEnabled(java.lang.Boolean)">OdometryThread</a></code></span></div>
+<div class="block">Mutates the current state of the thread to be enabled or disabled, note that this has different behavior from <a href="OdometryThread.html#close()"><code>OdometryThread.close()</code></a>, 
+ which stops this instance without the ability to re-enable it.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="OdometryThread.html#setEnabled(java.lang.Boolean)">setEnabled</a></code>&nbsp;in interface&nbsp;<code><a href="OdometryThread.html" title="interface in org.robotalons.lib.motion.utilities">OdometryThread</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/DoubleSupplier.html" title="class or interface in java.util.function" class="external-link">DoubleSupplier</a>&gt;</code></dd>
+<dt>Parameters:</dt>
+<dd><code>Enabled</code> - If this Thread is enabled or not</dd>
 </dl>
 </section>
 </li>

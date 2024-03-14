@@ -20,18 +20,16 @@ import java.util.Objects;
  * 
  * @see ModuleStatusContainer
  * 
- * @author Cody Washington (@Jelatinone) 
- * 
  */
 public abstract class Module implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   protected final Constants CONSTANTS;  
   protected final ModuleStatusContainerAutoLogged STATUS = new ModuleStatusContainerAutoLogged();  
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
+  protected volatile SwerveModuleState Reference = new SwerveModuleState();
+  protected volatile ReferenceType ReferenceMode = ReferenceType.STATE_CONTROL;
   protected Rotation2d RotationalAbsoluteOffset = (null);
-  protected Rotation2d RotationalRelativeOffset = (null);
-  protected SwerveModuleState Reference = new SwerveModuleState();
-  protected ReferenceType ReferenceMode = ReferenceType.STATE_CONTROL;
+  protected Rotation2d RotationalRelativeOffset = (null);  
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Common Module Constructor.
@@ -127,9 +125,11 @@ public abstract class Module implements Closeable {
    * @param Reference Module's new Goal or 'set-point' reference
    * @return An optimized version of the reference
    */
-  public SwerveModuleState set(final SwerveModuleState Reference) {
-    this.Reference = SwerveModuleState.optimize(Reference, getAbsoluteRotation());
-    return this.Reference;
+  public synchronized SwerveModuleState set(final SwerveModuleState Reference) {
+    synchronized(this.Reference) {
+      this.Reference = SwerveModuleState.optimize(Reference, STATUS.RotationalRelativePosition.plus(RotationalRelativeOffset == (null)? new Rotation2d(): RotationalRelativeOffset));
+      return this.Reference;      
+    }
   }
 
   /**
@@ -147,7 +147,10 @@ public abstract class Module implements Closeable {
   /**
    * Zeroes the rotational relative to offset from the position of the absolute encoders.
    */
-  public abstract void reset();
+  public synchronized void reset() {
+    update();
+    Reference = new SwerveModuleState();
+  }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Provides the deltas, or captured data points from odometry from the most recent {@link #periodic()} cycle.
@@ -200,7 +203,7 @@ public abstract class Module implements Closeable {
    * @return Rotational axis heading as a relative {@link Rotation2d} object
    */
   public Rotation2d getRelativeRotation() {
-    return STATUS.RotationalRelativePosition.minus(RotationalRelativeOffset);
+    return STATUS.RotationalRelativePosition;
   }
 
   /**
@@ -208,14 +211,14 @@ public abstract class Module implements Closeable {
    * @return Rotational axis heading as an absolute {@link Rotation2d} object
    */
   public Rotation2d getAbsoluteRotation() {
-    return STATUS.RotationalAbsolutePosition.minus(RotationalAbsoluteOffset);
+    return STATUS.RotationalAbsolutePosition;
   }
 
   /**
    * Provides the current linear position
    * @return Linear position in meters
    */
-  public Double getLinearVelocity() {
+  public Double getTranslationalVelocity() {
     return STATUS.TranslationalVelocityRadiansSecond * CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
   }
 
@@ -223,7 +226,7 @@ public abstract class Module implements Closeable {
    * Provides the current linear velocity
    * @return Linear velocity in meters per second
    */
-  public Double getLinearPosition() {
+  public Double getTranslationalPosition() {
     return STATUS.TranslationalPositionRadians * CONSTANTS.WHEEL_RADIUS_METERS;
   }
 

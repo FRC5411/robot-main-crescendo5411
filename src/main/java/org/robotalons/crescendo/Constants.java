@@ -68,8 +68,14 @@ public final class Constants {
   public static final class Odometry {
     public static final Lock CTRE_ODOMETRY_LOCK = new ReentrantLock();
     public static final Lock REV_ODOMETRY_LOCK = new ReentrantLock();
+    public static final Boolean CTRE_ODOMETRY_ENABLED = (true);
+    public static final Boolean REV_ODOMETRY_ENABLED = (true);
     public static final CTREOdometryThread CTRE_ODOMETRY_THREAD = CTREOdometryThread.create(CTRE_ODOMETRY_LOCK);
     public static final REVOdometryThread REV_ODOMETRY_THREAD = REVOdometryThread.create(REV_ODOMETRY_LOCK);
+    static {
+      CTRE_ODOMETRY_THREAD.setEnabled(CTRE_ODOMETRY_ENABLED);
+      REV_ODOMETRY_THREAD.setEnabled(REV_ODOMETRY_ENABLED);
+    }
   }
 
   public static final class Ports {
@@ -101,9 +107,9 @@ public final class Constants {
           .add(Preferences.TRANSLATION_Y_INPUT, () -> -INPUT_METHOD.getRawAxis((0)))
           .add(Preferences.ORIENTATION_T_INPUT, () -> INPUT_METHOD.getRawAxis((4)))
           .add(Preferences.SQUARED_INPUT, () -> (true))
-          .add(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (2e-2))
-          .add(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (2e-2))
-          .add(Preferences.ORIENTATION_DEADZONE, () -> (2e-2))
+          .add(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (2e-1))
+          .add(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (2e-1))
+          .add(Preferences.ORIENTATION_DEADZONE, () -> (2e-1))
           .add(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.a())
           .add(Keybindings.ALIGNMENT_SPEAKER, INPUT_METHOD.x());
       }
@@ -115,10 +121,9 @@ public final class Constants {
         public static final Operator<Keybindings,Preferences> PROFILE = new Operator<Keybindings,Preferences>(NAME)
           .add(Keybindings.CANNON_PIVOT_PODIUMLINE, INPUT_METHOD.a())
           .add(Keybindings.CANNON_PIVOT_SUBWOOFER, INPUT_METHOD.b())
-          .add(Keybindings.CANNON_PIVOT_CENTERLINE, INPUT_METHOD.x())
+          .add(Keybindings.CANNON_PIVOT_STARTING_LINE, INPUT_METHOD.x())
           .add(Keybindings.CANNON_PIVOT_WINGLINE, INPUT_METHOD.y())
-          .add(Keybindings.CANNON_PIVOT_MAXIMUM, INPUT_METHOD.rightBumper())
-          .add(Keybindings.CANNON_TOGGLE, INPUT_METHOD.leftBumper())
+          .add(Keybindings.CANNON_TOGGLE, Operators.Primary.INPUT_METHOD.leftBumper())
           .add(Keybindings.CLIMB_ROTATE_BACKWARD, INPUT_METHOD.povDown())
           .add(Keybindings.CLIMB_ROTATE_FORWARD, INPUT_METHOD.povUp())
           .add(Keybindings.INTAKE_TOGGLE, Operators.Primary.INPUT_METHOD.leftTrigger())
@@ -145,13 +150,13 @@ public final class Constants {
       CANNON_TOGGLE,
       CANNON_PIVOT_WINGLINE,
       CANNON_PIVOT_SUBWOOFER,
-      CANNON_PIVOT_CENTERLINE,
+      CANNON_PIVOT_STARTING_LINE,
       CANNON_PIVOT_PODIUMLINE,
       CANNON_PIVOT_MAXIMUM,
       ALIGNMENT_SPEAKER,
       ALIGNMENT_AMP,
       ALIGNMENT_OBJECT,
-      ALIGNMENT_NEAREST,
+      ALIGNMENT_NEAREST
     }
   }
 }

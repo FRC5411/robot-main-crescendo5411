@@ -48,6 +48,16 @@ deploy {
       artifacts {
         frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
           jarTask = shadowJar
+
+          gcType = edu.wpi.first.gradlerio.deploy.roborio.GarbageCollectorType.Other
+          jvmArgs << '-XX:+UseG1GC'
+
+          jvmArgs.add("-Dcom.sun.management.jmxremote=true")
+          jvmArgs.add("-Dcom.sun.management.jmxremote.port=1198")
+          jvmArgs.add("-Dcom.sun.management.jmxremote.local.only=false")
+          jvmArgs.add("-Dcom.sun.management.jmxremote.ssl=false")
+          jvmArgs.add("-Dcom.sun.management.jmxremote.authenticate=false")
+          jvmArgs.add("-Djava.rmi.server.hostname=10.54.11.2")
         }
         frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
           files = project.fileTree('src/main/deploy')

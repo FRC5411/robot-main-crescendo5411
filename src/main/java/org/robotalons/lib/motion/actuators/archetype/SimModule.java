@@ -73,8 +73,8 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
       MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kI, 
       MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kD);
     
-    TRANSLATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(() -> TRANSLATIONAL_CONTROLLER.getAngularPositionRad());
-    ROTATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(() -> getAbsoluteRotation().getRadians());
+    TRANSLATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(() -> STATUS.TranslationalPositionRadians);
+    ROTATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(() -> STATUS.RotationalAbsolutePosition.getRadians());
     TIMESTAMP_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.timestamp();
     ODOMETRY_LOCK = new ReentrantLock();
 

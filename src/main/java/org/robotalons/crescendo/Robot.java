@@ -1,8 +1,10 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo;
 import edu.wpi.first.hal.AllianceStationID;
+import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -21,6 +23,7 @@ import org.littletonrobotics.urcl.URCL;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonVersion;
 import org.robotalons.crescendo.Constants.Logging;
+import org.robotalons.crescendo.Constants.Odometry;
 import org.robotalons.crescendo.Constants.Subsystems;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.REVOdometryThread;
@@ -42,14 +45,18 @@ import javax.management.InstanceNotFoundException;
  * @see RobotContainer
  */
 public final class Robot extends LoggedRobot {
+  // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
+  private static final Alert BATTERY_VOLTAGE_ALERT = new Alert(("Battery Voltage Low"), AlertType.WARNING);
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  private static Boolean CurrentAutonomousMessagePrinted;
-  private static Double CurrentAutonomousStartTime;
-  private static Command CurrentAutonomous;
+  private static Command AutonomousCurrent;  
+  private static Boolean MessagePrinted;
+  private static Boolean LocalLogging;
+  private static Double StartTimestamp;
   private static Robot Instance;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private Robot() {} static {
-    CurrentAutonomous = (null);
+    AutonomousCurrent = (null);
+    LocalLogging = (true);
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
   /**
@@ -76,15 +83,14 @@ public final class Robot extends LoggedRobot {
     switch (BuildMetadata.DIRTY) {
       case 0:
         Logger.recordMetadata(("Changes"), ("Committed"));
-        new Alert(("GIT VCS CHANGES COMMITTED"), AlertType.INFO);
         break;
       case 1:
         Logger.recordMetadata(("Changes"), ("Uncommitted"));
-        new Alert(("GIT VCS CHANGES NOT COMMITTED"), AlertType.INFO);
+        new Alert(("GIT VCS Changes Not Committed"), AlertType.INFO);
         break;
       default:
         Logger.recordMetadata(("Changes"), ("Unknown"));
-        new Alert(("GIT VCS ERROR OR BUILD ISSUE"), AlertType.INFO);
+        new Alert(("GIT VCS Changes Unknown"), AlertType.INFO);
         break;
     }
     switch (Constants.Subsystems.TYPE) {
@@ -100,12 +106,15 @@ public final class Robot extends LoggedRobot {
         break;
       case REPLAY:
         setUseTiming((false));
-        String logPath = LogFileUtil.findReplayLog();
-        Logger.setReplaySource(new WPILOGReader(logPath));
-        Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, ("_sim"))));
+        String Path = LogFileUtil.findReplayLog();
+        Logger.setReplaySource(new WPILOGReader(Path));
+        Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(Path, ("_sim"))));
         break;
     }
-    Logger.start();
+    if(LocalLogging) {
+      Logger.start();
+    }
+   
     Map<String, Integer> CommandMap = new HashMap<>();
     BiConsumer<Command, Boolean> LoggerFunction =
         (Command command, Boolean active) -> {
@@ -133,37 +142,40 @@ public final class Robot extends LoggedRobot {
             });
     if (Subsystems.TYPE == RobotType.SIMULATION) {
       DriverStationSim.setAllianceStationId(AllianceStationID.Blue1);
-    }
-
+    } 
     try {
       CTREOdometryThread.getInstance();
       REVOdometryThread.getInstance();
     } catch (final InstanceNotFoundException Exception) {}
     Logger.registerURCL(URCL.startExternal());
+    RobotController.setBrownoutVoltage((9d));
     RobotContainer.getInstance();
     Shuffleboard.startRecording();
     DataLogManager.start();
     DriverStation.silenceJoystickConnectionWarning((true));
+    PortForwarder.add((5800), ("photonvision.local"), (5800));
   }
 
   @Override
   public void robotPeriodic() {
     Threads.setCurrentThreadPriority((true), (99));
+    BATTERY_VOLTAGE_ALERT.set(RobotController.getBatteryVoltage() < (11.5d));
     CommandScheduler.getInstance().run();
     SmartDashboard.updateValues();
-    if (CurrentAutonomous != (null)) {
-      if (!CurrentAutonomous.isScheduled() && !CurrentAutonomousMessagePrinted) {
+    if (AutonomousCurrent != (null)) {
+      if (!AutonomousCurrent.isScheduled() && !MessagePrinted) {
         if (DriverStation.isAutonomousEnabled()) {
           System.out.printf(
-              ("*** Auto finished in %.2f secs ***%n"), Logger.getRealTimestamp() / (1e6) - CurrentAutonomousStartTime);
+              ("*** Auto finished in %.2f secs ***%n"), Logger.getRealTimestamp() / (1e6) - StartTimestamp);
         } else {
           System.out.printf(
-              ("*** Auto cancelled in %.2f secs ***%n"), Logger.getRealTimestamp() / (1e6) - CurrentAutonomousStartTime);
+              ("*** Auto cancelled in %.2f secs ***%n"), Logger.getRealTimestamp() / (1e6) - StartTimestamp);
         }
-        CurrentAutonomousMessagePrinted = true;
+        MessagePrinted = (true);
       }
     }
     Logger.recordOutput(("Match Time"), DriverStation.getMatchTime());
+    Threads.setCurrentThreadPriority((true), (10));
   }
 
   // ------------------------------------------------------------[Simulation]---------------------------------------------------------------//
@@ -177,6 +189,8 @@ public final class Robot extends LoggedRobot {
   @Override
   public void disabledInit() {
     CommandScheduler.getInstance().cancelAll();
+    Odometry.CTRE_ODOMETRY_THREAD.setEnabled((false));
+    Odometry.REV_ODOMETRY_THREAD.setEnabled((false));
   }
 
   @Override
@@ -184,17 +198,18 @@ public final class Robot extends LoggedRobot {
 
   @Override
   public void disabledExit() {
-      super.disabledExit();
+    Odometry.CTRE_ODOMETRY_THREAD.setEnabled((true));
+    Odometry.REV_ODOMETRY_THREAD.setEnabled((true));
   }
 
   // ------------------------------------------------------------[Autonomous]---------------------------------------------------------------//
   @Override
   public void autonomousInit() {
-    CurrentAutonomousMessagePrinted = (false);
-    CurrentAutonomousStartTime = Timer.getFPGATimestamp();
-    CurrentAutonomous = RobotContainer.AutonomousSelector.get();
-    if(!java.util.Objects.isNull(CurrentAutonomous)) {
-      CurrentAutonomous.schedule();
+    MessagePrinted = (false);
+    StartTimestamp = Timer.getFPGATimestamp();
+    AutonomousCurrent = RobotContainer.AutonomousSelector.get();
+    if(!java.util.Objects.isNull(AutonomousCurrent)) {
+      AutonomousCurrent.schedule();
     }
   }
 
@@ -203,8 +218,8 @@ public final class Robot extends LoggedRobot {
 
   @Override
   public void autonomousExit() {
-    if(!java.util.Objects.isNull(CurrentAutonomous)) {
-      CurrentAutonomous.cancel();
+    if(!java.util.Objects.isNull(AutonomousCurrent)) {
+      AutonomousCurrent.cancel();
     }
   }
 

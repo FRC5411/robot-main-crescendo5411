@@ -15,20 +15,22 @@ import org.littletonrobotics.junction.AutoLog;
  */
 @AutoLog
 public class ModuleStatusContainer {
-  public double TranslationalPositionRadians = (0d);
-  public double TranslationalVelocityRadiansSecond = (0d);
-  public double TranslationalAppliedVoltage = (0d);
-  public double TranslationalCurrentAmperage = (0d);
-  public double TranslationTemperatureCelsius = (0d);
+  public volatile double TranslationalPositionRadians = (0d);
+  public volatile double TranslationalVelocityRadiansSecond = (0d);
+  public volatile double TranslationalAppliedVoltage = (0d);
+  public volatile double TranslationalCurrentAmperage = (0d);
+  public volatile double TranslationalTemperatureCelsius = (0d);
+  public volatile boolean TranslationalConnected = (false);
 
-  public Rotation2d RotationalAbsolutePosition = new Rotation2d();
-  public Rotation2d RotationalRelativePosition = new Rotation2d();
-  public double RotationalVelocityRadiansSecond = (0d);
-  public double RotationalAppliedVoltage = (0d);
-  public double RotationalCurrentAmperage = (0d);
-  public double RotationalTemperatureCelsius = (0d);
+  public volatile Rotation2d RotationalAbsolutePosition = new Rotation2d();
+  public volatile Rotation2d RotationalRelativePosition = new Rotation2d();
+  public volatile double RotationalVelocityRadiansSecond = (0d);
+  public volatile double RotationalAppliedVoltage = (0d);
+  public volatile double RotationalCurrentAmperage = (0d);
+  public volatile double RotationalTemperatureCelsius = (0d);
+  public volatile boolean RotationalConnected = (false);
 
-  public double[] OdometryTimestamps = new double[] {};
-  public double[] OdometryTranslationalPositionsRadians = new double[] {};
-  public Rotation2d[] OdometryRotationalPositionsRadians = new Rotation2d[] {};
+  public volatile double[] OdometryTimestamps = new double[] {};
+  public volatile double[] OdometryTranslationalPositionsRadians = new double[] {};
+  public volatile Rotation2d[] OdometryRotationalPositionsRadians = new Rotation2d[] {};
 }

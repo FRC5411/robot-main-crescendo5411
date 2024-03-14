@@ -3,23 +3,24 @@ package org.robotalons.crescendo.subsystems.superstructure;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.SlotConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonUtils;
@@ -29,7 +30,6 @@ import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.crescendo.subsystems.superstructure.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.superstructure.Constants.Ports;
 import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
-import org.robotalons.crescendo.subsystems.vision.VisionSubsystem.CameraIdentifier;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.trajectory.solving.TrajectoryObject;
 import org.robotalons.lib.utilities.Operator;
@@ -53,7 +53,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   private static final StatusSignal<Double> FIRING_VELOCITY;
 
   private static final CANSparkMax PIVOT_CONTROLLER;
-  private static final PIDController PIVOT_CONTROLLER_PID;
+  private static final ProfiledPIDController PIVOT_CONTROLLER_PID;
 
   private static final DutyCycleEncoder PIVOT_ABSOLUTE_ENCODER;
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
@@ -63,13 +63,14 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   private static SuperstructureSubsystem Instance;
   // ------------------------------------------------------------[Constructors]----------------------------------------------------------- //
   /**
+   * 
    * Cannon Subsystem Constructor
    */
   private SuperstructureSubsystem() {
     super(("Cannon Subsystem"));
   } static {
-    Reference = new SwerveModuleState((0d), new Rotation2d(Measurements.PIVOT_MINIMUM_ROTATION));
-    State = SuperstructureState.SEMI;
+    Reference = new SwerveModuleState((0d), Rotation2d.fromRotations(Measurements.PIVOT_MINIMUM_ROTATION));
+    State = SuperstructureState.MANUAL;
     FIRING_CONTROLLERS = new Pair<TalonFX,TalonFX>(
       new TalonFX(Ports.FIRING_CONTROLLER_LEFT_ID),
       new TalonFX(Ports.FIRING_CONTROLLER_RIGHT_ID)
@@ -86,10 +87,15 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       .withKD(Measurements.FIRING_D_GAIN)
     );
 
+    FIRING_CONTROLLERS.getFirst().getVelocity().setUpdateFrequency((50));
+    FIRING_CONTROLLERS.getSecond().getVelocity().setUpdateFrequency((50));
+    FIRING_CONTROLLERS.getFirst().optimizeBusUtilization();
+    FIRING_CONTROLLERS.getSecond().optimizeBusUtilization();
+
     FIRING_CONTROLLERS.getFirst().getConfigurator().apply(new TalonFXConfiguration().CurrentLimits.withSupplyCurrentLimit((25d)).withStatorCurrentLimit((20d)));
     FIRING_CONTROLLERS.getSecond().getConfigurator().apply(new TalonFXConfiguration().CurrentLimits.withSupplyCurrentLimit((25d)).withStatorCurrentLimit((20d)));
     FIRING_VELOCITY = FIRING_CONTROLLERS.getFirst().getVelocity();
-    FIRING_CONTROLLERS.getFirst().setInverted((false));
+    FIRING_CONTROLLERS.getFirst().setInverted((true));
     FIRING_CONTROLLERS.getSecond().setInverted((true));
 
     INDEXER_CONTROLLER = new CANSparkMax(Ports.INDEXER_CONTROLLER_ID, MotorType.kBrushless);
@@ -105,42 +111,47 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
 
     PIVOT_CONTROLLER = new CANSparkMax(Ports.PIVOT_CONTROLLER_ID, MotorType.kBrushless);
     PIVOT_CONTROLLER.setSmartCurrentLimit((40));
-    PIVOT_CONTROLLER_PID = new PIDController(
+    PIVOT_CONTROLLER_PID = new ProfiledPIDController(
       Measurements.PIVOT_P_GAIN,
       Measurements.PIVOT_I_GAIN,
-      Measurements.PIVOT_D_GAIN);
+      Measurements.PIVOT_D_GAIN, 
+      new TrapezoidProfile.Constraints(2, 2));
     PIVOT_CONTROLLER.setInverted(Measurements.PIVOT_INVERTED);
     PIVOT_ABSOLUTE_ENCODER = new DutyCycleEncoder(Ports.PIVOT_ABSOLUTE_ENCODER_ID);
   }
-
   // ---------------------------------------------------------------[Methods]--------------------------------------------------------------- //
   @Override
   public synchronized void periodic() {
     Constants.Objects.ODOMETRY_LOCKER.lock();
-    final var Robot = new Pose3d(DrivebaseSubsystem.getPose()).transformBy(VisionSubsystem.getCameraTransform(CameraIdentifier.SPEAKER_LEFT_CAMERA));
     final var Target = VisionSubsystem.getAprilTagPose((DrivebaseSubsystem.getRotation().getRadians() % (2) * Math.PI >= Math.PI)? (3): (7)).get();
-    final var Interpolated = Measurements.PIVOT_FIRING_MAP.get(Math.hypot(
-      PhotonUtils.getDistanceToPose(Robot.toPose2d(), Target.toPose2d()) / Measurements.PIVOT_MAXIMUM_RANGE_METERS,
-      Measurements.SPEAKER_HEIGHT_METERS
-    ));
+    final var Distance = (PhotonUtils.getDistanceToPose(DrivebaseSubsystem.getPose(), Target.toPose2d()));
+    final var Interpolated = Measurements.PIVOT_FIRING_MAP.interpolate(
+      Measurements.PIVOT_LOWER_BOUND,
+      Measurements.PIVOT_UPPER_BOUND,
+      Math.hypot(Distance, Measurements.SPEAKER_HEIGHT_METERS) / Math.hypot(Measurements.PIVOT_MAXIMUM_RANGE_METERS, Measurements.SPEAKER_HEIGHT_METERS));
     if(Interpolated != (null)) {
-      final var Percentage = (
-        Math.abs(FIRING_VELOCITY.getValueAsDouble() / Interpolated.get((0), (0))) +
-        (Math.abs(Units.rotationsToDegrees(getPivotRotation())) / Interpolated.get((1), (0)))
-      ) / 2;
-      if(State == SuperstructureState.AUTO || State == SuperstructureState.SEMI) {
-        Reference.angle = Rotation2d.fromRadians(-Interpolated.get((1), (0)));
-        if(State == SuperstructureState.AUTO) {
+      final var Percentage = 
+        (Math.abs(FIRING_VELOCITY.getValueAsDouble() / Interpolated.get((0), (0))) + (Math.abs(Units.rotationsToDegrees(getPivotRotation())) / Interpolated.get((1), (0)))) / 2;
+      switch(State) {
+        case AUTO:
+          Reference.angle = Rotation2d.fromRadians(Interpolated.get((1), (0)));
           if(Percentage < Measurements.ALLOWABLE_SHOT_PERCENTAGE) {
             set(Interpolated.get((0), (0)));
             INDEXER_CONTROLLER.set((-1d));
           }
-        }
+          break;
+        case SEMI:
+          Reference.angle = Rotation2d.fromRadians(Interpolated.get((1), (0)));
+          break;
+        case MANUAL:
+          break;
       }
+      Logger.recordOutput(("Cannon/InterpolatedDistance"), Distance); 
       Logger.recordOutput(("Cannon/InterpolatedPercentile"), Percentage);
       Logger.recordOutput(("Cannon/InterpolatedVelocity"), Interpolated.get((0), (0)));
-      Logger.recordOutput(("Cannon/InterpolatedRotation"), Interpolated.get((1), (0)));      
+      Logger.recordOutput(("Cannon/InterpolatedRotation"), Units.radiansToDegrees(Interpolated.get((1), (0))));      
     } else {
+      Logger.recordOutput(("Cannon/InterpolatedDistance"), (0d)); 
       Logger.recordOutput(("Cannon/InterpolatedPercentile"), (0d));
       Logger.recordOutput(("Cannon/InterpolatedVelocity"), (0d));
       Logger.recordOutput(("Cannon/InterpolatedRotation"), (0d));
@@ -187,7 +198,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    */
   private static synchronized void set(final Rotation2d Reference) {
     PIVOT_CONTROLLER.set(PIVOT_CONTROLLER_PID.calculate(
-      Units.radiansToRotations(getPivotRotation()), MathUtil.clamp(Reference.getRotations(), Measurements.PIVOT_MINIMUM_ROTATION, Measurements.PIVOT_MAXIMUM_ROTATION)));
+      Units.radiansToRotations(-getPivotRotation()), MathUtil.clamp(Reference.getRotations(), Measurements.PIVOT_MINIMUM_ROTATION, Measurements.PIVOT_MAXIMUM_ROTATION)));
   }
 
   /**
@@ -195,8 +206,8 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * @param Reference Desired velocity in RPM
    */
   private static synchronized void set(final Double Reference) {
-    FIRING_CONTROLLERS.getFirst().setControl(new VelocityDutyCycle(Reference));
-    FIRING_CONTROLLERS.getSecond().setControl(new VelocityDutyCycle(Reference));
+    FIRING_CONTROLLERS.getFirst().setControl(new VelocityDutyCycle((Reference / (60d))));
+    FIRING_CONTROLLERS.getSecond().setControl(new VelocityDutyCycle((Reference / (60d))));
   }
 
   /**
@@ -227,11 +238,57 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     set(Reference);
   }
 
-  @Override
-  public void configure(final Operator<Keybindings, Preferences> Profile) {
-    Operator = Profile;
+  /**
+   * Utility method for quickly adding button bindings to reach a given rotation, and reset to default
+   * @param Keybinding Trigger to bind this association to
+   * @param Rotation   Value of rotation to bring to pivot to
+   * @param Velocity   Value of velocity to bring the firing controllers to
+   */
+  private void with(final Trigger Keybinding, final Double Rotation, final Double RPM) {
     with(() -> {
-      Operator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
+      Keybinding.onTrue(new InstantCommand(
+        () -> {
+          Reference.angle = Rotation2d.fromRadians(Rotation);
+          set(RPM);
+        },
+        SuperstructureSubsystem.getInstance()
+      ));
+      Keybinding.onFalse(new InstantCommand(
+        () -> {
+          Reference.angle = Rotation2d.fromRadians(Measurements.PIVOT_MINIMUM_ROTATION);
+          FIRING_CONTROLLERS.getFirst().set((Measurements.FIRING_IDLE_PERCENT));
+          FIRING_CONTROLLERS.getSecond().set((Measurements.FIRING_IDLE_PERCENT));
+        },
+        SuperstructureSubsystem.getInstance()
+      ));
+    });
+  }
+
+  @Override
+  public void configure(final Operator<Keybindings, Preferences> Operator) {
+    SuperstructureSubsystem.Operator = Operator;
+    with(
+      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_SUBWOOFER),
+      Measurements.SUBWOOFER_LINE,
+      Measurements.SUBWOOFER_RPM
+      );
+    with(
+      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_WINGLINE),
+      Measurements.WING_LINE,
+      Measurements.SUBWOOFER_RPM
+      );
+    with(
+      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_PODIUMLINE),
+      Measurements.PODIUM_LINE,
+      Measurements.SUBWOOFER_RPM
+      );
+    with(
+      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_STARTING_LINE),
+      Measurements.STARTING_LINE,
+      Measurements.SUBWOOFER_RPM
+      );
+    with(() -> {
+      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
         .onTrue(new InstantCommand(
           () -> {
             INTAKE_CONTROLLER.set((-1d));
@@ -239,7 +296,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
           },
           SuperstructureSubsystem.getInstance()
         ));
-      Operator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
+        SuperstructureSubsystem.Operator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
         .onFalse(new InstantCommand(
           () -> {
             INTAKE_CONTROLLER.set((0d));
@@ -249,7 +306,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       ));
     });
     with(() -> {
-      Operator.getKeybinding(Keybindings.INTAKE_TOGGLE)
+      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.INTAKE_TOGGLE)
         .onTrue(new InstantCommand(
           () -> {
             INTAKE_CONTROLLER.set((1d));
@@ -257,11 +314,28 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
           },
           SuperstructureSubsystem.getInstance()
         ));
-      Operator.getKeybinding(Keybindings.INTAKE_TOGGLE)
+        SuperstructureSubsystem.Operator.getKeybinding(Keybindings.INTAKE_TOGGLE)
         .onFalse(new InstantCommand(
           () -> {
             INTAKE_CONTROLLER.set((0d));
             INDEXER_CONTROLLER.set((0d));
+          },
+          SuperstructureSubsystem.getInstance()
+        ));
+    });
+    with(() -> {
+      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_TOGGLE)
+        .onTrue(new InstantCommand(
+          () -> {
+            set(Measurements.FIRING_STANDARD_VELOCITY);
+          },
+          SuperstructureSubsystem.getInstance()
+        ));
+        SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_TOGGLE)
+        .onFalse(new InstantCommand(
+          () -> {
+            FIRING_CONTROLLERS.getFirst().set((0d));
+            FIRING_CONTROLLERS.getSecond().set((0d));
           },
           SuperstructureSubsystem.getInstance()
         ));

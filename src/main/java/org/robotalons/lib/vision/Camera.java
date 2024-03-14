@@ -28,8 +28,7 @@ import java.util.stream.Stream;
  */
 public abstract class Camera implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  protected final CameraStatusContainerAutoLogged CAMERA_STATUS = new CameraStatusContainerAutoLogged();
-  protected final TargetStatusContainerAutoLogged TARGET_STATUS = new TargetStatusContainerAutoLogged();
+  protected final CameraStatusContainerAutoLogged STATUS = new CameraStatusContainerAutoLogged();
   protected final NetworkTable INSTANCE;
   protected final Transform3d OFFSET;
   protected final String IDENTITY;
@@ -92,7 +91,7 @@ public abstract class Camera implements Closeable {
    * @return Position of the object relative to the field
    */
   public Optional<Pose2d> getObjectFieldPose(final Transform2d Target){
-    return Optional.ofNullable(TARGET_STATUS.BestTargetPose);
+    return Optional.ofNullable(STATUS.OptimalTargetPose);
   }
 
   /**
@@ -101,7 +100,7 @@ public abstract class Camera implements Closeable {
    * @return Position of the object relative to the field
    */
   public Optional<Pose2d> getObjectFieldPose(){
-    return Optional.ofNullable(TARGET_STATUS.BestTargetPose);
+    return Optional.ofNullable(STATUS.OptimalTargetPose);
   }
 
   /**
@@ -127,7 +126,7 @@ public abstract class Camera implements Closeable {
    * @return List of robot relative snapshot time deltas
    */
   public double[] getRobotPositionTimestamps(){
-    return CAMERA_STATUS.Timestamps;
+    return STATUS.Timestamps;
   }
 
   /**
@@ -135,7 +134,7 @@ public abstract class Camera implements Closeable {
    * @return List of Poses of the robot since the last control cycle
    */
   public Pose2d[] getRobotPositionDeltas(){
-    return CAMERA_STATUS.Deltas;
+    return STATUS.Deltas;
   };
 
   /**
@@ -156,8 +155,8 @@ public abstract class Camera implements Closeable {
    * Provides a list of robot-relative transformations to the best target within view of the camera
    * @return List of robot-relative target transformations
    */
-  public List<Optional<Transform2d>> getTargets(){
-    return Stream.of(TARGET_STATUS.Targets).map(Optional::ofNullable).toList();
+  public List<Transform2d> getTargets(){
+    return Stream.of(STATUS.RealizedTargets).toList();
   }
 
   /**
@@ -165,7 +164,7 @@ public abstract class Camera implements Closeable {
    * @return List of robot-relative target transformations
    */
   public boolean hasTargets(){
-    return TARGET_STATUS.HasTargets;
+    return STATUS.RealizedTargets.length > 0;
   }
 
 
@@ -174,38 +173,35 @@ public abstract class Camera implements Closeable {
    * @return Robot-relative best target transformation
    */
   public Optional<Transform2d> getOptimalTarget(){
-    return Optional.ofNullable(TARGET_STATUS.OptimalTransform);
+    final var Imprint = OFFSET.times((-1));
+    return Optional.ofNullable(
+      STATUS.OptimalTargetTransform
+        .plus(
+          new Transform2d(
+            Imprint.getTranslation().toTranslation2d(),
+            Imprint.getRotation().toRotation2d()
+      )));
   }
 
   /**
    * Provides the number of targets that is detected within the view of the camera
    * @return Number of targets detected by camera
    */
-  public int getNumTargets(){
-    return TARGET_STATUS.TotalTargets;
+  public int getTargetCount(){
+    return STATUS.RealizedTargets.length;
   }
 
   /**
    * Provides the identifier name of this camera, which is separate from the actual name on network tables
    * @return String representation of the camera's name
    */
-  public String getName() {
-    return CAMERA_STATUS.Name;
-  }
-
-  /**
-   * Provides the latency or 'lag' of the camera to retrieve information, should always be greater than 0d.
-   * @return Double representation of the latency to retrieve information
-   */
-  public Double getLatency() {
-    return CAMERA_STATUS.Latency;
-  }
+  public abstract String getName();
 
   /**
    * Provides a boolean representation of if the module is still connected to the system and all signals are okay.
    * @return Boolean representing Connectivity
    */
   public Boolean getConnected() {
-    return CAMERA_STATUS.Connected;
+    return STATUS.Connected;
   }
 }
