@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -88,6 +89,7 @@ public final class SubsystemManager extends SubsystemBase {
       Module.set(org.robotalons.lib.motion.actuators.Module.ReferenceType.STATE_CONTROL));
     Pathfinding.ensureInitialized();
     Pathfinding.setStartPosition(DrivebaseSubsystem.getPose().getTranslation());
+    configureAutonomous();
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
@@ -116,6 +118,20 @@ public final class SubsystemManager extends SubsystemBase {
       Terminal
     );
   }
+
+  private static void configureAutonomous(){
+    NamedCommands.registerCommand("Intake Note", SuperstructureSubsystem.grabNote());
+
+    NamedCommands.registerCommand("Expel Intake", SuperstructureSubsystem.expelNote());
+
+    NamedCommands.registerCommand("Shoot Podium", SuperstructureSubsystem.shootAtPodium());
+
+    NamedCommands.registerCommand("Shoot Subwoofer", SuperstructureSubsystem.shootAtSubwoofer());
+
+    NamedCommands.registerCommand("Shoot Wing", SuperstructureSubsystem.shootAtWing());
+
+  }
+
 
   /**
    * Provides the current chassis speeds
