@@ -29,7 +29,6 @@ import org.photonvision.PhotonUtils;
 import org.robotalons.crescendo.Constants.Profiles.Keybindings;
 import org.robotalons.crescendo.Constants.Profiles.Preferences;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
-import org.robotalons.crescendo.subsystems.elevator.Elevator;
 import org.robotalons.crescendo.subsystems.superstructure.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.superstructure.Constants.Ports;
 import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
@@ -66,7 +65,6 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   private static SuperstructureSubsystem Instance;
   // private static DigitalInput beamBreakSensorIntake = new DigitalInput(3);
   private static DigitalInput beamBreakSensorIndexer = new DigitalInput(1);
-  private static Elevator elevator = new Elevator();
 
 
   // ------------------------------------------------------------[Constructors]----------------------------------------------------------- //
@@ -121,7 +119,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     PIVOT_CONTROLLER_PID = new ProfiledPIDController(
       Measurements.PIVOT_P_GAIN,
       Measurements.PIVOT_I_GAIN,
-      Measurements.PIVOT_D_GAIN, new TrapezoidProfile.Constraints(4, 4));
+      Measurements.PIVOT_D_GAIN, new TrapezoidProfile.Constraints(8, 8)); 
     PIVOT_CONTROLLER.setInverted(Measurements.PIVOT_INVERTED);
     PIVOT_ABSOLUTE_ENCODER = new DutyCycleEncoder(Ports.PIVOT_ABSOLUTE_ENCODER_ID);
   }
@@ -258,21 +256,21 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * @param Rotation   Value of rotation to bring to pivot to
    * @param Velocity   Value of velocity to bring the firing controllers to
    */
-  private void with(final Trigger Keybinding, final Double Rotation, final Double percent) {
+  private void with(final Trigger Keybinding, final Double Rotation, final Double percentTop, final Double percentBottom) {
     with(() -> {
       Keybinding.whileTrue(new InstantCommand(
         () -> {
           Reference.angle = Rotation2d.fromRadians(Rotation);
-          FIRING_CONTROLLERS.getFirst().set((percent));
-          FIRING_CONTROLLERS.getSecond().set((percent));
+          FIRING_CONTROLLERS.getFirst().set((percentTop));
+          FIRING_CONTROLLERS.getSecond().set((percentBottom));
         },
         SuperstructureSubsystem.getInstance()
       ));
       Keybinding.whileFalse(new InstantCommand(
         () -> {
           Reference.angle = Rotation2d.fromRadians(Measurements.PIVOT_MINIMUM_ROTATION);
-          FIRING_CONTROLLERS.getFirst().set((0.1d));
-          FIRING_CONTROLLERS.getSecond().set((0.1d));
+          FIRING_CONTROLLERS.getFirst().set((0d));
+          FIRING_CONTROLLERS.getSecond().set((0d));
         },
         SuperstructureSubsystem.getInstance()
       ));
@@ -284,21 +282,21 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     SuperstructureSubsystem.Operator = Operator;
     with(
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_SUBWOOFER),
-      Measurements.SUBWOOFER_LINE,0.6);
+      Measurements.SUBWOOFER_LINE, 0.6, 0.6);
     with(
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_WINGLINE),
-      Measurements.WING_LINE, 0.8);
+      Measurements.WING_LINE, 0.8, 0.8);
     with(
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_PODIUMLINE),
-      Measurements.PODIUM_LINE, 0.6);
+      Measurements.PODIUM_LINE, 0.6, 0.6);
     with(
-      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_STARTING_LINE),
-      Measurements.STARTING_LINE, 0.6);
+      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.AMP_SCORE),
+      Measurements.AMP_SCORE, 0.005, 0.29);
     with(() -> {
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
         .onTrue(new InstantCommand(
           () -> {
-            INTAKE_CONTROLLER.set((1d));
+            INTAKE_CONTROLLER.set((-1d));
             INDEXER_CONTROLLER.set((-1d));
           },
           SuperstructureSubsystem.getInstance()
@@ -316,8 +314,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.INTAKE_TOGGLE)
         .onTrue(new InstantCommand(
           () -> {
-            INTAKE_CONTROLLER.set((1d));
-            INDEXER_CONTROLLER.set((1d));
+            runIntake();
           },
           SuperstructureSubsystem.getInstance()
         ));
@@ -326,58 +323,6 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
           () -> {
             INTAKE_CONTROLLER.set((0d));
             INDEXER_CONTROLLER.set((0d));
-          },
-          SuperstructureSubsystem.getInstance()
-      ));
-    });
-    with(() -> {
-      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.ELEVATOR_UP)
-        .onTrue(new InstantCommand(
-          () -> {
-            Elevator.setElevator(0.5);
-          },
-          SuperstructureSubsystem.getInstance()
-        ));
-        SuperstructureSubsystem.Operator.getKeybinding(Keybindings.ELEVATOR_UP)
-        .onFalse(new InstantCommand(
-          () -> {
-            Elevator.setElevator(0);
-          },
-          SuperstructureSubsystem.getInstance()
-      ));
-    });
-    with(() -> {
-      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.ELEVATOR_DOWN)
-        .onTrue(new InstantCommand(
-          () -> {
-            Elevator.setElevator(-0.3);
-          },
-          SuperstructureSubsystem.getInstance()
-        ));
-        SuperstructureSubsystem.Operator.getKeybinding(Keybindings.ELEVATOR_DOWN)
-        .onFalse(new InstantCommand(
-          () -> {
-            Elevator.setElevator(0);
-          },
-          SuperstructureSubsystem.getInstance()
-      ));
-    });
-    with(() -> {
-      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.ELEVATOR_OUTTAKE)
-        .onTrue(new InstantCommand(
-          () -> {
-            INTAKE_CONTROLLER.set((1d));
-            INDEXER_CONTROLLER.set((-1d));
-            Elevator.setRoller(1.0);
-          },
-          SuperstructureSubsystem.getInstance()
-        ));
-        SuperstructureSubsystem.Operator.getKeybinding(Keybindings.ELEVATOR_OUTTAKE)
-        .onFalse(new InstantCommand(
-          () -> {
-            INTAKE_CONTROLLER.set((0d));
-            INDEXER_CONTROLLER.set((0d));
-            Elevator.setRoller(0);
           },
           SuperstructureSubsystem.getInstance()
       ));
@@ -403,7 +348,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   }
 
   public static void runIntake(){
-    if(!beamBreakSensorIndexer.get()){
+    if(beamBreakSensorIndexer.get()){
       INTAKE_CONTROLLER.set(1);
       INDEXER_CONTROLLER.set(1);
     }

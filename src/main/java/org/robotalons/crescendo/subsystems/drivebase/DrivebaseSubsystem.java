@@ -319,15 +319,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
           DrivebaseSubsystem::toggleState,
           DrivebaseSubsystem.getInstance()
         )));
-
-    with(() ->
-      Operator.getKeybinding(Keybindings.PRECISION_TOGGLE)
-        .onTrue(new InstantCommand(
-          DrivebaseSubsystem::togglePrecision,
-          DrivebaseSubsystem.getInstance()
-        )));
-  
-
     with(() ->
       Operator.getKeybinding(Keybindings.ALIGNMENT_SPEAKER)
       .onTrue(new InstantCommand(

@@ -17,16 +17,17 @@ import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 public class Constants {
   // -------------------------------------------------------------[Internal]---------------------------------------------------------------//
   public static final class Measurements {
-    public static final Double ROBOT_LENGTH_METERS = Units.inchesToMeters((29));        
-    public static final Double ROBOT_WIDTH_METERS = Units.inchesToMeters((29));
+    public static final Double ROBOT_LENGTH_METERS = Units.inchesToMeters((29.5));        
+    public static final Double ROBOT_WIDTH_METERS = Units.inchesToMeters((29.5));
     public static final Double ROBOT_RADIUS_METERS = Math.hypot(ROBOT_LENGTH_METERS / (2.0), ROBOT_WIDTH_METERS / (2.0));      
     
-    public static final Double ROBOT_MAXIMUM_LINEAR_VELOCITY = Units.feetToMeters((15.4d));
+    public static final Double ROBOT_MAXIMUM_LINEAR_VELOCITY = Units.feetToMeters((16.6d));
     public static final Double ROBOT_MAXIMUM_ANGULAR_VELOCITY = ROBOT_MAXIMUM_LINEAR_VELOCITY / ROBOT_RADIUS_METERS;
 
     public static final Double ROBOT_MAXIMUM_LINEAR_ACCELERATION = Units.feetToMeters((9.5d));
     public static final Double ROBOT_MAXIMUM_ANGULAR_ACCELERATION = ROBOT_MAXIMUM_LINEAR_VELOCITY / ROBOT_RADIUS_METERS;
 
+<<<<<<< Updated upstream
     public static final Double ROBOT_TRANSLATION_KP = (1.35d);
     public static final Double ROBOT_TRANSLATION_KI = (0d);
     public static final Double ROBOT_TRANSLATION_KD = (0.05d);    
@@ -34,5 +35,14 @@ public class Constants {
     public static final Double ROBOT_ROTATIONAL_KP = (0.45d);
     public static final Double ROBOT_ROTATIONAL_KI = (0d);
     public static final Double ROBOT_ROTATIONAL_KD = (0.05d);
+=======
+    public static final Double ROBOT_TRANSLATION_KP = (0.05);
+    public static final Double ROBOT_TRANSLATION_KI = (0d);
+    public static final Double ROBOT_TRANSLATION_KD = (0d);    
+
+    public static final Double ROBOT_ROTATIONAL_KP = (0.05);
+    public static final Double ROBOT_ROTATIONAL_KI = (0d);
+    public static final Double ROBOT_ROTATIONAL_KD = (0d);
+>>>>>>> Stashed changes
   }
 }

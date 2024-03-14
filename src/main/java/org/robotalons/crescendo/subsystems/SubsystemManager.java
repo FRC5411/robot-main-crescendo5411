@@ -19,7 +19,6 @@ import org.littletonrobotics.junction.Logger;
 import org.robotalons.crescendo.Constants.Profiles.Keybindings;
 import org.robotalons.crescendo.Constants.Profiles.Preferences;
 import org.robotalons.crescendo.subsystems.Constants.Measurements;
-import org.robotalons.crescendo.subsystems.climb.ClimbSubsystem;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem;
 import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
@@ -44,7 +43,6 @@ public final class SubsystemManager extends SubsystemBase {
   public static final List<TalonSubsystemBase<Keybindings,Preferences>> SUBSYSTEMS;
   public static final TalonSubsystemBase<Keybindings,Preferences> DRIVEBASE;
   public static final TalonSubsystemBase<Keybindings,Preferences> CANNON;
-  public static final TalonSubsystemBase<Keybindings,Preferences> CLIMB;
   public static final TalonSubsystemBase<Keybindings,Preferences> VISION;
   public static final Field2d FIELD;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
@@ -55,17 +53,19 @@ public final class SubsystemManager extends SubsystemBase {
     FIELD = new Field2d();
     DRIVEBASE = DrivebaseSubsystem.getInstance();
     CANNON = SuperstructureSubsystem.getInstance();
-    CLIMB = ClimbSubsystem.getInstance();
     VISION = VisionSubsystem.getInstance();
     SUBSYSTEMS.add(DRIVEBASE);
     SUBSYSTEMS.add(CANNON);
-    SUBSYSTEMS.add(CLIMB);
     SUBSYSTEMS.add(VISION);
     AutoBuilder.configureHolonomic(
       DrivebaseSubsystem::getPose,
       DrivebaseSubsystem::set, 
       () -> DrivebaseSubsystem.getChassisSpeeds(),
+<<<<<<< Updated upstream
       (final ChassisSpeeds Demand) -> DrivebaseSubsystem.set(Demand.times((-1d))), 
+=======
+      (final ChassisSpeeds Demand) -> DrivebaseSubsystem.set(Demand.times((-1))), 
+>>>>>>> Stashed changes
       new HolonomicPathFollowerConfig(
         new PIDConstants(
           Constants.Measurements.ROBOT_TRANSLATION_KP,

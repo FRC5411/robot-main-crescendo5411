@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import org.robotalons.crescendo.Robot.RobotType;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
-import org.robotalons.crescendo.subsystems.climb.ClimbSubsystem;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem;
 import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
@@ -84,7 +83,6 @@ public final class Constants {
       OPERATORS.add(Operators.Primary.PROFILE);
       OPERATORS.add(Operators.Secondary.PROFILE);
 
-      DEFAULT.put(ClimbSubsystem.getInstance(), Operators.Secondary.PROFILE);
       DEFAULT.put(VisionSubsystem.getInstance(), Operators.Secondary.PROFILE);
       DEFAULT.put(DrivebaseSubsystem.getInstance(), Operators.Primary.PROFILE);
       DEFAULT.put(SuperstructureSubsystem.getInstance(), Operators.Secondary.PROFILE);
@@ -101,12 +99,20 @@ public final class Constants {
           .add(Preferences.TRANSLATION_Y_INPUT, () -> -INPUT_METHOD.getRawAxis((0)))
           .add(Preferences.ORIENTATION_T_INPUT, () -> INPUT_METHOD.getRawAxis((4)))
           .add(Preferences.SQUARED_INPUT, () -> (true))
+<<<<<<< Updated upstream
           .add(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (2e-1))
           .add(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (2e-1))
           .add(Preferences.ORIENTATION_DEADZONE, () -> (2e-1))
           .add(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.a())
           .add(Keybindings.PRECISION_TOGGLE, INPUT_METHOD.y())
           .add(Keybindings.ALIGNMENT_SPEAKER, INPUT_METHOD.x());
+=======
+          .add(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (2e-2))
+          .add(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (2e-2))
+          .add(Preferences.ORIENTATION_DEADZONE, () -> (2e-2))
+          .add(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.a());
+          
+>>>>>>> Stashed changes
       }
 
       public static final class Secondary {
@@ -116,16 +122,12 @@ public final class Constants {
         public static final Operator<Keybindings,Preferences> PROFILE = new Operator<Keybindings,Preferences>(NAME)
           .add(Keybindings.CANNON_PIVOT_PODIUMLINE, INPUT_METHOD.a())
           .add(Keybindings.CANNON_PIVOT_SUBWOOFER, INPUT_METHOD.b())
-          .add(Keybindings.CANNON_PIVOT_STARTING_LINE, INPUT_METHOD.x())
+          .add(Keybindings.AMP_SCORE, INPUT_METHOD.x())
           .add(Keybindings.CANNON_PIVOT_WINGLINE, INPUT_METHOD.y())
-          .add(Keybindings.CANNON_TOGGLE, Operators.Primary.INPUT_METHOD.leftBumper())
-          .add(Keybindings.CLIMB_ROTATE_BACKWARD, INPUT_METHOD.povDown())
-          .add(Keybindings.CLIMB_ROTATE_FORWARD, INPUT_METHOD.povUp())
+          .add(Keybindings.SHOOT_TOGGLE, INPUT_METHOD.rightBumper())
           .add(Keybindings.INTAKE_TOGGLE, Operators.Primary.INPUT_METHOD.leftTrigger())
-          .add(Keybindings.OUTTAKE_TOGGLE, Operators.Primary.INPUT_METHOD.rightTrigger())
-          .add(Keybindings.ELEVATOR_DOWN, INPUT_METHOD.povLeft())
-          .add(Keybindings.ELEVATOR_UP, INPUT_METHOD.povRight())
-          .add(Keybindings.ELEVATOR_OUTTAKE, INPUT_METHOD.rightBumper());
+          .add(Keybindings.OUTTAKE_TOGGLE, Operators.Primary.INPUT_METHOD.rightTrigger());
+          
 
 
       }
@@ -143,25 +145,19 @@ public final class Constants {
 
     public enum Keybindings {
       ORIENTATION_TOGGLE,
-      CLIMB_ROTATE_FORWARD,
-      CLIMB_ROTATE_BACKWARD,
-      PRECISION_TOGGLE,
       INTAKE_TOGGLE,
       OUTTAKE_TOGGLE,
       CANNON_TOGGLE,
       CANNON_PIVOT_WINGLINE,
       CANNON_PIVOT_SUBWOOFER,
-      CANNON_PIVOT_STARTING_LINE,
+      AMP_SCORE,
       CANNON_PIVOT_PODIUMLINE,
       CANNON_PIVOT_MAXIMUM,
       ALIGNMENT_SPEAKER,
       ALIGNMENT_AMP,
       ALIGNMENT_OBJECT,
       ALIGNMENT_NEAREST,
-      SHOOT_TOGGLE,
-      ELEVATOR_DOWN,
-      ELEVATOR_OUTTAKE,
-      ELEVATOR_UP
+      SHOOT_TOGGLE
     }
   }
 }

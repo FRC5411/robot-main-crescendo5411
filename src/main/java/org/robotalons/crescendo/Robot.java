@@ -2,7 +2,10 @@
 package org.robotalons.crescendo;
 import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.Timer;
@@ -11,6 +14,7 @@ import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -48,6 +52,11 @@ public final class Robot extends LoggedRobot {
   private static Double CurrentAutonomousStartTime;
   private static Command CurrentAutonomous;
   private static Robot Instance;
+  private static AddressableLED m_led;
+  private static AddressableLEDBuffer m_ledBuffer;
+  private double lastChange;
+  private boolean on = true;
+  //private DigitalInput beamBreakSensor = new DigitalInput(1);
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private Robot() {} static {
     CurrentAutonomous = (null);
@@ -145,6 +154,55 @@ public final class Robot extends LoggedRobot {
     DataLogManager.start();
     DriverStation.silenceJoystickConnectionWarning((true));
     PortForwarder.add((5800), ("photonvision.local"), (5800));
+
+    // PWM port 0
+    // Must be a PWM header, not MXP or DIO
+    m_led = new AddressableLED(0);
+
+    // Reuse buffer
+    // Default to a length of 60, start empty output
+    // Length is expensive to set, so only set it once, then just update data
+    m_ledBuffer = new AddressableLEDBuffer(26);
+    m_led.setLength(m_ledBuffer.getLength());
+
+    // Set the data
+    m_led.setData(m_ledBuffer);
+    m_led.start();
+
+    
+   
+   m_led.setData(m_ledBuffer);
+  }
+
+  
+
+  public void green(){
+    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+      // Sets the specified LED to the RGB values for red
+      m_ledBuffer.setRGB(i, 0, 255, 0);
+
+   }
+  }
+
+  public void white(){
+    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+      // Sets the specified LED to the RGB values for red
+      m_ledBuffer.setRGB(i, 255, 255, 255);
+
+   }
+  }
+
+  public void blinking(){
+    double timestamp = Timer.getFPGATimestamp();
+		if (timestamp- lastChange > 0.1){
+			on = !on;
+			lastChange = timestamp;
+		}
+		if (on){
+			green();
+		} else {
+			white();
+		}
   }
 
   @Override
@@ -165,7 +223,15 @@ public final class Robot extends LoggedRobot {
       }
     }
     Logger.recordOutput(("Match Time"), DriverStation.getMatchTime());
+
+    // //if(!beamBreakSensor.get()){
+
+    // //} else {
+     green();
+    // //}
+    m_led.setData(m_ledBuffer);
   }
+  
 
   // ------------------------------------------------------------[Simulation]---------------------------------------------------------------//
   @Override
