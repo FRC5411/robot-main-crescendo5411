@@ -43,7 +43,7 @@ public class TrajectorySolver implements Callable<Optional<TrajectoryObject>>, C
   private volatile Double HorizonConstant;
   // ----------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
-   * Solver Constructor.
+ 
    * @throws InstantiationError When attempting to create more valid instances then what is allowed for this type
    */
   public TrajectorySolver() throws InstantiationError {

@@ -10,8 +10,11 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -250,6 +253,42 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     return beamBreakSensorIndexer;
   }
 
+  public static synchronized Command grabNote(){
+    return new InstantCommand(() -> runIntake());
+  }
+
+  public static synchronized Command expelNote(){
+    return new InstantCommand(() -> expelIntake());
+  }
+
+  public static synchronized Command shootAtSubwoofer(){
+    Reference.angle = Rotation2d.fromRadians(41.7d);
+    return new SequentialCommandGroup( 
+      new InstantCommand(() -> movePivotSubwoofer()),
+      new WaitCommand(1),
+      new InstantCommand(() -> shoot(0.6))
+    );
+  }
+
+  public static synchronized Command shootAtWing(){
+    Reference.angle = Rotation2d.fromRadians(41.7d);
+    return new SequentialCommandGroup( 
+      new InstantCommand(() -> moveWingLine()),
+      new WaitCommand(1),
+      new InstantCommand(() -> shoot(0.8))
+    );
+  }
+
+  public static synchronized Command shootAtPodium(){
+    Reference.angle = Rotation2d.fromRadians(41.7d);
+    return new SequentialCommandGroup( 
+      new InstantCommand(() -> movePodiumLine()),
+      new WaitCommand(1),
+      new InstantCommand(() -> shoot(0.6))
+    );
+  }
+
+
   /**
    * Utility method for quickly adding button bindings to reach a given rotation, and reset to default
    * @param Keybinding Trigger to bind this association to
@@ -357,6 +396,34 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       INDEXER_CONTROLLER.set(0);
     }
   }
+
+  public static void expelIntake(){
+    INTAKE_CONTROLLER.set(-1);
+    INDEXER_CONTROLLER.set(-1);
+  }
+  
+  public static void movePivotSubwoofer(){
+    set(Rotation2d.fromDegrees(Measurements.SUBWOOFER_LINE));
+  }
+
+  public static void moveStartingLine(){
+    set(Rotation2d.fromDegrees(Measurements.STARTING_LINE));
+  }
+
+  public static void movePodiumLine(){
+    set(Rotation2d.fromDegrees(Measurements.PODIUM_LINE));
+  }
+
+  public static void moveWingLine(){
+    set(Rotation2d.fromDegrees(Measurements.WING_LINE));
+  }
+
+  public static void shoot(final Double applied){
+    FIRING_CONTROLLERS.getFirst().set((applied));
+    FIRING_CONTROLLERS.getSecond().set((applied));
+    }
+
+
   // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
   /**
    * Retrieves the existing instance of this static utility class

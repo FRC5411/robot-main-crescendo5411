@@ -5,7 +5,6 @@ import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.Timer;
@@ -14,7 +13,6 @@ import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -194,15 +192,15 @@ public final class Robot extends LoggedRobot {
 
   public void blinking(){
     double timestamp = Timer.getFPGATimestamp();
-		if (timestamp- lastChange > 0.1){
-			on = !on;
-			lastChange = timestamp;
-		}
-		if (on){
-			green();
-		} else {
-			white();
-		}
+    if (timestamp- lastChange > 0.1){
+      on = !on;
+      lastChange = timestamp;
+    }
+    if (on){
+      green();
+    } else {
+      white();
+    }
   }
 
   @Override

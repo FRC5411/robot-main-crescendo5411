@@ -4,12 +4,12 @@
 
 package org.robotalons.crescendo.subsystems.led;
 
-import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem;
-
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+
+import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem;
 
 public class LEDStrip extends SubsystemBase {
   public static AddressableLED M_LED;
