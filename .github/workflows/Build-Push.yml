@@ -1,18 +1,23 @@
 name: Gradle Build
 
 on:
-  push:
-  pull_request:
+  [push, pull_request, fork]
 
 jobs:
   build:
-    name: Build
+    name: Build Project
     runs-on: ubuntu-latest
     container: wpilib/roborio-cross-ubuntu:2024-22.04
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Grant execute permission
-        run: chmod +x gradlew
-      - name: Build robot code
-        run: ./gradlew build --scan
+    - uses: actions/checkout@v3
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    - name: Grant execute permission
+      run: chmod +x gradlew
+    - name: Build with Gradle
+      uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25
+      with:
+        arguments: build --scan -x createVersionFile -x spotlessGroovyGradle -x spotlessApply
