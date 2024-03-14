@@ -78,8 +78,8 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     Reference = new SwerveModuleState((0d), Rotation2d.fromRotations(Measurements.PIVOT_MINIMUM_ROTATION));
     State = SuperstructureState.MANUAL;
     FIRING_CONTROLLERS = new Pair<TalonFX,TalonFX>(
-      new TalonFX(Ports.FIRING_CONTROLLER_LEFT_ID),
-      new TalonFX(Ports.FIRING_CONTROLLER_RIGHT_ID)
+      new TalonFX(Ports.FIRING_CONTROLLER_LEFT_ID, "drivetrain/shooter"),
+      new TalonFX(Ports.FIRING_CONTROLLER_RIGHT_ID, "drivetrain/shooter")
     );
 
     FIRING_CONTROLLERS.getFirst().getConfigurator().apply(new SlotConfigs()
@@ -312,7 +312,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     });
     with(() -> {
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.INTAKE_TOGGLE)
-        .onTrue(new InstantCommand(
+        .whileTrue(new InstantCommand(
           () -> {
             runIntake();
           },
@@ -348,14 +348,18 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   }
 
   public static void runIntake(){
-    if(beamBreakSensorIndexer.get()){
-      INTAKE_CONTROLLER.set(1);
-      INDEXER_CONTROLLER.set(1);
-    }
-    else{
+    if(!beamBreakSensorIndexer.get()){
       INTAKE_CONTROLLER.set(0);
       INDEXER_CONTROLLER.set(0);
     }
+    else{
+      INTAKE_CONTROLLER.set(1);
+      INDEXER_CONTROLLER.set(0.2);
+    }
+  }
+
+  public static boolean getIndexerSensor(){
+    return beamBreakSensorIndexer.get();
   }
   // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
   /**

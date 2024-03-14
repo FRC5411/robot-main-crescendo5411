@@ -93,11 +93,11 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kI, 
       MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kD);
     ROTATIONAL_ENCODER = ROTATIONAL_CONTROLLER.getEncoder();
-    ABSOLUTE_ENCODER = new CANcoder(MODULE_CONSTANTS.ABSOLUTE_ENCODER_PORT);
+    ABSOLUTE_ENCODER = new CANcoder(MODULE_CONSTANTS.ABSOLUTE_ENCODER_PORT,  "drivetrain/shooter");
 
-    try {
-      wait(ABSOLUTE_ENCODER_WAIT_TIMEOUT);
-    } catch (final InterruptedException Ignored) {}
+    // try {
+    //   wait(ABSOLUTE_ENCODER_WAIT_TIMEOUT);
+    // } catch (final InterruptedException Ignored) {}
 
     RotationalAbsoluteOffset = MODULE_CONSTANTS.ROTATIONAL_ENCODER_OFFSET;
     ODOMETRY_LOCK = new ReentrantLock();

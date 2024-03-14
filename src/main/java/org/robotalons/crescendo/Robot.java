@@ -27,6 +27,8 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonVersion;
 import org.robotalons.crescendo.Constants.Logging;
 import org.robotalons.crescendo.Constants.Subsystems;
+import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem;
+import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem.SuperstructureState;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.REVOdometryThread;
 import org.robotalons.lib.utilities.Alert;
@@ -187,7 +189,7 @@ public final class Robot extends LoggedRobot {
   public void white(){
     for (var i = 0; i < m_ledBuffer.getLength(); i++) {
       // Sets the specified LED to the RGB values for red
-      m_ledBuffer.setRGB(i, 255, 255, 255);
+      m_ledBuffer.setRGB(i, 0, 0, 0);
 
    }
   }
@@ -224,11 +226,11 @@ public final class Robot extends LoggedRobot {
     }
     Logger.recordOutput(("Match Time"), DriverStation.getMatchTime());
 
-    // //if(!beamBreakSensor.get()){
-
-    // //} else {
+    if(!SuperstructureSubsystem.getIndexerSensor()){
+      blinking();
+    } else {
      green();
-    // //}
+    }
     m_led.setData(m_ledBuffer);
   }
   

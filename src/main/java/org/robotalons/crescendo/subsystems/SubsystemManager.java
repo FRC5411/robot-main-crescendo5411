@@ -61,11 +61,7 @@ public final class SubsystemManager extends SubsystemBase {
       DrivebaseSubsystem::getPose,
       DrivebaseSubsystem::set, 
       () -> DrivebaseSubsystem.getChassisSpeeds(),
-<<<<<<< Updated upstream
-      (final ChassisSpeeds Demand) -> DrivebaseSubsystem.set(Demand.times((-1d))), 
-=======
       (final ChassisSpeeds Demand) -> DrivebaseSubsystem.set(Demand.times((-1))), 
->>>>>>> Stashed changes
       new HolonomicPathFollowerConfig(
         new PIDConstants(
           Constants.Measurements.ROBOT_TRANSLATION_KP,
@@ -136,6 +132,7 @@ public final class SubsystemManager extends SubsystemBase {
   public static List<TalonSubsystemBase<Keybindings, Preferences>> getSubsystems() {
     return SUBSYSTEMS;
   }
+  
 
   /**
    * Retrieves the existing instance of this static utility class
