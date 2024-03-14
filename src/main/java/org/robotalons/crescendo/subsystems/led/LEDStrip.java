@@ -17,8 +17,8 @@ public class LEDStrip extends SubsystemBase {
 
   /** Creates a new LEDStrip. */
   public LEDStrip(int LENGTH, int PORT) {
-    M_LED = new AddressableLED(9);
-    M_LEDBUFFER = new AddressableLEDBuffer(60);
+    M_LED = new AddressableLED(PORT);
+    M_LEDBUFFER = new AddressableLEDBuffer(LENGTH);
     M_LED.setLength(M_LEDBUFFER.getLength());
     M_LED.setData(M_LEDBUFFER);
     M_LED.start();
@@ -68,8 +68,12 @@ public class LEDStrip extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    while(SuperstructureSubsystem.getBeamSensorState()){
+    if(SuperstructureSubsystem.getNoteDetector().get()){
       blinkGreen();
+    }
+
+    else{
+      setPurple();
     }
   }
 }

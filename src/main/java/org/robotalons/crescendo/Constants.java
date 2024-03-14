@@ -123,7 +123,11 @@ public final class Constants {
           .add(Keybindings.CLIMB_ROTATE_FORWARD, INPUT_METHOD.povUp())
           .add(Keybindings.INTAKE_TOGGLE, Operators.Primary.INPUT_METHOD.leftTrigger())
           .add(Keybindings.OUTTAKE_TOGGLE, Operators.Primary.INPUT_METHOD.rightTrigger())
-          .add(Keybindings.SHOOT_TOGGLE, INPUT_METHOD.rightBumper());
+          .add(Keybindings.ELEVATOR_DOWN, INPUT_METHOD.povLeft())
+          .add(Keybindings.ELEVATOR_UP, INPUT_METHOD.povRight())
+          .add(Keybindings.ELEVATOR_OUTTAKE, INPUT_METHOD.rightBumper());
+
+
       }
     }
 
@@ -154,7 +158,10 @@ public final class Constants {
       ALIGNMENT_AMP,
       ALIGNMENT_OBJECT,
       ALIGNMENT_NEAREST,
-      SHOOT_TOGGLE
+      SHOOT_TOGGLE,
+      ELEVATOR_DOWN,
+      ELEVATOR_OUTTAKE,
+      ELEVATOR_UP
     }
   }
 }
