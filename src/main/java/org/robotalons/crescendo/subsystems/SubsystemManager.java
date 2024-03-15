@@ -33,7 +33,7 @@ import java.util.List;
  *
  *
  * <h1>Subsystem Manager</h1>
- *
+ *W
  * <p>Contains implementation for subsystems interfacing between each other to receive serialized information./p>
  *
  * @see SubsystemBase
@@ -48,6 +48,7 @@ public final class SubsystemManager extends SubsystemBase {
   public static final Field2d FIELD;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static SubsystemManager Instance;
+  private static Pose2d Drivebase;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private SubsystemManager() {} static {
     SUBSYSTEMS = new ArrayList<>();
@@ -59,8 +60,8 @@ public final class SubsystemManager extends SubsystemBase {
     SUBSYSTEMS.add(CANNON);
     SUBSYSTEMS.add(VISION);
     AutoBuilder.configureHolonomic(
-      DrivebaseSubsystem::getPose,
-      DrivebaseSubsystem::set, 
+      () -> Drivebase,
+      (Pose) -> Drivebase = Pose, 
       () -> DrivebaseSubsystem.getChassisSpeeds(),
       (final ChassisSpeeds Demand) -> DrivebaseSubsystem.set(Demand.times((-1))), 
       new HolonomicPathFollowerConfig(
@@ -118,7 +119,7 @@ public final class SubsystemManager extends SubsystemBase {
       Terminal
     );
   }
-  
+
   public synchronized static void configureAutonomous(){
     NamedCommands.registerCommand("Intake Note", SuperstructureSubsystem.grabNote());
     NamedCommands.registerCommand("Shoot Subwoofer ", SuperstructureSubsystem.shoot(0.6));

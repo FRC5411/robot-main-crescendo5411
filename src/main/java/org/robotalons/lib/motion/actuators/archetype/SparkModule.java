@@ -42,7 +42,7 @@ import java.util.stream.IntStream;
  */
 public class SparkModule<Controller extends CANSparkMax> extends Module {
   // --------------------------------------------------------------[Constants]----------------------------------------------------------------//
-  private static final Long ABSOLUTE_ENCODER_WAIT_TIMEOUT = (100L);
+  private static final Long ABSOLUTE_ENCODER_WAIT_TIMEOUT = (1000L);
 
   private final Controller TRANSLATIONAL_CONTROLLER;
   private final PIDController TRANSLATIONAL_PID;
