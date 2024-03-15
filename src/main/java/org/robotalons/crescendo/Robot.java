@@ -274,25 +274,29 @@ public final class Robot extends LoggedRobot {
     CurrentAutonomousStartTime = Timer.getFPGATimestamp();
     CurrentAutonomous = RobotContainer.AutonomousSelector.get();
     if(!java.util.Objects.isNull(CurrentAutonomous)) {
-      CurrentAutonomous
-        .beforeStarting(() -> SubsystemManager.setAutonomousStatus((false)))
-        .onlyWhile(SubsystemManager::getAutonomousStatus)
-        .finallyDo(() -> SubsystemManager.setAutonomousStatus((true))).schedule();
+      CurrentAutonomous.schedule();
     }
 
 
     CurrentAutonomous.cancel();
     SequentialCommandGroup auton2 = new SequentialCommandGroup(
       SuperstructureSubsystem.movePivotSubwoofer(),
-      SuperstructureSubsystem.shoot(0.6),
-      new WaitCommand(0.1),
+      SuperstructureSubsystem.shoot((500d)),
+      new WaitCommand(1.5d),
+      SuperstructureSubsystem.shoot(),
+      new WaitCommand(1.5d),
       SuperstructureSubsystem.runAutonIntake(),
-      DrivebaseSubsystem.autonSet(new Translation2d(0.5d, 0d), new Rotation2d()),
-      new WaitCommand(0.5),
+      DrivebaseSubsystem.autonSet(new Translation2d(0.05d, 0d), new Rotation2d()),
+      new WaitCommand(1.9d),
       DrivebaseSubsystem.autonSet(),
       SuperstructureSubsystem.stopAutonIntake(),
-      SuperstructureSubsystem.movePodiumLine(),
-      SuperstructureSubsystem.shoot(0.6)
+      DrivebaseSubsystem.autonSet(new Translation2d(-0.05d, 0d), new Rotation2d()),
+      new WaitCommand(1.55d),
+      SuperstructureSubsystem.shoot((500d)),
+      new WaitCommand(0.2d),
+      SuperstructureSubsystem.shootConfirm(),
+      new WaitCommand(1.5d),
+      SuperstructureSubsystem.shoot()
     );
 
     auton2.schedule();

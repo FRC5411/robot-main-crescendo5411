@@ -393,7 +393,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
 
   public static void runIntake(){
     INTAKE_CONTROLLER.set(1);
-    INDEXER_CONTROLLER.set(0.2);
+    INDEXER_CONTROLLER.set(0.5);
   }
 
   public static void stopIntake(){
@@ -436,7 +436,20 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
 
   public static Command shoot(final Double applied){
     return new InstantCommand(() -> set((applied)), getInstance());
-    }
+  }
+
+  public static Command shoot() {
+    return new InstantCommand(() -> {
+      FIRING_CONTROLLERS.getFirst().stopMotor();
+      FIRING_CONTROLLERS.getSecond().stopMotor();
+    }, getInstance());
+  }
+
+  public static Command shootConfirm() {
+    return new InstantCommand(() -> {
+      INDEXER_CONTROLLER.set(0.2);
+    }, getInstance());
+  }
 
 
   // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
