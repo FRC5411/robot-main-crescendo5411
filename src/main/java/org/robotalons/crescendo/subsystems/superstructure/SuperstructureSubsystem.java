@@ -5,7 +5,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -428,9 +427,8 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     set(Rotation2d.fromDegrees(Measurements.WING_LINE));
   }
 
-  public static void shoot(final Double applied){
-    FIRING_CONTROLLERS.getFirst().set((applied));
-    FIRING_CONTROLLERS.getSecond().set((applied));
+  public static Command shoot(final Double applied){
+    return new InstantCommand(() -> set((applied)));
     }
 
 

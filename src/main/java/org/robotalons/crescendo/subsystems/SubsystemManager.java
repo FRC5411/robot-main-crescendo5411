@@ -5,7 +5,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -123,17 +122,8 @@ public final class SubsystemManager extends SubsystemBase {
 
   public synchronized static void configureAutonomous(){
     NamedCommands.registerCommand("Intake Note", SuperstructureSubsystem.grabNote());
-
-    NamedCommands.registerCommand("Expel Intake", SuperstructureSubsystem.expelNote());
-
-    NamedCommands.registerCommand("Shoot Podium", SuperstructureSubsystem.shootAtPodium());
-
-    NamedCommands.registerCommand("Shoot Subwoofer", SuperstructureSubsystem.shootAtSubwoofer());
-
-    NamedCommands.registerCommand("Shoot Wing", SuperstructureSubsystem.shootAtWing());
-
-    NamedCommands.registerCommand("Reset Wheels", new InstantCommand(
-      DrivebaseSubsystem::set, DrivebaseSubsystem.getInstance()));
+    NamedCommands.registerCommand("Shoot Subwoofer ", SuperstructureSubsystem.shoot(0.6));
+    NamedCommands.registerCommand("Pivot Subwoofer", SuperstructureSubsystem.shootAtSubwoofer());
 
   }
 

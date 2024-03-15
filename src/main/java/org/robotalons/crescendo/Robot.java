@@ -27,7 +27,7 @@ import org.robotalons.crescendo.Constants.Logging;
 import org.robotalons.crescendo.Constants.Subsystems;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
 import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem;
-import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem.SuperstructureState;
+import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.REVOdometryThread;
 import org.robotalons.lib.utilities.Alert;
@@ -267,6 +267,8 @@ public final class Robot extends LoggedRobot {
     if(!java.util.Objects.isNull(CurrentAutonomous)) {
       CurrentAutonomous.onlyIf(() -> !SubsystemManager.HasrunOnce).finallyDo(() -> SubsystemManager.HasrunOnce = (true)).schedule();
     }
+
+    SubsystemManager.configureAutonomous();
   }
 
   @Override
