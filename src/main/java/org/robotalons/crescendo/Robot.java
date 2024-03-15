@@ -272,11 +272,10 @@ public final class Robot extends LoggedRobot {
   public void autonomousInit() {
     CurrentAutonomousMessagePrinted = (false);
     CurrentAutonomousStartTime = Timer.getFPGATimestamp();
-    CurrentAutonomous = RobotContainer.AutonomousSelector.get();
-    if(!java.util.Objects.isNull(CurrentAutonomous)) {
-      CurrentAutonomous.schedule();
-    }
-
+    // CurrentAutonomous = RobotContainer.AutonomousSelector.get();
+    // if(!java.util.Objects.isNull(CurrentAutonomous)) {
+    //   CurrentAutonomous.schedule();
+    // }
 
     CurrentAutonomous.cancel();
     SequentialCommandGroup auton2 = new SequentialCommandGroup(
@@ -285,18 +284,18 @@ public final class Robot extends LoggedRobot {
       new WaitCommand(1.5d),
       SuperstructureSubsystem.shoot(),
       new WaitCommand(1.5d),
-      SuperstructureSubsystem.runAutonIntake(),
-      DrivebaseSubsystem.autonSet(new Translation2d(0.05d, 0d), new Rotation2d()),
-      new WaitCommand(1.9d),
-      DrivebaseSubsystem.autonSet(),
-      SuperstructureSubsystem.stopAutonIntake(),
-      DrivebaseSubsystem.autonSet(new Translation2d(-0.05d, 0d), new Rotation2d()),
-      new WaitCommand(1.55d),
-      SuperstructureSubsystem.shoot((500d)),
-      new WaitCommand(0.2d),
-      SuperstructureSubsystem.shootConfirm(),
-      new WaitCommand(1.5d),
-      SuperstructureSubsystem.shoot()
+      SuperstructureSubsystem.runAutonIntake()
+      //DrivebaseSubsystem.autonSet(new Translation2d(0.05d, 0d), new Rotation2d()),
+      // new WaitCommand(1.9d),
+      // DrivebaseSubsystem.autonSet(),
+      // SuperstructureSubsystem.stopAutonIntake(),
+      //DrivebaseSubsystem.autonSet(new Translation2d(-0.05d, 0d), new Rotation2d()),
+      // new WaitCommand(1.55d),
+      // SuperstructureSubsystem.shoot((500d)),
+      // new WaitCommand(0.2d),
+      // SuperstructureSubsystem.shootConfirm(),
+      // new WaitCommand(1.5d),
+      // SuperstructureSubsystem.shoot()
     );
 
     auton2.schedule();

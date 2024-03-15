@@ -393,7 +393,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
 
   public static void runIntake(){
     INTAKE_CONTROLLER.set(1);
-    INDEXER_CONTROLLER.set(0.5);
+    INDEXER_CONTROLLER.set(0.2);
   }
 
   public static void stopIntake(){
