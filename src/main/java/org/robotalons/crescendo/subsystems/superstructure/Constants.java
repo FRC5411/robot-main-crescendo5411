@@ -69,8 +69,8 @@ public class Constants {
 
     public static final Double ALLOWABLE_SHOT_PERCENTAGE = (95e-2);
 
-    public static final Matrix<N2,N1> PIVOT_UPPER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), new double[]{FIRING_STANDARD_VELOCITY, (Units.degreesToRadians((29d)))});
-    public static final Matrix<N2,N1> PIVOT_LOWER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), new double[]{FIRING_STANDARD_VELOCITY, (Units.degreesToRadians((55d)))});
+    public static final Matrix<N2,N1> PIVOT_UPPER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), FIRING_STANDARD_VELOCITY, (Units.degreesToRadians((29d))));
+    public static final Matrix<N2,N1> PIVOT_LOWER_BOUND = MatBuilder.fill(Nat.N2(), Nat.N1(), FIRING_STANDARD_VELOCITY, (Units.degreesToRadians((55d))));
 
     public static final InterpolatingMatrixTreeMap<Double,N2,N1> PIVOT_FIRING_MAP = new InterpolatingMatrixTreeMap<>();
 
@@ -94,7 +94,7 @@ public class Constants {
 
     /**
      * Quickly puts the data of a given successful shot relative to the height of the target
-     * @param Magnitude Measured magnitude of the triangle formed by the distance lengthwise and heightwise to a given target
+     * @param Magnitude Measured magnitude of the triangle formed by the distance lengthwise and height-wise to a given target
      * @param Velocity  Measured shooter velocity in RPM
      * @param Rotation  Measured shooter rotation in radians
      */
@@ -125,9 +125,4 @@ public class Constants {
   public static final class Objects {
     public static final Lock ODOMETRY_LOCKER = new ReentrantLock();
   }
-
-  public static final class Devices {
-
-  }
-
 }

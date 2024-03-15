@@ -71,7 +71,7 @@ public final class VisionCamera extends Camera {
   public synchronized void periodic(){
     if(CAMERA.isConnected()) {
       update();    
-      getRobotPosition().ifPresent((Pose) -> POSE_ESTIMATOR.setLastPose(Pose));
+      getRobotPosition().ifPresent(POSE_ESTIMATOR::setLastPose);
     }
   }
 
@@ -90,7 +90,7 @@ public final class VisionCamera extends Camera {
             STATUS.OptimalTargetTransform = Target;
             STATUS.OptimalTargetPose = getObjectFieldPose(Target).get();
           });
-          STATUS.RealizedTargets = getTargets().stream().toArray(Transform2d[]::new);
+          STATUS.RealizedTargets = getTargets().toArray(Transform2d[]::new);
           Logger.processInputs(IDENTITY + "/Target", STATUS);
         }
       }
@@ -125,18 +125,17 @@ public final class VisionCamera extends Camera {
     final var Y_Estimates = new double[POSES.size()];
     final var Z_Estimates = new double[POSES.size()];  
 
-    for(Integer Index = (0); Index < POSES.size(); Index++){
+    for(int Index = (0); Index < POSES.size(); Index++){
       final var Estimate = POSES.get(Index);
       X_Estimates[Index] = Estimate.getX();
       Y_Estimates[Index] = Estimate.getY();
       Z_Estimates[Index] = Estimate.getZ();
     }
 
-    return MatBuilder.fill(Nat.N3(), Nat.N1(), new double[] {
+    return MatBuilder.fill(Nat.N3(), Nat.N1(),
       MathUtilities.standardDeviation(X_Estimates),
       MathUtilities.standardDeviation(Y_Estimates),
-      MathUtilities.standardDeviation(Z_Estimates)
-    });
+      MathUtilities.standardDeviation(Z_Estimates));
   }
  
   @Override
@@ -157,7 +156,7 @@ public final class VisionCamera extends Camera {
   @Override
   public Pose2d[] getRobotPositionDeltas() {
     final Pose2d[] Deltas = new Pose2d[POSES.size()];
-    for(Integer Index = (0); Index < POSES.size() - (1); Index++){
+    for(int Index = (0); Index < POSES.size() - (1); Index++){
       final var Previous = POSES.get(Index);
       final var Current = POSES.get(Index + (1));
       Deltas[Index] = new Pose2d(
@@ -198,7 +197,7 @@ public final class VisionCamera extends Camera {
       if(RobotEstimate.isEmpty() || OptimalEstimate.isEmpty()){
         return Optional.empty();
       } 
-      return Optional.ofNullable(new Pose2d(
+      return Optional.of(new Pose2d(
         (OptimalEstimate.get().getX() + RobotEstimate.get().getX()),
         (OptimalEstimate.get().getY() + RobotEstimate.get().getY()),
         new Rotation2d()
@@ -211,12 +210,9 @@ public final class VisionCamera extends Camera {
   public Optional<Pose2d> getObjectFieldPose(final Transform2d Target) {
     if(CAMERA.isConnected()) {
       final var RobotEstimate = getRobotPosition();
-      if(RobotEstimate.isEmpty()){
-        return Optional.empty();
-      } 
-      return Optional.ofNullable(new Pose2d(
-        (Target.getX() + RobotEstimate.get().getX()),
-        (Target.getY() + RobotEstimate.get().getY()),
+      return RobotEstimate.map(pose3d -> new Pose2d(
+        (Target.getX() + pose3d.getX()),
+        (Target.getY() + pose3d.getY()),
         new Rotation2d()
       ));
     }
@@ -232,7 +228,7 @@ public final class VisionCamera extends Camera {
       }
       return CAMERA.getLatestResult().getTargets().stream()
         .map(PhotonTrackedTarget::getBestCameraToTarget)
-        .filter(Objects::isNull)
+        .filter(Objects::nonNull)
         .map((Target) -> scope(new Transform2d(Target.getTranslation().toTranslation2d(), Target.getRotation().toRotation2d())))
         .toList();
     }
@@ -240,7 +236,7 @@ public final class VisionCamera extends Camera {
   }
   
   /**
-   * Changes the scope of this Transformation to be robot-relative as opposed to it's original, camera-relative form.
+   * Changes the scope of this Transformation to be robot-relative as opposed to its original, camera-relative form.
    * @param Transformation Original Transformation, camera-relative
    * @return Robot-relative transformation, if the input was not null
    */

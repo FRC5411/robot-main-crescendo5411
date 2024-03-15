@@ -1,11 +1,10 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
+
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-
 import org.robotalons.crescendo.Robot.RobotType;
-import org.robotalons.crescendo.subsystems.SubsystemManager;
 import org.robotalons.crescendo.subsystems.climb.ClimbSubsystem;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem;
@@ -39,13 +38,12 @@ public final class Constants {
      */
   public static void main(String... Options) {
     if (Subsystems.TYPE == RobotType.SIMULATION) {
-      System.err.println("CANNOT DEPLOY, INVALID TYPE: " + Subsystems.TYPE.toString());
+      System.err.println("CANNOT DEPLOY, INVALID TYPE: " + Subsystems.TYPE);
       System.exit((1));
     }
   }
   // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
   public static final class Subsystems {
-    public static final SubsystemManager MANAGER = SubsystemManager.getInstance();
     public static final Boolean IS_REAL_ROBOT = RobotBase.isReal();
     public static final RobotType TYPE = 
       (Logging.REPLAY_FROM_LOG)?
@@ -62,7 +60,6 @@ public final class Constants {
       RobotType.CONCRETE, ("/media/sda1/"),
       RobotType.SIMULATION, ("logs/simulation")
     );
-    public static final Boolean LOGGING_TURBO_MODE = (false);
     public static final Boolean LOGGING_ENABLED = (false);
     public static final Boolean REPLAY_FROM_LOG = (false);
   }
@@ -82,10 +79,6 @@ public final class Constants {
       CTRE_ODOMETRY_THREAD.setEnabled(CTRE_ODOMETRY_ENABLED);
       REV_ODOMETRY_THREAD.setEnabled(REV_ODOMETRY_ENABLED);
     }
-  }
-
-  public static final class Ports {
-    public static final Integer POWER_DISTRIBUTION_HUB = (1);
   }
 
   public static final class Profiles { 
@@ -117,6 +110,7 @@ public final class Constants {
           .add(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (2e-1))
           .add(Preferences.ORIENTATION_DEADZONE, () -> (2e-1))
           .add(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.a())
+          .add(Keybindings.RESET_GYROSCOPE, INPUT_METHOD.y())
           .add(Keybindings.ALIGNMENT_SPEAKER, INPUT_METHOD.x());
       }
 
@@ -151,6 +145,7 @@ public final class Constants {
       ORIENTATION_TOGGLE,
       CLIMB_ROTATE_FORWARD,
       CLIMB_ROTATE_BACKWARD,
+      RESET_GYROSCOPE,
       INTAKE_TOGGLE,
       OUTTAKE_TOGGLE,
       CANNON_TOGGLE,

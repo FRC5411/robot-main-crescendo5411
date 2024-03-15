@@ -21,8 +21,8 @@ import java.util.concurrent.locks.Lock;
  */
 public sealed interface OdometryThread<SignalType> extends Runnable, Closeable permits CTREOdometryThread, REVOdometryThread {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  public static final Double STANDARD_FREQUENCY = (250d);
-  public static final Integer STANDARD_QUEUE_SIZE = (10);
+  Double STANDARD_FREQUENCY = (250d);
+  Integer STANDARD_QUEUE_SIZE = (10);
   // ---------------------------------------------------------------[Abstract]--------------------------------------------------------------//
   /**
    * Registers a new signal updated at a frequency with the frequency manager.
@@ -64,7 +64,7 @@ public sealed interface OdometryThread<SignalType> extends Runnable, Closeable p
 
   /**
    * Provides the odometry lock of this thread
-   * @return Lock which prevents method reentrance
+   * @return Lock which prevents method reentrancy
    */
   Lock getLock();
 

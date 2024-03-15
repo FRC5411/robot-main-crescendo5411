@@ -49,8 +49,14 @@ public class PigeonGyroscope extends Gyroscope {
     GYROSCOPE.optimizeBusUtilization();
   }
 
+  @Override
   public synchronized void close() {
     YAW_ROTATION_QUEUE.clear();
+  }
+
+  @Override
+  public synchronized void reset() {
+    GYROSCOPE.reset();
   }
 
   @Override

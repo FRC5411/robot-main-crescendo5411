@@ -111,12 +111,12 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
         try {
           final var Providers = SIGNAL_PROVIDERS.iterator();
           final var Timestamp = Logger.getRealTimestamp() / (1e6);
-          SIGNAL_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) -> {
+          SIGNAL_QUEUES.forEach((final Queue<Double> Queue) -> {
             synchronized(Queue) {
               Queue.offer(Providers.next().getAsDouble());
             }
           });
-          TIMESTAMP_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) ->  {
+          TIMESTAMP_QUEUES.forEach((final Queue<Double> Queue) ->  {
             synchronized(Queue) {
               Queue.offer(Timestamp);
             }

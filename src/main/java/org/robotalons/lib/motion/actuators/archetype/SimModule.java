@@ -58,7 +58,7 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
   public SimModule(final ModuleConfiguration<Controller> Constants) {
     super(Constants);
     MODULE_CONSTANTS = Constants;
-    TRANSLATIONAL_CONTROLLER = (Controller) Constants.TRANSLATIONAL_CONTROLLER;
+    TRANSLATIONAL_CONTROLLER = Constants.TRANSLATIONAL_CONTROLLER;
     TRANSLATIONAL_PID = new PIDController(
       MODULE_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS.kP,
       MODULE_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS.kI, 
@@ -67,7 +67,7 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
       MODULE_CONSTANTS.TRANSLATIONAL_KS_GAIN,
       MODULE_CONSTANTS.TRANSLATIONAL_KV_GAIN,
       MODULE_CONSTANTS.TRANSLATIONAL_KA_GAIN);
-    ROTATIONAL_CONTROLLER = (Controller) Constants.ROTATIONAL_CONTROLLER;
+    ROTATIONAL_CONTROLLER = Constants.ROTATIONAL_CONTROLLER;
     ROTATIONAL_PID = new PIDController(
       MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kP,
       MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kI, 
@@ -118,7 +118,7 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
   @Override
   public synchronized void periodic() {
     update();    
-    final var Timestamp = discretize();
+    final double Timestamp = discretize();
     ROTATIONAL_CONTROLLER.update(Timestamp);
     TRANSLATIONAL_CONTROLLER.update(Timestamp);
     synchronized(STATUS) {
@@ -146,12 +146,10 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
       }
       synchronized(DELTAS) {
         DELTAS.clear();
-        IntStream.range((0), Math.min(STATUS.OdometryTranslationalPositionsRadians.length, STATUS.OdometryRotationalPositionsRadians.length)).forEachOrdered((Index) -> {
-          DELTAS.add(new SwerveModulePosition(
-            STATUS.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS,
-            STATUS.OdometryRotationalPositionsRadians[Index]
-          ));
-        });              
+        IntStream.range((0), Math.min(STATUS.OdometryTranslationalPositionsRadians.length, STATUS.OdometryRotationalPositionsRadians.length)).forEachOrdered((Index) -> DELTAS.add(new SwerveModulePosition(
+          STATUS.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS,
+          STATUS.OdometryRotationalPositionsRadians[Index]
+        )));
       }
     }
   }
@@ -195,7 +193,7 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
           TIMESTAMP_QUEUE.stream()
             .mapToDouble((final Double Value) -> {
               TIMESTAMPS.add(Value);
-              return Value.doubleValue();
+              return Value;
             }).toArray();
         TIMESTAMP_QUEUE.clear();          
       }
@@ -214,7 +212,7 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
         ROTATIONAL_POSITION_QUEUE.clear();  
       }
     }
-    Logger.processInputs("RealInputs/" + "MODULE (" + Integer.toString(MODULE_CONSTANTS.NUMBER) + ')', STATUS);
+    Logger.processInputs("RealInputs/" + "MODULE (" + MODULE_CONSTANTS.NUMBER + ')', STATUS);
     MODULE_CONSTANTS.STATUS_PROVIDER.getLock().unlock();
     ODOMETRY_LOCK.unlock();
   }

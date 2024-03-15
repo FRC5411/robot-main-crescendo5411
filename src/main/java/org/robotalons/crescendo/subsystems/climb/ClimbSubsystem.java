@@ -183,7 +183,7 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
   }
   // --------------------------------------------------------------[Internal]--------------------------------------------------------------- //
   /**
-   * Represents directions on the climb subsystem on the physical robot, i. e. which side the hardware lies on.
+   * Represents directions on the climb subsystem on the physical robot, i.e. which side the hardware lies on.
    */
   public enum ClimbState {
     LEFT,
@@ -221,14 +221,10 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
    * @return Current absolute value of the absolute encoders, with a constant offset
    */
   public static synchronized Double getPosition(final ClimbState Direction) {
-    switch (Direction) {
-      case LEFT:
-        return LEFT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.LEFT_ENCODER_OFFSET;
-      case RIGHT:
-        return RIGHT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.RIGHT_ENCODER_OFFSET;
-      default:
-        return (null);
-    }
+    return switch (Direction) {
+      case LEFT -> LEFT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.LEFT_ENCODER_OFFSET;
+      case RIGHT -> RIGHT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.RIGHT_ENCODER_OFFSET;
+    };
   }
 
   @Override

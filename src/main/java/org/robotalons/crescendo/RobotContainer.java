@@ -45,14 +45,14 @@ public final class RobotContainer {
   private RobotContainer() {} static {
     Operators = new ArrayList<>();
     SubsystemManager.getInstance();
-    SubsystemManager.getSubsystems().stream().forEachOrdered((Subsystem) -> {
+    SubsystemManager.getSubsystems().forEach((Subsystem) -> {
       final var Selector = new SendableChooser<Operator<Keybindings, Preferences>>();
       Selector.onChange(Subsystem::configureOperator);
       final var Default = Profiles.DEFAULT.get(Subsystem);
       Profiles.OPERATORS.forEach((Profile) -> Selector.addOption(Profile.getName(), Profile));
       Selector.setDefaultOption(Default.getName(), Default);
       Subsystem.configureOperator(Default);
-      Operators.add(new LoggedDashboardChooser<Operator<Keybindings, Preferences>>(Subsystem.getName() + " Operator Selector", Selector));
+      Operators.add(new LoggedDashboardChooser<>(Subsystem.getName() + " Operator Selector", Selector));
     });
     final var Alliance = DriverStation.getAlliance();
     final var Selector = new SendableChooser<Pose2d>();
@@ -60,9 +60,9 @@ public final class RobotContainer {
     for(Integer Index = (1); Index < Odometry.ALLIANCE_VERTICAL_LOCATIONS.size() + (1); Index++) {
       final var Location = Odometry.ALLIANCE_VERTICAL_LOCATIONS.get(Index - (1));
       if(Index == (RobotBase.isReal()? DriverStation.getLocation().getAsInt(): (Subsystems.DEFAULT_ALLIANCE))) {
-        Selector.setDefaultOption(String.format(("%s Alliance %d"), Alliance.isPresent()? Alliance.get().name(): (DrivebaseSubsystem.getFlipped()? "Blue": "Red"), Index), new Pose2d(Odometry.ALLIANCE_HORIZONTAL_LOCATIONS, Location, DrivebaseSubsystem.getRotation()));
+        Selector.setDefaultOption(String.format(("%s Alliance %d"), Alliance.map(Enum::name).orElseGet(() -> (DrivebaseSubsystem.getFlipped() ? "Blue" : "Red")), Index), new Pose2d(Odometry.ALLIANCE_HORIZONTAL_LOCATIONS, Location, DrivebaseSubsystem.getRotation()));
       } else {
-        Selector.addOption(String.format(("%s Alliance %d"), Alliance.isPresent()? Alliance.get().name(): (DrivebaseSubsystem.getFlipped()? "Blue": "Red"), Index), new Pose2d(Odometry.ALLIANCE_HORIZONTAL_LOCATIONS, Location, DrivebaseSubsystem.getRotation()));
+        Selector.addOption(String.format(("%s Alliance %d"), Alliance.map(Enum::name).orElseGet(() -> (DrivebaseSubsystem.getFlipped() ? "Blue" : "Red")), Index), new Pose2d(Odometry.ALLIANCE_HORIZONTAL_LOCATIONS, Location, DrivebaseSubsystem.getRotation()));
       }
     }
     Selector.addOption(("Debug Alliance"), new Pose2d());

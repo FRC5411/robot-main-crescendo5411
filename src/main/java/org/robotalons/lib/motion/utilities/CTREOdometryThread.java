@@ -51,7 +51,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Phoenix Odometry Thread Constructor.
-   * @param Lock Appropriate Reentrance Locker for Odometry
+   * @param Lock Appropriate Reentrancy Locker for Odometry
    */
   private CTREOdometryThread(final Lock Lock) {
     ODOMETRY_LOCK = Lock;
@@ -139,12 +139,12 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
               final var Latency = new AtomicReference<>((0d));
               SIGNAL_PROVIDERS.forEach((Signal) -> Latency.set(Latency.get() + Signal.getTimestamp().getLatency()));
               Timestamp.set(Timestamp.get() - Latency.get() / SIGNAL_PROVIDERS.size());
-              SIGNAL_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) -> {
+              SIGNAL_QUEUES.forEach((final Queue<Double> Queue) -> {
                 synchronized(Queue) {
                   Queue.offer(Providers.next().getValue());
                 }
               });
-              TIMESTAMP_QUEUES.stream().forEachOrdered((final Queue<Double> Queue) ->  {
+              TIMESTAMP_QUEUES.forEach((final Queue<Double> Queue) ->  {
                 synchronized(Queue) {
                   Queue.offer(Timestamp.get());
                 }
@@ -164,7 +164,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
 
   /**
    * Creates a new instance of the existing utility class
-   * @param Lock Valid reentrance locker for this type
+   * @param Lock Valid reentrancy locker for this type
    * @return Utility class's instance
    */
   public static synchronized CTREOdometryThread create(final Lock Lock) {

@@ -59,12 +59,12 @@ public abstract class Camera implements Closeable {
   public abstract void update();
 
   /**
-   * Forces the camera to take a preprocessed snapshot of it's current processed feed.
+   * Forces the camera to take a preprocessed snapshot of its current processed feed.
    */
   public abstract void snapshotInput();
 
   /**
-   * Forces the camera to take a preprocessed snapshot of it's current processed feed.
+   * Forces the camera to take a preprocessed snapshot of its current processed feed.
    */
   public abstract void snapshotOutput();
 
@@ -123,7 +123,7 @@ public abstract class Camera implements Closeable {
 
   /**
    * Provides the robot relative position timestamps of each delta from the last update control cycle up to the current query.
-   * @return List of robot relative snapshot time deltas
+   * @return Array of robot relative snapshot time deltas
    */
   public double[] getRobotPositionTimestamps(){
     return STATUS.Timestamps;
@@ -131,11 +131,11 @@ public abstract class Camera implements Closeable {
 
   /**
    * Provides the robot relative (minus offset) position deltas from last update control cycle up to the current query.
-   * @return List of Poses of the robot since the last control cycle
+   * @return Array of Poses of the robot since the last control cycle
    */
   public Pose2d[] getRobotPositionDeltas(){
     return STATUS.Deltas;
-  };
+  }
 
   /**
    * Provides the robot relative (minus offset) position immediately.
@@ -161,7 +161,7 @@ public abstract class Camera implements Closeable {
 
   /**
    * Provides a boolean representation of if the module has an april tag / object detected
-   * @return List of robot-relative target transformations
+   * @return Boolean of if the camera has targets
    */
   public boolean hasTargets(){
     return STATUS.RealizedTargets.length > 0;

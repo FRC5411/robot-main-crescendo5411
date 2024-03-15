@@ -56,7 +56,7 @@ public final class Operator<Keybindings extends Enum<?>, Preferences extends Enu
    * Adds a new keybinding to the keybinding(s) map of this operator
    * @param Keybinding Enum type value that can be added to the map
    * @param Trigger    Valid trigger of this Operator's GenericHID input
-   * @return This operator, for chained calls to {@link #add(Enum, Supplier)} or {@link #add(Enum, Trigger)}
+   * @return This operator, for chained calls to {@link #add(Enum, Supplier)}
    */
   public Operator<Keybindings,Preferences> add(final Keybindings Keybinding, final Trigger Trigger) {
     KEYBINDINGS.put(Keybinding, Trigger);
@@ -71,7 +71,7 @@ public final class Operator<Keybindings extends Enum<?>, Preferences extends Enu
    * Adds a new keybinding to the preference(s) map of this operator
    * @param Preference Enum type value that can be added to the map
    * @param Value      Valid supplier of a changing preference of this operator
-   * @return This operator, for chained calls to {@link #add(Enum, Supplier)} or {@link #add(Enum, Trigger)}
+   * @return This operator, for chained calls to {@link #add(Enum, Trigger)}
    */
   public <Supplied> Operator<Keybindings,Preferences> add(final Preferences Preference, final Supplier<Supplied> Value) {
     PREFERENCES.put(Preference, Value);

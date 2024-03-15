@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Preferences> {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  private static List<Camera> CAMERAS;
+  private static final List<Camera> CAMERAS;
   public static final List<CameraIdentifier> ALL_CAMERA_IDENTIFIERS = List.of(
     CameraIdentifier.SPEAKER_LEFT_CAMERA,
     CameraIdentifier.SPEAKER_RIGHT_CAMERA,
@@ -59,11 +59,13 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
   public synchronized void periodic() {
+    Constants.Objects.ODOMETRY_LOCK.lock();
     CAMERAS.parallelStream().forEach((Camera) -> {
       if(Camera.getConnected()) {
         Camera.periodic();
       }
     });
+    Constants.Objects.ODOMETRY_LOCK.unlock();
   }
 
   @Override
@@ -132,13 +134,11 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
   public static Optional<Pose3d> getApproximatedRobotPose(){   
     final Pose3d EstimatedPoseAverage = new Pose3d();
     final AtomicInteger ValidPoseCount = new AtomicInteger();
-    CAMERAS.forEach((Camera) -> {
-      Camera.getRobotPosition().ifPresent((Pose) -> {
-        EstimatedPoseAverage.plus(new Transform3d(Pose.getTranslation(), Pose.getRotation()));
-        ValidPoseCount.incrementAndGet();
-      });
-    });
-    return Optional.ofNullable(EstimatedPoseAverage != new Pose3d() && ValidPoseCount.get() > 0? EstimatedPoseAverage.div(ValidPoseCount.get()): null);
+    CAMERAS.forEach((Camera) -> Camera.getRobotPosition().ifPresent((Pose) -> {
+      EstimatedPoseAverage.plus(new Transform3d(Pose.getTranslation(), Pose.getRotation()));
+      ValidPoseCount.incrementAndGet();
+    }));
+    return Optional.ofNullable(!EstimatedPoseAverage.equals(new Pose3d()) && ValidPoseCount.get() > 0? EstimatedPoseAverage.div(ValidPoseCount.get()): null);
   }
 
   /**
@@ -153,7 +153,7 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
   /**
    * Provides the robot relative position timestamps of each delta from the last update control cycle up to the current query of specific camera called.
    * @param Identifier Camera identifier to query from.
-   * @return List of robot relative snapshot time deltas of specific camera called.
+   * @return Array of robot relative snapshot time deltas of specific camera called.
    */
   public static double[] getRobotPositionTimestamps(final CameraIdentifier Identifier) {
     return CAMERAS.get(Identifier.getValue()).getRobotPositionTimestamps();
@@ -162,7 +162,7 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
   /**
    * Provides the robot relative (minus offset) position deltas from last update control cycle up to the current query.
    * @param Identifier Camera identifier to query from.
-   * @return List of Poses of the robot since the last control cycle.
+   * @return Array of Poses of the robot since the last control cycle.
    */
   public static Pose2d[] getRobotPositionDeltas(final CameraIdentifier Identifier) {
     return CAMERAS.get(Identifier.getValue()).getRobotPositionDeltas();
@@ -173,9 +173,9 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
    * @param Target Transformation to a given target anywhere on the field.
    * @return Position of the object relative to the field.
    */
-  // public static Optional<Pose3d> getObjectFieldPose(final Transform3d Target){
-  //   return CAMERAS.get(CameraIdentifier.INTAKE_CAMERA.getValue()).getObjectFieldPose(Target);
-  // }
+   public static Optional<Pose2d> getObjectFieldPose(final Transform3d Target){
+     return CAMERAS.get(CameraIdentifier.INTAKE_CAMERA.getValue()).getObjectFieldPose(new Transform2d(Target.getTranslation().toTranslation2d(), Target.getRotation().toRotation2d()));
+   }
 
   /**
    * Provides the values of standard deviations of the most recent object detection result on the camera
@@ -198,11 +198,11 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
   /**
    * Provides a list of robot-relative transformations to the best target within view of the camera.
    * @param Identifier Camera identifier to query from.
-   * @return List of robot-relative target transformations.
+   * @return Array of robot-relative target transformations.
    */
   @SuppressWarnings("unchecked")
   public static Optional<Transform3d>[] getTargets(final CameraIdentifier Identifier) {
-    return CAMERAS.get(Identifier.getValue()).getTargets().toArray(Optional[]::new);
+    return (Optional<Transform3d>[]) CAMERAS.get(Identifier.getValue()).getTargets().toArray(Optional[]::new);
   }
 
   /**
@@ -231,10 +231,10 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
    */
   public static Optional<Transform2d> getOptimalTarget(List<CameraIdentifier> Cameras) {
     Cameras = Cameras.stream().distinct().toList();
-    Optional<Transform2d> Optimal = Optional.empty();
+    Optional<Transform2d> Optimal = Optional.of(new Transform2d());
     for(final var Identifier: Cameras) {
       final var RelativeOptimal = CAMERAS.get(Identifier.getValue()).getOptimalTarget();
-      if(Optimal.isPresent() && RelativeOptimal.isPresent()) {
+      if(RelativeOptimal.isPresent()) {
         if(Optimal.get().getTranslation().getNorm() < RelativeOptimal.get().getTranslation().getNorm()) {
           Optimal = RelativeOptimal;
         }

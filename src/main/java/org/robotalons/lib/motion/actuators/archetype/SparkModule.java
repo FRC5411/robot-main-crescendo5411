@@ -86,7 +86,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     TRANSLATIONAL_ENCODER = TRANSLATIONAL_CONTROLLER.getEncoder();
 
     TRANSLATIONAL_POSITION = new DoubleAccumulator(
-      (Accumulated, Velocity) -> Accumulated -= Units.rotationsPerMinuteToRadiansPerSecond(Velocity) * discretize() * MODULE_CONSTANTS.WHEEL_RADIUS_METERS, (0d));
+      (Accumulated, Velocity) -> Accumulated - (Units.rotationsPerMinuteToRadiansPerSecond(Velocity) * discretize() * MODULE_CONSTANTS.WHEEL_RADIUS_METERS), (MODULE_CONSTANTS.TRANSLATIONAL_POSITION_METERS));
 
     ROTATIONAL_CONTROLLER = MODULE_CONSTANTS.ROTATIONAL_CONTROLLER;
     ROTATIONAL_CONTROLLER.clearFaults();
@@ -230,12 +230,10 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       }
       synchronized(POSITION_DELTAS) {
         POSITION_DELTAS.clear();
-        IntStream.range((0), Math.min(STATUS.OdometryTranslationalPositionsRadians.length, STATUS.OdometryRotationalPositionsRadians.length)).parallel().forEach((Index) -> {
-          POSITION_DELTAS.add(new SwerveModulePosition(
-            STATUS.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS,
-            STATUS.OdometryRotationalPositionsRadians[Index]
-          ));
-        });              
+        IntStream.range((0), Math.min(STATUS.OdometryTranslationalPositionsRadians.length, STATUS.OdometryRotationalPositionsRadians.length)).parallel().forEach((Index) -> POSITION_DELTAS.add(new SwerveModulePosition(
+          STATUS.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS,
+          STATUS.OdometryRotationalPositionsRadians[Index]
+        )));
       }
     }
   }
@@ -291,7 +289,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
             TIMESTAMP_QUEUE.stream()
               .mapToDouble((final Double Timestamp) -> {
                 TIMESTAMPS.add(Timestamp);
-                return Timestamp.doubleValue();
+                return Timestamp;
               }).toArray();
           TIMESTAMP_QUEUE.clear();             
         }
@@ -311,7 +309,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
         ROTATIONAL_POSITION_QUEUE.clear();  
       }
     }
-    Logger.processInputs("RealInputs/" + "MODULE (" + Integer.toString(MODULE_CONSTANTS.NUMBER) + ')', STATUS);
+    Logger.processInputs("RealInputs/" + "MODULE (" + MODULE_CONSTANTS.NUMBER + ')', STATUS);
     MODULE_CONSTANTS.STATUS_PROVIDER.getLock().unlock();
     ODOMETRY_LOCK.unlock();
     RotationalRelativeOffset = STATUS.RotationalAbsolutePosition.minus(STATUS.RotationalRelativePosition);

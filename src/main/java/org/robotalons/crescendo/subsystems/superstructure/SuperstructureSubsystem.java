@@ -71,7 +71,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   } static {
     Reference = new SwerveModuleState((0d), Rotation2d.fromRotations(Measurements.PIVOT_MINIMUM_ROTATION));
     State = SuperstructureState.MANUAL;
-    FIRING_CONTROLLERS = new Pair<TalonFX,TalonFX>(
+    FIRING_CONTROLLERS = new Pair<>(
       new TalonFX(Ports.FIRING_CONTROLLER_LEFT_ID),
       new TalonFX(Ports.FIRING_CONTROLLER_RIGHT_ID)
     );
@@ -123,7 +123,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   @Override
   public synchronized void periodic() {
     Constants.Objects.ODOMETRY_LOCKER.lock();
-    final var Target = VisionSubsystem.getAprilTagPose((DrivebaseSubsystem.getRotation().getRadians() % (2) * Math.PI >= Math.PI)? (3): (7)).get();
+    final var Target = VisionSubsystem.getAprilTagPose((DrivebaseSubsystem.getFlipped())? (3): (7)).get();
     final var Distance = (PhotonUtils.getDistanceToPose(DrivebaseSubsystem.getPose(), Target.toPose2d()));
     final var Interpolated = Measurements.PIVOT_FIRING_MAP.interpolate(
       Measurements.PIVOT_LOWER_BOUND,
@@ -168,7 +168,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * @param Velocity  Initial Velocity
    * @param Rotation  Initial Rotation
    * @param Distance  How far lengthwise the object must travel
-   * @param Height    How far heightwise the object must travel
+   * @param Height    How far height-wise the object must travel
    * @return Note preset with the parameters
    */
   @SuppressWarnings("unused")
@@ -231,7 +231,6 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * and how it should identify and calculate reference 'set-points'
    * @param Reference Cannon's new Goal or 'set-point' reference
    * @param Mode Mode of cannon control
-   * @return An optimized version of the reference
    */
   public static synchronized void set(final SwerveModuleState Reference, final SuperstructureState Mode) {
     set(Mode);
@@ -242,14 +241,14 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * Utility method for quickly adding button bindings to reach a given rotation, and reset to default
    * @param Keybinding Trigger to bind this association to
    * @param Rotation   Value of rotation to bring to pivot to
-   * @param Velocity   Value of velocity to bring the firing controllers to
+   * @param Velocity   Value of velocity to bring the firing controllers to in RPM
    */
-  private void with(final Trigger Keybinding, final Double Rotation, final Double RPM) {
+  private void with(final Trigger Keybinding, final Double Rotation, final Double Velocity) {
     with(() -> {
       Keybinding.onTrue(new InstantCommand(
         () -> {
           Reference.angle = Rotation2d.fromRadians(Rotation);
-          set(RPM);
+          set(Velocity);
         },
         SuperstructureSubsystem.getInstance()
       ));
@@ -326,9 +325,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     with(() -> {
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_TOGGLE)
         .onTrue(new InstantCommand(
-          () -> {
-            set(Measurements.FIRING_STANDARD_VELOCITY);
-          },
+          () -> set(Measurements.FIRING_STANDARD_VELOCITY),
           SuperstructureSubsystem.getInstance()
         ));
         SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_TOGGLE)

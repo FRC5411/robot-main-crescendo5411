@@ -126,19 +126,13 @@ public final class Robot extends LoggedRobot {
         };
     CommandScheduler.getInstance()
         .onCommandInitialize(
-            (Command command) -> {
-              LoggerFunction.accept(command, (true));
-            });
+            (Command command) -> LoggerFunction.accept(command, (true)));
     CommandScheduler.getInstance()
         .onCommandFinish(
-            (Command command) -> {
-              LoggerFunction.accept(command, (false));
-            });
+            (Command command) -> LoggerFunction.accept(command, (false)));
     CommandScheduler.getInstance()
         .onCommandInterrupt(
-            (Command command) -> {
-              LoggerFunction.accept(command, (false));
-            });
+            (Command command) -> LoggerFunction.accept(command, (false)));
     if (Subsystems.TYPE == RobotType.SIMULATION) {
       DriverStationSim.setAllianceStationId(AllianceStationID.Blue1);
     } 

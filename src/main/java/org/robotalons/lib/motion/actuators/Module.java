@@ -126,10 +126,8 @@ public abstract class Module implements Closeable {
    * @return An optimized version of the reference
    */
   public synchronized SwerveModuleState set(final SwerveModuleState Reference) {
-    synchronized(this.Reference) {
-      this.Reference = SwerveModuleState.optimize(Reference, STATUS.RotationalRelativePosition.plus(RotationalRelativeOffset == (null)? new Rotation2d(): RotationalRelativeOffset));
-      return this.Reference;      
-    }
+    this.Reference = SwerveModuleState.optimize(Reference, STATUS.RotationalRelativePosition.plus(RotationalRelativeOffset == (null)? new Rotation2d(): RotationalRelativeOffset));
+    return this.Reference;
   }
 
   /**

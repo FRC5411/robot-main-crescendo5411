@@ -35,13 +35,13 @@ public class TrajectoryObject {
    * @param Rotation  Initial Rotation
    * @param Offset    Length of the offset's slope (shooter length)
    * @param Distance  How far lengthwise the object must travel
-   * @param Height    How far heightwise the object must travel
+   * @param Height    How far height-wise the object must travel
    * @param Iterations How many discrete points to solve for along the trajectory
    * @return Note preset with the parameters
    */
-  public static final TrajectoryObject note(
-      final Double Velocity, final Rotation2d Rotation, final Double Offset,
-      final Double Distance, final Double Height, final Integer Iterations) {
+  public static TrajectoryObject note(
+    final Double Velocity, final Rotation2d Rotation, final Double Offset,
+    final Double Distance, final Double Height, final Integer Iterations) {
     var Object = new TrajectoryObject();
     Object.MU = NOTE_MU;
     Object.MASS = NOTE_MASS;

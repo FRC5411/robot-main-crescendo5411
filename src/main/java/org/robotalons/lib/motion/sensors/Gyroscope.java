@@ -29,6 +29,12 @@ public abstract class Gyroscope implements Closeable {
   public abstract void close();
 
   /**
+   * Update the gyro offset to be the current gyroscope position, therefore resting the gyro's measurement to
+   * make its current heading it's zero.
+   */
+  public abstract void reset();
+
+  /**
    * Provides a boolean representation of if the module is still connected to the system and all signals are okay.
    * @return Boolean representing Connectivity
    */

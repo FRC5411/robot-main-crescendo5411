@@ -122,8 +122,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     Logger.recordOutput(("Drivebase/Measurements"),getModuleMeasurements());
     Logger.recordOutput(("Drivebase/Translation"), new Translation2d());
     Logger.recordOutput(("Drivebase/Rotation"), new Rotation2d());
-    Logger.recordOutput(("Drivebase/Reference"), new SwerveModuleState[MODULES.size()]);
-    Logger.recordOutput(("Drivebase/Optimized"),new SwerveModuleState[MODULES.size()]);
+    Logger.recordOutput(("Drivebase/Reference"), MODULES.stream().map(Module::getReference).toArray(SwerveModuleState[]::new));
+    Logger.recordOutput(("Drivebase/Optimized"), MODULES.stream().map(Module::getOptimized).toArray(SwerveModuleState[]::new));
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   /**
@@ -224,7 +224,10 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    * Resets the modules are pose estimation
    */
   public synchronized void reset() {
-    MODULES.forEach(Module::reset);
+    synchronized(MODULES) {
+      GYROSCOPE.reset();
+      MODULES.forEach(Module::reset);      
+    }
   }
 
   /**
@@ -232,15 +235,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    */
   @Override
   public synchronized void close() {
-    MODULES.forEach(Module::close);
-    POSE_ESTIMATOR.resetPosition(
-      GYROSCOPE.getYawRotation(),
-      getModulePositions(),
-      new Pose2d()
-    );
-    Instance = (null);
     ODOMETRY_PROCESSOR.stop();
-    ODOMETRY_PROCESSOR.close();
+    Instance = (null);
   }
 
   /**
@@ -317,6 +313,12 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       Operator.getKeybinding(Keybindings.ORIENTATION_TOGGLE)
         .onTrue(new InstantCommand(
           DrivebaseSubsystem::toggle,
+          DrivebaseSubsystem.getInstance()
+        )));
+    with(() ->
+      Operator.getKeybinding(Keybindings.RESET_GYROSCOPE)
+        .onTrue(new InstantCommand(
+          () -> reset(),
           DrivebaseSubsystem.getInstance()
         )));
   
@@ -459,10 +461,9 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
 
   /**
    * Drives the robot provided Module States
-   * @param <State> State Type to apply from the module
    * @param States Collection of module states
    */
-  public static synchronized <State extends SwerveModuleState> void set(Collection<State> States) {
+  public static synchronized void set(Collection<SwerveModuleState> States) {
     synchronized(MODULES) {
       final var StateIterator = States.iterator();
       Logger.recordOutput(("Drivebase/Reference"), States.toArray(SwerveModuleState[]::new));
@@ -477,7 +478,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    * reset into an 'X' orientation.
    */
   public static synchronized void set() {
-    MODULES.forEach((Module) -> Module.reset());
+    MODULES.forEach(Module::reset);
   }
 
   /**

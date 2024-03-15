@@ -71,7 +71,7 @@ public final class SubsystemManager extends SubsystemBase {
         new PIDConstants(
           Constants.Measurements.ROBOT_TRANSLATION_KP,
           Constants.Measurements.ROBOT_TRANSLATION_KI,
-          Constants.Measurements.ROBOT_TRANSLATION_KP), 
+          Constants.Measurements.ROBOT_TRANSLATION_KD),
         new PIDConstants(
           Constants.Measurements.ROBOT_ROTATIONAL_KP,
           Constants.Measurements.ROBOT_ROTATIONAL_KI,
@@ -81,8 +81,8 @@ public final class SubsystemManager extends SubsystemBase {
         new ReplanningConfig(
           (true),
           (true) 
-        )), 
-      () -> DrivebaseSubsystem.getFlipped(),
+        )),
+      DrivebaseSubsystem::getFlipped,
       DRIVEBASE);
     Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
@@ -102,7 +102,7 @@ public final class SubsystemManager extends SubsystemBase {
   }
 
   /**
-   * Pathfinds and autonomously achieves the robot chassis to a give pose position; with a given end velocity
+   * Pathfinding and autonomously achieves the robot chassis to a give pose position; with a given end velocity
    * @param Pose     Ending pose of the robot, the position for the chassis to achieve
    * @param Terminal Ending velocity of the robot, the velocity for the chassis to end with
    * @return Command capable of pathfinding the robot to a given position

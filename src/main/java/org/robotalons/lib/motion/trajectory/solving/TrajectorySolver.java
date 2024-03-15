@@ -44,7 +44,7 @@ public class TrajectorySolver implements Callable<Optional<TrajectoryObject>>, C
   // ----------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Solver Constructor.
-   * @throws InstantiationError When attempting to create more valid instances then what is allowed for this type
+   * @throws InstantiationError When attempting to create more valid instances than what is allowed for this type
    */
   public TrajectorySolver() throws InstantiationError {
     if(Instances > SOLVING_MAXIMUM_INSTANCES) {
@@ -63,7 +63,7 @@ public class TrajectorySolver implements Callable<Optional<TrajectoryObject>>, C
   public synchronized Optional<TrajectoryObject> call() {
     try {
       synchronized(SOLVING_QUEUE) {
-        while(!Thread.currentThread().isInterrupted() && !SOLVING_QUEUE.isEmpty()) { 
+        while(!Thread.currentThread().isInterrupted()) {
           if(Reserved == (null)) {
             synchronized(SOLVING_QUEUE) {
               Reserved = SOLVING_QUEUE.poll();
@@ -111,14 +111,14 @@ public class TrajectorySolver implements Callable<Optional<TrajectoryObject>>, C
   // ------------------------------------------------------------[Math Operations]-------------------------------------------------------------// 
   /**
    * Calculates the rotational trajectory at a given point along the horizon
-   * @param Horizon  Current point along the trajectory
+   * @param Distance Current point along the trajectory
    * @param Velocity Current velocity along the trajectory
    * @param Rotation Current rotation along the trajectory
    * @return Trajectory at this point along the horizontal axis
    */
   private synchronized Double rotationalTrajectory(final Double Distance, final Double Velocity, final Rotation2d Rotation) {
     set(Distance, Velocity, Rotation);
-    return + HorizonConstant * Rotation.getTan()
+    return HorizonConstant * Rotation.getTan()
     - Math.pow(HorizonConstant, (2)) * VelocityConstant * secantSquared(Rotation)
     + Reserved.OFFSET_LENGTH * Rotation.getSin()
     + Reserved.VERTICAL;
@@ -126,7 +126,7 @@ public class TrajectorySolver implements Callable<Optional<TrajectoryObject>>, C
 
   /**
    * Calculates the derivative discretely at a given point along the horizon
-   * @param Horizon  Current point along the trajectory
+   * @param Distance Current point along the trajectory
    * @param Velocity Current velocity along the trajectory
    * @param Rotation Current rotation along the trajectory
    * @param Delta    Change in distance, i.e. the instantaneous change in distance to take the derivative of
@@ -139,7 +139,7 @@ public class TrajectorySolver implements Callable<Optional<TrajectoryObject>>, C
 
   /**
    * Calculates the derivative continuously at a given point along the horizon
-   * @param Horizon  Current point along the trajectory
+   * @param Distance Current point along the trajectory
    * @param Velocity Current velocity along the trajectory
    * @param Rotation Current rotation along the trajectory
    * @return Derivative at this point along the horizon
@@ -159,8 +159,8 @@ public class TrajectorySolver implements Callable<Optional<TrajectoryObject>>, C
 
   /**
    * Provides the tangent line of a given point at the roots of a function
-   * @param X     Value of point along the x axis
-   * @param Y     Value of point along the y axis
+   * @param X     Value of point along the x-axis
+   * @param Y     Value of point along the y-axis
    * @param Slope Slope of this point
    * @return Tangent line at this point
    */
@@ -178,7 +178,7 @@ public class TrajectorySolver implements Callable<Optional<TrajectoryObject>>, C
   
   /**
    * Mutates the current horizon constant given the current states of this object at a position.
-   * @param Horizon  Current point along the trajectory
+   * @param Distance Current point along the trajectory
    * @param Velocity Current velocity along the trajectory
    * @param Rotation Current rotation along the trajectory
    */

@@ -20,7 +20,7 @@ public class MathUtilities {
    * @return Standard deviation as a double value
    */
   public static double standardDeviation(double[] Numbers){
-    Double Mean = 0d, SummativeSquareDifference = 0d;
+    double Mean = 0d, SummativeSquareDifference = 0d;
     for(double Number : Numbers){
       Mean += Number;
     }

@@ -62,6 +62,7 @@ public class Constants {
     public static final Lock ODOMETRY_LOCK = new ReentrantLock();
   }
 
+  @SuppressWarnings("unused")
   public static final class Devices {
     public static final Camera FRONT_LEFT_CAMERA =
       new VisionCamera(
