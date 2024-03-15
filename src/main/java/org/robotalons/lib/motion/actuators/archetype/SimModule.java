@@ -122,7 +122,7 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
     ROTATIONAL_CONTROLLER.update(Timestamp);
     TRANSLATIONAL_CONTROLLER.update(Timestamp);
     synchronized(STATUS) {
-      if (RotationalRelativeOffset == (null) && STATUS.RotationalAbsolutePosition.getRadians() != (0d)) {
+      if (RotationalRelativeOffset == (null)) {
         RotationalRelativeOffset = STATUS.RotationalAbsolutePosition.minus(STATUS.RotationalRelativePosition);
       }
       switch(ReferenceMode) {
