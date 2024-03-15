@@ -82,6 +82,9 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     GyroscopeRotation = GYROSCOPE.getYawRotation();
     Timestamp = Logger.getRealTimestamp() / (1e6);
     Precision = (false);
+    try {
+      Thread.sleep((1000L));
+    } catch(final InterruptedException Ignored) {}
     MODULES = List.of(
       Devices.FRONT_LEFT_MODULE,
       Devices.FRONT_RIGHT_MODULE,
@@ -464,6 +467,10 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         ));
         break;
     }
+  }
+
+  public static synchronized Command fixWheels(){
+    return new InstantCommand(() -> DrivebaseSubsystem.set(new Translation2d(), new Rotation2d(-Math.PI/2)));
   }
 
   /**

@@ -25,6 +25,7 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonVersion;
 import org.robotalons.crescendo.Constants.Logging;
 import org.robotalons.crescendo.Constants.Subsystems;
+import org.robotalons.crescendo.subsystems.SubsystemManager;
 import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem;
 import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem.SuperstructureState;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
@@ -205,6 +206,8 @@ public final class Robot extends LoggedRobot {
     }
   }
 
+    
+
   @Override
   public void robotPeriodic() {
     Threads.setCurrentThreadPriority((true), (99));
@@ -258,10 +261,11 @@ public final class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     CurrentAutonomousMessagePrinted = (false);
+    SubsystemManager.HasrunOnce = (false);
     CurrentAutonomousStartTime = Timer.getFPGATimestamp();
     CurrentAutonomous = RobotContainer.AutonomousSelector.get();
     if(!java.util.Objects.isNull(CurrentAutonomous)) {
-      CurrentAutonomous.schedule();
+      CurrentAutonomous.onlyIf(() -> !SubsystemManager.HasrunOnce).finallyDo(() -> SubsystemManager.HasrunOnce = (true)).schedule();
     }
   }
 
@@ -273,6 +277,7 @@ public final class Robot extends LoggedRobot {
     if(!java.util.Objects.isNull(CurrentAutonomous)) {
       CurrentAutonomous.cancel();
     }
+    
   }
 
   // -----------------------------------------------------------[Teleoperated]--------------------------------------------------------------//

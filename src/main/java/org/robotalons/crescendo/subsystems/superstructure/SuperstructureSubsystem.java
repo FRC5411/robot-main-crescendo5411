@@ -5,6 +5,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -158,11 +159,13 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       Logger.recordOutput(("Cannon/InterpolatedVelocity"), Interpolated.get((0), (0)));
       Logger.recordOutput(("Cannon/InterpolatedRotation"), Units.radiansToDegrees(Interpolated.get((1), (0))));      
       Logger.recordOutput(("Has Note"), beamBreakSensorIndexer.get());
+    Logger.recordOutput(("Cannon/Setpoint"), 0);
     } else {
       Logger.recordOutput(("Cannon/InterpolatedDistance"), (0d)); 
       Logger.recordOutput(("Cannon/InterpolatedPercentile"), (0d));
       Logger.recordOutput(("Cannon/InterpolatedVelocity"), (0d));
       Logger.recordOutput(("Cannon/InterpolatedRotation"), (0d));
+    Logger.recordOutput(("Cannon/Setpoint"), 0);
       Logger.recordOutput(("Has Note"), false);
     }
     set(Reference.angle);
@@ -171,6 +174,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     Logger.recordOutput(("Cannon/MeasuredRotation"), -getPivotRotation());
     Logger.recordOutput(("Cannon/IndexerCurrent"), INDEXER_CONTROLLER.getOutputCurrent());
     Logger.recordOutput(("Has Note"), beamBreakSensorIndexer.get());
+    Logger.recordOutput(("Cannon/Setpoint"), Measurements.SUBWOOFER_LINE);
     Constants.Objects.ODOMETRY_LOCKER.unlock();
   }
 
@@ -287,6 +291,8 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       new InstantCommand(() -> shoot(0.6))
     );
   }
+
+
 
 
   /**

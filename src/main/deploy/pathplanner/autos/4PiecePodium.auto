@@ -6,39 +6,9 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": null
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": null
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "PreToNote1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Note1ToNote2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Note2ToNote3"
+            "pathName": "PreToNote2"
           }
         }
       ]

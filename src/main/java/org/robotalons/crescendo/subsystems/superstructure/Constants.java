@@ -30,7 +30,7 @@ public class Constants {
 
     public static final Double PIVOT_GEAR_RATIO = (1d);
 
-    public static final Double PIVOT_P_GAIN = (4.8d);
+    public static final Double PIVOT_P_GAIN = (4.7d);
     public static final Double PIVOT_I_GAIN = (0d);
     public static final Double PIVOT_D_GAIN = (0.695d);
 
@@ -44,7 +44,7 @@ public class Constants {
     public static final Boolean PIVOT_INVERTED = (false);
 
     public static final Double SUBWOOFER_LINE = Units.degreesToRadians((41.7d));
-    public static final Double AMP_SCORE = Units.degreesToRadians((40.2d));
+    public static final Double AMP_SCORE = Units.degreesToRadians((40.8d));
     public static final Double PODIUM_LINE = Units.degreesToRadians((25.7d));
     public static final Double STARTING_LINE = Units.degreesToRadians((38.0d));
     public static final Double WING_LINE = Units.degreesToRadians((15.1d));

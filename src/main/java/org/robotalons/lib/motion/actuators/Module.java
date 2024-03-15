@@ -28,6 +28,7 @@ public abstract class Module implements Closeable {
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   protected volatile SwerveModuleState Reference = new SwerveModuleState();
   protected volatile ReferenceType ReferenceMode = ReferenceType.STATE_CONTROL;
+  protected volatile Boolean IsFirstOptimization = (true);
   protected Rotation2d RotationalAbsoluteOffset = (null);
   protected Rotation2d RotationalRelativeOffset = (null);  
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
@@ -126,7 +127,8 @@ public abstract class Module implements Closeable {
    * @return An optimized version of the reference
    */
   public SwerveModuleState set(final SwerveModuleState Reference) {
-    this.Reference = SwerveModuleState.optimize(Reference, STATUS.RotationalRelativePosition.plus(RotationalRelativeOffset == (null)? new Rotation2d(): RotationalRelativeOffset));
+    this.Reference = SwerveModuleState.optimize(Reference, STATUS.RotationalRelativePosition.plus(RotationalRelativeOffset == (null) || IsFirstOptimization? new Rotation2d(): RotationalRelativeOffset));
+    IsFirstOptimization = (false);
     return this.Reference;
   }
 

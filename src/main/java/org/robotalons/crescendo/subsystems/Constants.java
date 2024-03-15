@@ -31,7 +31,7 @@ public class Constants {
     public static final Double ROBOT_TRANSLATION_KI = (0d);
     public static final Double ROBOT_TRANSLATION_KD = (0d);    
 
-    public static final Double ROBOT_ROTATIONAL_KP = (0.05);
+    public static final Double ROBOT_ROTATIONAL_KP = (0d);
     public static final Double ROBOT_ROTATIONAL_KI = (0d);
     public static final Double ROBOT_ROTATIONAL_KD = (0d);
   }

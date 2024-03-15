@@ -46,7 +46,7 @@ public final class Constants {
   }
 
   public static final class Measurements {
-    public static final Double ROBOT_WHEEL_DIAMETER_METERS = Units.inchesToMeters((8d));
+    public static final Double ROBOT_WHEEL_DIAMETER_METERS = Units.inchesToMeters((4d));
     public static final Double ROBOT_WHEEL_PERIMETER_METERS = ROBOT_WHEEL_DIAMETER_METERS * Math.PI;
 
     public static final Double ROBOT_LENGTH_METERS = Units.inchesToMeters((29.5d));

@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -48,6 +49,7 @@ public final class SubsystemManager extends SubsystemBase {
   public static final Field2d FIELD;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static SubsystemManager Instance;
+  public static boolean HasrunOnce = (false);
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private SubsystemManager() {} static {
     SUBSYSTEMS = new ArrayList<>();
@@ -89,7 +91,6 @@ public final class SubsystemManager extends SubsystemBase {
       Module.set(org.robotalons.lib.motion.actuators.Module.ReferenceType.STATE_CONTROL));
     Pathfinding.ensureInitialized();
     Pathfinding.setStartPosition(DrivebaseSubsystem.getPose().getTranslation());
-    configureAutonomous();
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
@@ -98,6 +99,7 @@ public final class SubsystemManager extends SubsystemBase {
     Pathfinding.setDynamicObstacles(
       new ArrayList<>(),
       DrivebaseSubsystem.getPose().getTranslation());
+  
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
@@ -119,7 +121,7 @@ public final class SubsystemManager extends SubsystemBase {
     );
   }
 
-  private static void configureAutonomous(){
+  public synchronized static void configureAutonomous(){
     NamedCommands.registerCommand("Intake Note", SuperstructureSubsystem.grabNote());
 
     NamedCommands.registerCommand("Expel Intake", SuperstructureSubsystem.expelNote());
@@ -129,6 +131,9 @@ public final class SubsystemManager extends SubsystemBase {
     NamedCommands.registerCommand("Shoot Subwoofer", SuperstructureSubsystem.shootAtSubwoofer());
 
     NamedCommands.registerCommand("Shoot Wing", SuperstructureSubsystem.shootAtWing());
+
+    NamedCommands.registerCommand("Reset Wheels", new InstantCommand(
+      DrivebaseSubsystem::set, DrivebaseSubsystem.getInstance()));
 
   }
 
