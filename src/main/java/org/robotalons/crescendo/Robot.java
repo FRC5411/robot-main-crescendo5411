@@ -26,6 +26,7 @@ import org.photonvision.PhotonVersion;
 import org.robotalons.crescendo.Constants.Logging;
 import org.robotalons.crescendo.Constants.Subsystems;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
+import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.REVOdometryThread;
@@ -264,13 +265,13 @@ public final class Robot extends LoggedRobot {
     CurrentAutonomousStartTime = Timer.getFPGATimestamp();
     CurrentAutonomous = RobotContainer.AutonomousSelector.get();
     if(!java.util.Objects.isNull(CurrentAutonomous)) {
-      CurrentAutonomous.schedule();
+      CurrentAutonomous.finallyDo((Unused) -> DrivebaseSubsystem.set()).schedule();
     }
   }
 
   @Override
   public void autonomousPeriodic() {
-    CurrentAutonomous.cancel();
+
   }
 
   @Override
