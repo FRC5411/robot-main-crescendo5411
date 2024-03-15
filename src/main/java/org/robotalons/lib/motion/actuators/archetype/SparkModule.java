@@ -86,7 +86,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     TRANSLATIONAL_ENCODER = TRANSLATIONAL_CONTROLLER.getEncoder();
 
     TRANSLATIONAL_POSITION = new DoubleAccumulator(
-      (Accumulated, Velocity) -> Accumulated - (Units.rotationsPerMinuteToRadiansPerSecond(Velocity) * discretize() * MODULE_CONSTANTS.WHEEL_RADIUS_METERS), (MODULE_CONSTANTS.TRANSLATIONAL_POSITION_METERS));
+      (Accumulated, Velocity) -> Accumulated -= Velocity * discretize() * MODULE_CONSTANTS.WHEEL_PERIMETER_METERS / (60d * MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO), (0d));
 
     ROTATIONAL_CONTROLLER = MODULE_CONSTANTS.ROTATIONAL_CONTROLLER;
     ROTATIONAL_CONTROLLER.clearFaults();
@@ -215,7 +215,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
             } else {
               setRotationalVoltage((0d));
             }
-            var Adjusted = Reference.speedMetersPerSecond / MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
+            var Adjusted = Reference.speedMetersPerSecond * Math.cos(ROTATIONAL_PID.getPositionError()) / MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
             setTranslationalVoltage((TRANSLATIONAL_PID.calculate(Adjusted)) + (TRANSLATIONAL_FF.calculate(STATUS.TranslationalVelocityRadiansSecond, Adjusted)));          
           } else {
             cease();
@@ -259,9 +259,9 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     synchronized(STATUS) {
 
       STATUS.TranslationalPositionRadians =
-        Units.rotationsToRadians(TRANSLATIONAL_ENCODER.getPosition()) / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
+        TRANSLATIONAL_ENCODER.getPosition() * MODULE_CONSTANTS.WHEEL_PERIMETER_METERS / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
       STATUS.TranslationalVelocityRadiansSecond =
-          Units.rotationsPerMinuteToRadiansPerSecond(TRANSLATIONAL_ENCODER.getVelocity()) / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
+        TRANSLATIONAL_ENCODER.getVelocity() * MODULE_CONSTANTS.WHEEL_PERIMETER_METERS / (MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO * 60d);
       STATUS.TranslationalAppliedVoltage = 
         MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER.getAppliedOutput() * MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER.getBusVoltage();
       STATUS.TranslationalCurrentAmperage = MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER.getOutputCurrent();

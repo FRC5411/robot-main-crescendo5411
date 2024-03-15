@@ -82,6 +82,7 @@ public abstract class Module implements Closeable {
     public Double TRANSLATIONAL_GEAR_RATIO = (1d);
     public Double ROTATIONAL_GEAR_RATIO = (1d);
     public Double WHEEL_RADIUS_METERS = (1d);
+    public Double WHEEL_PERIMETER_METERS = (0d);
     public Boolean ROTATIONAL_INVERTED = (false);
     public Boolean TRANSLATIONAL_INVERTED = (false);
     public Double TRANSLATIONAL_MAXIMUM_VELOCITY_METERS = (0d);
