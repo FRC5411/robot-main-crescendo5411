@@ -99,9 +99,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       KINEMATICS, 
       GYROSCOPE.getYawRotation(), 
       getModulePositions(), 
-      Estimated.isPresent()? 
-      Estimated.get().toPose2d(): 
-      new Pose2d());
+      Estimated.isPresent()? Estimated.get().toPose2d(): new Pose2d()
+    );
     ModulePositions = new ArrayList<>();
     MODULES.stream().map(Module::getPosition).forEachOrdered(ModulePositions::add);
     CHARACTERIZATION_ROUTINE = new SysIdRoutine(
@@ -153,36 +152,42 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
               final var Twist = KINEMATICS.toTwist2d(Deltas);
               GyroscopeRotation = GyroscopeRotation.plus(new Rotation2d(Twist.dtheta));
             }
-            POSE_ESTIMATOR.updateWithTime(
-              Timestamps.get(Partitions.indexOf(Size)).get(Timestamp),
-              GyroscopeRotation, 
-              Positions
-            );            
+            synchronized(POSE_ESTIMATOR) {
+              POSE_ESTIMATOR.updateWithTime(
+                Timestamps.get(Partitions.indexOf(Size)).get(Timestamp),
+                GyroscopeRotation, 
+                Positions
+              );                    
+            }
           } catch (final IndexOutOfBoundsException | NullPointerException Ignored) {
             break;
           } 
         }
       },
       () -> {
-        POSE_ESTIMATOR.updateWithTime(
-          Logger.getRealTimestamp() / (1e6),
-          GyroscopeRotation, 
-          getModulePositions()
-        );
+        synchronized(POSE_ESTIMATOR) {
+          POSE_ESTIMATOR.updateWithTime(
+            Logger.getRealTimestamp() / (1e6),
+            GyroscopeRotation, 
+            getModulePositions()
+          );          
+        }
       });
     }
-    VisionSubsystem.ALL_CAMERA_IDENTIFIERS.parallelStream().forEach((Identifier) -> {
-      final var Timestamps = VisionSubsystem.getRobotPositionTimestamps(Identifier);
-      final var Positions = VisionSubsystem.getRobotPositionDeltas(Identifier);
-      final var Deviation = VisionSubsystem.getStandardDeviations(Identifier);
-      IntStream.range((0), Math.min(Timestamps.length, Positions.length)).parallel().forEach((Index) -> {
-        POSE_ESTIMATOR.addVisionMeasurement(
-          Positions[Index],
-          Timestamps[Index],
-          Deviation
-        );
-      });
-    });
+    synchronized(POSE_ESTIMATOR) {
+      VisionSubsystem.ALL_CAMERA_IDENTIFIERS.parallelStream().forEach((Identifier) -> {
+        final var Timestamps = VisionSubsystem.getRobotPositionTimestamps(Identifier);
+        final var Positions = VisionSubsystem.getRobotPositionDeltas(Identifier);
+        final var Deviation = VisionSubsystem.getStandardDeviations(Identifier);
+        IntStream.range((0), Math.min(Timestamps.length, Positions.length)).parallel().forEach((Index) -> {
+          POSE_ESTIMATOR.addVisionMeasurement(
+            Positions[Index],
+            Timestamps[Index],
+            Deviation
+          );
+        });
+      });      
+    }
   }
 
 
@@ -283,7 +288,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   }
 
   @Override
-  public void configure(final Operator<Keybindings, Preferences> Profile) {
+  public void configureOperator(final Operator<Keybindings, Preferences> Profile) {
     Operator = Profile;
     DrivebaseSubsystem.getInstance().setDefaultCommand(
       new InstantCommand(() ->
@@ -481,7 +486,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    */
   public static synchronized void set(final Pose2d Pose) {
     synchronized(POSE_ESTIMATOR) {
-      POSE_ESTIMATOR.resetPosition(GYROSCOPE.getYawRotation(), getModulePositions(),getPose());
+      POSE_ESTIMATOR.resetPosition(GYROSCOPE.getYawRotation(), getModulePositions(), Pose);
     }
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//

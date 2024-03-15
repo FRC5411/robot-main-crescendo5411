@@ -158,7 +158,7 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
     RIGHT_ARM.close();
   }
 
-  public synchronized void configure(final Operator<Keybindings, Preferences> Operator) {
+  public synchronized void configureOperator(final Operator<Keybindings, Preferences> Operator) {
     ClimbSubsystem.Operator = Operator;
     with(() -> {
       ClimbSubsystem.Operator.getKeybinding(Keybindings.CLIMB_ROTATE_FORWARD).onTrue(new InstantCommand(() -> {

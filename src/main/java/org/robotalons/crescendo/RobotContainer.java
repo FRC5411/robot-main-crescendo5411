@@ -1,17 +1,22 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.robotalons.crescendo.Constants.Odometry;
 import org.robotalons.crescendo.Constants.Profiles;
+import org.robotalons.crescendo.Constants.Subsystems;
 import org.robotalons.crescendo.Constants.Profiles.Keybindings;
 import org.robotalons.crescendo.Constants.Profiles.Preferences;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
+import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.lib.utilities.Alert;
 import org.robotalons.lib.utilities.Alert.AlertType;
 import org.robotalons.lib.utilities.Operator;
@@ -28,38 +33,55 @@ import java.util.List;
  */
 public final class RobotContainer {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  public static final List<LoggedDashboardChooser<Operator<Keybindings, Preferences>>> OperatorSelectors;
-  public static LoggedDashboardChooser<Command> AutonomousSelector;
+  public static final List<LoggedDashboardChooser<Operator<Keybindings, Preferences>>> Operators;
+  public static LoggedDashboardChooser<Command> Autonomous;
+  public static LoggedDashboardChooser<Pose2d> Location;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static RobotContainer Instance = (null);
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
-  
+  /**
+   * Robot Container Constructor
+   */
   private RobotContainer() {} static {
-    OperatorSelectors = new ArrayList<>();
+    Operators = new ArrayList<>();
+    SubsystemManager.getInstance();
     SubsystemManager.getSubsystems().stream().forEachOrdered((Subsystem) -> {
       final var Selector = new SendableChooser<Operator<Keybindings, Preferences>>();
+      Selector.onChange((Operator) -> Subsystem.configureOperator(Operator));
       final var Default = Profiles.DEFAULT.get(Subsystem);
       Profiles.OPERATORS.forEach((Profile) -> Selector.addOption(Profile.getName(), Profile));
       Selector.setDefaultOption(Default.getName(), Default);
-      Selector.onChange(Subsystem::configure);
-      Subsystem.configure(Default);
-      OperatorSelectors.add(new LoggedDashboardChooser<Operator<Keybindings, Preferences>>(Subsystem.getName() + " Operator Selector", Selector));
+      Subsystem.configureOperator(Default);
+      Operators.add(new LoggedDashboardChooser<Operator<Keybindings, Preferences>>(Subsystem.getName() + " Operator Selector", Selector));
     });
-    Profiles.OPERATORS.forEach((Profile) -> SmartDashboard.putData(Profile.getName(), Profile));
-    SubsystemManager.getInstance();
+    final var Alliance = DriverStation.getAlliance();
+    final var Selector = new SendableChooser<Pose2d>();
+    Selector.onChange((final Pose2d Pose) -> DrivebaseSubsystem.set(Pose));
+    for(Integer Index = (1); Index < Odometry.ALLIANCE_VERTICAL_LOCATIONS.size() + (1); Index++) {
+      final var Location = Odometry.ALLIANCE_VERTICAL_LOCATIONS.get(Index - (1));
+      if(Index == (RobotBase.isReal()? DriverStation.getLocation().getAsInt(): (Subsystems.DEFAULT_ALLIANCE))) {
+        Selector.setDefaultOption(String.format(("%s Alliance %d"), Alliance.isPresent()? Alliance.get().name(): (DrivebaseSubsystem.getFlipped()? "Blue": "Red"), Index), new Pose2d(Odometry.ALLIANCE_HORIZONTAL_LOCATIONS, Location, DrivebaseSubsystem.getRotation()));
+      } else {
+        Selector.addOption(String.format(("%s Alliance %d"), Alliance.isPresent()? Alliance.get().name(): (DrivebaseSubsystem.getFlipped()? "Blue": "Red"), Index), new Pose2d(Odometry.ALLIANCE_HORIZONTAL_LOCATIONS, Location, DrivebaseSubsystem.getRotation()));
+      }
+    }
+    Selector.addOption(("Debug Alliance"), new Pose2d());
+    DrivebaseSubsystem.set(Selector.getSelected() == null? new Pose2d(): Selector.getSelected());
+    Location = new LoggedDashboardChooser<>(("Location Selector"), Selector);
     try {
-      final var Selector = AutoBuilder.buildAutoChooser();
-      Selector.onChange(SubsystemManager::set);
-      AutonomousSelector = new LoggedDashboardChooser<>(("Autonomous Selector"), Selector); 
+      final var AutoSelector = AutoBuilder.buildAutoChooser();
+      AutoSelector.onChange((final Command Auto) -> SubsystemManager.set(Auto));
+      Autonomous = new LoggedDashboardChooser<>(("Autonomous Selector"), AutoSelector); 
     } catch (final Exception Ignored) {
-      new Alert(("Autonomous Configuration Failed"), AlertType.ERROR);
-      if(AutonomousSelector ==  (null)) {
-        final var Selector = new SendableChooser<Command>();
-        Selector.addOption(("Autonomous Configuration Failed"), new InstantCommand());
-        AutonomousSelector = new LoggedDashboardChooser<>(("Autonomous Selector"), Selector); 
+      new Alert(("Autonomous Unavailable"), AlertType.ERROR);
+      if(Autonomous ==  (null)) {
+        final var AutoSelector = new SendableChooser<Command>();
+        AutoSelector.addOption(("Autonomous Configuration Failed"), new InstantCommand());
+        Autonomous = new LoggedDashboardChooser<>(("Autonomous Selector"), AutoSelector); 
       }
     }
   }
+  //61238
 
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**

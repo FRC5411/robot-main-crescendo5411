@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.robotalons.lib.utilities.Alert;
 import org.robotalons.lib.utilities.Alert.AlertType;
+
 import org.robotalons.lib.utilities.Operator;
 
 import java.io.Closeable;
@@ -40,10 +41,17 @@ public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preference
   }
   // --------------------------------------------------------------[Methods]----------------------------------------------------------------//
   /**
-   * Configures a pilot's hardware (GenericHID) to operate this subsystem's Hardware (actuators)
+   * Configures a subsystem's hardware (GenericHID) to operate this subsystem's Hardware (actuators)
    * @param Operator New subsystem operator
    */
-  public synchronized void configure(final Operator<Keybindings, Preferences> Operator) {
+  public synchronized void configureOperator(final Operator<Keybindings, Preferences> Operator) {
+
+  }
+
+  /**
+   * Configure a subsystem's hardware for PathPlanner autonomous to operate with registered named commands.
+   */
+  public synchronized void configureAutonomous() {
 
   }
   

@@ -29,9 +29,10 @@ public final class Operator<Keybindings extends Enum<?>, Preferences extends Enu
   private static final List<Operator<?,?>> OPERATORS = new ArrayList<>();
   private final Map<Preferences,Supplier<?>> PREFERENCES = new HashMap<>();  
   private final Map<Keybindings,Trigger> KEYBINDINGS = new HashMap<>();
+  //TODO: Controller Status
   private final String PILOT_NAME;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  private SendableBuilder Builder;
+  private volatile SendableBuilder Builder;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Constructor.

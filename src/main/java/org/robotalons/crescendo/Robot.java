@@ -114,7 +114,6 @@ public final class Robot extends LoggedRobot {
     if(LocalLogging) {
       Logger.start();
     }
-   
     Map<String, Integer> CommandMap = new HashMap<>();
     BiConsumer<Command, Boolean> LoggerFunction =
         (Command command, Boolean active) -> {
@@ -207,7 +206,7 @@ public final class Robot extends LoggedRobot {
   public void autonomousInit() {
     MessagePrinted = (false);
     StartTimestamp = Timer.getFPGATimestamp();
-    AutonomousCurrent = RobotContainer.AutonomousSelector.get();
+    AutonomousCurrent = RobotContainer.Autonomous.get();
     if(!java.util.Objects.isNull(AutonomousCurrent)) {
       AutonomousCurrent.schedule();
     }

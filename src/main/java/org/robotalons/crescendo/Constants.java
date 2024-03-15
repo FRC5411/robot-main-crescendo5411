@@ -54,11 +54,13 @@ public final class Constants {
         (RobotType.CONCRETE):
         (RobotType.SIMULATION)
       );
+    public static final Integer DEFAULT_ALLIANCE = (3);
   }
 
   public static final class Logging {
     public static final Map<RobotType,String> LOGGING_DEPOSIT = Map.of(
-      RobotType.CONCRETE, ("/media/sda1/")
+      RobotType.CONCRETE, ("/media/sda1/"),
+      RobotType.SIMULATION, ("logs/simulation")
     );
     public static final Boolean LOGGING_TURBO_MODE = (false);
     public static final Boolean LOGGING_ENABLED = (false);
@@ -72,6 +74,10 @@ public final class Constants {
     public static final Boolean REV_ODOMETRY_ENABLED = (true);
     public static final CTREOdometryThread CTRE_ODOMETRY_THREAD = CTREOdometryThread.create(CTRE_ODOMETRY_LOCK);
     public static final REVOdometryThread REV_ODOMETRY_THREAD = REVOdometryThread.create(REV_ODOMETRY_LOCK);
+
+    public static final Double ALLIANCE_HORIZONTAL_LOCATIONS = (0.59d);
+    public static final List<Double> ALLIANCE_VERTICAL_LOCATIONS = List.of((2d), (4d), (7.2d));
+
     static {
       CTRE_ODOMETRY_THREAD.setEnabled(CTRE_ODOMETRY_ENABLED);
       REV_ODOMETRY_THREAD.setEnabled(REV_ODOMETRY_ENABLED);

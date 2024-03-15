@@ -265,7 +265,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   }
 
   @Override
-  public void configure(final Operator<Keybindings, Preferences> Operator) {
+  public void configureOperator(final Operator<Keybindings, Preferences> Operator) {
     SuperstructureSubsystem.Operator = Operator;
     with(
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_SUBWOOFER),
