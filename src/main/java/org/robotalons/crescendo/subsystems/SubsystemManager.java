@@ -48,7 +48,7 @@ public final class SubsystemManager extends SubsystemBase {
   public static final Field2d FIELD;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static SubsystemManager Instance;
-  private static Pose2d Drivebase;
+  private static Pose2d Drivebase = DrivebaseSubsystem.getPose();
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private SubsystemManager() {} static {
     SUBSYSTEMS = new ArrayList<>();
@@ -59,6 +59,7 @@ public final class SubsystemManager extends SubsystemBase {
     SUBSYSTEMS.add(DRIVEBASE);
     SUBSYSTEMS.add(CANNON);
     SUBSYSTEMS.add(VISION);
+    //TODO: Change Back To Odometry-Based
     AutoBuilder.configureHolonomic(
       () -> Drivebase,
       (Pose) -> Drivebase = Pose, 
