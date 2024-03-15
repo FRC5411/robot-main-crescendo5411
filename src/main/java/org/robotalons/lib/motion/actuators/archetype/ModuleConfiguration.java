@@ -30,4 +30,5 @@ public class ModuleConfiguration<Controller> extends Module.Constants {
   public Double TRANSLATIONAL_KS_GAIN;
   public Double TRANSLATIONAL_KV_GAIN;
   public Double TRANSLATIONAL_KA_GAIN;  
+  public Double WHEEL_PERIMETER_METERS;
 }

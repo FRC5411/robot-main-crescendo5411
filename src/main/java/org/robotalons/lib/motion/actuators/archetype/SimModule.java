@@ -180,8 +180,8 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
     ODOMETRY_LOCK.lock();
     MODULE_CONSTANTS.STATUS_PROVIDER.getLock().lock();
     synchronized(STATUS) {
-      STATUS.TranslationalPositionRadians = TRANSLATIONAL_CONTROLLER.getAngularPositionRad();
-      STATUS.TranslationalVelocityRadiansSecond = TRANSLATIONAL_CONTROLLER.getAngularVelocityRadPerSec();
+      STATUS.TranslationalPositionRadians = TRANSLATIONAL_CONTROLLER.getAngularPositionRad() * MODULE_CONSTANTS.WHEEL_PERIMETER_METERS / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
+      STATUS.TranslationalVelocityRadiansSecond = TRANSLATIONAL_CONTROLLER.getAngularVelocityRadPerSec() * MODULE_CONSTANTS.WHEEL_PERIMETER_METERS  / (60 * MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO);
       STATUS.TranslationalCurrentAmperage = TRANSLATIONAL_CONTROLLER.getCurrentDrawAmps();
 
       STATUS.RotationalRelativePosition = new Rotation2d(ROTATIONAL_CONTROLLER.getAngularPositionRad()).plus(RotationalAbsoluteOffset);
