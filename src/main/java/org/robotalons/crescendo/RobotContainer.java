@@ -47,7 +47,7 @@ public final class RobotContainer {
     SubsystemManager.getInstance();
     SubsystemManager.getSubsystems().stream().forEachOrdered((Subsystem) -> {
       final var Selector = new SendableChooser<Operator<Keybindings, Preferences>>();
-      Selector.onChange((Operator) -> Subsystem.configureOperator(Operator));
+      Selector.onChange(Subsystem::configureOperator);
       final var Default = Profiles.DEFAULT.get(Subsystem);
       Profiles.OPERATORS.forEach((Profile) -> Selector.addOption(Profile.getName(), Profile));
       Selector.setDefaultOption(Default.getName(), Default);
@@ -56,7 +56,7 @@ public final class RobotContainer {
     });
     final var Alliance = DriverStation.getAlliance();
     final var Selector = new SendableChooser<Pose2d>();
-    Selector.onChange((final Pose2d Pose) -> DrivebaseSubsystem.set(Pose));
+    Selector.onChange(DrivebaseSubsystem::set);
     for(Integer Index = (1); Index < Odometry.ALLIANCE_VERTICAL_LOCATIONS.size() + (1); Index++) {
       final var Location = Odometry.ALLIANCE_VERTICAL_LOCATIONS.get(Index - (1));
       if(Index == (RobotBase.isReal()? DriverStation.getLocation().getAsInt(): (Subsystems.DEFAULT_ALLIANCE))) {
@@ -70,7 +70,7 @@ public final class RobotContainer {
     Location = new LoggedDashboardChooser<>(("Location Selector"), Selector);
     try {
       final var AutoSelector = AutoBuilder.buildAutoChooser();
-      AutoSelector.onChange((final Command Auto) -> SubsystemManager.set(Auto));
+      AutoSelector.onChange(SubsystemManager::set);
       Autonomous = new LoggedDashboardChooser<>(("Autonomous Selector"), AutoSelector); 
     } catch (final Exception Ignored) {
       new Alert(("Autonomous Unavailable"), AlertType.ERROR);
