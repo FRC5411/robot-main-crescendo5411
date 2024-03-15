@@ -392,14 +392,21 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   }
 
   public static void runIntake(){
-    if(!beamBreakSensorIndexer.get()){
-      INTAKE_CONTROLLER.set(0);
-      INDEXER_CONTROLLER.set(0);
-    }
-    else{
-      INTAKE_CONTROLLER.set(1);
-      INDEXER_CONTROLLER.set(0.2);
-    }
+    INTAKE_CONTROLLER.set(1);
+    INDEXER_CONTROLLER.set(0.2);
+  }
+
+  public static void stopIntake(){
+    INTAKE_CONTROLLER.set(0);
+    INDEXER_CONTROLLER.set(0);
+  }
+
+  public static Command runAutonIntake(){
+    return new InstantCommand(() -> runIntake() , getInstance());
+  }
+
+  public static Command stopAutonIntake(){
+    return new InstantCommand(() -> stopIntake());
   }
 
   public static boolean getIndexerSensor(){
@@ -411,24 +418,24 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     INDEXER_CONTROLLER.set(-1);
   }
   
-  public static void movePivotSubwoofer(){
-    set(Rotation2d.fromDegrees(Measurements.SUBWOOFER_LINE));
+  public static Command movePivotSubwoofer(){
+    return new InstantCommand(() -> set(Rotation2d.fromDegrees(Measurements.SUBWOOFER_LINE)), getInstance());
   }
 
-  public static void moveStartingLine(){
-    set(Rotation2d.fromDegrees(Measurements.STARTING_LINE));
+  public static Command moveStartingLine(){
+    return new InstantCommand(() -> set(Rotation2d.fromDegrees(Measurements.STARTING_LINE)), getInstance());
   }
 
-  public static void movePodiumLine(){
-    set(Rotation2d.fromDegrees(Measurements.PODIUM_LINE));
+  public static Command movePodiumLine(){
+    return new InstantCommand(() -> set(Rotation2d.fromDegrees(Measurements.PODIUM_LINE)), getInstance());
   }
 
-  public static void moveWingLine(){
-    set(Rotation2d.fromDegrees(Measurements.WING_LINE));
+  public static Command moveWingLine(){
+    return new InstantCommand(() -> set(Rotation2d.fromDegrees(Measurements.WING_LINE)), getInstance());
   }
 
   public static Command shoot(final Double applied){
-    return new InstantCommand(() -> set((applied)));
+    return new InstantCommand(() -> set((applied)), getInstance());
     }
 
 

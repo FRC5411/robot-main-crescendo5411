@@ -132,7 +132,6 @@ public final class SubsystemManager extends SubsystemBase {
     NamedCommands.registerCommand("Intake Note", SuperstructureSubsystem.grabNote());
     NamedCommands.registerCommand("Shoot Subwoofer ", SuperstructureSubsystem.shoot(0.6));
     NamedCommands.registerCommand("Pivot Subwoofer", SuperstructureSubsystem.shootAtSubwoofer());
-
   }
 
 

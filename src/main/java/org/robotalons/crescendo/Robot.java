@@ -1,6 +1,8 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo;
 import edu.wpi.first.hal.AllianceStationID;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -14,6 +16,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import net.bytebuddy.implementation.bind.annotation.Super;
+import net.bytebuddy.implementation.bind.annotation.SuperCall;
 
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -27,6 +33,7 @@ import org.photonvision.PhotonVersion;
 import org.robotalons.crescendo.Constants.Logging;
 import org.robotalons.crescendo.Constants.Subsystems;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
+import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
@@ -271,6 +278,23 @@ public final class Robot extends LoggedRobot {
         .onlyIf(SubsystemManager::getAutonomousStatus)
         .finallyDo(() -> SubsystemManager.setAutonomousStatus((true))).schedule();
     }
+
+
+    CurrentAutonomous.cancel();
+    SequentialCommandGroup auton2 = new SequentialCommandGroup(
+      SuperstructureSubsystem.movePivotSubwoofer(),
+      SuperstructureSubsystem.shoot(0.6),
+      new WaitCommand(0.1),
+      SuperstructureSubsystem.runAutonIntake(),
+      DrivebaseSubsystem.autonSet(new Translation2d(0.5d, 0d), new Rotation2d()),
+      new WaitCommand(0.5),
+      DrivebaseSubsystem.autonSet(),
+      SuperstructureSubsystem.stopAutonIntake(),
+      SuperstructureSubsystem.movePodiumLine(),
+      SuperstructureSubsystem.shoot(0.6)
+    );
+
+    auton2.schedule();
 
     SubsystemManager.configureAutonomous();
   }

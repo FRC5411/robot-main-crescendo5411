@@ -496,6 +496,14 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     MODULES.forEach((Module) -> Module.reset());
   }
 
+  public static synchronized Command autonSet(){
+    return new InstantCommand(() -> set(), getInstance());
+  }
+
+  public static synchronized Command autonSet(final Translation2d Translation, final Rotation2d Rotation){
+    return new InstantCommand(() -> set(Translation, Rotation), getInstance());
+  }
+
   /**
    * Mutates the current estimated pose of the robot
    * @param Pose Robot Pose in Meters
