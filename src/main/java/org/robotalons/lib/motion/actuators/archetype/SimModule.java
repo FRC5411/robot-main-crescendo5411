@@ -122,9 +122,6 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
     ROTATIONAL_CONTROLLER.update(Timestamp);
     TRANSLATIONAL_CONTROLLER.update(Timestamp);
     synchronized(STATUS) {
-      if (RotationalRelativeOffset == (null) && STATUS.RotationalAbsolutePosition.getRadians() != (0d)) {
-        RotationalRelativeOffset = STATUS.RotationalAbsolutePosition.minus(STATUS.RotationalRelativePosition);
-      }
       switch(ReferenceMode) {
         case STATE_CONTROL:
           if(Reference != (null)) {
@@ -215,6 +212,7 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
     Logger.processInputs("RealInputs/" + "MODULE (" + MODULE_CONSTANTS.NUMBER + ')', STATUS);
     MODULE_CONSTANTS.STATUS_PROVIDER.getLock().unlock();
     ODOMETRY_LOCK.unlock();
+    RotationalRelativeOffset = STATUS.RotationalAbsolutePosition.minus(STATUS.RotationalRelativePosition);
   }
 
   /**
