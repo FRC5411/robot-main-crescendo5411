@@ -259,17 +259,13 @@ public final class Robot extends LoggedRobot {
   // ------------------------------------------------------------[Autonomous]---------------------------------------------------------------//
   @Override
   public void autonomousInit() {
+    SubsystemManager.configureAutonomous();
     CurrentAutonomousMessagePrinted = (false);
     CurrentAutonomousStartTime = Timer.getFPGATimestamp();
     CurrentAutonomous = RobotContainer.AutonomousSelector.get();
     if(!java.util.Objects.isNull(CurrentAutonomous)) {
-      CurrentAutonomous
-        .beforeStarting(() -> SubsystemManager.setAutonomousStatus((false)))
-        .onlyWhile(SubsystemManager::getAutonomousStatus)
-        .finallyDo(() -> SubsystemManager.setAutonomousStatus((true))).schedule();
+      CurrentAutonomous.schedule();
     }
-
-    SubsystemManager.configureAutonomous();
   }
 
   @Override

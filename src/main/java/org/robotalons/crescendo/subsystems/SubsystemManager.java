@@ -48,7 +48,6 @@ public final class SubsystemManager extends SubsystemBase {
   public static final Field2d FIELD;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static SubsystemManager Instance;
-  private static Boolean AutonomousStatus = (false);
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private SubsystemManager() {} static {
     SUBSYSTEMS = new ArrayList<>();
@@ -119,15 +118,7 @@ public final class SubsystemManager extends SubsystemBase {
       Terminal
     );
   }
-
-  public static synchronized void setAutonomousStatus(final Boolean Status) {
-    AutonomousStatus = Status;
-  }
-
-  public static synchronized Boolean getAutonomousStatus() {
-    return !AutonomousStatus;
-  }
-
+  
   public synchronized static void configureAutonomous(){
     NamedCommands.registerCommand("Intake Note", SuperstructureSubsystem.grabNote());
     NamedCommands.registerCommand("Shoot Subwoofer ", SuperstructureSubsystem.shoot(0.6));
