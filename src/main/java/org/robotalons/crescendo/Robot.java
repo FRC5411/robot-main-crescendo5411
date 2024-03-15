@@ -276,11 +276,7 @@ public final class Robot extends LoggedRobot {
 
   @Override
   public void autonomousPeriodic() {
-
     CurrentAutonomous.cancel();
-    
-
-
   }
 
   @Override
