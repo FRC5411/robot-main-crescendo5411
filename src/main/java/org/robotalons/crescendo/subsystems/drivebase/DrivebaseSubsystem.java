@@ -312,6 +312,12 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         (Double) Operator.getPreference(Preferences.ORIENTATION_DEADZONE))))),
         DrivebaseSubsystem.getInstance()
     ));
+    with(() -> 
+      Operator.getKeybinding(Keybindings.RESET_GYRO)
+        .onTrue(new InstantCommand(
+          DrivebaseSubsystem::resetGyroscope,
+          DrivebaseSubsystem.getInstance()
+        )));
 
     with(() ->
       Operator.getKeybinding(Keybindings.ORIENTATION_TOGGLE)
@@ -526,6 +532,10 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    */
   public static List<Module> getModules() {
     return MODULES;
+  }
+
+  public static void resetGyroscope() {
+    GYROSCOPE.reset();
   }
 
   /**

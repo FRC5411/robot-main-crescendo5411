@@ -40,7 +40,7 @@ public class PigeonGyroscope extends Gyroscope {
    * @param Provider Status Provider which accepts Double StatusSignals 
    */
   public PigeonGyroscope(final Integer Port, final OdometryThread<StatusSignal<Double>> Provider) {
-    GYROSCOPE = new Pigeon2(Port, "drivetrain/shooter");
+    GYROSCOPE = new Pigeon2(Port, ("drivetrain/shooter"));
     YAW_ROTATION = GYROSCOPE.getYaw();
     YAW_VELOCITY = GYROSCOPE.getAngularVelocityZWorld();
     GYROSCOPE.getConfigurator().apply(new Pigeon2Configuration());
@@ -54,6 +54,10 @@ public class PigeonGyroscope extends Gyroscope {
 
   public synchronized void close() {
     YAW_ROTATION_QUEUE.clear();
+  }
+
+  public synchronized void reset() {
+    GYROSCOPE.reset();
   }
 
   @Override
