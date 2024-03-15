@@ -329,7 +329,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       Measurements.SUBWOOFER_LINE, 0.6, 0.6);
     with(
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_WINGLINE),
-      Measurements.WING_LINE, 0.8, 0.8);
+      Measurements.WING_LINE, 0.6, 0.8);
     with(
       SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_PODIUMLINE),
       Measurements.PODIUM_LINE, 0.6, 0.6);
