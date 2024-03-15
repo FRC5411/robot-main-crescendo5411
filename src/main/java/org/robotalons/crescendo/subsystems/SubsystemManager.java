@@ -48,7 +48,7 @@ public final class SubsystemManager extends SubsystemBase {
   public static final Field2d FIELD;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static SubsystemManager Instance;
-  private static volatile Boolean AutonomousStatus = (false);
+  private static Boolean AutonomousStatus = (false);
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private SubsystemManager() {} static {
     SUBSYSTEMS = new ArrayList<>();

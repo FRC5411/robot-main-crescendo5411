@@ -284,7 +284,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       STATUS.TranslationalPositionRadians =
         Units.rotationsToRadians(TRANSLATIONAL_ENCODER.getPosition()) / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
       STATUS.TranslationalVelocityRadiansSecond =
-          Units.rotationsPerMinuteToRadiansPerSecond(TRANSLATIONAL_ENCODER.getVelocity()) / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
+          Units.rotationsPerMinuteToRadiansPerSecond(TRANSLATIONAL_ENCODER.getVelocity()) * MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
       STATUS.TranslationalAppliedVoltage = 
         MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER.getAppliedOutput() * MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER.getBusVoltage();
       STATUS.TranslationalCurrentAmperage = MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER.getOutputCurrent();

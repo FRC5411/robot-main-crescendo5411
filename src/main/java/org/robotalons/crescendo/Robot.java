@@ -275,7 +275,8 @@ public final class Robot extends LoggedRobot {
     CurrentAutonomous = RobotContainer.AutonomousSelector.get();
     if(!java.util.Objects.isNull(CurrentAutonomous)) {
       CurrentAutonomous
-        .onlyIf(SubsystemManager::getAutonomousStatus)
+        .beforeStarting(() -> SubsystemManager.setAutonomousStatus((false)))
+        .onlyWhile(SubsystemManager::getAutonomousStatus)
         .finallyDo(() -> SubsystemManager.setAutonomousStatus((true))).schedule();
     }
 
@@ -300,14 +301,15 @@ public final class Robot extends LoggedRobot {
   }
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    CurrentAutonomous.cancel();
+  }
 
   @Override
   public void autonomousExit() {
     if(!java.util.Objects.isNull(CurrentAutonomous)) {
       CurrentAutonomous.cancel();
     }
-    SubsystemManager.setAutonomousStatus((true));
   }
 
   // -----------------------------------------------------------[Teleoperated]--------------------------------------------------------------//
