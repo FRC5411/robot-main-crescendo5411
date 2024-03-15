@@ -136,6 +136,7 @@ public final class Constants {
 
     public enum Keybindings {
       ORIENTATION_TOGGLE,
+      RESET_GYRO,
       INTAKE_TOGGLE,
       OUTTAKE_TOGGLE,
       CANNON_TOGGLE,
