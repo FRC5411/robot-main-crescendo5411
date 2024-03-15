@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -65,6 +66,7 @@ public final class Robot extends LoggedRobot {
   private static Robot Instance;
   private static AddressableLED m_led;
   private static AddressableLEDBuffer m_ledBuffer;
+  private static Notifier notifier;
   private double lastChange;
   private boolean on = true;
   //private DigitalInput beamBreakSensor = new DigitalInput(1);
@@ -183,6 +185,7 @@ public final class Robot extends LoggedRobot {
     
    
    m_led.setData(m_ledBuffer);
+
   }
 
   
@@ -204,6 +207,10 @@ public final class Robot extends LoggedRobot {
   }
 
   public void blinking(){
+    try {
+      Thread.sleep(10);
+    } catch(final InterruptedException Ignored) {}
+    
     double timestamp = Timer.getFPGATimestamp();
     if (timestamp- lastChange > 0.1){
       on = !on;
@@ -238,10 +245,14 @@ public final class Robot extends LoggedRobot {
     Logger.recordOutput(("Match Time"), DriverStation.getMatchTime());
 
     if(!SuperstructureSubsystem.getIndexerSensor()){
-      blinking();
-    } else {
-     green();
+       notifier = new Notifier(() -> blinking());
+       notifier.startPeriodic(2);
+    } 
+    
+    else {
+      green();
     }
+
     m_led.setData(m_ledBuffer);
   }
   
