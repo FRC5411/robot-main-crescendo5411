@@ -67,7 +67,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   private static volatile SuperstructureState State;
   private static SuperstructureSubsystem Instance;
   // private static DigitalInput beamBreakSensorIntake = new DigitalInput(3);
-  private static DigitalInput beamBreakSensorIndexer = new DigitalInput(1);
+  private static DigitalInput beamBreakSensorIndexer = new DigitalInput(2);
 
 
   // ------------------------------------------------------------[Constructors]----------------------------------------------------------- //
