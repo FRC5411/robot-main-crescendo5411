@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -32,6 +33,8 @@ import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.REVOdometryThread;
 import org.robotalons.lib.utilities.Alert;
 import org.robotalons.lib.utilities.Alert.AlertType;
+
+import com.pathplanner.lib.auto.NamedCommands;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -261,11 +264,12 @@ public final class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     CurrentAutonomousMessagePrinted = (false);
-    SubsystemManager.HasrunOnce = (false);
     CurrentAutonomousStartTime = Timer.getFPGATimestamp();
     CurrentAutonomous = RobotContainer.AutonomousSelector.get();
     if(!java.util.Objects.isNull(CurrentAutonomous)) {
-      CurrentAutonomous.onlyIf(() -> !SubsystemManager.HasrunOnce).finallyDo(() -> SubsystemManager.HasrunOnce = (true)).schedule();
+      CurrentAutonomous
+        .onlyIf(SubsystemManager::getAutonomousStatus)
+        .finallyDo(() -> SubsystemManager.setAutonomousStatus((true))).schedule();
     }
 
     SubsystemManager.configureAutonomous();
@@ -279,7 +283,7 @@ public final class Robot extends LoggedRobot {
     if(!java.util.Objects.isNull(CurrentAutonomous)) {
       CurrentAutonomous.cancel();
     }
-    
+    SubsystemManager.setAutonomousStatus((true));
   }
 
   // -----------------------------------------------------------[Teleoperated]--------------------------------------------------------------//

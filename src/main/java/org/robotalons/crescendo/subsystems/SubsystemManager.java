@@ -48,7 +48,7 @@ public final class SubsystemManager extends SubsystemBase {
   public static final Field2d FIELD;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static SubsystemManager Instance;
-  public static boolean HasrunOnce = (false);
+  private static volatile Boolean AutonomousStatus = (false);
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private SubsystemManager() {} static {
     SUBSYSTEMS = new ArrayList<>();
@@ -118,6 +118,14 @@ public final class SubsystemManager extends SubsystemBase {
       ),
       Terminal
     );
+  }
+
+  public static synchronized void setAutonomousStatus(final Boolean Status) {
+    AutonomousStatus = Status;
+  }
+
+  public static synchronized Boolean getAutonomousStatus() {
+    return !AutonomousStatus;
   }
 
   public synchronized static void configureAutonomous(){
