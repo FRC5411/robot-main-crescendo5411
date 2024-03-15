@@ -29,7 +29,7 @@ import java.util.List;
 public final class RobotContainer {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   public static final List<LoggedDashboardChooser<Operator<Keybindings, Preferences>>> OperatorSelectors;
-  public static LoggedDashboardChooser<Command> AutonomousSelector;
+  public static LoggedDashboardChooser<Command> AutonTimedSelector;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static RobotContainer Instance = (null);
   // private static DigitalInput beamBreak1 = new DigitalInput(1);
@@ -54,13 +54,14 @@ public final class RobotContainer {
     Profiles.OPERATORS.forEach((Profile) -> SmartDashboard.putData(Profile.getName(), Profile));
     SubsystemManager.getInstance();
     try {
-      AutonomousSelector = new LoggedDashboardChooser<>(("Autonomous Selector"), AutoBuilder.buildAutoChooser()); 
+      AutonTimedSelector = new LoggedDashboardChooser<>(("Autonomous Timed Selector"), AutoBuilder.buildAutoChooser()); 
+
     } catch (final Exception Ignored) {
       new Alert(("Autonomous Configuration Failed"), AlertType.ERROR);
-      if(AutonomousSelector ==  (null)) {
+      if(AutonTimedSelector ==  (null)) {
         final var Selector = new SendableChooser<Command>();
         Selector.addOption(("Autonomous Configuration Failed"), new InstantCommand());
-        AutonomousSelector = new LoggedDashboardChooser<>(("Autonomous Selector"), Selector); 
+        AutonTimedSelector = new LoggedDashboardChooser<>(("Autonomous Selector"), Selector); 
       }
     }
   }

@@ -16,11 +16,8 @@ import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import net.bytebuddy.implementation.bind.annotation.Super;
-import net.bytebuddy.implementation.bind.annotation.SuperCall;
 
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -36,16 +33,10 @@ import org.robotalons.crescendo.Constants.Subsystems;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem;
-<<<<<<< Updated upstream
-import org.robotalons.lib.motion.utilities.CTREOdometryThread;
-=======
->>>>>>> Stashed changes
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.REVOdometryThread;
 import org.robotalons.lib.utilities.Alert;
 import org.robotalons.lib.utilities.Alert.AlertType;
-
-import com.pathplanner.lib.auto.NamedCommands;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -292,27 +283,57 @@ public final class Robot extends LoggedRobot {
     // }
 
     CurrentAutonomous.cancel();
-    SequentialCommandGroup auton2 = new SequentialCommandGroup(
+      SequentialCommandGroup onePiece = new SequentialCommandGroup(
       SuperstructureSubsystem.movePivotSubwoofer(),
       SuperstructureSubsystem.shoot((500d)),
       new WaitCommand(1.5d),
       SuperstructureSubsystem.shoot(),
       new WaitCommand(1.5d),
       SuperstructureSubsystem.runAutonIntake()
-      //DrivebaseSubsystem.autonSet(new Translation2d(0.05d, 0d), new Rotation2d()),
-      // new WaitCommand(1.9d),
-      // DrivebaseSubsystem.autonSet(),
-      // SuperstructureSubsystem.stopAutonIntake(),
-      //DrivebaseSubsystem.autonSet(new Translation2d(-0.05d, 0d), new Rotation2d()),
-      // new WaitCommand(1.55d),
-      // SuperstructureSubsystem.shoot((500d)),
-      // new WaitCommand(0.2d),
-      // SuperstructureSubsystem.shootConfirm(),
-      // new WaitCommand(1.5d),
-      // SuperstructureSubsystem.shoot()
     );
 
-    auton2.schedule();
+    // onePiece.schedule();
+
+    SequentialCommandGroup twoPiece = new SequentialCommandGroup(
+      SuperstructureSubsystem.movePivotSubwoofer(),
+      SuperstructureSubsystem.shoot((500d)),
+      new WaitCommand(1.5d),
+      SuperstructureSubsystem.shoot(),
+      new WaitCommand(1.5d),
+      SuperstructureSubsystem.runAutonIntake(),
+      DrivebaseSubsystem.autonSet(new Translation2d(0.05d, 0d), new Rotation2d()),
+      new WaitCommand(1.9d),
+      DrivebaseSubsystem.autonSet(),
+      SuperstructureSubsystem.stopAutonIntake(),
+      DrivebaseSubsystem.autonSet(new Translation2d(-0.05d, 0d), new Rotation2d()),
+      new WaitCommand(1.55d),
+      SuperstructureSubsystem.shoot((500d)),
+      new WaitCommand(0.2d),
+      SuperstructureSubsystem.shootConfirm(),
+      new WaitCommand(1.5d),
+      SuperstructureSubsystem.shoot()
+    );
+
+    // twoPiece.schedule();
+
+    SequentialCommandGroup threePeice = new SequentialCommandGroup(
+      twoPiece, 
+      DrivebaseSubsystem.autonSet(new Translation2d(), new Rotation2d(Math.PI / 2)),
+      SuperstructureSubsystem.runAutonIntake(),
+      new WaitCommand((0.5)),
+      DrivebaseSubsystem.autonSet(new Translation2d(0.05d, 0d), new Rotation2d()),
+      new WaitCommand(1),
+      SuperstructureSubsystem.stopAutonIntake(),
+      DrivebaseSubsystem.autonSet(new Translation2d(), new Rotation2d(Math.PI / 2 * 3)),
+      new WaitCommand(1),
+      DrivebaseSubsystem.autonSet(new Translation2d(-0.02d, 0d), new Rotation2d()),
+      SuperstructureSubsystem.movePivotSubwoofer(),
+      SuperstructureSubsystem.shootConfirm(),
+      new WaitCommand(1.5d),
+      SuperstructureSubsystem.shoot((500d))
+    );
+
+
 
     SubsystemManager.configureAutonomous();
   }
