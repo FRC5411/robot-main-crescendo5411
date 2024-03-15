@@ -264,8 +264,8 @@ public final class Robot extends LoggedRobot {
     CurrentAutonomousMessagePrinted = (false);
     CurrentAutonomousStartTime = Timer.getFPGATimestamp();
     CurrentAutonomous = RobotContainer.AutonomousSelector.get();
-    if(!java.util.Objects.isNull(CurrentAutonomous)) {
-      CurrentAutonomous.finallyDo((Unused) -> DrivebaseSubsystem.set()).schedule();
+    if(CurrentAutonomous != (null)) {
+      CurrentAutonomous.finallyDo(() -> DrivebaseSubsystem.set()).schedule();
     }
   }
 

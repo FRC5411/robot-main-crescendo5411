@@ -88,6 +88,7 @@ public abstract class Module implements Closeable {
     public Double TRANSLATIONAL_MAXIMUM_VELOCITY_METERS = (0d);
     public Double ROTATIONAL_MAXIMUM_VELOCITY_METERS = (0d);
     public Double TRANSLATIONAL_POSITION_METERS = (0d);
+    public Double WHEEL_PERIMETER_METERS = (0d);
     public Rotation2d ROTATIONAL_ENCODER_OFFSET = new Rotation2d();
     public Integer NUMBER = (0);
   }    
