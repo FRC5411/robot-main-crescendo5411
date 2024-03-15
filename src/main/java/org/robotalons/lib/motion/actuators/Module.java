@@ -136,13 +136,13 @@ public abstract class Module implements Closeable {
    * Mutates the module's current applied voltage to the translational controller
    * @param Voltage Next applied voltage
    */
-  protected abstract void setTranslationalVoltage(final Double Voltage);
+  protected abstract void setTranslationalVoltage(final double Voltage);
 
   /**
    * Mutates the module's current applied voltage to the rotational controller
    * @param Voltage next applied voltage
    */
-  protected abstract void setRotationalVoltage(final Double Voltage);
+  protected abstract void setRotationalVoltage(final double Voltage);
 
   /**
    * Zeroes the rotational relative to offset from the position of the absolute encoders.

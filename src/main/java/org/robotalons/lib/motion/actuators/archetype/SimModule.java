@@ -229,13 +229,13 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
   }
 
   @Override
-  protected synchronized void setTranslationalVoltage(final Double Voltage) {
-    TRANSLATIONAL_CONTROLLER.setInputVoltage(MathUtil.clamp(Voltage != null? Voltage: 0d, (-12d), (12d)));
+  protected synchronized void setTranslationalVoltage(final double Voltage) {
+    TRANSLATIONAL_CONTROLLER.setInputVoltage(MathUtil.clamp(Voltage, (-12d), (12d)));
   }
 
   @Override
-  protected synchronized void setRotationalVoltage(final Double Voltage) {
-    ROTATIONAL_CONTROLLER.setInputVoltage(MathUtil.clamp(Voltage != null? Voltage: 0d, (-12d), (12d)));
+  protected synchronized void setRotationalVoltage(final double Voltage) {
+    ROTATIONAL_CONTROLLER.setInputVoltage(MathUtil.clamp(Voltage, (-12d), (12d)));
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   @Override

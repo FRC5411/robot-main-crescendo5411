@@ -8,6 +8,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
@@ -39,8 +41,6 @@ import java.util.stream.IntStream;
  */
 public class SparkModule<Controller extends CANSparkMax> extends Module {
   // --------------------------------------------------------------[Constants]----------------------------------------------------------------//
-  private static final Long ABSOLUTE_ENCODER_WAIT_TIMEOUT = (1000L);
-
   private final Controller TRANSLATIONAL_CONTROLLER;
   private final PIDController TRANSLATIONAL_PID;
   private final SimpleMotorFeedforward TRANSLATIONAL_FF;
@@ -74,6 +74,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
 
     this.MODULE_CONSTANTS = Constants;
     TRANSLATIONAL_CONTROLLER = MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER;
+    TRANSLATIONAL_CONTROLLER.clearFaults();
     TRANSLATIONAL_PID = new PIDController(
       MODULE_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS.kP, 
       MODULE_CONSTANTS.TRANSLATIONAL_PID_CONSTANTS.kI, 
@@ -88,16 +89,16 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       (Accumulated, Velocity) -> Accumulated -= Units.rotationsPerMinuteToRadiansPerSecond(Velocity) * discretize() * MODULE_CONSTANTS.WHEEL_RADIUS_METERS, (0d));
 
     ROTATIONAL_CONTROLLER = MODULE_CONSTANTS.ROTATIONAL_CONTROLLER;
+    ROTATIONAL_CONTROLLER.clearFaults();
     ROTATIONAL_PID = new PIDController(
       MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kP, 
       MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kI, 
       MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kD);
     ROTATIONAL_ENCODER = ROTATIONAL_CONTROLLER.getEncoder();
-    ABSOLUTE_ENCODER = new CANcoder(MODULE_CONSTANTS.ABSOLUTE_ENCODER_PORT);
-
-    try {
-      wait(ABSOLUTE_ENCODER_WAIT_TIMEOUT);
-    } catch (final InterruptedException Ignored) {}
+    ABSOLUTE_ENCODER = new CANcoder(MODULE_CONSTANTS.ABSOLUTE_ENCODER_PORT, MODULE_CONSTANTS.ABSOLUTE_ENCODER_BUS == (null)? (""): MODULE_CONSTANTS.ABSOLUTE_ENCODER_BUS);
+    ABSOLUTE_ENCODER.getConfigurator().apply(new MagnetSensorConfigs());
+    ABSOLUTE_ENCODER.getConfigurator().apply(new CANcoderConfiguration());
+    ABSOLUTE_ENCODER.clearStickyFault_BadMagnet();
 
     RotationalAbsoluteOffset = MODULE_CONSTANTS.ROTATIONAL_ENCODER_OFFSET;
     ODOMETRY_LOCK = new ReentrantLock();
@@ -109,7 +110,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     TIMESTAMPS = new ArrayList<>();
     POSITION_DELTAS = new ArrayList<>();
 
-    ABSOLUTE_ENCODER.getAbsolutePosition().setUpdateFrequency((25));
+    ABSOLUTE_ENCODER.getAbsolutePosition().setUpdateFrequency((25d));
     ABSOLUTE_ENCODER.optimizeBusUtilization();
 
     configure();
@@ -190,11 +191,11 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
    * @return Double representation of the time passed between now and the last timestep.
    */
   private synchronized Double discretize() {
-    var Discretized = (0.0);
+    var Discretized = (0d);
     if (Timestamp.equals((0d))) {
-      Discretized = ((1.0) / (50.0));
+      Discretized = ((1d) / (50d));
     } else {
-      final var Measured = Logger.getRealTimestamp() / (1e6);
+      final var Measured = Logger.getRealTimestamp() / (1e6d);
       Discretized = Measured - Timestamp;
       Timestamp = Measured;
     }    
@@ -241,13 +242,13 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
 
 
   @Override
-  protected synchronized void setTranslationalVoltage(final Double Voltage) {
-    TRANSLATIONAL_CONTROLLER.setVoltage(MathUtil.clamp(Voltage != null? Voltage: 0d, (-12d), (12d)));
+  protected synchronized void setTranslationalVoltage(final double Voltage) {
+    TRANSLATIONAL_CONTROLLER.setVoltage(MathUtil.clamp(Voltage, (-12d), (12d)));
   }
 
   @Override
-  protected synchronized void setRotationalVoltage(final Double Voltage) {
-    ROTATIONAL_CONTROLLER.setVoltage(MathUtil.clamp(Voltage != null? Voltage: 0d, (-12d), (12d)));
+  protected synchronized void setRotationalVoltage(final double Voltage) {
+    ROTATIONAL_CONTROLLER.setVoltage(MathUtil.clamp(Voltage, (-12d), (12d)));
   }
   
   /**
@@ -271,7 +272,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       STATUS.TranslationalConnected = TRANSLATIONAL_CONTROLLER.getLastError() == REVLibError.kOk;
 
       STATUS.RotationalAbsolutePosition = 
-        Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().getValueAsDouble()).minus(RotationalAbsoluteOffset);
+        Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().refresh().getValueAsDouble()).minus(RotationalAbsoluteOffset);
       STATUS.RotationalRelativePosition =
         Rotation2d.fromRotations(ROTATIONAL_ENCODER.getPosition() / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO);
       STATUS.RotationalVelocityRadiansSecond =
