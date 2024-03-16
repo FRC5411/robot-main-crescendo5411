@@ -127,19 +127,11 @@ public final class SubsystemManager extends SubsystemBase {
   public static synchronized void set(final Command Autonomous) {
     if(SubsystemManager.Autonomous != (null) && SubsystemManager.Autonomous.isScheduled()) {
       SubsystemManager.Autonomous.cancel();
-      SubsystemManager.Autonomous = Autonomous;      
-      Autonomous.schedule();
     }
+    SubsystemManager.Autonomous = Autonomous;      
+    Autonomous.schedule();
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
-  /**
-   * Provides the current chassis speeds
-   * @return Chassis speeds of Robot drivebase
-   */
-  public static ChassisSpeeds getChassisSpeeds() {
-    return DrivebaseSubsystem.getChassisSpeeds();
-  }
-
   /**
    * Provides the employee subsystems managed my this subsystem manager
    * @return List of dependent subsystems
