@@ -121,6 +121,9 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
     final var Timestamp = discretize();
     ROTATIONAL_CONTROLLER.update(Timestamp);
     TRANSLATIONAL_CONTROLLER.update(Timestamp);
+    if(RotationalRelativeOffset == (null)) {
+      RotationalRelativeOffset = STATUS.RotationalAbsolutePosition.minus(STATUS.RotationalRelativePosition);
+    }
     synchronized(STATUS) {
       if (RotationalRelativeOffset == (null) && STATUS.RotationalAbsolutePosition.getRadians() != (0d)) {
         RotationalRelativeOffset = STATUS.RotationalAbsolutePosition.minus(STATUS.RotationalRelativePosition);
@@ -135,6 +138,8 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
             }
             var Adjusted = (Reference.speedMetersPerSecond * Math.cos(ROTATIONAL_PID.getPositionError())) / MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
             setTranslationalVoltage((TRANSLATIONAL_PID.calculate(Adjusted)) + (TRANSLATIONAL_FF.calculate(STATUS.TranslationalVelocityRadiansSecond, Adjusted)));          
+          } else {
+            cease();
           }
           break;
         case DISABLED:

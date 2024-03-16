@@ -13,6 +13,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
@@ -105,7 +106,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     ROTATIONAL_ENCODER = ROTATIONAL_CONTROLLER.getEncoder();
 
     ABSOLUTE_ENCODER = new CANcoder(MODULE_CONSTANTS.ABSOLUTE_ENCODER_PORT,  ("drivetrain/shooter"));
-    ABSOLUTE_ENCODER.getConfigurator().apply(new MagnetSensorConfigs());
+    ABSOLUTE_ENCODER.getConfigurator().apply(new MagnetSensorConfigs().withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1));
     ABSOLUTE_ENCODER.getConfigurator().apply(new CANcoderConfiguration());
     ABSOLUTE_ENCODER.clearStickyFaults();
 
@@ -122,7 +123,6 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     BaseStatusSignal.setUpdateFrequencyForAll((25), ABSOLUTE_ENCODER.getAbsolutePosition());
     ABSOLUTE_ENCODER.optimizeBusUtilization();
 
-    ABSOLUTE_ENCODER.getAbsolutePosition().refresh();
     configure();
     reset();
   }
@@ -227,6 +227,9 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
   public synchronized void periodic() {
     update();
     TRANSLATIONAL_POSITION.accumulate(TRANSLATIONAL_ENCODER.getVelocity());
+    if(RotationalRelativeOffset == (null)) {
+      RotationalRelativeOffset = STATUS.RotationalAbsolutePosition.minus(STATUS.RotationalRelativePosition);
+    }
     synchronized(STATUS) {
       switch(ReferenceMode) {
         case STATE_CONTROL:
@@ -330,10 +333,9 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
         ROTATIONAL_POSITION_QUEUE.clear();  
       }
     }
-    Logger.processInputs("RealInputs/" + "MODULE (" + Integer.toString(MODULE_CONSTANTS.NUMBER) + ')', STATUS);
+    Logger.processInputs(String.format(("Drivebase/Module[%d]"), MODULE_CONSTANTS.NUMBER), STATUS);
     MODULE_CONSTANTS.STATUS_PROVIDER.getLock().unlock();
     ODOMETRY_LOCK.unlock();
-    RotationalRelativeOffset = STATUS.RotationalAbsolutePosition.minus(STATUS.RotationalRelativePosition);
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   @Override

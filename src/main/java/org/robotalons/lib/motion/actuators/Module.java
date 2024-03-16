@@ -28,7 +28,6 @@ public abstract class Module implements Closeable {
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   protected volatile SwerveModuleState Reference = new SwerveModuleState();
   protected volatile ReferenceType ReferenceMode = ReferenceType.STATE_CONTROL;
-  protected volatile Boolean IsFirstOptimization = (true);
   protected Rotation2d RotationalAbsoluteOffset = (null);
   protected Rotation2d RotationalRelativeOffset = (null);  
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
@@ -73,7 +72,35 @@ public abstract class Module implements Closeable {
    * @param Voltage Applied voltage to the translation actuator of this module
    */
   public synchronized void characterize(final Double Voltage) {
+    Reference = (null);
     setTranslationalVoltage(Voltage);
+  }
+  
+  /**
+   * Put a given amount of rotation within the scope of a reference rotation.
+   * @param Measured  Rotation measured 
+   * @param Reference Rotation reference, 'setpoint'
+   * @return Closest rotation within the scope of the reference.
+   */
+  public static Rotation2d scope(final Rotation2d Measured, final Rotation2d Reference) {
+    final var Offset = Rotation2d.fromRadians(Measured.getRadians() % 2d * Math.PI);
+    final var Lower = Measured.minus(new Rotation2d(Offset.getRadians() >= 0d? Offset.getRadians(): (2d * Math.PI + Offset.getRadians())));
+    final var Upper = Measured.minus(new Rotation2d(Offset.getRadians() >= 0d? (2d * Math.PI - Offset.getRadians()): Offset.getRadians()));
+    while(Reference.getRadians() < Lower.getRadians()) {
+      Reference.plus(new Rotation2d(2d * Math.PI));
+    }
+    while(Reference.getRadians() < Lower.getRadians()) {
+      Reference.plus(new Rotation2d(2d * Math.PI));
+    }
+    while(Reference.getRadians() > Upper.getRadians()) {
+      Reference.minus(new Rotation2d(2d * Math.PI));
+    }
+    if (Reference.getRadians() - Measured.getRadians() > Math.PI) {
+      Reference.minus(new Rotation2d(2d * Math.PI));
+    } else if (Reference.getRadians() - Measured.getRadians() < -Math.PI) {
+      Reference.plus(new Rotation2d(2d * Math.PI));
+    }
+    return Reference;
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
   /**
@@ -127,8 +154,8 @@ public abstract class Module implements Closeable {
    * @return An optimized version of the reference
    */
   public SwerveModuleState set(final SwerveModuleState Reference) {
-    this.Reference = SwerveModuleState.optimize(Reference, STATUS.RotationalRelativePosition.plus(RotationalRelativeOffset == (null) || IsFirstOptimization? new Rotation2d(): RotationalRelativeOffset));
-    IsFirstOptimization = (false);
+    update();
+    this.Reference = SwerveModuleState.optimize(Reference, scope(STATUS.RotationalAbsolutePosition, Reference.angle));
     return this.Reference;
   }
 
