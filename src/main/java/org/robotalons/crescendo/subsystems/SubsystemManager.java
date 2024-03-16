@@ -3,6 +3,8 @@ package org.robotalons.crescendo.subsystems;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -50,6 +52,8 @@ public final class SubsystemManager extends SubsystemBase {
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static SubsystemManager Instance;
   private static volatile Command Autonomous;
+  private static volatile Boolean MessagePrinted;
+  private static volatile Double StartTimestamp;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private SubsystemManager() {} static {
     SUBSYSTEMS = new ArrayList<>();
@@ -98,6 +102,18 @@ public final class SubsystemManager extends SubsystemBase {
   @Override
   public synchronized void periodic() {
     FIELD.setRobotPose(DrivebaseSubsystem.getPose());
+    if (Autonomous != (null)) {
+      if (!Autonomous.isScheduled() && !MessagePrinted) {
+        if (DriverStation.isAutonomousEnabled()) {
+          System.out.printf(
+              ("*** Auto finished in %.2f secs ***%n"), Logger.getRealTimestamp() / (1e6) - StartTimestamp);
+        } else {
+          System.out.printf(
+              ("*** Auto cancelled in %.2f secs ***%n"), Logger.getRealTimestamp() / (1e6) - StartTimestamp);
+        }
+        MessagePrinted = (true);
+      }
+    }
     //Pathfinding.setDynamicObstacles(new ArrayList<>(), DrivebaseSubsystem.getPose().getTranslation());
   }
 
@@ -119,12 +135,18 @@ public final class SubsystemManager extends SubsystemBase {
       Terminal
     );
   }  
+
+  public static void cancel() {
+    SubsystemManager.Autonomous.cancel();
+  }
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
   /**
    * Mutates the currently running autonomous command
    * @param Autonomous New Autonomous command
    */
   public static synchronized void set(final Command Autonomous) {
+    MessagePrinted = (false);
+    StartTimestamp = Timer.getFPGATimestamp();
     if(SubsystemManager.Autonomous != (null) && SubsystemManager.Autonomous.isScheduled()) {
       SubsystemManager.Autonomous.cancel();
     }

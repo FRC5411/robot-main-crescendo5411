@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Threads;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,6 +24,7 @@ import org.photonvision.PhotonVersion;
 import org.robotalons.crescendo.Constants.Logging;
 import org.robotalons.crescendo.Constants.Odometry;
 import org.robotalons.crescendo.Constants.Subsystems;
+import org.robotalons.crescendo.subsystems.SubsystemManager;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.REVOdometryThread;
 import org.robotalons.lib.utilities.Alert;
@@ -48,14 +48,10 @@ public final class Robot extends LoggedRobot {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private static final Alert BATTERY_VOLTAGE_ALERT = new Alert(("Battery Voltage Low"), AlertType.WARNING);
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  private static Command AutonomousCurrent;  
-  private static Boolean MessagePrinted;
   private static Boolean LocalLogging;
-  private static Double StartTimestamp;
   private static Robot Instance;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private Robot() {} static {
-    AutonomousCurrent = (null);
     LocalLogging = (true);
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
@@ -155,18 +151,6 @@ public final class Robot extends LoggedRobot {
     BATTERY_VOLTAGE_ALERT.set(RobotController.getBatteryVoltage() < (11.5d));
     CommandScheduler.getInstance().run();
     SmartDashboard.updateValues();
-    if (AutonomousCurrent != (null)) {
-      if (!AutonomousCurrent.isScheduled() && !MessagePrinted) {
-        if (DriverStation.isAutonomousEnabled()) {
-          System.out.printf(
-              ("*** Auto finished in %.2f secs ***%n"), Logger.getRealTimestamp() / (1e6) - StartTimestamp);
-        } else {
-          System.out.printf(
-              ("*** Auto cancelled in %.2f secs ***%n"), Logger.getRealTimestamp() / (1e6) - StartTimestamp);
-        }
-        MessagePrinted = (true);
-      }
-    }
     Logger.recordOutput(("Match Time"), DriverStation.getMatchTime());
     Threads.setCurrentThreadPriority((true), (10));
   }
@@ -198,12 +182,7 @@ public final class Robot extends LoggedRobot {
   // ------------------------------------------------------------[Autonomous]---------------------------------------------------------------//
   @Override
   public void autonomousInit() {
-    MessagePrinted = (false);
-    StartTimestamp = Timer.getFPGATimestamp();
-    AutonomousCurrent = RobotContainer.Autonomous.get();
-    if(!java.util.Objects.isNull(AutonomousCurrent)) {
-      AutonomousCurrent.schedule();
-    }
+    SubsystemManager.set(RobotContainer.Autonomous.get());
   }
 
   @Override
@@ -211,9 +190,7 @@ public final class Robot extends LoggedRobot {
 
   @Override
   public void autonomousExit() {
-    if(!java.util.Objects.isNull(AutonomousCurrent)) {
-      AutonomousCurrent.cancel();
-    }
+    SubsystemManager.cancel();
   }
 
   // -----------------------------------------------------------[Teleoperated]--------------------------------------------------------------//
