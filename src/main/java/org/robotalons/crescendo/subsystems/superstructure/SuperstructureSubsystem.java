@@ -59,6 +59,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
 
   private static final CANSparkMax PIVOT_CONTROLLER;
   private static final ProfiledPIDController PIVOT_CONTROLLER_PID;
+  private static final DigitalInput INDEXER_SENSOR;
 
   private static final DutyCycleEncoder PIVOT_ABSOLUTE_ENCODER;
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
@@ -66,10 +67,6 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   private static volatile SwerveModuleState Reference;
   private static volatile SuperstructureState State;
   private static SuperstructureSubsystem Instance;
-  // private static DigitalInput beamBreakSensorIntake = new DigitalInput(3);
-  private static DigitalInput beamBreakSensorIndexer = new DigitalInput(2);
-
-
   // ------------------------------------------------------------[Constructors]----------------------------------------------------------- //
   /**
    * 
@@ -80,9 +77,10 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   } static {
     Reference = new SwerveModuleState((0d), Rotation2d.fromRotations(Measurements.PIVOT_MINIMUM_ROTATION));
     State = SuperstructureState.MANUAL;
+    INDEXER_SENSOR = new DigitalInput((2));
     FIRING_CONTROLLERS = new Pair<TalonFX,TalonFX>(
-      new TalonFX(Ports.FIRING_CONTROLLER_LEFT_ID, "drivetrain/shooter"),
-      new TalonFX(Ports.FIRING_CONTROLLER_RIGHT_ID, "drivetrain/shooter")
+      new TalonFX(Ports.FIRING_CONTROLLER_LEFT_ID, ("drivetrain/shooter")),
+      new TalonFX(Ports.FIRING_CONTROLLER_RIGHT_ID, ("drivetrain/shooter"))
     );
 
     FIRING_CONTROLLERS.getFirst().getConfigurator().apply(new SlotConfigs()
@@ -122,7 +120,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     PIVOT_CONTROLLER_PID = new ProfiledPIDController(
       Measurements.PIVOT_P_GAIN,
       Measurements.PIVOT_I_GAIN,
-      Measurements.PIVOT_D_GAIN, new TrapezoidProfile.Constraints(8, 8)); 
+      Measurements.PIVOT_D_GAIN, new TrapezoidProfile.Constraints((8), (8))); 
     PIVOT_CONTROLLER.setInverted(Measurements.PIVOT_INVERTED);
     PIVOT_ABSOLUTE_ENCODER = new DutyCycleEncoder(Ports.PIVOT_ABSOLUTE_ENCODER_ID);
   }
@@ -157,23 +155,19 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       Logger.recordOutput(("Cannon/InterpolatedPercentile"), Percentage);
       Logger.recordOutput(("Cannon/InterpolatedVelocity"), Interpolated.get((0), (0)));
       Logger.recordOutput(("Cannon/InterpolatedRotation"), Units.radiansToDegrees(Interpolated.get((1), (0))));      
-      Logger.recordOutput(("Has Note"), beamBreakSensorIndexer.get());
-    Logger.recordOutput(("Cannon/Setpoint"), 0);
     } else {
       Logger.recordOutput(("Cannon/InterpolatedDistance"), (0d)); 
       Logger.recordOutput(("Cannon/InterpolatedPercentile"), (0d));
       Logger.recordOutput(("Cannon/InterpolatedVelocity"), (0d));
       Logger.recordOutput(("Cannon/InterpolatedRotation"), (0d));
-    Logger.recordOutput(("Cannon/Setpoint"), 0);
-      Logger.recordOutput(("Has Note"), false);
     }
     set(Reference.angle);
     Logger.recordOutput(("Cannon/Reference"), Reference);
     Logger.recordOutput(("Cannon/MeasuredVelocity"), FIRING_VELOCITY.getValueAsDouble());
     Logger.recordOutput(("Cannon/MeasuredRotation"), -getPivotRotation());
     Logger.recordOutput(("Cannon/IndexerCurrent"), INDEXER_CONTROLLER.getOutputCurrent());
-    Logger.recordOutput(("Has Note"), beamBreakSensorIndexer.get());
     Logger.recordOutput(("Cannon/Setpoint"), Measurements.SUBWOOFER_LINE);
+    Logger.recordOutput(("Cannon/Note"), INDEXER_SENSOR.get());
     Constants.Objects.ODOMETRY_LOCKER.unlock();
   }
 
@@ -253,7 +247,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   }
 
   public static synchronized DigitalInput getNoteDetector(){
-    return beamBreakSensorIndexer;
+    return INDEXER_SENSOR;
   }
 
   public static synchronized Command grabNote(){
@@ -410,7 +404,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   }
 
   public static boolean getIndexerSensor(){
-    return beamBreakSensorIndexer.get();
+    return INDEXER_SENSOR.get();
   }
 
   public static void expelIntake(){
