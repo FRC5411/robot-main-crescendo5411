@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.robotalons.lib.utilities.LoggedDashboardChooser;
 import org.robotalons.crescendo.Constants.Odometry;
 import org.robotalons.crescendo.Constants.Profiles;
 import org.robotalons.crescendo.Constants.Subsystems;
@@ -60,13 +60,13 @@ public final class RobotContainer {
     for(Integer Index = (1); Index < Odometry.ALLIANCE_VERTICAL_LOCATIONS.size() + (1); Index++) {
       final var Location = Odometry.ALLIANCE_VERTICAL_LOCATIONS.get(Index - (1));
       if(Index == (RobotBase.isReal()? DriverStation.getLocation().getAsInt(): (Subsystems.DEFAULT_ALLIANCE))) {
-        Selector.setDefaultOption(String.format(("%s Alliance %d"), Alliance.map(Enum::name).orElseGet(() -> (DrivebaseSubsystem.getFlipped() ? "Blue" : "Red")), Index), new Pose2d(Odometry.ALLIANCE_HORIZONTAL_LOCATIONS, Location, DrivebaseSubsystem.getRotation()));
+        Selector.setDefaultOption(String.format(("%s Alliance %d"), Alliance.map(Enum::name).orElseGet(() -> (!DrivebaseSubsystem.getFlipped() ? "Blue" : "Red")), Index), new Pose2d(Odometry.ALLIANCE_HORIZONTAL_LOCATIONS, Location, DrivebaseSubsystem.getRotation()));
       } else {
-        Selector.addOption(String.format(("%s Alliance %d"), Alliance.map(Enum::name).orElseGet(() -> (DrivebaseSubsystem.getFlipped() ? "Blue" : "Red")), Index), new Pose2d(Odometry.ALLIANCE_HORIZONTAL_LOCATIONS, Location, DrivebaseSubsystem.getRotation()));
+        Selector.addOption(String.format(("%s Alliance %d"), Alliance.map(Enum::name).orElseGet(() -> (!DrivebaseSubsystem.getFlipped() ? "Blue" : "Red")), Index), new Pose2d(Odometry.ALLIANCE_HORIZONTAL_LOCATIONS, Location, DrivebaseSubsystem.getRotation()));
       }
     }
     Selector.addOption(("Debug Alliance"), new Pose2d());
-    DrivebaseSubsystem.set(Selector.getSelected() == null? new Pose2d(): Selector.getSelected());
+    DrivebaseSubsystem.set(Selector.getSelected() == (null)? new Pose2d(): Selector.getSelected());
     Location = new LoggedDashboardChooser<>(("Location Selector"), Selector);
     try {
       final var AutoSelector = AutoBuilder.buildAutoChooser();

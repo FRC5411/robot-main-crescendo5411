@@ -125,9 +125,9 @@ public final class SubsystemManager extends SubsystemBase {
    * @param Autonomous New Autonomous command
    */
   public static synchronized void set(final Command Autonomous) {
-    SubsystemManager.Autonomous.cancel();
-    SubsystemManager.Autonomous = Autonomous;
-    if(SubsystemManager.Autonomous.isScheduled()) {
+    if(SubsystemManager.Autonomous != (null) && SubsystemManager.Autonomous.isScheduled()) {
+      SubsystemManager.Autonomous.cancel();
+      SubsystemManager.Autonomous = Autonomous;      
       Autonomous.schedule();
     }
   }

@@ -76,7 +76,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     Instance = new DrivebaseSubsystem();
     GYROSCOPE = Constants.Devices.GYROSCOPE;
     State = DrivebaseState.ROBOT_ORIENTED;
-    FlippedEnabled = (DriverStation.getAlliance().isPresent()? (DriverStation.getAlliance().get().equals(Alliance.Red)): (true));
+    FlippedEnabled = (DriverStation.getAlliance().isPresent()? (DriverStation.getAlliance().get().equals(Alliance.Red)): (false));
     GyroscopeRotation = GYROSCOPE.getYawRotation();
     Timestamp = Logger.getRealTimestamp() / (1e6);
     MODULES = List.of(
@@ -130,6 +130,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    * Processes Module and Gyroscope data from a single control loop of module data
    */
   public static synchronized void process() {
+    Objects.ODOMETRY_LOCK.lock();
     synchronized(MODULES) {
       final var Rotation = GYROSCOPE.getOdometryYawRotations();
       final var Measured = MODULES.stream().map(Module::getPositionDeltas).toList();
@@ -188,12 +189,12 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         });
       });      
     }
+    Objects.ODOMETRY_LOCK.unlock();
   }
 
 
   @Override
   public synchronized void periodic() {
-    Objects.ODOMETRY_LOCK.lock();
     MODULES.forEach(Module::periodic);
     GYROSCOPE.update();
     Logger.recordOutput(("Drivebase/Measurements"),getModuleMeasurements());
@@ -201,7 +202,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     if (DriverStation.isDisabled()) {
       MODULES.forEach(Module::cease);
     }
-    Objects.ODOMETRY_LOCK.unlock();
   }
 
   /**
@@ -485,9 +485,11 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    * Mutates the current estimated pose of the robot
    * @param Pose Robot Pose in Meters
    */
-  public static synchronized void set(final Pose2d Pose) {
+  public static void set(final Pose2d Pose) {
     synchronized(POSE_ESTIMATOR) {
-      POSE_ESTIMATOR.resetPosition(GYROSCOPE.getYawRotation(), getModulePositions(), Pose);
+      if(Pose != null)  {
+        POSE_ESTIMATOR.resetPosition(GYROSCOPE.getYawRotation(), getModulePositions(), Pose);
+      }
     }
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
