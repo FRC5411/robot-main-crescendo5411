@@ -118,10 +118,16 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
   @Override
   public synchronized void periodic() {
     update();    
-    final double Timestamp = discretize();
+    final var Timestamp = discretize();
     ROTATIONAL_CONTROLLER.update(Timestamp);
     TRANSLATIONAL_CONTROLLER.update(Timestamp);
+    if(RotationalRelativeOffset == (null)) {
+      RotationalRelativeOffset = STATUS.RotationalAbsolutePosition.minus(STATUS.RotationalRelativePosition);
+    }
     synchronized(STATUS) {
+      if (RotationalRelativeOffset == (null) && STATUS.RotationalAbsolutePosition.getRadians() != (0d)) {
+        RotationalRelativeOffset = STATUS.RotationalAbsolutePosition.minus(STATUS.RotationalRelativePosition);
+      }
       switch(ReferenceMode) {
         case STATE_CONTROL:
           if(Reference != (null)) {
@@ -132,6 +138,8 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
             }
             var Adjusted = (Reference.speedMetersPerSecond * Math.cos(ROTATIONAL_PID.getPositionError())) / MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
             setTranslationalVoltage((TRANSLATIONAL_PID.calculate(Adjusted)) + (TRANSLATIONAL_FF.calculate(STATUS.TranslationalVelocityRadiansSecond, Adjusted)));          
+          } else {
+            cease();
           }
           break;
         case DISABLED:
@@ -143,10 +151,12 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
       }
       synchronized(DELTAS) {
         DELTAS.clear();
-        IntStream.range((0), Math.min(STATUS.OdometryTranslationalPositionsRadians.length, STATUS.OdometryRotationalPositionsRadians.length)).forEachOrdered((Index) -> DELTAS.add(new SwerveModulePosition(
-          STATUS.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS,
-          STATUS.OdometryRotationalPositionsRadians[Index]
-        )));
+        IntStream.range((0), Math.min(STATUS.OdometryTranslationalPositionsRadians.length, STATUS.OdometryRotationalPositionsRadians.length)).forEachOrdered((Index) -> {
+          DELTAS.add(new SwerveModulePosition(
+            STATUS.OdometryTranslationalPositionsRadians[Index] * MODULE_CONSTANTS.WHEEL_RADIUS_METERS,
+            STATUS.OdometryRotationalPositionsRadians[Index]
+          ));
+        });              
       }
     }
   }

@@ -206,6 +206,9 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
   public synchronized void periodic() {
     update();
     TRANSLATIONAL_POSITION.accumulate(TRANSLATIONAL_ENCODER.getVelocity());
+    if(RotationalRelativeOffset == (null)) {
+      RotationalRelativeOffset = STATUS.RotationalAbsolutePosition.minus(STATUS.RotationalRelativePosition);
+    }
     synchronized(STATUS) {
       switch(ReferenceMode) {
         case STATE_CONTROL:
