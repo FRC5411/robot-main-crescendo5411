@@ -66,42 +66,13 @@ public abstract class Module implements Closeable {
    */
   public abstract void periodic();
 
-
   /**
    * Updates the characterization voltages of this module's translation controller according
    * to the values of voltage provided
    * @param Voltage Applied voltage to the translation actuator of this module
    */
   public synchronized void characterize(final Double Voltage) {
-    Reference = (null);
     setTranslationalVoltage(Voltage);
-  }
-  
-  /**
-   * Put a given amount of rotation within the scope of a reference rotation.
-   * @param Measured  Rotation measured 
-   * @param Reference Rotation reference, 'setpoint'
-   * @return Closest rotation within the scope of the reference.
-   */
-  public static Rotation2d scope(final Rotation2d Measured, final Rotation2d Reference) {
-    final var Offset = Rotation2d.fromRadians(Measured.getRadians() % 2d * Math.PI);
-    final var Lower = Measured.minus(new Rotation2d(Offset.getRadians() >= 0d? Offset.getRadians(): (2d * Math.PI + Offset.getRadians())));
-    final var Upper = Measured.minus(new Rotation2d(Offset.getRadians() >= 0d? (2d * Math.PI - Offset.getRadians()): Offset.getRadians()));
-    while(Reference.getRadians() < Lower.getRadians()) {
-      Reference.plus(new Rotation2d(2d * Math.PI));
-    }
-    while(Reference.getRadians() < Lower.getRadians()) {
-      Reference.plus(new Rotation2d(2d * Math.PI));
-    }
-    while(Reference.getRadians() > Upper.getRadians()) {
-      Reference.minus(new Rotation2d(2d * Math.PI));
-    }
-    if (Reference.getRadians() - Measured.getRadians() > Math.PI) {
-      Reference.minus(new Rotation2d(2d * Math.PI));
-    } else if (Reference.getRadians() - Measured.getRadians() < -Math.PI) {
-      Reference.plus(new Rotation2d(2d * Math.PI));
-    }
-    return Reference;
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
   /**
@@ -156,7 +127,7 @@ public abstract class Module implements Closeable {
    * @return An optimized version of the reference
    */
   public synchronized SwerveModuleState set(final SwerveModuleState Reference) {
-    this.Reference = SwerveModuleState.optimize(Reference, scope(STATUS.RotationalAbsolutePosition, Reference.angle));
+    this.Reference = SwerveModuleState.optimize(Reference, STATUS.RotationalRelativePosition.plus(RotationalRelativeOffset == (null)? new Rotation2d(): RotationalRelativeOffset));
     return this.Reference;
   }
 
