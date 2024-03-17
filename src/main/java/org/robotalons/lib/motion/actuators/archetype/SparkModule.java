@@ -74,6 +74,8 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     super(Constants);
 
     this.MODULE_CONSTANTS = Constants;
+
+    RotationalAbsoluteOffset = MODULE_CONSTANTS.ROTATIONAL_ENCODER_OFFSET;
     TRANSLATIONAL_CONTROLLER = MODULE_CONSTANTS.TRANSLATIONAL_CONTROLLER;
     TRANSLATIONAL_CONTROLLER.clearFaults();
     TRANSLATIONAL_PID = new PIDController(
@@ -101,7 +103,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     ABSOLUTE_ENCODER.getConfigurator().apply(new CANcoderConfiguration());
     ABSOLUTE_ENCODER.clearStickyFault_BadMagnet();
 
-    RotationalAbsoluteOffset = MODULE_CONSTANTS.ROTATIONAL_ENCODER_OFFSET;
+    
     ODOMETRY_LOCK = new ReentrantLock();
 
     TRANSLATIONAL_POSITION_QUEUE = MODULE_CONSTANTS.STATUS_PROVIDER.register(TRANSLATIONAL_POSITION::get);
