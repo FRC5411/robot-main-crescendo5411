@@ -249,6 +249,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         State = DrivebaseState.FIELD_ORIENTED;
         break;
       case FIELD_ORIENTED:
+        GYROSCOPE.reset();
         State = DrivebaseState.OBJECT_ORIENTED;
         break;
       case OBJECT_ORIENTED:
@@ -410,8 +411,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    * @param Demand Chassis speeds object which represents the demand speeds of the drivebase
    */
   public static synchronized void set(final ChassisSpeeds Demand) {
-    var Discrete = ChassisSpeeds.discretize(Demand, discretize());
-    var Reference = KINEMATICS.toSwerveModuleStates(Discrete);
+    final var Discrete = ChassisSpeeds.discretize(Demand, discretize());
+    final var Reference = KINEMATICS.toSwerveModuleStates(Discrete);
     SwerveDriveKinematics.desaturateWheelSpeeds(
       Reference,
       Demand,
@@ -443,10 +444,11 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         });
         break;
       case ROBOT_ORIENTED:
-        set(new ChassisSpeeds(
+        set(ChassisSpeeds.fromRobotRelativeSpeeds(
           -Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
           -Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
-          -Rotation.getRadians() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY
+          -Rotation.getRadians() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY,
+          FlippedEnabled? getPose().getRotation().times(-1): getPose().getRotation()
         ));
         break;
       case FIELD_ORIENTED:
@@ -454,7 +456,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
           -Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
           -Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
           -Rotation.getRadians() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY,
-          GYROSCOPE.getYawRotation()
+          FlippedEnabled? getPose().getRotation().times(-1): getPose().getRotation()
         ));
         break;
     }

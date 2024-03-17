@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
@@ -89,7 +88,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     TRANSLATIONAL_ENCODER = TRANSLATIONAL_CONTROLLER.getEncoder();
 
     TRANSLATIONAL_POSITION = new DoubleAccumulator(
-      (Accumulated, Velocity) -> Accumulated -= Velocity * discretize() * MODULE_CONSTANTS.WHEEL_PERIMETER_METERS / (60d * MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO), (0d));
+      (Accumulated, Velocity) -> Accumulated - Velocity * discretize() * MODULE_CONSTANTS.WHEEL_PERIMETER_METERS / (60d * MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO), (0d));
 
     ROTATIONAL_CONTROLLER = MODULE_CONSTANTS.ROTATIONAL_CONTROLLER;
     ROTATIONAL_CONTROLLER.clearFaults();
@@ -100,7 +99,6 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     ROTATIONAL_ENCODER = ROTATIONAL_CONTROLLER.getEncoder();
     ABSOLUTE_ENCODER = new CANcoder(MODULE_CONSTANTS.ABSOLUTE_ENCODER_PORT, MODULE_CONSTANTS.ABSOLUTE_ENCODER_BUS == (null)? (""): MODULE_CONSTANTS.ABSOLUTE_ENCODER_BUS);
     ABSOLUTE_ENCODER.getConfigurator().apply(new MagnetSensorConfigs().withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1).withMagnetOffset(RotationalRelativeOffset.getRotations()));
-    ABSOLUTE_ENCODER.getConfigurator().apply(new CANcoderConfiguration());
     ABSOLUTE_ENCODER.clearStickyFault_BadMagnet();
 
     
