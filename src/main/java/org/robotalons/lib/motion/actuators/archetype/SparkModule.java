@@ -97,7 +97,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       MODULE_CONSTANTS.ROTATIONAL_PID_CONSTANTS.kD);
     ROTATIONAL_ENCODER = ROTATIONAL_CONTROLLER.getEncoder();
     ABSOLUTE_ENCODER = new CANcoder(MODULE_CONSTANTS.ABSOLUTE_ENCODER_PORT, MODULE_CONSTANTS.ABSOLUTE_ENCODER_BUS == (null)? (""): MODULE_CONSTANTS.ABSOLUTE_ENCODER_BUS);
-    ABSOLUTE_ENCODER.getConfigurator().apply(new MagnetSensorConfigs().withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1));
+    ABSOLUTE_ENCODER.getConfigurator().apply(new MagnetSensorConfigs().withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1).withMagnetOffset(RotationalRelativeOffset.getRotations()));
     ABSOLUTE_ENCODER.getConfigurator().apply(new CANcoderConfiguration());
     ABSOLUTE_ENCODER.clearStickyFault_BadMagnet();
 
@@ -271,7 +271,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       STATUS.TranslationalConnected = TRANSLATIONAL_CONTROLLER.getLastError() == REVLibError.kOk;
 
       STATUS.RotationalAbsolutePosition = 
-        Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().refresh().getValueAsDouble()).minus(RotationalAbsoluteOffset);
+        Rotation2d.fromRotations(ABSOLUTE_ENCODER.getAbsolutePosition().refresh().getValueAsDouble());
       STATUS.RotationalRelativePosition =
         Rotation2d.fromRotations(ROTATIONAL_ENCODER.getPosition() / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO);
       STATUS.RotationalVelocityRadiansSecond =
