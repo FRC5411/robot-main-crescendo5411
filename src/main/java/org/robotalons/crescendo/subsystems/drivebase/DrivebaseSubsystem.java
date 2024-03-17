@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -147,7 +148,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
                 Positions[Module].distanceMeters - ModulePositions.get(Module).distanceMeters, 
                 Positions[Module].angle);
               ModulePositions.set(Module, Positions[Module]);
-            } if (GYROSCOPE.getConnected() && Rotation.length > (0)) {
+            } if (GYROSCOPE.getConnected() && Rotation.length > (0) && RobotBase.isReal()) {
               GyroscopeRotation = Rotation[Timestamp];
             } else {
               final var Twist = KINEMATICS.toTwist2d(Deltas);
