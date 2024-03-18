@@ -235,6 +235,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   @Override
   public synchronized void close() {
     ODOMETRY_PROCESSOR.stop();
+    ODOMETRY_PROCESSOR.close();
     Instance = (null);
   }
 
@@ -246,6 +247,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       case ROBOT_ORIENTED -> DrivebaseState.FIELD_ORIENTED;
       case FIELD_ORIENTED -> DrivebaseState.OBJECT_ORIENTED;
       case OBJECT_ORIENTED -> DrivebaseState.ROBOT_ORIENTED;
+      default -> DrivebaseState.ROBOT_ORIENTED;
     };
   }
 
@@ -281,25 +283,20 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     Operator = Profile;
     DrivebaseSubsystem.getInstance().setDefaultCommand(
       new InstantCommand(() ->
-      DrivebaseSubsystem.set(((Boolean) Operator.getPreference(Preferences.SQUARED_INPUT))?
-        new Translation2d(
-            MathUtilities.signedSquare(MathUtil.applyDeadband(Operator.<Double>getPreference(Preferences.TRANSLATION_X_INPUT),
-          Operator.<Double>getPreference(Preferences.TRANSLATIONAL_X_DEADZONE))),
-            MathUtilities.signedSquare(MathUtil.applyDeadband(Operator.<Double>getPreference(Preferences.TRANSLATION_Y_INPUT),
-          Operator.<Double>getPreference(Preferences.TRANSLATIONAL_Y_DEADZONE)))):
-        new Translation2d(
-          MathUtil.applyDeadband(Operator.<Double>getPreference(Preferences.TRANSLATION_X_INPUT),
-        Operator.<Double>getPreference(Preferences.TRANSLATIONAL_X_DEADZONE)),
-          MathUtil.applyDeadband(Operator.getPreference(Preferences.TRANSLATION_Y_INPUT),
-        Operator.<Double>getPreference(Preferences.TRANSLATIONAL_Y_DEADZONE))),
+      DrivebaseSubsystem.set(
         (Operator.<Boolean>getPreference(Preferences.SQUARED_INPUT))?
-        Rotation2d.fromRotations(
-            MathUtilities.signedSquare(MathUtil.applyDeadband(Operator.<Double>getPreference(Preferences.ORIENTATION_T_INPUT),
-          Operator.getPreference(Preferences.ORIENTATION_DEADZONE)))):
-        Rotation2d.fromRotations(
-          (MathUtil.applyDeadband(Operator.<Double>getPreference(Preferences.ORIENTATION_T_INPUT),
-        Operator.<Double>getPreference(Preferences.ORIENTATION_DEADZONE))))),
-        DrivebaseSubsystem.getInstance()
+          new Translation2d(
+            -MathUtilities.signedSquare(MathUtil.applyDeadband(Operator.<Double>getPreference(Preferences.TRANSLATION_X_INPUT), Operator.<Double>getPreference(Preferences.TRANSLATIONAL_X_DEADZONE))),
+            -MathUtilities.signedSquare(MathUtil.applyDeadband(Operator.<Double>getPreference(Preferences.TRANSLATION_Y_INPUT), Operator.<Double>getPreference(Preferences.TRANSLATIONAL_Y_DEADZONE)))):
+          new Translation2d(
+            -MathUtil.applyDeadband(Operator.<Double>getPreference(Preferences.TRANSLATION_X_INPUT), Operator.<Double>getPreference(Preferences.TRANSLATIONAL_X_DEADZONE)),
+            -MathUtil.applyDeadband(Operator.<Double>getPreference(Preferences.TRANSLATION_Y_INPUT), Operator.<Double>getPreference(Preferences.TRANSLATIONAL_Y_DEADZONE))),
+        (Operator.<Boolean>getPreference(Preferences.SQUARED_INPUT))?
+          Rotation2d.fromRotations(
+            -MathUtilities.signedSquare(MathUtil.applyDeadband(Operator.<Double>getPreference(Preferences.ORIENTATION_T_INPUT), Operator.<Double>getPreference(Preferences.ORIENTATION_DEADZONE)))):
+          Rotation2d.fromRotations(
+            -MathUtil.applyDeadband(Operator.<Double>getPreference(Preferences.ORIENTATION_T_INPUT),Operator.<Double>getPreference(Preferences.ORIENTATION_DEADZONE)))),
+      DrivebaseSubsystem.getInstance()
     ));
 
     with(() ->
@@ -402,8 +399,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
       Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
       Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY);
-    Logger.recordOutput(("Drivebase/Translation"), new Translation2d(Discrete.vxMetersPerSecond, Discrete.vyMetersPerSecond));
-    Logger.recordOutput(("Drivebase/Rotation"), new Rotation2d(Discrete.omegaRadiansPerSecond));
+    Logger.recordOutput(("Drivebase/Fixed-Translation"), new Translation2d(Discrete.vxMetersPerSecond, Discrete.vyMetersPerSecond));
+    Logger.recordOutput(("Drivebase/Fixed-Rotation"), new Rotation2d(Discrete.omegaRadiansPerSecond));
     set(List.of(Reference));
   }
 
@@ -413,20 +410,20 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    * @param Rotation    Demand rotation in two-dimensional space
    */
   public static synchronized void set(final Translation2d Translation, final Rotation2d Rotation) {
+    Logger.recordOutput(("Drivebase/Raw-Translation"), Translation);
+    Logger.recordOutput(("Drivebase/Raw-Rotation"),Rotation);
     set(switch(State) {
-      case OBJECT_ORIENTED -> new ChassisSpeeds();
-      case ROBOT_ORIENTED -> 
-        ChassisSpeeds.fromRobotRelativeSpeeds(
+      case ROBOT_ORIENTED, OBJECT_ORIENTED -> 
+        new ChassisSpeeds(
           Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
           Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
-          Rotation.getRotations() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY, 
-          GYROSCOPE.getConnected()? GYROSCOPE.getYawRotation(): getPose().getRotation());
+          Rotation.getRotations() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY);
       case FIELD_ORIENTED -> 
         ChassisSpeeds.fromFieldRelativeSpeeds(
           Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
           Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
-          Rotation.getRotations() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY, 
-          GYROSCOPE.getConnected()? GYROSCOPE.getYawRotation(): getPose().getRotation());
+          Rotation.getRotations() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY,
+          getRotation());
     });
   }
 
@@ -474,7 +471,9 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    */
   @AutoLogOutput(key = "Drivebase/Pose")
   public static Pose2d getPose() {
-    return POSE_ESTIMATOR.getEstimatedPosition();
+    synchronized(POSE_ESTIMATOR) {
+      return POSE_ESTIMATOR.getEstimatedPosition();
+    } 
   }
 
   /**
@@ -499,7 +498,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    */
   @AutoLogOutput(key = "Drivebase/Rotation")
   public static Rotation2d getRotation() {
-    return getPose().getRotation();
+    return GYROSCOPE.getConnected()? GYROSCOPE.getYawRotation(): getPose().getRotation();
   }
 
   /**
