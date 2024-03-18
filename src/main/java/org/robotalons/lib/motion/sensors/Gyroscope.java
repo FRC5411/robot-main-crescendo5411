@@ -17,6 +17,7 @@ import java.io.Closeable;
 public abstract class Gyroscope implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   protected final GyroscopeStatusContainerAutoLogged STATUS = new GyroscopeStatusContainerAutoLogged();
+  protected Rotation2d RotationalAbsoluteOffset;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   /**
    * Updates the underlying signals within this module.
@@ -55,7 +56,7 @@ public abstract class Gyroscope implements Closeable {
    * @return Rotation in radians of yaw position
    */
   public Rotation2d getYawRotation() {
-    return STATUS.YawRotation;
+    return STATUS.YawRotation.minus(RotationalAbsoluteOffset);
   }
 
   /**

@@ -95,8 +95,9 @@ public final class Operator<Keybindings extends Enum<?>, Preferences extends Enu
    * @param Preference Enum type value to pull information from
    * @return The value of preference's supplier if it exists within the map, if not {@code NullPointerException} is thrown
    */
-  public Object getPreference(final Preferences Preference) {
-    return PREFERENCES.get(Preference).get();
+  @SuppressWarnings("unchecked")
+  public <Supplied> Supplied  getPreference(final Preferences Preference) {
+    return (Supplied) PREFERENCES.get(Preference).get();
   }
 
   /**

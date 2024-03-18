@@ -188,10 +188,8 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
         TIMESTAMPS.clear();
         STATUS.OdometryTimestamps = 
           TIMESTAMP_QUEUE.stream()
-            .mapToDouble((final Double Value) -> {
-              TIMESTAMPS.add(Value);
-              return Value;
-            }).toArray();
+            .mapToDouble((final Double Value) -> { TIMESTAMPS.add(Value); return Value; })
+            .toArray();
         TIMESTAMP_QUEUE.clear();          
       }
       synchronized(TRANSLATIONAL_POSITION_QUEUE) {

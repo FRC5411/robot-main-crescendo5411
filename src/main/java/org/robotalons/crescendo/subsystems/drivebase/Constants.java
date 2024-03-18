@@ -71,6 +71,8 @@ public final class Constants {
     public static final Double ROBOT_LINEAR_GEAR_RATIO = ((6.12d));
     public static final Double ROBOT_ROTATION_GEAR_RATIO = (((150d) / (7d)));
 
+    public static final Rotation2d GYROSCOPE_OFFSET = Rotation2d.fromRadians(Math.PI / 2);
+
     public static final Boolean PHOENIX_DRIVE = (false);
 
     public static final Double ODOMETRY_FREQUENCY = (250d);
@@ -352,7 +354,7 @@ public final class Constants {
 
   public static final class Devices {
   public static final Gyroscope GYROSCOPE =
-    new PigeonGyroscope(Ports.GYROSCOPE_ID,org.robotalons.crescendo.Constants.Odometry.CTRE_ODOMETRY_THREAD);
+    new PigeonGyroscope(Ports.GYROSCOPE_ID,org.robotalons.crescendo.Constants.Odometry.CTRE_ODOMETRY_THREAD, Measurements.GYROSCOPE_OFFSET);
   public static final Module FRONT_LEFT_MODULE =
     (RobotBase.isSimulation())?
     (new SimModule<>(Measurements.Modules.FL.SIM_CONSTANTS)):

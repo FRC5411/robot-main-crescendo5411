@@ -131,7 +131,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       Math.hypot(Distance, Measurements.SPEAKER_HEIGHT_METERS) / Math.hypot(Measurements.PIVOT_MAXIMUM_RANGE_METERS, Measurements.SPEAKER_HEIGHT_METERS));
     if(Interpolated != (null)) {
       final var Percentage = 
-        (Math.abs(FIRING_VELOCITY.getValueAsDouble() / Interpolated.get((0), (0))) + (Math.abs(Units.rotationsToDegrees(getPivotRotation())) / Interpolated.get((1), (0)))) / 2;
+        (Math.abs(FIRING_VELOCITY.getValueAsDouble() / Interpolated.get((0), (0))) + (Math.abs(getPivotRotation().getDegrees()) / Interpolated.get((1), (0)))) / 2;
       switch(State) {
         case AUTO:
           Reference.angle = Rotation2d.fromRadians(Interpolated.get((1), (0)));
@@ -159,7 +159,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     set(Reference.angle);
     Logger.recordOutput(("Cannon/Reference"), Reference);
     Logger.recordOutput(("Cannon/MeasuredVelocity"), FIRING_VELOCITY.getValueAsDouble());
-    Logger.recordOutput(("Cannon/MeasuredRotation"), -getPivotRotation());
+    Logger.recordOutput(("Cannon/MeasuredRotation"), getPivotRotation().getDegrees());
     Constants.Objects.ODOMETRY_LOCKER.unlock();
   }
 
@@ -198,7 +198,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    */
   private static synchronized void set(final Rotation2d Reference) {
     PIVOT_CONTROLLER.set(PIVOT_CONTROLLER_PID.calculate(
-      Units.radiansToRotations(-getPivotRotation()), MathUtil.clamp(Reference.getRotations(), Measurements.PIVOT_MINIMUM_ROTATION, Measurements.PIVOT_MAXIMUM_ROTATION)));
+      getPivotRotation().getRotations(), MathUtil.clamp(Reference.getRotations(), Measurements.PIVOT_MINIMUM_ROTATION, Measurements.PIVOT_MAXIMUM_ROTATION)));
   }
 
   /**
@@ -358,8 +358,8 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * Provides the current rotational reading of the pivot in rotations
    * @return Pivot rotational reading in radians
    */
-  private static Double getPivotRotation() {
-    return Units.rotationsToRadians((PIVOT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.ABSOLUTE_ENCODER_OFFSET));
+  private static Rotation2d getPivotRotation() {
+    return Rotation2d.fromRotations(-(PIVOT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.ABSOLUTE_ENCODER_OFFSET));
   }
 
 

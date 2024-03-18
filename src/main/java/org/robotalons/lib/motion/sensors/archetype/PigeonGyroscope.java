@@ -3,6 +3,7 @@ package org.robotalons.lib.motion.sensors.archetype;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
@@ -38,7 +39,8 @@ public class PigeonGyroscope extends Gyroscope {
    * @param Port Port (ID) of the PigeonDevice
    * @param Provider Status Provider which accepts Double StatusSignals 
    */
-  public PigeonGyroscope(final Integer Port, final OdometryThread<StatusSignal<Double>> Provider) {
+  public PigeonGyroscope(final Integer Port, final OdometryThread<StatusSignal<Double>> Provider, final Rotation2d Offset) {
+    RotationalAbsoluteOffset = Offset;
     GYROSCOPE = new Pigeon2(Port);
     YAW_ROTATION = GYROSCOPE.getYaw();
     YAW_VELOCITY = GYROSCOPE.getAngularVelocityZWorld();
@@ -62,7 +64,7 @@ public class PigeonGyroscope extends Gyroscope {
   @Override
   public synchronized void update() {
     synchronized(STATUS) {
-      STATUS.Connected = YAW_VELOCITY.refresh().getStatus() == StatusCode.OK;
+      STATUS.Connected = YAW_VELOCITY.refresh().getStatus() == StatusCode.OK && RobotBase.isReal();
       STATUS.YawRotation = Rotation2d.fromDegrees(YAW_ROTATION.getValue());
       STATUS.YawVelocityRadiansSecond = Units.degreesToRadians(YAW_VELOCITY.getValue());
       synchronized(YAW_ROTATION_QUEUE) {
