@@ -43,7 +43,7 @@ import java.util.List;
  * @see SubsystemBase
  * @see org.robotalons.crescendo.RobotContainer RobotContainer
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "resource" })
 public final class SubsystemManager extends SubsystemBase {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   public static final List<TalonSubsystemBase<Keybindings,Preferences,?>> SUBSYSTEMS;
@@ -55,8 +55,8 @@ public final class SubsystemManager extends SubsystemBase {
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static SubsystemManager Instance;
   private static volatile Command Autonomous;
-  private static volatile Boolean MessagePrinted;
-  private static volatile Double StartTimestamp;
+  private static volatile Boolean AutonomousMessagePrinted;
+  private static volatile Double AutonomousStartTimestamp;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private SubsystemManager() {} static {
     SUBSYSTEMS = new ArrayList<>();
@@ -100,24 +100,24 @@ public final class SubsystemManager extends SubsystemBase {
       Module.set(org.robotalons.lib.motion.actuators.Module.ReferenceType.STATE_CONTROL));
     Pathfinding.ensureInitialized();
     Pathfinding.setStartPosition(DrivebaseSubsystem.getPose().getTranslation());
-    ClimbSubsystem.getInstance().configureOperator(new Vector<>(() -> (1), Operators.Secondary.PROFILE));
-    DrivebaseSubsystem.getInstance().configureOperator(new Vector<>(() -> (1), Operators.Primary.PROFILE));
-    SuperstructureSubsystem.getInstance().configureOperator(new Vector<>(() -> (2), Operators.Secondary.PROFILE, Operators.Primary.PROFILE));
+    ClimbSubsystem.getInstance().configureOperator(new Vector<>(() -> (ClimbSubsystem.getInstance().getElements().getNum()), Operators.Secondary.PROFILE));
+    DrivebaseSubsystem.getInstance().configureOperator(new Vector<>(() -> (DrivebaseSubsystem.getInstance().getElements().getNum()), Operators.Primary.PROFILE));
+    SuperstructureSubsystem.getInstance().configureOperator(new Vector<>(() -> (SuperstructureSubsystem.getInstance().getElements().getNum()), Operators.Secondary.PROFILE, Operators.Primary.PROFILE));
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
   public synchronized void periodic() {
     FIELD.setRobotPose(DrivebaseSubsystem.getPose());
     if (Autonomous != (null)) {
-      if (!Autonomous.isScheduled() && !MessagePrinted) {
+      if (!Autonomous.isScheduled() && !AutonomousMessagePrinted) {
         if (DriverStation.isAutonomousEnabled()) {
           System.out.printf(
-              ("*** Auto finished in %.2f secs ***%n"), Logger.getRealTimestamp() / (1e6) - StartTimestamp);
+              ("*** Auto finished in %.2f secs ***%n"), Logger.getRealTimestamp() / (1e6) - AutonomousStartTimestamp);
         } else {
           System.out.printf(
-              ("*** Auto cancelled in %.2f secs ***%n"), Logger.getRealTimestamp() / (1e6) - StartTimestamp);
+              ("*** Auto cancelled in %.2f secs ***%n"), Logger.getRealTimestamp() / (1e6) - AutonomousStartTimestamp);
         }
-        MessagePrinted = (true);
+        AutonomousMessagePrinted = (true);
       }
     }
     //Pathfinding.setDynamicObstacles(new ArrayList<>(), DrivebaseSubsystem.getPose().getTranslation());
@@ -151,8 +151,8 @@ public final class SubsystemManager extends SubsystemBase {
    * @param Autonomous New Autonomous command
    */
   public static synchronized void set(final Command Autonomous) {
-    MessagePrinted = (false);
-    StartTimestamp = Timer.getFPGATimestamp();
+    AutonomousMessagePrinted = (false);
+    AutonomousStartTimestamp = Timer.getFPGATimestamp();
     if(SubsystemManager.Autonomous != (null) && SubsystemManager.Autonomous.isScheduled()) {
       SubsystemManager.Autonomous.cancel();
     }
