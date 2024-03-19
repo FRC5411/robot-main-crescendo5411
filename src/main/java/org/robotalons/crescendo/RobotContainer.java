@@ -11,19 +11,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import org.robotalons.crescendo.Constants.Odometry;
-import org.robotalons.crescendo.Constants.Profiles;
-import org.robotalons.crescendo.Constants.Profiles.Keybindings;
-import org.robotalons.crescendo.Constants.Profiles.Preferences;
 import org.robotalons.crescendo.Constants.Subsystems;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.lib.utilities.Alert;
 import org.robotalons.lib.utilities.Alert.AlertType;
 import org.robotalons.lib.utilities.LoggedDashboardChooser;
-import org.robotalons.lib.utilities.Operator;
-
-import java.util.ArrayList;
-import java.util.List;
 // -------------------------------------------------------------[Robot Container]-----------------------------------------------------------//
 /**
  *
@@ -34,7 +27,6 @@ import java.util.List;
  */
 public final class RobotContainer {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  public static final List<LoggedDashboardChooser<Operator<Keybindings, Preferences>>> Operators;
   public static LoggedDashboardChooser<Command> Autonomous;
   public static LoggedDashboardChooser<Pose2d> Location;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
@@ -44,26 +36,20 @@ public final class RobotContainer {
    * Robot Container Constructor
    */
   private RobotContainer() {} static {
-    Operators = new ArrayList<>();
     SubsystemManager.getInstance();
-    SubsystemManager.getSubsystems().forEach((Subsystem) -> {
-      final var Selector = new SendableChooser<Operator<Keybindings, Preferences>>();
-      Selector.onChange(Subsystem::configureOperator);
-      final var Default = Profiles.DEFAULT.get(Subsystem);
-      Profiles.OPERATORS.forEach((Profile) -> Selector.addOption(Profile.getName(), Profile));
-      Selector.setDefaultOption(Default.getName(), Default);
-      Subsystem.configureOperator(Default);
-      Operators.add(new LoggedDashboardChooser<>(Subsystem.getName() + " Operator Selector", Selector));
-    });
     final var Alliance = DriverStation.getAlliance();
     final var Selector = new SendableChooser<Pose2d>();
     Selector.onChange(DrivebaseSubsystem::set);
     for(Integer Index = (1); Index < Odometry.ALLIANCE_VERTICAL_LOCATIONS.size() + (1); Index++) {
       final var Location = Odometry.ALLIANCE_VERTICAL_LOCATIONS.get(Index - (1));
       if(Index == (RobotBase.isReal()? DriverStation.getLocation().getAsInt(): (Subsystems.DEFAULT_ALLIANCE))) {
-        Selector.setDefaultOption(String.format(("%s Alliance %d"), Alliance.map(Enum::name).orElseGet(() -> (!DrivebaseSubsystem.getFlipped() ? "Blue" : "Red")), Index), new Pose2d(Odometry.ALLIANCE_HORIZONTAL_LOCATIONS, Location, DrivebaseSubsystem.getRotation()));
+        Selector.setDefaultOption(
+          String.format(("%s Alliance %d"), Alliance.map(Enum::name).orElseGet(() -> (!DrivebaseSubsystem.getAlliance() ? "Blue" : "Red")), Index),
+          new Pose2d(!DrivebaseSubsystem.getAlliance() ? Odometry.BLUE_ALLIANCE_HORIZONTAL_LOCATION: Odometry.RED_ALLIANCE_HORIZONTAL_LOCATION, Location, DrivebaseSubsystem.getRotation()));
       } else {
-        Selector.addOption(String.format(("%s Alliance %d"), Alliance.map(Enum::name).orElseGet(() -> (!DrivebaseSubsystem.getFlipped() ? "Blue" : "Red")), Index), new Pose2d(Odometry.ALLIANCE_HORIZONTAL_LOCATIONS, Location, DrivebaseSubsystem.getRotation()));
+        Selector.addOption(
+          String.format(("%s Alliance %d"), Alliance.map(Enum::name).orElseGet(() -> (!DrivebaseSubsystem.getAlliance() ? "Blue" : "Red")), Index),
+          new Pose2d(!DrivebaseSubsystem.getAlliance() ? Odometry.BLUE_ALLIANCE_HORIZONTAL_LOCATION: Odometry.RED_ALLIANCE_HORIZONTAL_LOCATION, Location, DrivebaseSubsystem.getRotation()));
       }
     }
     Selector.addOption(("Debug Alliance"), new Pose2d());

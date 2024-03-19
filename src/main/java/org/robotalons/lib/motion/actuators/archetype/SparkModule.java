@@ -88,7 +88,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     TRANSLATIONAL_ENCODER = TRANSLATIONAL_CONTROLLER.getEncoder();
 
     TRANSLATIONAL_POSITION = new DoubleAccumulator(
-      (Accumulated, Velocity) -> Accumulated - Velocity * discretize() * MODULE_CONSTANTS.WHEEL_PERIMETER_METERS / (60d * MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO), (0d));
+      (Accumulated, Velocity) -> Accumulated - Velocity * discretize() * MODULE_CONSTANTS.WHEEL_PERIMETER_METERS * MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO  / 60d, (0d));
 
     ROTATIONAL_CONTROLLER = MODULE_CONSTANTS.ROTATIONAL_CONTROLLER;
     ROTATIONAL_CONTROLLER.clearFaults();
@@ -144,13 +144,17 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
 
     TRANSLATIONAL_ENCODER.setPosition((0d));
     TRANSLATIONAL_ENCODER.setMeasurementPeriod((10));
+    TRANSLATIONAL_ENCODER.setPositionConversionFactor((1d));
+    TRANSLATIONAL_ENCODER.setVelocityConversionFactor((1d));
     TRANSLATIONAL_ENCODER.setAverageDepth((2));
 
     ROTATIONAL_ENCODER.setPosition((0d));
-    ROTATIONAL_ENCODER.setAverageDepth((2));
     ROTATIONAL_ENCODER.setMeasurementPeriod((10));
+    ROTATIONAL_ENCODER.setPositionConversionFactor((1d));
+    ROTATIONAL_ENCODER.setVelocityConversionFactor((1d));
+    ROTATIONAL_ENCODER.setAverageDepth((2));
 
-    ROTATIONAL_PID.enableContinuousInput(-Math.PI, Math.PI);
+    ROTATIONAL_PID.enableContinuousInput((0d), 2 * Math.PI);
 
     IntStream.range((0),(4)).forEach((Index) -> {
       TRANSLATIONAL_CONTROLLER.setPeriodicFramePeriod(
@@ -183,6 +187,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
 
   @Override
   public synchronized void cease() {
+    Reference = (null);
     TRANSLATIONAL_CONTROLLER.stopMotor();
     ROTATIONAL_CONTROLLER.stopMotor();
   }

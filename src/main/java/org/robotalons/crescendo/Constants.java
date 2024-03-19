@@ -6,14 +6,11 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import org.robotalons.crescendo.Robot.RobotType;
-import org.robotalons.crescendo.subsystems.climb.ClimbSubsystem;
-import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
-import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem;
-import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.REVOdometryThread;
 import org.robotalons.lib.utilities.Operator;
+import org.robotalons.lib.utilities.Vector;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,10 +30,10 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public final class Constants {
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
-    /**
-     * Checks if the robot is deployed with a valid mode
-     * @param Options Additional options applied via the command line
-     */
+  /**
+   * Checks if the robot is deployed with a valid mode
+   * @param Options Additional options applied via the command line
+   */
   public static void main(String... Options) {
     if (Subsystems.TYPE == RobotType.SIMULATION) {
       System.err.println("CANNOT DEPLOY, INVALID TYPE: " + Subsystems.TYPE);
@@ -73,7 +70,8 @@ public final class Constants {
     public static final CTREOdometryThread CTRE_ODOMETRY_THREAD = CTREOdometryThread.create(CTRE_ODOMETRY_LOCK);
     public static final REVOdometryThread REV_ODOMETRY_THREAD = REVOdometryThread.create(REV_ODOMETRY_LOCK);
 
-    public static final Double ALLIANCE_HORIZONTAL_LOCATIONS = (0.59d);
+    public static final Double BLUE_ALLIANCE_HORIZONTAL_LOCATION = (0.59d);
+    public static final Double RED_ALLIANCE_HORIZONTAL_LOCATION = (15.89d);
     public static final List<Double> ALLIANCE_VERTICAL_LOCATIONS = List.of((2d), (4d), (7.2d));
 
     static {
@@ -85,15 +83,10 @@ public final class Constants {
   public static final class Profiles { 
 
     public static final List<Operator<Keybindings, Preferences>> OPERATORS = new ArrayList<>();
-    public static final Map<TalonSubsystemBase<Keybindings,Preferences>,Operator<Keybindings, Preferences>> DEFAULT = new HashMap<>();
+    public static final Map<TalonSubsystemBase<Keybindings,Preferences,?>, Vector<Operator<Keybindings, Preferences>,?>> DEFAULT = new HashMap<>();
     static {
       OPERATORS.add(Operators.Primary.PROFILE);
       OPERATORS.add(Operators.Secondary.PROFILE);
-
-      DEFAULT.put(ClimbSubsystem.getInstance(), Operators.Secondary.PROFILE);
-      DEFAULT.put(VisionSubsystem.getInstance(), Operators.Secondary.PROFILE);
-      DEFAULT.put(DrivebaseSubsystem.getInstance(), Operators.Primary.PROFILE);
-      DEFAULT.put(SuperstructureSubsystem.getInstance(), Operators.Secondary.PROFILE);
     }
 
     public static final class Operators {
@@ -112,7 +105,9 @@ public final class Constants {
           .add(Preferences.ORIENTATION_DEADZONE, () -> (2e-1))
           .add(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.a())
           .add(Keybindings.RESET_GYROSCOPE, INPUT_METHOD.y())
-          .add(Keybindings.ALIGNMENT_SPEAKER, INPUT_METHOD.x());
+          .add(Keybindings.ALIGNMENT_SPEAKER, INPUT_METHOD.x())
+          .add(Keybindings.INTAKE_TOGGLE, INPUT_METHOD.leftTrigger())
+          .add(Keybindings.OUTTAKE_TOGGLE, INPUT_METHOD.rightTrigger());          
       }
 
       public static final class Secondary {
@@ -126,9 +121,7 @@ public final class Constants {
           .add(Keybindings.CANNON_PIVOT_WINGLINE, INPUT_METHOD.y())
           .add(Keybindings.CANNON_TOGGLE, Operators.Primary.INPUT_METHOD.leftBumper())
           .add(Keybindings.CLIMB_ROTATE_BACKWARD, INPUT_METHOD.povDown())
-          .add(Keybindings.CLIMB_ROTATE_FORWARD, INPUT_METHOD.povUp())
-          .add(Keybindings.INTAKE_TOGGLE, Operators.Primary.INPUT_METHOD.leftTrigger())
-          .add(Keybindings.OUTTAKE_TOGGLE, Operators.Primary.INPUT_METHOD.rightTrigger());
+          .add(Keybindings.CLIMB_ROTATE_FORWARD, INPUT_METHOD.povUp());
       }
     }
 

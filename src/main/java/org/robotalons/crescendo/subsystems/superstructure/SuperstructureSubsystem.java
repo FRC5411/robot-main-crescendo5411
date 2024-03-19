@@ -6,6 +6,7 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -32,7 +33,9 @@ import org.robotalons.crescendo.subsystems.superstructure.Constants.Ports;
 import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.trajectory.solving.TrajectoryObject;
+import org.robotalons.lib.utilities.GenericUtilities;
 import org.robotalons.lib.utilities.Operator;
+import org.robotalons.lib.utilities.Vector;
 // --------------------------------------------------------[Superstructure Subsystem]--------------------------------------------------------//
 /**
  *
@@ -45,7 +48,7 @@ import org.robotalons.lib.utilities.Operator;
  * @see SubsystemBase
  * @see org.robotalons.crescendo.RobotContainer RobotContainer
  */
-public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Preferences> {
+public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Preferences, N2> {
   // --------------------------------------------------------------[Constants]-------------------------------------------------------------- //
   private static final Pair<TalonFX,TalonFX> FIRING_CONTROLLERS;
   private static final CANSparkMax INDEXER_CONTROLLER;
@@ -57,7 +60,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
 
   private static final DutyCycleEncoder PIVOT_ABSOLUTE_ENCODER;
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
-  private static volatile Operator<Keybindings,Preferences> Operator;  
+  private static volatile Vector<Operator<Keybindings,Preferences>,N2> Operators;  
   private static volatile SwerveModuleState Reference;
   private static volatile SuperstructureState State;
   private static SuperstructureSubsystem Instance;
@@ -67,7 +70,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * Cannon Subsystem Constructor
    */
   private SuperstructureSubsystem() {
-    super(("Cannon Subsystem"));
+    super(("Cannon Subsystem"), () -> 2);
   } static {
     Reference = new SwerveModuleState((0d), Rotation2d.fromRotations(Measurements.PIVOT_MINIMUM_ROTATION));
     State = SuperstructureState.MANUAL;
@@ -123,15 +126,14 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   @Override
   public synchronized void periodic() {
     Constants.Objects.ODOMETRY_LOCKER.lock();
-    final var Target = VisionSubsystem.getAprilTagPose((DrivebaseSubsystem.getFlipped())? (3): (7)).get();
+    final var Target = VisionSubsystem.getAprilTagPose((DrivebaseSubsystem.getAlliance())? (3): (7)).get();
     final var Distance = (PhotonUtils.getDistanceToPose(DrivebaseSubsystem.getPose(), Target.toPose2d()));
     final var Interpolated = Measurements.PIVOT_FIRING_MAP.interpolate(
       Measurements.PIVOT_LOWER_BOUND,
       Measurements.PIVOT_UPPER_BOUND,
       Math.hypot(Distance, Measurements.SPEAKER_HEIGHT_METERS) / Math.hypot(Measurements.PIVOT_MAXIMUM_RANGE_METERS, Measurements.SPEAKER_HEIGHT_METERS));
     if(Interpolated != (null)) {
-      final var Percentage = 
-        (Math.abs(FIRING_VELOCITY.getValueAsDouble() / Interpolated.get((0), (0))) + (Math.abs(getPivotRotation().getDegrees()) / Interpolated.get((1), (0)))) / 2;
+      final var Percentage = (1d) - (Math.abs(FIRING_VELOCITY.getValueAsDouble() - Interpolated.get((0), (0))) / 2d + (Math.abs(getPivotRotation().getDegrees()) - Interpolated.get((1), (0))) / 2d);
       switch(State) {
         case AUTO:
           Reference.angle = Rotation2d.fromRadians(Interpolated.get((1), (0)));
@@ -243,8 +245,8 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * @param Rotation   Value of rotation to bring to pivot to
    * @param Velocity   Value of velocity to bring the firing controllers to in RPM
    */
-  private void with(final Trigger Keybinding, final Double Rotation, final Double Velocity) {
-    with(() -> {
+  private void protect(final Trigger Keybinding, final Double Rotation, final Double Velocity) {
+    GenericUtilities.protect(() -> {
       Keybinding.onTrue(new InstantCommand(
         () -> {
           Reference.angle = Rotation2d.fromRadians(Rotation);
@@ -264,30 +266,30 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   }
 
   @Override
-  public void configureOperator(final Operator<Keybindings, Preferences> Operator) {
-    SuperstructureSubsystem.Operator = Operator;
-    with(
-      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_SUBWOOFER),
+  public void configureOperator(final Vector<Operator<Keybindings, Preferences>,N2> Operator) {
+    SuperstructureSubsystem.Operators = Operator;
+    protect(
+      SuperstructureSubsystem.Operators.DATA[0].getKeybinding(Keybindings.CANNON_PIVOT_SUBWOOFER),
       Measurements.SUBWOOFER_LINE,
       Measurements.SUBWOOFER_RPM
       );
-    with(
-      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_WINGLINE),
+    protect(
+      SuperstructureSubsystem.Operators.DATA[0].getKeybinding(Keybindings.CANNON_PIVOT_WINGLINE),
       Measurements.WING_LINE,
       Measurements.SUBWOOFER_RPM
       );
-    with(
-      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_PODIUMLINE),
+    protect(
+      SuperstructureSubsystem.Operators.DATA[0].getKeybinding(Keybindings.CANNON_PIVOT_PODIUMLINE),
       Measurements.PODIUM_LINE,
       Measurements.SUBWOOFER_RPM
       );
-    with(
-      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_PIVOT_STARTING_LINE),
+    protect(
+      SuperstructureSubsystem.Operators.DATA[0].getKeybinding(Keybindings.CANNON_PIVOT_STARTING_LINE),
       Measurements.STARTING_LINE,
       Measurements.SUBWOOFER_RPM
       );
-    with(() -> {
-      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
+    GenericUtilities.protect(() -> {
+      SuperstructureSubsystem.Operators.DATA[1].getKeybinding(Keybindings.OUTTAKE_TOGGLE)
         .onTrue(new InstantCommand(
           () -> {
             INTAKE_CONTROLLER.set((-1d));
@@ -295,7 +297,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
           },
           SuperstructureSubsystem.getInstance()
         ));
-        SuperstructureSubsystem.Operator.getKeybinding(Keybindings.OUTTAKE_TOGGLE)
+        SuperstructureSubsystem.Operators.DATA[1].getKeybinding(Keybindings.OUTTAKE_TOGGLE)
         .onFalse(new InstantCommand(
           () -> {
             INTAKE_CONTROLLER.set((0d));
@@ -304,8 +306,8 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
           SuperstructureSubsystem.getInstance()
       ));
     });
-    with(() -> {
-      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.INTAKE_TOGGLE)
+    GenericUtilities.protect(() -> {
+      SuperstructureSubsystem.Operators.DATA[1].getKeybinding(Keybindings.INTAKE_TOGGLE)
         .onTrue(new InstantCommand(
           () -> {
             INTAKE_CONTROLLER.set((1d));
@@ -313,7 +315,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
           },
           SuperstructureSubsystem.getInstance()
         ));
-        SuperstructureSubsystem.Operator.getKeybinding(Keybindings.INTAKE_TOGGLE)
+        SuperstructureSubsystem.Operators.DATA[1].getKeybinding(Keybindings.INTAKE_TOGGLE)
         .onFalse(new InstantCommand(
           () -> {
             INTAKE_CONTROLLER.set((0d));
@@ -322,13 +324,13 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
           SuperstructureSubsystem.getInstance()
         ));
     });
-    with(() -> {
-      SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_TOGGLE)
+    GenericUtilities.protect(() -> {
+      SuperstructureSubsystem.Operators.DATA[0].getKeybinding(Keybindings.CANNON_TOGGLE)
         .onTrue(new InstantCommand(
           () -> set(Measurements.FIRING_STANDARD_VELOCITY),
           SuperstructureSubsystem.getInstance()
         ));
-        SuperstructureSubsystem.Operator.getKeybinding(Keybindings.CANNON_TOGGLE)
+        SuperstructureSubsystem.Operators.DATA[0].getKeybinding(Keybindings.CANNON_TOGGLE)
         .onFalse(new InstantCommand(
           () -> {
             FIRING_CONTROLLERS.getFirst().set((0d));
@@ -350,8 +352,8 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   }
 
   @Override
-  public Operator<Keybindings, Preferences> getOperator() {
-    return Operator;
+  public Vector<Operator<Keybindings, Preferences>, N2> getOperators() {
+    return Operators;
   }
   
   /**
@@ -359,7 +361,11 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * @return Pivot rotational reading in radians
    */
   private static Rotation2d getPivotRotation() {
-    return Rotation2d.fromRotations(-(PIVOT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.ABSOLUTE_ENCODER_OFFSET));
+    var Rotation = Rotation2d.fromRotations(-(PIVOT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.ABSOLUTE_ENCODER_OFFSET));
+    if(Measurements.PIVOT_INVERTED) {
+      Rotation = Rotation.unaryMinus();
+    }
+    return Rotation;
   }
 
 

@@ -1,11 +1,14 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.lib;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.Num;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.robotalons.lib.utilities.Alert;
 import org.robotalons.lib.utilities.Alert.AlertType;
 import org.robotalons.lib.utilities.Operator;
+import org.robotalons.lib.utilities.Vector;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -20,19 +23,23 @@ import java.util.List;
  * and implementation of standard methods like {@link #close()} <p>
  * 
  * @see SubsystemBase
+ * @see Vector
  * 
  * @author Cody Washington (@Jelatinone) 
  */
-public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preferences extends Enum<?>> extends SubsystemBase implements Closeable {
+public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preferences extends Enum<?>, Operators extends Num> extends SubsystemBase implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  private static final List<TalonSubsystemBase<?,?>> SUBSYSTEMS;
+  private static final List<TalonSubsystemBase<?,?,?>> SUBSYSTEMS;
+  private final Nat<Operators> ELEMENTS;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Talon Subsystem Constructor.
-   * @param Name Any name for this subsystem, which can be used for telemetry and logging
+   * @param Name     Any name for this subsystem, which can be used for telemetry and logging
+   * @param Elements Functional interface representing the number of elements required when making calls to {@link #configureOperator(Vector)}
    */
-  protected TalonSubsystemBase(final String Name) {
+  protected TalonSubsystemBase(final String Name, final Nat<Operators> Elements) {
     super(Name);
+    ELEMENTS = Elements;
     SUBSYSTEMS.add(this);
     new Alert(Name + " Initialized", AlertType.INFO);
   } static {
@@ -43,7 +50,7 @@ public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preference
    * Configures a subsystem's hardware (GenericHID) to operate this subsystem's Hardware (actuators)
    * @param Operator New subsystem operator
    */
-  public synchronized void configureOperator(final Operator<Keybindings, Preferences> Operator) {
+  public synchronized void configureOperator(final Vector<Operator<Keybindings, Preferences>, Operators> Operator) {
 
   }
 
@@ -61,18 +68,6 @@ public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preference
 
   } 
 
-  /**
-   * Provides a safe environment for configuring possibly null operations
-   * @param Executable Runnable controller configuration
-   */
-  protected void with(final Runnable Executable) {
-    try {
-      Executable.run();
-    } catch (final NullPointerException Ignored) {
-      new Alert((getName().toUpperCase() + " Bindings Improperly Configured"), AlertType.ERROR);
-    }
-  }
-
   @Override
   //@Timeable(limit = 20, unit = TimeUnit.MILLISECONDS)
   public synchronized void periodic() {
@@ -84,15 +79,23 @@ public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preference
    * Provides a list (ordered) of all initialized subsystems
    * @return List of subsystems
    */
-  public static List<TalonSubsystemBase<?,?>> getSubsystems() {
+  public static List<TalonSubsystemBase<?,?,?>> getSubsystems() {
     return SUBSYSTEMS;
+  }
+
+  /**
+   * Provides a number of elements that should be expected when calling {@link #configureOperator(Vector)}
+   * @return Functional interface representing a number
+   */
+  public Nat<Operators> getElements() {
+    return ELEMENTS;
   }
 
   /**
    * Provides the current operator of this subsystem.
    * @return Current subsystem operator
    */
-  public Operator<Keybindings, Preferences> getOperator() {
+  public Vector<Operator<Keybindings, Preferences>, Operators> getOperators() {
     return (null);
   }
 

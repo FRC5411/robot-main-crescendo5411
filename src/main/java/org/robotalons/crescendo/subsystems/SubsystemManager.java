@@ -19,6 +19,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import org.littletonrobotics.junction.Logger;
 import org.robotalons.crescendo.Constants.Profiles.Keybindings;
+import org.robotalons.crescendo.Constants.Profiles.Operators;
 import org.robotalons.crescendo.Constants.Profiles.Preferences;
 import org.robotalons.crescendo.subsystems.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.climb.ClimbSubsystem;
@@ -27,6 +28,7 @@ import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsyste
 import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.pathfinding.LocalADStarAK;
+import org.robotalons.lib.utilities.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,13 +43,14 @@ import java.util.List;
  * @see SubsystemBase
  * @see org.robotalons.crescendo.RobotContainer RobotContainer
  */
+@SuppressWarnings("unchecked")
 public final class SubsystemManager extends SubsystemBase {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
-  public static final List<TalonSubsystemBase<Keybindings,Preferences>> SUBSYSTEMS;
-  public static final TalonSubsystemBase<Keybindings,Preferences> DRIVEBASE;
-  public static final TalonSubsystemBase<Keybindings,Preferences> CANNON;
-  public static final TalonSubsystemBase<Keybindings,Preferences> CLIMB;
-  public static final TalonSubsystemBase<Keybindings,Preferences> VISION;
+  public static final List<TalonSubsystemBase<Keybindings,Preferences,?>> SUBSYSTEMS;
+  public static final TalonSubsystemBase<Keybindings,Preferences,?> DRIVEBASE;
+  public static final TalonSubsystemBase<Keybindings,Preferences,?> CANNON;
+  public static final TalonSubsystemBase<Keybindings,Preferences,?> CLIMB;
+  public static final TalonSubsystemBase<Keybindings,Preferences,?> VISION;
   public static final Field2d FIELD;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static SubsystemManager Instance;
@@ -70,7 +73,7 @@ public final class SubsystemManager extends SubsystemBase {
       DrivebaseSubsystem::getPose,
       DrivebaseSubsystem::set, 
       DrivebaseSubsystem::getChassisSpeeds,
-      (final ChassisSpeeds Demand) -> DrivebaseSubsystem.set(Demand.times(-1)), 
+      (final ChassisSpeeds Demand) -> DrivebaseSubsystem.set(Demand.unaryMinus()), 
       new HolonomicPathFollowerConfig(
         new PIDConstants(
           Constants.Measurements.ROBOT_TRANSLATION_KP,
@@ -86,7 +89,7 @@ public final class SubsystemManager extends SubsystemBase {
           (true),
           (true) 
         )),
-      DrivebaseSubsystem::getFlipped,
+      DrivebaseSubsystem::getAlliance,
       DRIVEBASE);
     Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
@@ -97,6 +100,9 @@ public final class SubsystemManager extends SubsystemBase {
       Module.set(org.robotalons.lib.motion.actuators.Module.ReferenceType.STATE_CONTROL));
     Pathfinding.ensureInitialized();
     Pathfinding.setStartPosition(DrivebaseSubsystem.getPose().getTranslation());
+    ClimbSubsystem.getInstance().configureOperator(new Vector<>(() -> (1), Operators.Secondary.PROFILE));
+    DrivebaseSubsystem.getInstance().configureOperator(new Vector<>(() -> (1), Operators.Primary.PROFILE));
+    SuperstructureSubsystem.getInstance().configureOperator(new Vector<>(() -> (2), Operators.Secondary.PROFILE, Operators.Primary.PROFILE));
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
@@ -158,7 +164,7 @@ public final class SubsystemManager extends SubsystemBase {
    * Provides the employee subsystems managed my this subsystem manager
    * @return List of dependent subsystems
    */
-  public static List<TalonSubsystemBase<Keybindings, Preferences>> getSubsystems() {
+  public static List<TalonSubsystemBase<Keybindings,Preferences,?>> getSubsystems() {
     return SUBSYSTEMS;
   }
 

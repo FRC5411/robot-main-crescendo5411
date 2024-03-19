@@ -3,6 +3,7 @@ package org.robotalons.crescendo.subsystems.climb;
 // ---------------------------------------------------------------[Libraries]--------------------------------------------------------------- //
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -21,7 +22,9 @@ import org.robotalons.crescendo.subsystems.climb.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.climb.Constants.Objects;
 import org.robotalons.crescendo.subsystems.climb.Constants.Ports;
 import org.robotalons.lib.TalonSubsystemBase;
+import org.robotalons.lib.utilities.GenericUtilities;
 import org.robotalons.lib.utilities.Operator;
+import org.robotalons.lib.utilities.Vector;
 // ------------------------------------------------------------[Climb Subsystem]------------------------------------------------------------ //
 /**
  *
@@ -32,7 +35,7 @@ import org.robotalons.lib.utilities.Operator;
  * @see SubsystemBase
  * @see {@link org.robotalons.crescendo.RobotContainer RobotContainer}
  */
-public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Preferences> {
+public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Preferences, N1> {
   // --------------------------------------------------------------[Constants]-------------------------------------------------------------- //
   private static final CANSparkMax LEFT_ARM;
   private static final CANSparkMax RIGHT_ARM;
@@ -57,7 +60,7 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
    * Climb Subsystem Constructor
    */
   public ClimbSubsystem() {
-    super(("Climb Subsystem"));
+    super(("Climb Subsystem"), () -> 1);
   } static {
     Operator = (null);
     LEFT_ARM = new CANSparkMax(Ports.LEFT_ARM_CONTROLLER_ID, MotorType.kBrushless);
@@ -158,9 +161,9 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
     RIGHT_ARM.close();
   }
 
-  public synchronized void configureOperator(final Operator<Keybindings, Preferences> Operator) {
-    ClimbSubsystem.Operator = Operator;
-    with(() -> {
+  public synchronized void configureOperator(final Vector<Operator<Keybindings, Preferences>,N1> Operators) {
+    ClimbSubsystem.Operator = Operators.DATA[0];
+    GenericUtilities.protect(() -> {
       ClimbSubsystem.Operator.getKeybinding(Keybindings.CLIMB_ROTATE_FORWARD).onTrue(new InstantCommand(() -> {
         LEFT_ARM.set((0.3d));
         RIGHT_ARM.set((0.3d));
@@ -170,7 +173,7 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
         RIGHT_ARM.set((0d));
       }, getInstance()));   
     });
-    with(() -> {
+    GenericUtilities.protect(() -> {
       ClimbSubsystem.Operator.getKeybinding(Keybindings.CLIMB_ROTATE_BACKWARD).whileTrue(new InstantCommand(() -> {
         LEFT_ARM.set(-0.3d);
         RIGHT_ARM.set(-0.3d);
@@ -228,8 +231,9 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
   }
 
   @Override
-  public Operator<Keybindings, Preferences> getOperator() {
-    return Operator;
+  @SuppressWarnings("unchecked")
+  public Vector<Operator<Keybindings, Preferences>, N1> getOperators() {
+    return new Vector<>(() -> (1), Operator);
   }
 
   /**

@@ -60,7 +60,6 @@ public class Constants {
 
     public static final Double FIRING_PASSIVE_PERCENTILE = (0.35d);
 
-
     public static final Double OFFSET_WALL_METERS = (1.16d);
     public static final Double PIVOT_MAXIMUM_RANGE_METERS = (3.5d) + OFFSET_WALL_METERS;
     public static final Double PIVOT_MINIMUM_RANGE_METERS = (0d) + OFFSET_WALL_METERS;

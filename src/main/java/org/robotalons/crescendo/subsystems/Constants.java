@@ -2,8 +2,6 @@
 package org.robotalons.crescendo.subsystems;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.util.Units;
-
-import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 // ---------------------------------------------------------------[Constants]---------------------------------------------------------------//
 /**
  *
@@ -28,11 +26,11 @@ public class Constants {
     public static final Double ROBOT_MAXIMUM_LINEAR_ACCELERATION = Units.feetToMeters((9.5d));
     public static final Double ROBOT_MAXIMUM_ANGULAR_ACCELERATION = ROBOT_MAXIMUM_LINEAR_VELOCITY / ROBOT_RADIUS_METERS;
 
-    public static final Double ROBOT_TRANSLATION_KP = (0.5d);
+    public static final Double ROBOT_TRANSLATION_KP = (1d);
     public static final Double ROBOT_TRANSLATION_KI = (0d);
     public static final Double ROBOT_TRANSLATION_KD = (0d);    
 
-    public static final Double ROBOT_ROTATIONAL_KP = (0.5d);
+    public static final Double ROBOT_ROTATIONAL_KP = (1d);
     public static final Double ROBOT_ROTATIONAL_KI = (0d);
     public static final Double ROBOT_ROTATIONAL_KD = (0d);
   }

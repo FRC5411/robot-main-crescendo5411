@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.numbers.N0;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -32,7 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @see SubsystemBase
  * @see org.robotalons.crescendo.RobotContainer RobotContainer
  */
-public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Preferences> {
+public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Preferences, N0> {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private static final List<Camera> CAMERAS;
   public static final List<CameraIdentifier> ALL_CAMERA_IDENTIFIERS = List.of(
@@ -47,7 +48,7 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
    * Vision Subsystem Constructor.
    */
   public VisionSubsystem() {
-    super(("Vision Subsystem"));
+    super(("Vision Subsystem"), () -> (0));
   } static {
     CAMERAS = List.of(
       Devices.FRONT_LEFT_CAMERA,
@@ -120,7 +121,7 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
    * Retrieves the existing instance of this static utility class.
    * @return Utility class's instance
    */
-  public static synchronized TalonSubsystemBase<Keybindings,Preferences> getInstance() {
+  public static synchronized TalonSubsystemBase<Keybindings,Preferences,N0> getInstance() {
     if (java.util.Objects.isNull(Instance)) {
       Instance = new VisionSubsystem();
     }
