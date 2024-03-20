@@ -2,6 +2,8 @@
 package org.robotalons.crescendo;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
@@ -50,7 +52,46 @@ public final class Constants {
         (RobotType.CONCRETE):
         (RobotType.SIMULATION)
       );
-    public static final Integer DEFAULT_ALLIANCE = (3);
+  }
+
+  public static final class Field {
+    public static final Integer DEFAULT_ALLIANCE = (1);
+    public static final Double FIELD_LENGTH = Units.inchesToMeters((651.223d));
+    public static final Double FIELD_WIDTH = Units.inchesToMeters((323.277d));
+
+    public static final class Lines {
+      public static final Double WING_LINE_POSITION = Units.inchesToMeters((229.201d));
+      public static final Double PODIUM_LINE_POSITION = Units.inchesToMeters((126.75d));
+      public static final Double STARTING_LINE_POSITION = Units.inchesToMeters((74.111d));
+      public static final Double CENTER_LINE_POSITION = FIELD_LENGTH / 2d;      
+    }
+
+    public static final class Elements {
+      public static final Double AMP_POSITION = Units.inchesToMeters((72.455d));
+
+      public static final class Speaker {
+        public static final Translation3d TOP_RIGHT_SPEAKER =
+            new Translation3d(
+                Units.inchesToMeters((18.055d)),
+                Units.inchesToMeters((238.815d)),
+                Units.inchesToMeters((83.091d)));
+
+        public static final Translation3d TOP_LEFT_SPEAKER =
+            new Translation3d(
+                Units.inchesToMeters((18.055d)),
+                Units.inchesToMeters((197.765d)),
+                Units.inchesToMeters((83.091d)));
+
+        public static final Translation3d BOTTOM_RIGHT_SPEAKER =
+            new Translation3d((0d), Units.inchesToMeters((238.815d)), Units.inchesToMeters((78.324d)));
+        public static final Translation3d BOTTOM_LEFT_SPEAKER =
+            new Translation3d((0d), Units.inchesToMeters((197.765d)), Units.inchesToMeters((78.324d)));
+
+
+        public static final Translation3d CENTER_SPEAKER_OPENING =
+            BOTTOM_LEFT_SPEAKER.interpolate(TOP_RIGHT_SPEAKER, (1d/2d));
+      }
+    }
   }
 
   public static final class Logging {
@@ -63,8 +104,8 @@ public final class Constants {
   }
 
   public static final class Odometry {
-    public static final Lock CTRE_ODOMETRY_LOCK = new ReentrantLock();
-    public static final Lock REV_ODOMETRY_LOCK = new ReentrantLock();
+    public static final Lock CTRE_ODOMETRY_LOCK = new ReentrantLock((true));
+    public static final Lock REV_ODOMETRY_LOCK = new ReentrantLock((true));
     public static final Boolean CTRE_ODOMETRY_ENABLED = (false);
     public static final Boolean REV_ODOMETRY_ENABLED = (false);
     public static final CTREOdometryThread CTRE_ODOMETRY_THREAD = CTREOdometryThread.create(CTRE_ODOMETRY_LOCK);

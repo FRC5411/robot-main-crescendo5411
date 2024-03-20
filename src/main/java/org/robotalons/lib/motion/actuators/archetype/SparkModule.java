@@ -227,6 +227,8 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
             cease();
           }
           break;
+        case CHARACTERIZATION:
+          break;
         case DISABLED:
           cease();
           break;

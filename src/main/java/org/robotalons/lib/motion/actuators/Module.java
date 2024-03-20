@@ -72,6 +72,7 @@ public abstract class Module implements Closeable {
    * @param Voltage Applied voltage to the translation actuator of this module
    */
   public synchronized void characterize(final Double Voltage) {
+    Reference = (null);
     setTranslationalVoltage(Voltage);
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
@@ -95,7 +96,8 @@ public abstract class Module implements Closeable {
   /**
    * <p>Describes a given {@link Module}'s current state of control, and how it should operate given the mode.
    */
-  public enum ReferenceType {        
+  public enum ReferenceType {     
+    CHARACTERIZATION,   
     STATE_CONTROL,
     DISABLED,
     CLOSED,

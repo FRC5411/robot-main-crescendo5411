@@ -1,5 +1,6 @@
 // ----------------------------------------------------------------[Package]---------------------------------------------------------------- //
 package org.robotalons.crescendo.subsystems.climb;
+import edu.wpi.first.math.Nat;
 // ---------------------------------------------------------------[Libraries]--------------------------------------------------------------- //
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
@@ -60,7 +61,7 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
    * Climb Subsystem Constructor
    */
   public ClimbSubsystem() {
-    super(("Climb Subsystem"), () -> 1);
+    super(("Climb-Subsystem-Subsystem"), Nat.N1());
   } static {
     Operator = (null);
     LEFT_ARM = new CANSparkMax(Ports.LEFT_ARM_CONTROLLER_ID, MotorType.kBrushless);
@@ -136,20 +137,20 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
   public synchronized void periodic() {
     Objects.ODOMETRY_LOCKER.lock();
 
-    Logger.recordOutput(("Climb/LeftAbsolutePosition"), Units.rotationsToDegrees(getPosition(ClimbState.LEFT)));
-    Logger.recordOutput(("Climb/RightAbsolutePosition"), Units.rotationsToDegrees(getPosition(ClimbState.RIGHT)));
+    Logger.recordOutput(("Climb-Subsystem/Left-Absolute-Position"), Units.rotationsToDegrees(getPosition(ClimbState.LEFT)));
+    Logger.recordOutput(("Climb-Subsystem/Right-Absolute-Position"), Units.rotationsToDegrees(getPosition(ClimbState.RIGHT)));
 
-    Logger.recordOutput(("Climb/LeftRelativePosition"), Units.rotationsToDegrees(LEFT_RELATIVE_ENCODER.getPosition()));
-    Logger.recordOutput(("Climb/RightRelativePosition"), Units.rotationsToDegrees(RIGHT_RELATIVE_ENCODER.getPosition()));
+    Logger.recordOutput(("Climb-Subsystem/Left-Relative-Position"), Units.rotationsToDegrees(LEFT_RELATIVE_ENCODER.getPosition()));
+    Logger.recordOutput(("Climb-Subsystem/Right-Relative-Position"), Units.rotationsToDegrees(RIGHT_RELATIVE_ENCODER.getPosition()));
 
-    Logger.recordOutput(("Climb/LeftVelocity"), LEFT_RELATIVE_ENCODER.getVelocity());
-    Logger.recordOutput(("Climb/RightVelocity"), RIGHT_RELATIVE_ENCODER.getVelocity());
+    Logger.recordOutput(("Climb-Subsystem/Left-Velocity"), LEFT_RELATIVE_ENCODER.getVelocity());
+    Logger.recordOutput(("Climb-Subsystem/Right-Velocity"), RIGHT_RELATIVE_ENCODER.getVelocity());
 
-    Logger.recordOutput(("Climb/LeftTemperature"), LEFT_ARM.getMotorTemperature());
-    Logger.recordOutput(("Climb/RightTemperature"), RIGHT_ARM.getMotorTemperature());
+    Logger.recordOutput(("Climb-Subsystem/Left-Temperature"), LEFT_ARM.getMotorTemperature());
+    Logger.recordOutput(("Climb-Subsystem/Right-Temperature"), RIGHT_ARM.getMotorTemperature());
 
-    Logger.recordOutput(("Climb/LeftVoltage"), LEFT_ARM.getBusVoltage());
-    Logger.recordOutput(("Climb/RightVoltage"), RIGHT_ARM.getBusVoltage());
+    Logger.recordOutput(("Climb-Subsystem/Left-Voltage"), LEFT_ARM.getBusVoltage());
+    Logger.recordOutput(("Climb-Subsystem/Right-Voltage"), RIGHT_ARM.getBusVoltage());
 
     set(Rotation);
     Objects.ODOMETRY_LOCKER.unlock();

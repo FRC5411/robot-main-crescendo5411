@@ -1,6 +1,7 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.crescendo.subsystems.vision;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -48,7 +49,7 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings,Prefer
    * Vision Subsystem Constructor.
    */
   public VisionSubsystem() {
-    super(("Vision Subsystem"), () -> (0));
+    super(("Vision-Subsystem"), Nat.N0());
   } static {
     CAMERAS = List.of(
       Devices.FRONT_LEFT_CAMERA,

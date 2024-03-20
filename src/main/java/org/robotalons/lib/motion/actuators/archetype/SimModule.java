@@ -134,6 +134,8 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
             setTranslationalVoltage((TRANSLATIONAL_PID.calculate(Adjusted)) + (TRANSLATIONAL_FF.calculate(STATUS.TranslationalVelocityRadiansSecond, Adjusted)));          
           }
           break;
+        case CHARACTERIZATION:
+          break;
         case DISABLED:
           cease();
           break;

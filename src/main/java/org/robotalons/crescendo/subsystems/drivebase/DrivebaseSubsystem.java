@@ -2,6 +2,7 @@
 package org.robotalons.crescendo.subsystems.drivebase;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -40,6 +41,7 @@ import org.robotalons.lib.utilities.Vector;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 // ----------------------------------------------------------[Drivebase Subsystem]----------------------------------------------------------//
 /**
@@ -47,7 +49,7 @@ import java.util.stream.IntStream;
  *
  * <h1>DrivebaseSubsystem</h1>
  *
- * <p>Utility class which controls the modules to achieve individual goal set points GenericUtilities.protectin an acceptable target range of accuracy and time
+ * <p>Utility class which controls the modules to achieve individual goal set points with an acceptable target range of accuracy and time
  * efficiency and providing an API for querying new goal states.<p>
  *
  * @see TalonSubsystemBase
@@ -60,7 +62,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   private static final SysIdRoutine CHARACTERIZATION_ROUTINE;
   private static final SwerveDriveKinematics KINEMATICS;
   private static final Notifier ODOMETRY_PROCESSOR;
-  private static final Boolean ORIENTATION_FLIPPED;
+  private static final Supplier<Boolean> ORIENTATION_FLIPPED;
   private static final List<Module> MODULES;
   private static final Gyroscope GYROSCOPE;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
@@ -76,10 +78,10 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    */
 
   private DrivebaseSubsystem() {
-    super(("Drivebase Subsystem"), () -> 1);
+    super(("Drivebase-Subsystem"), Nat.N1());
   } static {
     GYROSCOPE = Constants.Devices.GYROSCOPE;
-    ORIENTATION_FLIPPED = (DriverStation.getAlliance().isPresent() && (DriverStation.getAlliance().get().equals(Alliance.Red)));
+    ORIENTATION_FLIPPED = () -> (DriverStation.getAlliance().isPresent() && (DriverStation.getAlliance().get().equals(Alliance.Red)));
     State = DrivebaseState.ROBOT_ORIENTED;
     GyroscopeRotation = GYROSCOPE.getYawRotation();
     Timestamp = Logger.getRealTimestamp() / (1e6);
@@ -101,7 +103,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     final var Estimated = VisionSubsystem.getApproximatedRobotPose();
     POSE_ESTIMATOR = new SwerveDrivePoseEstimator(
       KINEMATICS, 
-      GYROSCOPE.getYawRotation().plus(Rotation2d.fromDegrees((ORIENTATION_FLIPPED && RobotBase.isSimulation())? (180d): (0d))), 
+      GYROSCOPE.getYawRotation().plus(Rotation2d.fromDegrees((ORIENTATION_FLIPPED.get() && RobotBase.isSimulation())? (180d): (0d))), 
       getModulePositions(), 
       Estimated.isPresent()? Estimated.get().toPose2d(): new Pose2d()
     );
@@ -112,7 +114,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         (null),
         (null),
         (null),
-        (State) -> Logger.recordOutput(("Drivebase/Module-Characterization"), State.toString())),
+        (State) -> Logger.recordOutput(("Drivebase-Subsystem/Module-Characterization"), State.toString())),
       new SysIdRoutine.Mechanism(
         (Voltage) -> MODULES.forEach(Module -> Module.characterize(Voltage.magnitude())),
         (null),
@@ -120,12 +122,13 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     );
     ODOMETRY_PROCESSOR = new Notifier(DrivebaseSubsystem::process);
     ODOMETRY_PROCESSOR.setName(("Odometry-Processor"));
-    ODOMETRY_PROCESSOR.startPeriodic(((double) 1/25));
-    Logger.recordOutput(("Drivebase/Module-Measurements"), getModuleMeasurements());
-    Logger.recordOutput(("Drivebase/Fixed-Translation"), new Translation2d());
-    Logger.recordOutput(("Drivebase/Fixed-Rotation"), new Rotation2d());
-    Logger.recordOutput(("Drivebase/Module-Reference"), MODULES.stream().map(Module::getReference).toArray(SwerveModuleState[]::new));
-    Logger.recordOutput(("Drivebase/Module-Optimized"), MODULES.stream().map(Module::getOptimized).toArray(SwerveModuleState[]::new));
+    ODOMETRY_PROCESSOR.startPeriodic(((double) 1/25)); 
+    Logger.recordOutput(("Drivebase-Subsystem/Module-Measurements"), getModuleMeasurements());
+    Logger.recordOutput(("Drivebase-Subsystem/Operator-State"), State.name());
+    Logger.recordOutput(("Drivebase-Subsystem/Operator-Translation"), new Translation2d());
+    Logger.recordOutput(("Drivebase-Subsystem/Operator-Rotation"), new Rotation2d());
+    Logger.recordOutput(("Drivebase-Subsystem/Module-Reference"), getModuleUnoptimizedReferences());
+    Logger.recordOutput(("Drivebase-Subsystem/Module-Optimized"), getModuleOptimizedReferences());
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   /**
@@ -164,7 +167,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
               );                    
             }
             if(Timestamp == (Math.min(Size, Rotation.length) - 1)) {
-              Logger.recordOutput(("Drivebase/Odometry-Latency"), Timestamps.get(Partitions.indexOf(Size)).get(Timestamp) - Logger.getRealTimestamp() / (1e6));
+              Logger.recordOutput(("Drivebase-Subsystem/Odometry-Latency"), Timestamps.get(Partitions.indexOf(Size)).get(Timestamp) - Logger.getRealTimestamp() / (1e6));
             }
           } catch (final IndexOutOfBoundsException | NullPointerException Ignored) {
             break;
@@ -201,8 +204,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   public synchronized void periodic() {
     MODULES.forEach(Module::periodic);
     GYROSCOPE.update();
-    Logger.recordOutput(("Drivebase/Module-Measurements"),getModuleMeasurements());
-    Logger.recordOutput(("Drivebase/Odometry-Estimation"), getPose());
+    Logger.recordOutput(("Drivebase-Subsystem/Module-Measurements"),getModuleMeasurements());
+    Logger.recordOutput(("Drivebase-Subsystem/Odometry-Estimation"), getPose());
     if (DriverStation.isDisabled()) {
       MODULES.forEach(Module::cease);
     }
@@ -254,6 +257,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       case OBJECT_ORIENTED -> DrivebaseState.ROBOT_ORIENTED;
       default -> DrivebaseState.ROBOT_ORIENTED;
     };
+    Logger.recordOutput(("Drivebase-Subsystem/State"), State.name());
   }
 
   /**
@@ -361,7 +365,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   }
 
   /**
-   * Performs linear characterization GenericUtilities.protect sysID dynamically.
+   * Performs linear characterization with sysID dynamically.
    * @param Direction Direction of travel to characterize in
    */
   public static synchronized void characterizeDynamic(final SysIdRoutine.Direction Direction) {
@@ -375,7 +379,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   }
 
   /**
-   * Performs linear characterization GenericUtilities.protect sysID quasi-statically.
+   * Performs linear characterization with sysID quasi-statically.
    * @param Direction Direction of travel to characterize in
    */
   public static synchronized void characterizeQausistatic(final SysIdRoutine.Direction Direction) {
@@ -410,8 +414,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
       Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
       Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY);
-    Logger.recordOutput(("Drivebase/Fixed-Translation"), new Translation2d(Discrete.vxMetersPerSecond, Discrete.vyMetersPerSecond));
-    Logger.recordOutput(("Drivebase/Fixed-Rotation"), new Rotation2d(Discrete.omegaRadiansPerSecond));
+    Logger.recordOutput(("Drivebase-Subsystem/Operator-Translation"), new Translation2d(Discrete.vxMetersPerSecond, Discrete.vyMetersPerSecond));
+    Logger.recordOutput(("Drivebase-Subsystem/Operator-Rotation"), new Rotation2d(Discrete.omegaRadiansPerSecond));
     set(List.of(Reference));
   }
 
@@ -421,8 +425,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    * @param Rotation    Demand rotation in two-dimensional space
    */
   public static synchronized void set(final Translation2d Translation, final Rotation2d Rotation) {
-    Logger.recordOutput(("Drivebase/Raw-Translation"), Translation);
-    Logger.recordOutput(("Drivebase/Raw-Rotation"),Rotation);
+    Logger.recordOutput(("Drivebase-Subsystem/Raw-Translation"), Translation);
+    Logger.recordOutput(("Drivebase-Subsystem/Raw-Rotation"),Rotation);
     set(switch(State) {
       case FIELD_ORIENTED -> 
         ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -446,8 +450,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   public static synchronized void set(Collection<SwerveModuleState> States) {
     synchronized(MODULES) {
       final var Iterator = States.iterator();
-      Logger.recordOutput(("Drivebase/Module-Reference"), States.toArray(SwerveModuleState[]::new));
-      Logger.recordOutput(("Drivebase/Module-Optimized"), MODULES.stream().map((Module) -> Module.set(Iterator.next())).toArray(SwerveModuleState[]::new));      
+      Logger.recordOutput(("Drivebase-Subsystem/Module-Reference"), States.toArray(SwerveModuleState[]::new));
+      Logger.recordOutput(("Drivebase-Subsystem/Module-Optimized"), MODULES.stream().map((Module) -> Module.set(Iterator.next())).toArray(SwerveModuleState[]::new));      
     } 
   }
 
@@ -491,7 +495,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    * @return Boolean of if Pathfinding is flipped or not
    */
   public static Boolean getAlliance() {
-    return ORIENTATION_FLIPPED;
+    return ORIENTATION_FLIPPED.get();
   }
 
   /**
@@ -522,9 +526,15 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    * Provides the current un-optimized reference ,'set-point' state of all modules on the drivebase
    * @return Array of module states
    */
-  public static SwerveModuleState[] getModuleReferences() {
+  public static SwerveModuleState[] getModuleUnoptimizedReferences() {
     return MODULES.stream().map(
       Module::getReference
+      ).toArray(SwerveModuleState[]::new);
+  }
+
+  public static SwerveModuleState[] getModuleOptimizedReferences() {
+    return MODULES.stream().map(
+      Module::getOptimized
       ).toArray(SwerveModuleState[]::new);
   }
 

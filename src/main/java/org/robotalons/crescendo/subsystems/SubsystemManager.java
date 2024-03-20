@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
@@ -156,8 +157,9 @@ public final class SubsystemManager extends SubsystemBase {
     if(SubsystemManager.Autonomous != (null) && SubsystemManager.Autonomous.isScheduled()) {
       SubsystemManager.Autonomous.cancel();
     }
-    SubsystemManager.Autonomous = Autonomous;      
-    Autonomous.schedule();
+    SubsystemManager.Autonomous = Autonomous.withInterruptBehavior(InterruptionBehavior.kCancelSelf);      
+
+    SubsystemManager.Autonomous.schedule();
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**

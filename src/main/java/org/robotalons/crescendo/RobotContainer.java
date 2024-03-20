@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import org.robotalons.crescendo.Constants.Field;
 import org.robotalons.crescendo.Constants.Odometry;
-import org.robotalons.crescendo.Constants.Subsystems;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.lib.utilities.Alert;
@@ -42,7 +42,7 @@ public final class RobotContainer {
     Selector.onChange(DrivebaseSubsystem::set);
     for(Integer Index = (1); Index < Odometry.ALLIANCE_VERTICAL_LOCATIONS.size() + (1); Index++) {
       final var Location = Odometry.ALLIANCE_VERTICAL_LOCATIONS.get(Index - (1));
-      if(Index == (RobotBase.isReal()? DriverStation.getLocation().getAsInt(): (Subsystems.DEFAULT_ALLIANCE))) {
+      if(Index == (RobotBase.isReal()? DriverStation.getLocation().getAsInt(): (Field.DEFAULT_ALLIANCE))) {
         Selector.setDefaultOption(
           String.format(("%s Alliance %d"), Alliance.map(Enum::name).orElseGet(() -> (!DrivebaseSubsystem.getAlliance() ? "Blue" : "Red")), Index),
           new Pose2d(!DrivebaseSubsystem.getAlliance() ? Odometry.BLUE_ALLIANCE_HORIZONTAL_LOCATION: Odometry.RED_ALLIANCE_HORIZONTAL_LOCATION, Location, DrivebaseSubsystem.getRotation()));

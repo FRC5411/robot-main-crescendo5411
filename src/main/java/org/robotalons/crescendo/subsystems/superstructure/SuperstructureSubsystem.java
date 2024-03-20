@@ -2,6 +2,7 @@
 package org.robotalons.crescendo.subsystems.superstructure;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -70,7 +71,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * Cannon Subsystem Constructor
    */
   private SuperstructureSubsystem() {
-    super(("Cannon Subsystem"), () -> 2);
+    super(("Superstructure-Subsystem-Subsystem"), Nat.N2());
   } static {
     Reference = new SwerveModuleState((0d), Rotation2d.fromRotations(Measurements.PIVOT_MINIMUM_ROTATION));
     State = SuperstructureState.MANUAL;
@@ -103,13 +104,13 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
 
     INDEXER_CONTROLLER = new CANSparkMax(Ports.INDEXER_CONTROLLER_ID, MotorType.kBrushless);
     INDEXER_CONTROLLER.setSmartCurrentLimit((20));
-    INDEXER_CONTROLLER.setSecondaryCurrentLimit((30));
+    INDEXER_CONTROLLER.setSecondaryCurrentLimit((30d));
     INDEXER_CONTROLLER.setIdleMode(IdleMode.kBrake);
     INDEXER_CONTROLLER.setInverted((false));
 
     INTAKE_CONTROLLER = new CANSparkMax(Ports.INTAKE_CONTROLLER_ID, MotorType.kBrushless);
     INTAKE_CONTROLLER.setSmartCurrentLimit((20));
-    INTAKE_CONTROLLER.setSecondaryCurrentLimit((30));
+    INTAKE_CONTROLLER.setSecondaryCurrentLimit((30d));
     INTAKE_CONTROLLER.setInverted((true));
 
     PIVOT_CONTROLLER = new CANSparkMax(Ports.PIVOT_CONTROLLER_ID, MotorType.kBrushless);
@@ -118,7 +119,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
       Measurements.PIVOT_P_GAIN,
       Measurements.PIVOT_I_GAIN,
       Measurements.PIVOT_D_GAIN, 
-      new TrapezoidProfile.Constraints(2, 2));
+      new TrapezoidProfile.Constraints((2d), (2d)));
     PIVOT_CONTROLLER.setInverted(Measurements.PIVOT_INVERTED);
     PIVOT_ABSOLUTE_ENCODER = new DutyCycleEncoder(Ports.PIVOT_ABSOLUTE_ENCODER_ID);
   }
@@ -148,20 +149,20 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
         case MANUAL:
           break;
       }
-      Logger.recordOutput(("Cannon/InterpolatedDistance"), Distance); 
-      Logger.recordOutput(("Cannon/InterpolatedPercentile"), Percentage);
-      Logger.recordOutput(("Cannon/InterpolatedVelocity"), Interpolated.get((0), (0)));
-      Logger.recordOutput(("Cannon/InterpolatedRotation"), Units.radiansToDegrees(Interpolated.get((1), (0))));      
+      Logger.recordOutput(("Superstructure-Subsystem/Interpolated-Distance"), Distance); 
+      Logger.recordOutput(("Superstructure-Subsystem/Interpolated-Percentile"), Percentage);
+      Logger.recordOutput(("Superstructure-Subsystem/Interpolated-Velocity"), Interpolated.get((0), (0)));
+      Logger.recordOutput(("Superstructure-Subsystem/Interpolated-Rotation"), Units.radiansToDegrees(Interpolated.get((1), (0))));      
     } else {
-      Logger.recordOutput(("Cannon/InterpolatedDistance"), (0d)); 
-      Logger.recordOutput(("Cannon/InterpolatedPercentile"), (0d));
-      Logger.recordOutput(("Cannon/InterpolatedVelocity"), (0d));
-      Logger.recordOutput(("Cannon/InterpolatedRotation"), (0d));
+      Logger.recordOutput(("Superstructure-Subsystem/Interpolated-Distance"), (0d)); 
+      Logger.recordOutput(("Superstructure-Subsystem/Interpolated-Percentile"), (0d));
+      Logger.recordOutput(("Superstructure-Subsystem/Interpolated-Velocity"), (0d));
+      Logger.recordOutput(("Superstructure-Subsystem/Interpolated-Rotation"), (0d));
     }
     set(Reference.angle);
-    Logger.recordOutput(("Cannon/Reference"), Reference);
-    Logger.recordOutput(("Cannon/MeasuredVelocity"), FIRING_VELOCITY.getValueAsDouble());
-    Logger.recordOutput(("Cannon/MeasuredRotation"), getPivotRotation().getDegrees());
+    Logger.recordOutput(("Superstructure-Subsystem/Reference"), Reference);
+    Logger.recordOutput(("Superstructure-Subsystem/Measured-Velocity"), FIRING_VELOCITY.getValueAsDouble());
+    Logger.recordOutput(("Superstructure-Subsystem/Measured-Rotation"), getPivotRotation().getDegrees());
     Constants.Objects.ODOMETRY_LOCKER.unlock();
   }
 
