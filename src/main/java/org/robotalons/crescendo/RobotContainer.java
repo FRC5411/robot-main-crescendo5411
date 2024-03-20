@@ -33,7 +33,7 @@ public final class RobotContainer {
   private static RobotContainer Instance = (null);
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
-   * Robot Container Constructor
+   * Robot Container Constructor.
    */
   private RobotContainer() {} static {
     SubsystemManager.getInstance();
@@ -44,12 +44,12 @@ public final class RobotContainer {
       final var Location = Odometry.ALLIANCE_VERTICAL_LOCATIONS.get(Index - (1));
       if(Index == (RobotBase.isReal()? DriverStation.getLocation().getAsInt(): (Field.DEFAULT_ALLIANCE))) {
         Selector.setDefaultOption(
-          String.format(("%s Alliance %d"), Alliance.map(Enum::name).orElseGet(() -> (!DrivebaseSubsystem.getAlliance() ? "Blue" : "Red")), Index),
-          new Pose2d(!DrivebaseSubsystem.getAlliance() ? Odometry.BLUE_ALLIANCE_HORIZONTAL_LOCATION: Odometry.RED_ALLIANCE_HORIZONTAL_LOCATION, Location, DrivebaseSubsystem.getRotation()));
+          String.format(("%s Alliance %d"), Alliance.map(Enum::name).orElseGet(() -> (DrivebaseSubsystem.getAlliance() ? "Blue" : "Red")), Index),
+          new Pose2d(DrivebaseSubsystem.getAlliance() ? Odometry.BLUE_ALLIANCE_HORIZONTAL_LOCATION: Odometry.RED_ALLIANCE_HORIZONTAL_LOCATION, Location, DrivebaseSubsystem.getRotation()));
       } else {
         Selector.addOption(
-          String.format(("%s Alliance %d"), Alliance.map(Enum::name).orElseGet(() -> (!DrivebaseSubsystem.getAlliance() ? "Blue" : "Red")), Index),
-          new Pose2d(!DrivebaseSubsystem.getAlliance() ? Odometry.BLUE_ALLIANCE_HORIZONTAL_LOCATION: Odometry.RED_ALLIANCE_HORIZONTAL_LOCATION, Location, DrivebaseSubsystem.getRotation()));
+          String.format(("%s Alliance %d"), Alliance.map(Enum::name).orElseGet(() -> (DrivebaseSubsystem.getAlliance() ? "Blue" : "Red")), Index),
+          new Pose2d(DrivebaseSubsystem.getAlliance() ? Odometry.BLUE_ALLIANCE_HORIZONTAL_LOCATION: Odometry.RED_ALLIANCE_HORIZONTAL_LOCATION, Location, DrivebaseSubsystem.getRotation()));
       }
     }
     Selector.addOption(("Debug Alliance"), new Pose2d());

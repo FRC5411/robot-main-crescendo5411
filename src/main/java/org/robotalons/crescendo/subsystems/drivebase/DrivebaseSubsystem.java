@@ -81,7 +81,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     super(("Drivebase-Subsystem"), Nat.N1());
   } static {
     GYROSCOPE = Constants.Devices.GYROSCOPE;
-    ORIENTATION_FLIPPED = () -> (DriverStation.getAlliance().isPresent() && (DriverStation.getAlliance().get().equals(Alliance.Red)));
+    ORIENTATION_FLIPPED = () -> (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red));
     State = DrivebaseState.ROBOT_ORIENTED;
     GyroscopeRotation = GYROSCOPE.getYawRotation();
     Timestamp = Logger.getRealTimestamp() / (1e6);

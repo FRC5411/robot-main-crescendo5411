@@ -2,13 +2,12 @@
 package org.robotalons.crescendo.subsystems;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
@@ -111,13 +110,10 @@ public final class SubsystemManager extends SubsystemBase {
     FIELD.setRobotPose(DrivebaseSubsystem.getPose());
     if (Autonomous != (null)) {
       if (!Autonomous.isScheduled() && !AutonomousMessagePrinted) {
-        if (DriverStation.isAutonomousEnabled()) {
-          System.out.printf(
-              ("*** Auto finished in %.2f secs ***%n"), Logger.getRealTimestamp() / (1e6) - AutonomousStartTimestamp);
-        } else {
-          System.out.printf(
-              ("*** Auto cancelled in %.2f secs ***%n"), Logger.getRealTimestamp() / (1e6) - AutonomousStartTimestamp);
-        }
+        System.out.printf(
+          ("*** Auto %s in %.2f secs ***%n"),
+          (DriverStation.isAutonomousEnabled()? "finished": "cancelled"),
+          Logger.getRealTimestamp() / (1e6) - AutonomousStartTimestamp);
         AutonomousMessagePrinted = (true);
       }
     }
@@ -143,6 +139,16 @@ public final class SubsystemManager extends SubsystemBase {
     );
   }  
 
+  /**
+   * Pathfinding and autonomously achieves the robot chassis to a give transformed position; with a given end velocity
+   * @param Transform Ending transform of the robot, the position for the chassis to achieve
+   * @param Terminal  Ending velocity of the robot, the velocity for the chassis to end with
+   * @return Command capable of pathfinding the robot to a given position
+   */
+  public static Command pathfind(final Transform2d Transform, final Double Terminal) {
+    return pathfind(DrivebaseSubsystem.getPose().transformBy(Transform), Terminal);
+  }
+
   public static void cancel() {
     SubsystemManager.Autonomous.cancel();
   }
@@ -153,13 +159,12 @@ public final class SubsystemManager extends SubsystemBase {
    */
   public static synchronized void set(final Command Autonomous) {
     AutonomousMessagePrinted = (false);
-    AutonomousStartTimestamp = Timer.getFPGATimestamp();
+    AutonomousStartTimestamp = Logger.getRealTimestamp() / (1e6);
     if(SubsystemManager.Autonomous != (null) && SubsystemManager.Autonomous.isScheduled()) {
       SubsystemManager.Autonomous.cancel();
     }
-    SubsystemManager.Autonomous = Autonomous.withInterruptBehavior(InterruptionBehavior.kCancelSelf);      
-
-    SubsystemManager.Autonomous.schedule();
+    SubsystemManager.Autonomous = Autonomous;
+    Autonomous.schedule();
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**

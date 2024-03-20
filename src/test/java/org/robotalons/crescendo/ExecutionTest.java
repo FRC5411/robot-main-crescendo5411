@@ -8,10 +8,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 // -------------------------------------------------------------[Execution Test]-----------------------------------------------------------//
 public final class ExecutionTest {
-  // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
+  // --------------------------------------------------------------[Constants]-------------------------------------------------------------//
   public static final Long TEST_RUNTIME_DURATION = (5_000L);
   public static final Long TEST_START_DURATION = (7_500L);
-  // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
+  // ---------------------------------------------------------------[Methods]--------------------------------------------------------------//
   @Test
   synchronized void checkErrorRuntime() throws Exception {
     final var RuntimeExecutor = Executors.newFixedThreadPool((1));
