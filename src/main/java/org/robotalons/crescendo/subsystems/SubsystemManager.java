@@ -43,7 +43,7 @@ import java.util.List;
  * @see SubsystemBase
  * @see org.robotalons.crescendo.RobotContainer RobotContainer
  */
-@SuppressWarnings({ "unchecked", "resource" })
+@SuppressWarnings({"unchecked", "resource"})
 public final class SubsystemManager extends SubsystemBase {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   public static final List<TalonSubsystemBase<Keybindings,Preferences,?>> SUBSYSTEMS;
@@ -160,13 +160,15 @@ public final class SubsystemManager extends SubsystemBase {
    * @param Autonomous New Autonomous command
    */
   public static synchronized void set(final Command Autonomous) {
-    AutonomousMessagePrinted = (false);
-    AutonomousStartTimestamp = Logger.getRealTimestamp() / (1e6);
-    if(SubsystemManager.Autonomous != (null) && SubsystemManager.Autonomous.isScheduled()) {
-      SubsystemManager.Autonomous.cancel();
+    if(Autonomous != null) {
+      AutonomousMessagePrinted = (false);
+      AutonomousStartTimestamp = Logger.getRealTimestamp() / (1e6);
+      if(SubsystemManager.Autonomous != (null) && SubsystemManager.Autonomous.isScheduled()) {
+        SubsystemManager.Autonomous.cancel();
+      }
+      SubsystemManager.Autonomous = Autonomous;
+      Autonomous.schedule();      
     }
-    SubsystemManager.Autonomous = Autonomous;
-    Autonomous.schedule();
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**

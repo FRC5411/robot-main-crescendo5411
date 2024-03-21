@@ -213,28 +213,30 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     update();
     TRANSLATIONAL_POSITION.accumulate(TRANSLATIONAL_ENCODER.getVelocity());
     synchronized(STATUS) {
-      switch(ReferenceMode) {
-        case STATE_CONTROL:
-          if(Reference != (null)) {
-            if (Reference.angle != (null)) {
-              setRotationalVoltage(ROTATIONAL_PID.calculate(getAbsoluteRotation().getRadians(), Reference.angle.getRadians()));
+      if(STATUS.RotationalConnected && STATUS.TranslationalConnected) {
+        switch (ReferenceMode) {
+          case STATE_CONTROL:
+            if (Reference != (null)) {
+              if (Reference.angle != (null)) {
+                setRotationalVoltage(ROTATIONAL_PID.calculate(getAbsoluteRotation().getRadians(), Reference.angle.getRadians()));
+              } else {
+                setRotationalVoltage((0d));
+              }
+              var Adjusted = Reference.speedMetersPerSecond * Math.cos(ROTATIONAL_PID.getPositionError()) / MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
+              setTranslationalVoltage((TRANSLATIONAL_PID.calculate(Adjusted)) + (TRANSLATIONAL_FF.calculate(STATUS.TranslationalVelocityRadiansSecond, Adjusted)));
             } else {
-              setRotationalVoltage((0d));
+              cease();
             }
-            var Adjusted = Reference.speedMetersPerSecond * Math.cos(ROTATIONAL_PID.getPositionError()) / MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
-            setTranslationalVoltage((TRANSLATIONAL_PID.calculate(Adjusted)) + (TRANSLATIONAL_FF.calculate(STATUS.TranslationalVelocityRadiansSecond, Adjusted)));          
-          } else {
+            break;
+          case CHARACTERIZATION:
+            break;
+          case DISABLED:
             cease();
-          }
-          break;
-        case CHARACTERIZATION:
-          break;
-        case DISABLED:
-          cease();
-          break;
-        case CLOSED:
-          close();
-          break;
+            break;
+          case CLOSED:
+            close();
+            break;
+        }
       }
       synchronized(POSITION_DELTAS) {
         POSITION_DELTAS.clear();

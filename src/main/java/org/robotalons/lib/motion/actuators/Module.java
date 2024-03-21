@@ -232,6 +232,14 @@ public abstract class Module implements Closeable {
   }
 
   /**
+   * Provides if both actuators (translational and rotational), sustain a connection last control-loop cycle.
+   * @return Module connection status
+   */
+  public Boolean getConnection() {
+    return STATUS.TranslationalConnected && STATUS.RotationalConnected;
+  }
+
+  /**
    * Provides the most-recent cycle observed (measured) state of this module
    * @return Measure module state
    */

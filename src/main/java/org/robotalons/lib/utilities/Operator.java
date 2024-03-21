@@ -7,10 +7,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import org.mockito.DoNotMock;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 // ----------------------------------------------------------------[Operator]--------------------------------------------------------------//
 /**
@@ -82,22 +79,49 @@ public final class Operator<Keybindings extends Enum<?>, Preferences extends Enu
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
-   * Provides the value of a given keybinding from this operator's keybinding map
+   * Provides the value of a given keybinding from this operator's keybinding map an an optional value
    * @param Keybinding Enum type value to pull information from
-   * @return The keybinding if it exists within the map, if not {@code NullPointerException} is thrown
+   * @return The keybinding if it exists within the map, if not it is {@link Optional#empty()}
    */
-  public Trigger getKeybinding(final Keybindings Keybinding) {
-    return KEYBINDINGS.get(Keybinding);
+  public Optional<Trigger> getOptionalKeybinding(final Keybindings Keybinding) {
+    return Optional.ofNullable(KEYBINDINGS.get(Keybinding));
   }
 
   /**
-   * Provides the value of a given preference from this operator's keybinding map
+   * Provides the value of a given keybinding from this operator's keybinding map an an optional value
+   * @param Keybinding Enum type value to pull information from
+   * @return The keybinding if it exists within the map, if not null is returned 
+   */
+  public Trigger getRequiredKeybinding(final Keybindings Keybinding) {
+    try {
+      return KEYBINDINGS.get(Keybinding);
+    } catch(final NullPointerException Ignored) {
+      return (null);
+    }
+  }
+
+  /**
+   * Provides the value of a given preference from this operator's keybinding map as an optional value
    * @param Preference Enum type value to pull information from
-   * @return The value of preference's supplier if it exists within the map, if not {@code NullPointerException} is thrown
+   * @return The value of preference's supplier if it exists within the map, if not it is {@link Optional#empty()}
    */
   @SuppressWarnings("unchecked")
-  public <Supplied> Supplied  getPreference(final Preferences Preference) {
-    return (Supplied) PREFERENCES.get(Preference).get();
+  public <Supplied> Optional<Supplied> getOptionalPreference(final Preferences Preference) {
+    return Optional.ofNullable((Supplied) PREFERENCES.get(Preference).get());
+  }
+
+  /**
+   * Provides the value of a given preference from this operator's keybinding map as a real value, may be null
+   * @param Preference Enum type value to pull information from
+   * @return The value of preference's supplier if it exists within the map, if not null is returned 
+   */
+  @SuppressWarnings("unchecked")
+  public <Supplied> Supplied getRequiredPreference(final Preferences Preference) {
+    try {
+      return (Supplied) PREFERENCES.get(Preference).get();
+    } catch(final NullPointerException Ignored) {
+      return (null);
+    }
   }
 
   /**
