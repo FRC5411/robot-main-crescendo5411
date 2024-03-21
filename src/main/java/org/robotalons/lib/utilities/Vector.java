@@ -1,13 +1,11 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.lib.utilities;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
-
+import edu.wpi.first.hal.util.BoundaryException;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.Num;
 
 import java.util.Objects;
-
-import edu.wpi.first.hal.util.BoundaryException;
-import edu.wpi.first.math.Nat;
 
 // ----------------------------------------------------------------[Vector]--------------------------------------------------------------//
 /**
@@ -31,10 +29,8 @@ public class Vector<Type, Elements extends Num> {
    */
   @SuppressWarnings("unchecked")
   public Vector(final Nat<Num> Elements, final Type... Data) throws BoundaryException {
-    Objects.requireNonNull(Elements);
-    Objects.requireNonNull(Data);
-    if(Elements.getNum() == Data.length) {
-      DATA = Data;
+    if(Objects.requireNonNull(Elements).getNum() == Data.length) {
+      DATA = Objects.requireNonNull(Data);
     } else {
       throw new BoundaryException(("The size of the provided data must match the declared size when creating a new vector"));
     }

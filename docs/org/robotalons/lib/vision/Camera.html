@@ -234,12 +234,12 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#snapshotInput()" class="member-name-link">snapshotInput</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Forces the camera to take a preprocessed snapshot of it's current processed feed.</div>
+<div class="block">Forces the camera to take a preprocessed snapshot of its current processed feed.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#snapshotOutput()" class="member-name-link">snapshotOutput</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Forces the camera to take a preprocessed snapshot of it's current processed feed.</div>
+<div class="block">Forces the camera to take a preprocessed snapshot of its current processed feed.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
@@ -339,14 +339,14 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <section class="detail" id="snapshotInput()">
 <h3>snapshotInput</h3>
 <div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">snapshotInput</span>()</div>
-<div class="block">Forces the camera to take a preprocessed snapshot of it's current processed feed.</div>
+<div class="block">Forces the camera to take a preprocessed snapshot of its current processed feed.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="snapshotOutput()">
 <h3>snapshotOutput</h3>
 <div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">snapshotOutput</span>()</div>
-<div class="block">Forces the camera to take a preprocessed snapshot of it's current processed feed.</div>
+<div class="block">Forces the camera to take a preprocessed snapshot of its current processed feed.</div>
 </section>
 </li>
 <li>
@@ -446,7 +446,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="block">Provides the robot relative position timestamps of each delta from the last update control cycle up to the current query.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>List of robot relative snapshot time deltas</dd>
+<dd>Array of robot relative snapshot time deltas</dd>
 </dl>
 </section>
 </li>
@@ -457,7 +457,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="block">Provides the robot relative (minus offset) position deltas from last update control cycle up to the current query.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>List of Poses of the robot since the last control cycle</dd>
+<dd>Array of Poses of the robot since the last control cycle</dd>
 </dl>
 </section>
 </li>
@@ -501,7 +501,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="block">Provides a boolean representation of if the module has an april tag / object detected</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>List of robot-relative target transformations</dd>
+<dd>Boolean of if the camera has targets</dd>
 </dl>
 </section>
 </li>

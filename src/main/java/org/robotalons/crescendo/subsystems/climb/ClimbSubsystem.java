@@ -1,7 +1,6 @@
 // ----------------------------------------------------------------[Package]---------------------------------------------------------------- //
 package org.robotalons.crescendo.subsystems.climb;
 import edu.wpi.first.math.Nat;
-// ---------------------------------------------------------------[Libraries]--------------------------------------------------------------- //
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.numbers.N1;
@@ -23,7 +22,6 @@ import org.robotalons.crescendo.subsystems.climb.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.climb.Constants.Objects;
 import org.robotalons.crescendo.subsystems.climb.Constants.Ports;
 import org.robotalons.lib.TalonSubsystemBase;
-import org.robotalons.lib.utilities.GenericUtilities;
 import org.robotalons.lib.utilities.Operator;
 import org.robotalons.lib.utilities.Vector;
 // ------------------------------------------------------------[Climb Subsystem]------------------------------------------------------------ //
@@ -34,7 +32,7 @@ import org.robotalons.lib.utilities.Vector;
  * <p>Utility class which controls the indexing of notes from and to the intake and shooter.<p>
  *
  * @see SubsystemBase
- * @see {@link org.robotalons.crescendo.RobotContainer RobotContainer}
+ * @see org.robotalons.crescendo.RobotContainer RobotContainer
  */
 public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Preferences, N1> {
   // --------------------------------------------------------------[Constants]-------------------------------------------------------------- //
@@ -164,25 +162,25 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
 
   public synchronized void configureOperator(final Vector<Operator<Keybindings, Preferences>,N1> Operators) {
     ClimbSubsystem.Operator = Operators.DATA[0];
-    GenericUtilities.protect(() -> {
-      ClimbSubsystem.Operator.getKeybinding(Keybindings.CLIMB_ROTATE_FORWARD).onTrue(new InstantCommand(() -> {
+    ClimbSubsystem.Operator.getOptionalKeybinding(Keybindings.CLIMB_ROTATE_FORWARD).ifPresent((Trigger) -> {
+      Trigger.onTrue(new InstantCommand(() -> {
         LEFT_ARM.set((0.3d));
         RIGHT_ARM.set((0.3d));
-      }, getInstance()));   
-      ClimbSubsystem.Operator.getKeybinding(Keybindings.CLIMB_ROTATE_FORWARD).onFalse(new InstantCommand(() -> {
+      },getInstance()));
+      Trigger.onFalse(new InstantCommand(() -> {
         LEFT_ARM.set((0d));
         RIGHT_ARM.set((0d));
-      }, getInstance()));   
+      },getInstance()));
     });
-    GenericUtilities.protect(() -> {
-      ClimbSubsystem.Operator.getKeybinding(Keybindings.CLIMB_ROTATE_BACKWARD).whileTrue(new InstantCommand(() -> {
-        LEFT_ARM.set(-0.3d);
-        RIGHT_ARM.set(-0.3d);
-      }, getInstance()).repeatedly());
-      ClimbSubsystem.Operator.getKeybinding(Keybindings.CLIMB_ROTATE_BACKWARD).onFalse(new InstantCommand(() -> {
+    ClimbSubsystem.Operator.getOptionalKeybinding(Keybindings.CLIMB_ROTATE_FORWARD).ifPresent((Trigger) -> {
+      Trigger.onTrue(new InstantCommand(() -> {
+        LEFT_ARM.set(-(0.3d));
+        RIGHT_ARM.set(-(0.3d));
+      },getInstance()));
+      Trigger.onFalse(new InstantCommand(() -> {
         LEFT_ARM.set((0d));
         RIGHT_ARM.set((0d));
-      }, getInstance()));   
+      },getInstance()));
     });
   }
   // --------------------------------------------------------------[Internal]--------------------------------------------------------------- //
@@ -242,8 +240,9 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
    * @return Utility class's instance
    */
   public static synchronized ClimbSubsystem getInstance() {
-    if (java.util.Objects.isNull(Instance))
+    if (java.util.Objects.isNull(Instance)) {
       Instance = new ClimbSubsystem();
+    }
     return Instance;
   }
 }

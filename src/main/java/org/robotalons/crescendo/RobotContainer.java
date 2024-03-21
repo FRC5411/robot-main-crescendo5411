@@ -73,6 +73,7 @@ public final class RobotContainer {
    * Retrieves the existing instance of this static utility class
    * @return Utility class's instance
    */
+  @SuppressWarnings("InstantiationOfUtilityClass")
   public static synchronized RobotContainer getInstance() {
       if (java.util.Objects.isNull(Instance)) {
           Instance = new RobotContainer();

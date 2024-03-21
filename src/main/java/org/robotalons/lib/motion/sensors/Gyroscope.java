@@ -39,7 +39,7 @@ public abstract class Gyroscope implements Closeable {
    * Provides a boolean representation of if the module is still connected to the system and all signals are okay.
    * @return Boolean representing Connectivity
    */
-  public Boolean getConnected() {
+  public Boolean getConnection() {
     return STATUS.Connected;
   }
 

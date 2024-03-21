@@ -34,7 +34,6 @@ import org.robotalons.crescendo.subsystems.superstructure.Constants.Ports;
 import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.trajectory.solving.TrajectoryObject;
-import org.robotalons.lib.utilities.GenericUtilities;
 import org.robotalons.lib.utilities.Operator;
 import org.robotalons.lib.utilities.Vector;
 // --------------------------------------------------------[Superstructure Subsystem]--------------------------------------------------------//
@@ -246,99 +245,92 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * @param Rotation   Value of rotation to bring to pivot to
    * @param Velocity   Value of velocity to bring the firing controllers to in RPM
    */
-  private void protect(final Trigger Keybinding, final Double Rotation, final Double Velocity) {
-    GenericUtilities.protect(() -> {
-      Keybinding.onTrue(new InstantCommand(
-        () -> {
-          Reference.angle = Rotation2d.fromRadians(Rotation);
-          set(Velocity);
-        },
-        SuperstructureSubsystem.getInstance()
-      ));
-      Keybinding.onFalse(new InstantCommand(
-        () -> {
-          Reference.angle = Rotation2d.fromRadians(Measurements.PIVOT_MINIMUM_ROTATION);
-          FIRING_CONTROLLERS.getFirst().set((Measurements.FIRING_IDLE_PERCENT));
-          FIRING_CONTROLLERS.getSecond().set((Measurements.FIRING_IDLE_PERCENT));
-        },
-        SuperstructureSubsystem.getInstance()
-      ));
-    });
+  private void configure(final Trigger Keybinding, final Double Rotation, final Double Velocity) {
+    Keybinding.onTrue(new InstantCommand(
+      () -> {
+        Reference.angle = Rotation2d.fromRadians(Rotation);
+        set(Velocity);
+      },
+      SuperstructureSubsystem.getInstance()
+    ));
+    Keybinding.onFalse(new InstantCommand(
+      () -> {
+        Reference.angle = Rotation2d.fromRadians(Measurements.PIVOT_MINIMUM_ROTATION);
+        FIRING_CONTROLLERS.getFirst().set((Measurements.FIRING_IDLE_PERCENT));
+        FIRING_CONTROLLERS.getSecond().set((Measurements.FIRING_IDLE_PERCENT));
+      },
+      SuperstructureSubsystem.getInstance()
+    ));
   }
 
   @Override
   public void configureOperator(final Vector<Operator<Keybindings, Preferences>,N2> Operator) {
     SuperstructureSubsystem.Operators = Operator;
-    protect(
-      SuperstructureSubsystem.Operators.DATA[0].getKeybinding(Keybindings.CANNON_PIVOT_SUBWOOFER),
-      Measurements.SUBWOOFER_LINE,
-      Measurements.SUBWOOFER_RPM
-      );
-    protect(
-      SuperstructureSubsystem.Operators.DATA[0].getKeybinding(Keybindings.CANNON_PIVOT_WINGLINE),
-      Measurements.WING_LINE,
-      Measurements.SUBWOOFER_RPM
-      );
-    protect(
-      SuperstructureSubsystem.Operators.DATA[0].getKeybinding(Keybindings.CANNON_PIVOT_PODIUMLINE),
-      Measurements.PODIUM_LINE,
-      Measurements.SUBWOOFER_RPM
-      );
-    protect(
-      SuperstructureSubsystem.Operators.DATA[0].getKeybinding(Keybindings.CANNON_PIVOT_STARTING_LINE),
-      Measurements.STARTING_LINE,
-      Measurements.SUBWOOFER_RPM
-      );
-    GenericUtilities.protect(() -> {
-      SuperstructureSubsystem.Operators.DATA[1].getKeybinding(Keybindings.OUTTAKE_TOGGLE)
-        .onTrue(new InstantCommand(
-          () -> {
-            INTAKE_CONTROLLER.set((-1d));
-            INDEXER_CONTROLLER.set((-1d));
-          },
-          SuperstructureSubsystem.getInstance()
-        ));
-        SuperstructureSubsystem.Operators.DATA[1].getKeybinding(Keybindings.OUTTAKE_TOGGLE)
-        .onFalse(new InstantCommand(
-          () -> {
-            INTAKE_CONTROLLER.set((0d));
-            INDEXER_CONTROLLER.set((0d));
-          },
-          SuperstructureSubsystem.getInstance()
+    //TODO: Change RPM Setpoints
+    SuperstructureSubsystem.Operators.DATA[0].getOptionalKeybinding(Keybindings.CANNON_PIVOT_SUBWOOFER).ifPresent((Trigger) -> 
+      configure(
+        Trigger, 
+        Measurements.SUBWOOFER_LINE, 
+        Measurements.SUBWOOFER_RPM));
+    SuperstructureSubsystem.Operators.DATA[0].getOptionalKeybinding(Keybindings.CANNON_PIVOT_WINGLINE).ifPresent((Trigger) -> 
+      configure(
+        Trigger, 
+        Measurements.WING_LINE, 
+        Measurements.SUBWOOFER_RPM));
+    SuperstructureSubsystem.Operators.DATA[0].getOptionalKeybinding(Keybindings.CANNON_PIVOT_PODIUMLINE).ifPresent((Trigger) -> 
+      configure(
+        Trigger, 
+        Measurements.PODIUM_LINE, 
+        Measurements.SUBWOOFER_RPM));
+    SuperstructureSubsystem.Operators.DATA[0].getOptionalKeybinding(Keybindings.CANNON_PIVOT_STARTING_LINE).ifPresent((Trigger) -> 
+      configure(
+        Trigger, 
+        Measurements.STARTING_LINE, 
+        Measurements.SUBWOOFER_RPM));
+    SuperstructureSubsystem.Operators.DATA[1].getOptionalKeybinding(Keybindings.OUTTAKE_TOGGLE).ifPresent((Trigger) -> {
+      Trigger.onTrue(new InstantCommand(
+        () -> {
+          INTAKE_CONTROLLER.set((-1d));
+          INDEXER_CONTROLLER.set((-1d));
+        },
+        SuperstructureSubsystem.getInstance()
+      ));
+      Trigger.onFalse(new InstantCommand(
+        () -> {
+          INTAKE_CONTROLLER.set((0d));
+          INDEXER_CONTROLLER.set((0d));
+        },
+        SuperstructureSubsystem.getInstance()
       ));
     });
-    GenericUtilities.protect(() -> {
-      SuperstructureSubsystem.Operators.DATA[1].getKeybinding(Keybindings.INTAKE_TOGGLE)
-        .onTrue(new InstantCommand(
-          () -> {
-            INTAKE_CONTROLLER.set((1d));
-            INDEXER_CONTROLLER.set((1d));
-          },
-          SuperstructureSubsystem.getInstance()
-        ));
-        SuperstructureSubsystem.Operators.DATA[1].getKeybinding(Keybindings.INTAKE_TOGGLE)
-        .onFalse(new InstantCommand(
-          () -> {
-            INTAKE_CONTROLLER.set((0d));
-            INDEXER_CONTROLLER.set((0d));
-          },
-          SuperstructureSubsystem.getInstance()
-        ));
+    SuperstructureSubsystem.Operators.DATA[1].getOptionalKeybinding(Keybindings.INTAKE_TOGGLE).ifPresent((Trigger) -> {
+      Trigger.onTrue(new InstantCommand(
+        () -> {
+          INTAKE_CONTROLLER.set((1d));
+          INDEXER_CONTROLLER.set((1d));
+        },
+        SuperstructureSubsystem.getInstance()
+      ));
+      Trigger.onFalse(new InstantCommand(
+        () -> {
+          INTAKE_CONTROLLER.set((0d));
+          INDEXER_CONTROLLER.set((0d));
+        },
+        SuperstructureSubsystem.getInstance()
+      ));
     });
-    GenericUtilities.protect(() -> {
-      SuperstructureSubsystem.Operators.DATA[0].getKeybinding(Keybindings.CANNON_TOGGLE)
-        .onTrue(new InstantCommand(
-          () -> set(Measurements.FIRING_STANDARD_VELOCITY),
-          SuperstructureSubsystem.getInstance()
-        ));
-        SuperstructureSubsystem.Operators.DATA[0].getKeybinding(Keybindings.CANNON_TOGGLE)
-        .onFalse(new InstantCommand(
-          () -> {
-            FIRING_CONTROLLERS.getFirst().set((0d));
-            FIRING_CONTROLLERS.getSecond().set((0d));
-          },
-          SuperstructureSubsystem.getInstance()
-        ));
+    SuperstructureSubsystem.Operators.DATA[1].getOptionalKeybinding(Keybindings.INTAKE_TOGGLE).ifPresent((Trigger) -> {
+      Trigger.onTrue(new InstantCommand(
+        () -> set(Measurements.FIRING_STANDARD_VELOCITY),
+        SuperstructureSubsystem.getInstance()
+      ));
+      Trigger.onFalse(new InstantCommand(
+        () -> {
+          FIRING_CONTROLLERS.getFirst().set((0d));
+          FIRING_CONTROLLERS.getSecond().set((0d));
+        },
+        SuperstructureSubsystem.getInstance()
+      ));
     });
   }
   // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //

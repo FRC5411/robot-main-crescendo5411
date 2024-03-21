@@ -113,6 +113,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
     return Queue;
   }
 
+  @SuppressWarnings({"BusyWait", "SynchronizationOnLocalVariableOrMethodParameter"})
   @Override
   public void run() {
     while (this.isAlive()) {

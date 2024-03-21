@@ -358,18 +358,18 @@ public final class Constants {
   public static final Module FRONT_LEFT_MODULE =
     (RobotBase.isSimulation())?
     (new SimModule<>(Measurements.Modules.FL.SIM_CONSTANTS)):
-    (new SparkModule<CANSparkMax>(Measurements.Modules.FL.REAL_CONSTANTS));
+    (new SparkModule<>(Measurements.Modules.FL.REAL_CONSTANTS));
   public static final Module FRONT_RIGHT_MODULE =
     (RobotBase.isSimulation())?
     (new SimModule<>(Measurements.Modules.FR.SIM_CONSTANTS)):
-    (new SparkModule<CANSparkMax>(Measurements.Modules.FR.REAL_CONSTANTS));
+    (new SparkModule<>(Measurements.Modules.FR.REAL_CONSTANTS));
   public static final Module REAR_LEFT_MODULE =
     (RobotBase.isSimulation())?
     (new SimModule<>(Measurements.Modules.RL.SIM_CONSTANTS)):
-    (new SparkModule<CANSparkMax>(Measurements.Modules.RL.REAL_CONSTANTS));
+    (new SparkModule<>(Measurements.Modules.RL.REAL_CONSTANTS));
   public static final Module REAR_RIGHT_MODULE =
     (RobotBase.isSimulation())?
     (new SimModule<>(Measurements.Modules.RR.SIM_CONSTANTS)):
-    (new SparkModule<CANSparkMax>(Measurements.Modules.RR.REAL_CONSTANTS));
+    (new SparkModule<>(Measurements.Modules.RR.REAL_CONSTANTS));
   }
 }

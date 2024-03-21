@@ -15,7 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * <p>Contains all climb-wide constants, does not contain subsystem specific constants.
  *
- * @see DrivebaseSubsystem
+ * @see ClimbSubsystem
  */
 public class Constants {
   // ------------------------------------------------------------[Internal]-------------------------------------------------------------//
