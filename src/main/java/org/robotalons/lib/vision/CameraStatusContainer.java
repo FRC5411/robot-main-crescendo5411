@@ -11,7 +11,9 @@ import org.littletonrobotics.junction.AutoLog;
 /**
  *
  *
- * <p>Loggable input reference to a specific singular unit which assists in the odometry and kinematics of a given robot.
+ * <p>
+ * Loggable input reference to a specific singular unit which assists in the
+ * odometry and kinematics of a given robot.
  */
 @AutoLog
 public class CameraStatusContainer {
@@ -20,7 +22,7 @@ public class CameraStatusContainer {
   public volatile Pose2d Robot = new Pose2d();
   public volatile Pose2d OptimalTargetPose = new Pose2d();
   public volatile Transform2d OptimalTargetTransform = new Transform2d();
-  public volatile Transform2d[] RealizedTargets = new Transform2d[]{};
-  public volatile Pose2d[] Deltas = new Pose2d[]{};
-  public volatile double[] Timestamps = new double[]{};
-} 
+  public volatile Transform2d[] RealizedTargets = new Transform2d[] {};
+  public volatile Pose2d[] Deltas = new Pose2d[] {};
+  public volatile double[] Timestamps = new double[] {};
+}
