@@ -23,7 +23,7 @@ import org.robotalons.crescendo.subsystems.climb.Constants.Objects;
 import org.robotalons.crescendo.subsystems.climb.Constants.Ports;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.utilities.Operator;
-import org.robotalons.lib.utilities.Vector;
+import org.robotalons.lib.utilities.TypeVector;
 // ------------------------------------------------------------[Climb Subsystem]------------------------------------------------------------ //
 /**
  *
@@ -160,8 +160,8 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
     RIGHT_ARM.close();
   }
 
-  public synchronized void configureOperator(final Vector<Operator<Keybindings, Preferences>,N1> Operators) {
-    ClimbSubsystem.Operator = Operators.DATA[0];
+  public synchronized void configureOperator(final TypeVector<Operator<Keybindings, Preferences>,N1> Operators) {
+    ClimbSubsystem.Operator = Operators.get((0));
     ClimbSubsystem.Operator.getOptionalKeybinding(Keybindings.CLIMB_ROTATE_FORWARD).ifPresent((Trigger) -> {
       Trigger.onTrue(new InstantCommand(() -> {
         LEFT_ARM.set((0.3d));
@@ -231,8 +231,8 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
 
   @Override
   @SuppressWarnings("unchecked")
-  public Vector<Operator<Keybindings, Preferences>, N1> getOperators() {
-    return new Vector<>(() -> (1), Operator);
+  public TypeVector<Operator<Keybindings, Preferences>, N1> getOperators() {
+    return new TypeVector<>(() -> (1), Operator);
   }
 
   /**

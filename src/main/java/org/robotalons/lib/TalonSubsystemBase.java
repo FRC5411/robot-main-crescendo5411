@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.robotalons.lib.utilities.Alert;
 import org.robotalons.lib.utilities.Alert.AlertType;
 import org.robotalons.lib.utilities.Operator;
-import org.robotalons.lib.utilities.Vector;
+import org.robotalons.lib.utilities.TypeVector;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.List;
  * and implementation of standard methods like {@link #close()} <p>
  * 
  * @see SubsystemBase
- * @see Vector
+ * @see TypeVector
  * 
  * @author Cody Washington (@Jelatinone) 
  */
@@ -35,7 +35,7 @@ public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preference
   /**
    * Talon Subsystem Constructor.
    * @param Name     Any name for this subsystem, which can be used for telemetry and logging
-   * @param Elements Functional interface representing the number of elements required when making calls to {@link #configureOperator(Vector)}
+   * @param Elements Functional interface representing the number of elements required when making calls to {@link #configureOperator(TypeVector)}
    */
   protected TalonSubsystemBase(final String Name, final Nat<Operators> Elements) {
     super(Name);
@@ -50,7 +50,7 @@ public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preference
    * Configures a subsystem's hardware (GenericHID) to operate this subsystem's Hardware (actuators)
    * @param Operator New subsystem operator
    */
-  public synchronized void configureOperator(final Vector<Operator<Keybindings, Preferences>, Operators> Operator) {
+  public synchronized void configureOperator(final TypeVector<Operator<Keybindings, Preferences>, Operators> Operator) {
 
   }
 
@@ -84,7 +84,7 @@ public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preference
   }
 
   /**
-   * Provides a number of elements that should be expected when calling {@link #configureOperator(Vector)}
+   * Provides a number of elements that should be expected when calling {@link #configureOperator(TypeVector)}
    * @return Functional interface representing a number
    */
   public Nat<Operators> getElements() {
@@ -95,7 +95,7 @@ public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preference
    * Provides the current operator of this subsystem.
    * @return Current subsystem operator
    */
-  public Vector<Operator<Keybindings, Preferences>, Operators> getOperators() {
+  public TypeVector<Operator<Keybindings, Preferences>, Operators> getOperators() {
     return (null);
   }
 

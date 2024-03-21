@@ -28,7 +28,7 @@ import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsyste
 import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.pathfinding.LocalADStarAK;
-import org.robotalons.lib.utilities.Vector;
+import org.robotalons.lib.utilities.TypeVector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,9 +100,9 @@ public final class SubsystemManager extends SubsystemBase {
       Module.set(org.robotalons.lib.motion.actuators.Module.ReferenceType.STATE_CONTROL));
     Pathfinding.ensureInitialized();
     Pathfinding.setStartPosition(DrivebaseSubsystem.getPose().getTranslation());
-    ClimbSubsystem.getInstance().configureOperator(new Vector<>(() -> (ClimbSubsystem.getInstance().getElements().getNum()), Operators.Secondary.PROFILE));
-    DrivebaseSubsystem.getInstance().configureOperator(new Vector<>(() -> (DrivebaseSubsystem.getInstance().getElements().getNum()), Operators.Primary.PROFILE));
-    SuperstructureSubsystem.getInstance().configureOperator(new Vector<>(() -> (SuperstructureSubsystem.getInstance().getElements().getNum()), Operators.Secondary.PROFILE, Operators.Primary.PROFILE));
+    ClimbSubsystem.getInstance().configureOperator(new TypeVector<>(() -> (ClimbSubsystem.getInstance().getElements().getNum()), Operators.Secondary.PROFILE));
+    DrivebaseSubsystem.getInstance().configureOperator(new TypeVector<>(() -> (DrivebaseSubsystem.getInstance().getElements().getNum()), Operators.Primary.PROFILE));
+    SuperstructureSubsystem.getInstance().configureOperator(new TypeVector<>(() -> (SuperstructureSubsystem.getInstance().getElements().getNum()), Operators.Secondary.PROFILE, Operators.Primary.PROFILE));
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override

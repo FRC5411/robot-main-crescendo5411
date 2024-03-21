@@ -35,7 +35,7 @@ import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
 import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.trajectory.solving.TrajectoryObject;
 import org.robotalons.lib.utilities.Operator;
-import org.robotalons.lib.utilities.Vector;
+import org.robotalons.lib.utilities.TypeVector;
 // --------------------------------------------------------[Superstructure Subsystem]--------------------------------------------------------//
 /**
  *
@@ -60,7 +60,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
 
   private static final DutyCycleEncoder PIVOT_ABSOLUTE_ENCODER;
   // ---------------------------------------------------------------[Fields]---------------------------------------------------------------- //
-  private static volatile Vector<Operator<Keybindings,Preferences>,N2> Operators;  
+  private static volatile TypeVector<Operator<Keybindings,Preferences>,N2> Operators;  
   private static volatile SwerveModuleState Reference;
   private static volatile SuperstructureState State;
   private static SuperstructureSubsystem Instance;
@@ -264,30 +264,30 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   }
 
   @Override
-  public void configureOperator(final Vector<Operator<Keybindings, Preferences>,N2> Operator) {
+  public void configureOperator(final TypeVector<Operator<Keybindings, Preferences>,N2> Operator) {
     SuperstructureSubsystem.Operators = Operator;
     //TODO: Change RPM Setpoints
-    SuperstructureSubsystem.Operators.DATA[0].getOptionalKeybinding(Keybindings.CANNON_PIVOT_SUBWOOFER).ifPresent((Trigger) -> 
+    SuperstructureSubsystem.Operators.get((0)).getOptionalKeybinding(Keybindings.CANNON_PIVOT_SUBWOOFER).ifPresent((Trigger) -> 
       configure(
         Trigger, 
         Measurements.SUBWOOFER_LINE, 
         Measurements.SUBWOOFER_RPM));
-    SuperstructureSubsystem.Operators.DATA[0].getOptionalKeybinding(Keybindings.CANNON_PIVOT_WINGLINE).ifPresent((Trigger) -> 
+    SuperstructureSubsystem.Operators.get((0)).getOptionalKeybinding(Keybindings.CANNON_PIVOT_WINGLINE).ifPresent((Trigger) -> 
       configure(
         Trigger, 
         Measurements.WING_LINE, 
         Measurements.SUBWOOFER_RPM));
-    SuperstructureSubsystem.Operators.DATA[0].getOptionalKeybinding(Keybindings.CANNON_PIVOT_PODIUMLINE).ifPresent((Trigger) -> 
+    SuperstructureSubsystem.Operators.get((0)).getOptionalKeybinding(Keybindings.CANNON_PIVOT_PODIUMLINE).ifPresent((Trigger) -> 
       configure(
         Trigger, 
         Measurements.PODIUM_LINE, 
         Measurements.SUBWOOFER_RPM));
-    SuperstructureSubsystem.Operators.DATA[0].getOptionalKeybinding(Keybindings.CANNON_PIVOT_STARTING_LINE).ifPresent((Trigger) -> 
+    SuperstructureSubsystem.Operators.get((0)).getOptionalKeybinding(Keybindings.CANNON_PIVOT_STARTING_LINE).ifPresent((Trigger) -> 
       configure(
         Trigger, 
         Measurements.STARTING_LINE, 
         Measurements.SUBWOOFER_RPM));
-    SuperstructureSubsystem.Operators.DATA[1].getOptionalKeybinding(Keybindings.OUTTAKE_TOGGLE).ifPresent((Trigger) -> {
+    SuperstructureSubsystem.Operators.get((1)).getOptionalKeybinding(Keybindings.OUTTAKE_TOGGLE).ifPresent((Trigger) -> {
       Trigger.onTrue(new InstantCommand(
         () -> {
           INTAKE_CONTROLLER.set((-1d));
@@ -303,7 +303,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
         SuperstructureSubsystem.getInstance()
       ));
     });
-    SuperstructureSubsystem.Operators.DATA[1].getOptionalKeybinding(Keybindings.INTAKE_TOGGLE).ifPresent((Trigger) -> {
+    SuperstructureSubsystem.Operators.get((1)).getOptionalKeybinding(Keybindings.INTAKE_TOGGLE).ifPresent((Trigger) -> {
       Trigger.onTrue(new InstantCommand(
         () -> {
           INTAKE_CONTROLLER.set((1d));
@@ -319,7 +319,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
         SuperstructureSubsystem.getInstance()
       ));
     });
-    SuperstructureSubsystem.Operators.DATA[1].getOptionalKeybinding(Keybindings.INTAKE_TOGGLE).ifPresent((Trigger) -> {
+    SuperstructureSubsystem.Operators.get((1)).getOptionalKeybinding(Keybindings.INTAKE_TOGGLE).ifPresent((Trigger) -> {
       Trigger.onTrue(new InstantCommand(
         () -> set(Measurements.FIRING_STANDARD_VELOCITY),
         SuperstructureSubsystem.getInstance()
@@ -345,7 +345,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   }
 
   @Override
-  public Vector<Operator<Keybindings, Preferences>, N2> getOperators() {
+  public TypeVector<Operator<Keybindings, Preferences>, N2> getOperators() {
     return Operators;
   }
   

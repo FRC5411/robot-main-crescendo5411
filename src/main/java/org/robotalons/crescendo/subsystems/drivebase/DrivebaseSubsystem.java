@@ -36,7 +36,7 @@ import org.robotalons.lib.motion.sensors.Gyroscope;
 import org.robotalons.lib.motion.utilities.OdometryThread;
 import org.robotalons.lib.utilities.MathUtilities;
 import org.robotalons.lib.utilities.Operator;
-import org.robotalons.lib.utilities.Vector;
+import org.robotalons.lib.utilities.TypeVector;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -288,8 +288,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   }
 
   @Override
-  public void configureOperator(final Vector<Operator<Keybindings, Preferences>, N1> Operators) {
-    DrivebaseSubsystem.Operator = Operators.DATA[0];
+  public void configureOperator(final TypeVector<Operator<Keybindings, Preferences>, N1> Operators) {
+    DrivebaseSubsystem.Operator = Operators.get((0));
     getInstance().setDefaultCommand(
       new InstantCommand(() ->
       set((Operator.<Boolean>getRequiredPreference(Preferences.SQUARED_INPUT))?
@@ -465,8 +465,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   @Override
   @SuppressWarnings("unchecked")
-  public Vector<Operator<Keybindings, Preferences>, N1> getOperators() {
-    return new Vector<>(() -> (1), Operator);
+  public TypeVector<Operator<Keybindings, Preferences>, N1> getOperators() {
+    return new TypeVector<>(() -> (1), Operator);
   }
   /**
    * Provides the current position of the drivebase in space

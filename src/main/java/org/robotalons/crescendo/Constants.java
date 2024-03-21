@@ -12,7 +12,7 @@ import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.REVOdometryThread;
 import org.robotalons.lib.utilities.Operator;
-import org.robotalons.lib.utilities.Vector;
+import org.robotalons.lib.utilities.TypeVector;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -124,7 +124,7 @@ public final class Constants {
   public static final class Profiles { 
 
     public static final List<Operator<Keybindings, Preferences>> OPERATORS = new ArrayList<>();
-    public static final Map<TalonSubsystemBase<Keybindings,Preferences,?>, Vector<Operator<Keybindings, Preferences>,?>> DEFAULT = new HashMap<>();
+    public static final Map<TalonSubsystemBase<Keybindings,Preferences,?>, TypeVector<Operator<Keybindings, Preferences>,?>> DEFAULT = new HashMap<>();
     static {
       OPERATORS.add(Operators.Primary.PROFILE);
       OPERATORS.add(Operators.Secondary.PROFILE);
