@@ -1,7 +1,6 @@
 // ----------------------------------------------------------------[Package]---------------------------------------------------------------- //
 package org.robotalons.crescendo.subsystems.climb;
 import edu.wpi.first.math.Nat;
-// ---------------------------------------------------------------[Libraries]--------------------------------------------------------------- //
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.numbers.N1;

@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import org.mockito.DoNotMock;
 
-import java.util.*;
 import java.util.function.Supplier;
+import java.util.*;
 // ----------------------------------------------------------------[Operator]--------------------------------------------------------------//
 /**
  * 

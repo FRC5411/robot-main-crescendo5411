@@ -67,7 +67,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   private static final Gyroscope GYROSCOPE;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private static Operator<Keybindings,Preferences> Operator;
-
   private static Rotation2d GyroscopeRotation;
   private static DrivebaseSubsystem Instance;
   private static DrivebaseState State;

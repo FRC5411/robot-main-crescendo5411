@@ -103,9 +103,12 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>protected final org.robotalons.lib.motion.sensors.GyroscopeStatusContainerAutoLogged</code></div>
-<div class="col-second even-row-color"><code><a href="#STATUS" class="member-name-link">STATUS</a></code></div>
+<div class="col-first even-row-color"><code>protected edu.wpi.first.math.geometry.Rotation2d</code></div>
+<div class="col-second even-row-color"><code><a href="#RotationalAbsoluteOffset" class="member-name-link">RotationalAbsoluteOffset</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>protected final org.robotalons.lib.motion.sensors.GyroscopeStatusContainerAutoLogged</code></div>
+<div class="col-second odd-row-color"><code><a href="#STATUS" class="member-name-link">STATUS</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -139,7 +142,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="block">Closes this instance and all held resources immediately, but does not render the class unusable hence forth and can be re-instantiated.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getConnected()" class="member-name-link">getConnected</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getConnection()" class="member-name-link">getConnection</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Provides a boolean representation of if the module is still connected to the system and all signals are okay.</div>
 </div>
@@ -159,8 +162,14 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="block">Provides the most-recent rotational velocity of yaw</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#reset()" class="member-name-link">reset</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Update the gyro offset to be the current gyroscope position, therefore resting the gyro's measurement to
+ make its current heading it's zero.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Updates the underlying signals within this module.</div>
 </div>
 </div>
@@ -184,6 +193,12 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <section class="detail" id="STATUS">
 <h3>STATUS</h3>
 <div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type">org.robotalons.lib.motion.sensors.GyroscopeStatusContainerAutoLogged</span>&nbsp;<span class="element-name">STATUS</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="RotationalAbsoluteOffset">
+<h3>RotationalAbsoluteOffset</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Rotation2d</span>&nbsp;<span class="element-name">RotationalAbsoluteOffset</span></div>
 </section>
 </li>
 </ul>
@@ -229,9 +244,17 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 </section>
 </li>
 <li>
-<section class="detail" id="getConnected()">
-<h3>getConnected</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">getConnected</span>()</div>
+<section class="detail" id="reset()">
+<h3>reset</h3>
+<div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">reset</span>()</div>
+<div class="block">Update the gyro offset to be the current gyroscope position, therefore resting the gyro's measurement to
+ make its current heading it's zero.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getConnection()">
+<h3>getConnection</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">getConnection</span>()</div>
 <div class="block">Provides a boolean representation of if the module is still connected to the system and all signals are okay.</div>
 <dl class="notes">
 <dt>Returns:</dt>

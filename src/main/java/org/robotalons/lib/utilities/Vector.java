@@ -1,13 +1,11 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.lib.utilities;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
-
+import edu.wpi.first.hal.util.BoundaryException;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.Num;
 
 import java.util.Objects;
-
-import edu.wpi.first.hal.util.BoundaryException;
-import edu.wpi.first.math.Nat;
 
 // ----------------------------------------------------------------[Vector]--------------------------------------------------------------//
 /**
