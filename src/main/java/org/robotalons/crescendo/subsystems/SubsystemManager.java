@@ -93,7 +93,7 @@ public final class SubsystemManager extends SubsystemBase {
       DRIVEBASE);
     Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
-      (Trajectory) -> Logger.recordOutput(("Pathfinding/Trajectory"), Trajectory.toArray(new Pose2d[0])));
+      (Trajectory) -> Logger.recordOutput(("Pathfinding/Trajectory"), Trajectory.toArray(Pose2d[]::new)));
     PathPlannerLogging.setLogTargetPoseCallback(
       (Reference) -> Logger.recordOutput(("Pathfinding/Reference"), Reference));
     DrivebaseSubsystem.getModules().forEach((Module) -> 
@@ -107,15 +107,17 @@ public final class SubsystemManager extends SubsystemBase {
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
   public synchronized void periodic() {
-    FIELD.setRobotPose(DrivebaseSubsystem.getPose());
-    if (Autonomous != (null)) {
-      if (!Autonomous.isScheduled() && !AutonomousMessagePrinted) {
-        System.out.printf(
-          ("*** Auto %s in %.2f secs ***%n"),
-          (DriverStation.isAutonomousEnabled()? "finished": "cancelled"),
-          Logger.getRealTimestamp() / (1e6) - AutonomousStartTimestamp);
-        AutonomousMessagePrinted = (true);
-      }
+    synchronized(FIELD) {
+      FIELD.setRobotPose(DrivebaseSubsystem.getPose());
+      if (Autonomous != (null)) {
+        if (!Autonomous.isScheduled() && !AutonomousMessagePrinted) {
+          System.out.printf(
+            ("*** Auto %s in %.2f secs ***%n"),
+            (DriverStation.isAutonomousEnabled()? "finished": "cancelled"),
+            Logger.getRealTimestamp() / (1e6) - AutonomousStartTimestamp);
+          AutonomousMessagePrinted = (true);
+        }
+      }      
     }
     //Pathfinding.setDynamicObstacles(new ArrayList<>(), DrivebaseSubsystem.getPose().getTranslation());
   }

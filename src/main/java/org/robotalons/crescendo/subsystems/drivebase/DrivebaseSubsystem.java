@@ -414,8 +414,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY,
       Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
       Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY);
-    Logger.recordOutput(("Drivebase-Subsystem/Operator-Translation"), new Translation2d(Discrete.vxMetersPerSecond, Discrete.vyMetersPerSecond));
-    Logger.recordOutput(("Drivebase-Subsystem/Operator-Rotation"), new Rotation2d(Discrete.omegaRadiansPerSecond));
+    Logger.recordOutput(("Drivebase-Subsystem/Odometry-Translation"), new Translation2d(Discrete.vxMetersPerSecond, Discrete.vyMetersPerSecond));
+    Logger.recordOutput(("Drivebase-Subsystem/Odometry-Rotation"), new Rotation2d(Discrete.omegaRadiansPerSecond));
     set(List.of(Reference));
   }
 
@@ -425,8 +425,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    * @param Rotation    Demand rotation in two-dimensional space
    */
   public static synchronized void set(final Translation2d Translation, final Rotation2d Rotation) {
-    Logger.recordOutput(("Drivebase-Subsystem/Raw-Translation"), Translation);
-    Logger.recordOutput(("Drivebase-Subsystem/Raw-Rotation"),Rotation);
+    Logger.recordOutput(("Drivebase-Subsystem/Operator-Translation"), Translation);
+    Logger.recordOutput(("Drivebase-Subsystem/Operator-Rotation"),Rotation);
     set(switch(State) {
       case FIELD_ORIENTED -> 
         ChassisSpeeds.fromFieldRelativeSpeeds(
