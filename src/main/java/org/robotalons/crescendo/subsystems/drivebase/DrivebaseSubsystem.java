@@ -341,16 +341,16 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
         getInstance()
       )));
 
-    GenericUtilities.protect(() ->
-      Operator.getKeybinding(Keybindings.ALIGNMENT_OBJECT)
-      .onTrue(new InstantCommand(
-        () -> 
-          VisionSubsystem.getOptimalTarget(CameraIdentifier.INTAKE_CAMERA)
-            .ifPresent((Transformation) -> align(new Transform2d(Transformation.getTranslation(), Transformation.getRotation()))
-            .onlyIf(() -> Operator.getKeybinding(Keybindings.ALIGNMENT_OBJECT).getAsBoolean()).schedule()),
-        VisionSubsystem.getInstance(),
-        getInstance()
-      )));
+    // GenericUtilities.protect(() ->
+    //   Operator.getKeybinding(Keybindings.ALIGNMENT_OBJECT)
+    //   .onTrue(new InstantCommand(
+    //     () -> 
+    //       VisionSubsystem.getOptimalTarget(CameraIdentifier.INTAKE_CAMERA)
+    //         .ifPresent((Transformation) -> align(new Transform2d(Transformation.getTranslation(), Transformation.getRotation()))
+    //         .onlyIf(() -> Operator.getKeybinding(Keybindings.ALIGNMENT_OBJECT).getAsBoolean()).schedule()),
+    //     VisionSubsystem.getInstance(),
+    //     getInstance()
+    //   )));
 
     GenericUtilities.protect(() ->
       Operator.getKeybinding(Keybindings.ALIGNMENT_NEAREST)
