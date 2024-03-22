@@ -30,6 +30,7 @@ import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.pathfinding.LocalADStarAK;
 import org.robotalons.lib.utilities.TypeVector;
 
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.List;
 // -----------------------------------------------------------[Subsystem Manager]---------------------------------------------------------------//
@@ -44,7 +45,7 @@ import java.util.List;
  * @see org.robotalons.crescendo.RobotContainer RobotContainer
  */
 @SuppressWarnings({"unchecked", "resource"})
-public final class SubsystemManager extends SubsystemBase {
+public final class SubsystemManager extends SubsystemBase implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   public static final List<TalonSubsystemBase<Keybindings,Preferences,?>> SUBSYSTEMS;
   public static final TalonSubsystemBase<Keybindings,Preferences,?> DRIVEBASE;
@@ -151,8 +152,22 @@ public final class SubsystemManager extends SubsystemBase {
     return pathfind(DrivebaseSubsystem.getPose().transformBy(Transform), Terminal);
   }
 
-  public static void cancel() {
-    SubsystemManager.Autonomous.cancel();
+  /**
+   * Cancels the currently scheduled autonomous command immediately.
+   */
+  public static synchronized void cancel() {
+    if(Autonomous.isScheduled()) {
+      Autonomous.cancel();
+    }
+  }
+
+  /**
+   * Closes this instance and all held resources (subsystems) immediately.
+   */
+  public synchronized void close() {
+    SUBSYSTEMS.forEach(TalonSubsystemBase::close);
+    FIELD.close();
+    Instance = (null);
   }
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//
   /**

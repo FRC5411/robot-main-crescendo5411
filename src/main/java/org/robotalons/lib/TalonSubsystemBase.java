@@ -69,7 +69,6 @@ public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preference
   } 
 
   @Override
-  //@Timeable(limit = 20, unit = TimeUnit.MILLISECONDS)
   public synchronized void periodic() {
 
   }
