@@ -117,10 +117,7 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
 
   @Override
   public synchronized void periodic() {
-    update();    
-    final double Timestamp = discretize();
-    ROTATIONAL_CONTROLLER.update(Timestamp);
-    TRANSLATIONAL_CONTROLLER.update(Timestamp);
+    update(); 
     synchronized(STATUS) {
       switch(ReferenceMode) {
         case STATE_CONTROL:
@@ -130,7 +127,7 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
             } else {
               setRotationalVoltage((0d));
             }
-            var Adjusted = (Reference.speedMetersPerSecond * Math.cos(ROTATIONAL_PID.getPositionError())) / MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
+            final var Adjusted = (Reference.speedMetersPerSecond * Math.cos(ROTATIONAL_PID.getPositionError())) / MODULE_CONSTANTS.WHEEL_RADIUS_METERS;
             setTranslationalVoltage((TRANSLATIONAL_PID.calculate(Adjusted)) + (TRANSLATIONAL_FF.calculate(STATUS.TranslationalVelocityRadiansSecond, Adjusted)));          
           }
           break;
@@ -176,15 +173,20 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
   public synchronized void update() {
     ODOMETRY_LOCK.lock();
     MODULE_CONSTANTS.STATUS_PROVIDER.getLock().lock();
+    final double Timestamp = discretize();
+    ROTATIONAL_CONTROLLER.update(Timestamp);
+    TRANSLATIONAL_CONTROLLER.update(Timestamp);
     synchronized(STATUS) {
       STATUS.TranslationalPositionRadians = TRANSLATIONAL_CONTROLLER.getAngularPositionRad();
       STATUS.TranslationalVelocityRadiansSecond = TRANSLATIONAL_CONTROLLER.getAngularVelocityRadPerSec();
       STATUS.TranslationalCurrentAmperage = TRANSLATIONAL_CONTROLLER.getCurrentDrawAmps();
+      STATUS.TranslationalConnected = (true);
 
       STATUS.RotationalRelativePosition = new Rotation2d(ROTATIONAL_CONTROLLER.getAngularPositionRad()).plus(RotationalAbsoluteOffset);
       STATUS.RotationalAbsolutePosition = new Rotation2d(ROTATIONAL_CONTROLLER.getAngularPositionRad());
       STATUS.RotationalVelocityRadiansSecond = ROTATIONAL_CONTROLLER.getAngularVelocityRadPerSec();
       STATUS.RotationalCurrentAmperage = ROTATIONAL_CONTROLLER.getCurrentDrawAmps();      
+      STATUS.RotationalConnected = (true);
     
       synchronized(TIMESTAMP_QUEUE) {
         TIMESTAMPS.clear();

@@ -73,8 +73,6 @@ public final class Constants {
 
     public static final Rotation2d GYROSCOPE_OFFSET = Rotation2d.fromRadians(Math.PI / 2);
 
-    public static final Boolean PHOENIX_DRIVE = (false);
-
     public static final Double ODOMETRY_FREQUENCY = (250d);
 
     public static final class Modules {

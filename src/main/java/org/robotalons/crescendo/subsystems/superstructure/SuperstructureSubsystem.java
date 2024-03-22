@@ -127,7 +127,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   public synchronized void periodic() {
     Constants.Objects.ODOMETRY_LOCKER.lock();
     final var Target = VisionSubsystem.getAprilTagPose((DrivebaseSubsystem.getAlliance())? (3): (7)).get();
-    final var Distance = (PhotonUtils.getDistanceToPose(DrivebaseSubsystem.getPose(), Target.toPose2d()));
+    final var Distance = PhotonUtils.getDistanceToPose(DrivebaseSubsystem.getPose(), Target.toPose2d());
     final var Interpolated = Measurements.PIVOT_FIRING_MAP.interpolate(
       Measurements.PIVOT_LOWER_BOUND,
       Measurements.PIVOT_UPPER_BOUND,
@@ -266,7 +266,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   @Override
   public void configureOperator(final TypeVector<Operator<Keybindings, Preferences>,N2> Operator) {
     SuperstructureSubsystem.Operators = Operator;
-    //TODO: Change RPM Setpoints
+    //TODO: Corrected RPM Set-point(s)
     SuperstructureSubsystem.Operators.get((0)).getOptionalKeybinding(Keybindings.CANNON_PIVOT_SUBWOOFER).ifPresent((Trigger) -> 
       configure(
         Trigger, 
@@ -339,9 +339,9 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * @return Utility class's instance
    */
   public static synchronized SuperstructureSubsystem getInstance() {
-      if (java.util.Objects.isNull(Instance))
-          Instance = new SuperstructureSubsystem();
-      return Instance;
+    if (java.util.Objects.isNull(Instance))
+      Instance = new SuperstructureSubsystem();
+    return Instance;
   }
 
   @Override
@@ -354,7 +354,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
    * @return Pivot rotational reading in radians
    */
   private static Rotation2d getPivotRotation() {
-    var Rotation = Rotation2d.fromRotations(-(PIVOT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.ABSOLUTE_ENCODER_OFFSET));
+    var Rotation = Rotation2d.fromRotations(-(PIVOT_ABSOLUTE_ENCODER.getAbsolutePosition() - Measurements.ABSOLUTE_ENCODER_OFFSET) + Measurements.PIVOT_MINIMUM_ROTATION);
     if(Measurements.PIVOT_INVERTED) {
       Rotation = Rotation.unaryMinus();
     }
