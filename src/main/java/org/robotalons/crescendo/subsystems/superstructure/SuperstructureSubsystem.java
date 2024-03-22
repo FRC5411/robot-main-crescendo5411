@@ -126,7 +126,7 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   @Override
   public synchronized void periodic() {
     Constants.Objects.ODOMETRY_LOCKER.lock();
-    final var Target = VisionSubsystem.getAprilTagPose((DrivebaseSubsystem.getAlliance())? (3): (7)).get();
+    final var Target = VisionSubsystem.getAprilTagPose((!DrivebaseSubsystem.getAlliance())? (3): (7)).get();
     final var Distance = PhotonUtils.getDistanceToPose(DrivebaseSubsystem.getPose(), Target.toPose2d());
     final var Interpolated = Measurements.PIVOT_FIRING_MAP.interpolate(
       Measurements.PIVOT_LOWER_BOUND,

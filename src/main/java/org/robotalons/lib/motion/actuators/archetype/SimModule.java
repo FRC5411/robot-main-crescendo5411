@@ -192,22 +192,25 @@ public class SimModule<Controller extends DCMotorSim> extends Module {
         TIMESTAMPS.clear();
         STATUS.OdometryTimestamps = 
           TIMESTAMP_QUEUE.stream()
-            .mapToDouble((final Double Value) -> { TIMESTAMPS.add(Value); return Value; })
-            .toArray();
+            .mapToDouble((final Double Value) -> { 
+              TIMESTAMPS.add(Value); return Value; 
+            }).toArray();
         TIMESTAMP_QUEUE.clear();          
       }
       synchronized(TRANSLATIONAL_POSITION_QUEUE) {
         STATUS.OdometryTranslationalPositionsRadians =
           TRANSLATIONAL_POSITION_QUEUE.stream()
-            .mapToDouble((final Double Value) -> Units.rotationsToRadians(Value) / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO)
-            .toArray();    
+            .mapToDouble((final Double Value) -> 
+              Units.rotationsToRadians(Value) / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO
+            ).toArray();    
         TRANSLATIONAL_POSITION_QUEUE.clear();    
       }
       synchronized(ROTATIONAL_POSITION_QUEUE) {
         STATUS.OdometryRotationalPositionsRadians =
           ROTATIONAL_POSITION_QUEUE.stream()
-            .map((final Double Value) -> Rotation2d.fromRotations(Value / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO))
-            .toArray(Rotation2d[]::new);    
+            .map((final Double Value) -> 
+              Rotation2d.fromRotations(Value / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO)
+            ).toArray(Rotation2d[]::new);    
         ROTATIONAL_POSITION_QUEUE.clear();  
       }
     }

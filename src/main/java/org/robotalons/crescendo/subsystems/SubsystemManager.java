@@ -89,7 +89,7 @@ public final class SubsystemManager extends SubsystemBase {
           (true),
           (true) 
         )),
-      DrivebaseSubsystem::getAlliance,
+      () -> !DrivebaseSubsystem.getAlliance(),
       DRIVEBASE);
     Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(

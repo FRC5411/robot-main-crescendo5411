@@ -307,15 +307,17 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
       synchronized(TRANSLATIONAL_POSITION_QUEUE) {
         STATUS.OdometryTranslationalPositionsRadians =
           TRANSLATIONAL_POSITION_QUEUE.stream()
-            .mapToDouble((final Double Position) -> Units.rotationsToRadians(Position) / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO)
-            .toArray();    
+            .mapToDouble((final Double Position) -> 
+              Units.rotationsToRadians(Position) / MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO
+            ).toArray();    
         TRANSLATIONAL_POSITION_QUEUE.clear();    
       }
       synchronized(ROTATIONAL_POSITION_QUEUE) {
         STATUS.OdometryRotationalPositionsRadians =
           ROTATIONAL_POSITION_QUEUE.stream()
-            .map((final Double Position) -> Rotation2d.fromRotations(Position / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO))
-            .toArray(Rotation2d[]::new);    
+            .map((final Double Position) -> 
+              Rotation2d.fromRotations(Position / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO)
+            ).toArray(Rotation2d[]::new);    
         ROTATIONAL_POSITION_QUEUE.clear();  
       }
     }

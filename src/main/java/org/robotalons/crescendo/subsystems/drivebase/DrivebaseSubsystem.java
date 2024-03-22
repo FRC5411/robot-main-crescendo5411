@@ -342,7 +342,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       Trigger.whileTrue(new InstantCommand(
         () -> 
           VisionSubsystem.getAprilTagPose((9))
-          .ifPresent((Pose) -> align(Pose.toPose2d()).schedule()),
+            .ifPresent((Pose) -> align(Pose.toPose2d()).schedule()),
         VisionSubsystem.getInstance(),
         getInstance()
       )));
@@ -350,8 +350,8 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     // Operator.getOptionalKeybinding(Keybindings.ALIGNMENT_OBJECT).ifPresent((Trigger) -> 
     //   Trigger.whileTrue(new InstantCommand(
     //     () -> 
-    //     VisionSubsystem.getOptimalTarget(CameraIdentifier.INTAKE_CAMERA)
-    //     .ifPresent((Transformation) -> align(new Transform2d(Transformation.getTranslation(), Transformation.getRotation())).schedule()),
+    //       VisionSubsystem.getOptimalTarget(CameraIdentifier.INTAKE_CAMERA)
+    //         .ifPresent((Transformation) -> align(new Transform2d(Transformation.getTranslation(), Transformation.getRotation())).schedule()),
     //     VisionSubsystem.getInstance(),
     //     getInstance()
     //   )));
@@ -429,6 +429,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   public static synchronized void set(final Translation2d Translation, final Rotation2d Rotation) {
     Logger.recordOutput(("Drivebase-Subsystem/Operator-Translation"), Translation);
     Logger.recordOutput(("Drivebase-Subsystem/Operator-Rotation"),Rotation);
+    final var Transform = VisionSubsystem.getOptimalTarget(CameraIdentifier.SPEAKER_LEFT_CAMERA);
     set(switch(State) {
       case FIELD_ORIENTED -> 
         ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -436,12 +437,24 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
           Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
           Rotation.getRotations() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY,
           getRotation());
-      default -> 
+      case ROBOT_ORIENTED -> 
         ChassisSpeeds.fromRobotRelativeSpeeds(
           Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
           Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
           Rotation.getRotations() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY,
-          getRotation());          
+          getRotation());  
+      case OBJECT_ORIENTED -> 
+        (Transform.isPresent())? 
+        (ChassisSpeeds.fromRobotRelativeSpeeds(
+          Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
+          Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
+          (getPose().transformBy(Transform.get()).getRotation().plus(new Rotation2d(Math.PI/2)).getRotations()) * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY,
+          getRotation())):
+        (ChassisSpeeds.fromRobotRelativeSpeeds(
+          Translation.getX() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
+          Translation.getY() * Measurements.ROBOT_MAXIMUM_LINEAR_VELOCITY, 
+          Rotation.getRotations() * Measurements.ROBOT_MAXIMUM_ANGULAR_VELOCITY,
+          getRotation()));
     });
   }
 
