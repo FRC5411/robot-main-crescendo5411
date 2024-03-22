@@ -160,7 +160,8 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
     RIGHT_ARM.close();
   }
 
-  public synchronized void configureOperator(final TypeVector<Operator<Keybindings, Preferences>,N1> Operators) {
+  @Override
+  public synchronized void configure(final TypeVector<Operator<Keybindings, Preferences>,N1> Operators) {
     ClimbSubsystem.Operator = Operators.get((0));
     ClimbSubsystem.Operator.getOptionalKeybinding(Keybindings.CLIMB_ROTATE_FORWARD).ifPresent((Trigger) -> {
       Trigger.onTrue(new InstantCommand(() -> {
@@ -182,6 +183,11 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
         RIGHT_ARM.set((0d));
       },getInstance()));
     });
+  }
+
+  @Override
+  public synchronized void configure() {
+    //TODO: Named Commands
   }
   // --------------------------------------------------------------[Internal]--------------------------------------------------------------- //
   /**

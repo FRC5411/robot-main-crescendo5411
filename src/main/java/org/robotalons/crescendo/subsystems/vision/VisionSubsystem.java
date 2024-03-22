@@ -100,7 +100,11 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings, Prefe
   public static void snapshotOutput(final CameraIdentifier Identifier) {
     CAMERAS.get(Identifier.getValue()).snapshotOutput();
   }
-
+  
+  @Override
+  public synchronized void configure() {
+    //TODO: Named Commands
+  }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
   /**
    * Describes a queried camera type with an integer value in a more

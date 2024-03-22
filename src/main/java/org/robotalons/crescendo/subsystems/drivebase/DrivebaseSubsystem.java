@@ -181,8 +181,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
           POSE_ESTIMATOR.updateWithTime(
             Logger.getRealTimestamp() / (1e6),
             Rotation, 
-            getModulePositions()
-          );          
+            getModulePositions());          
         }
       });
     }
@@ -214,14 +213,18 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
 
   @Override
   public synchronized void periodic() {
-    MODULES.forEach(Module::periodic);
-    GYROSCOPE.update();
+    synchronized(MODULES) {
+      MODULES.forEach(Module::periodic);
+      if (DriverStation.isDisabled()) {
+        MODULES.forEach(Module::cease);
+      }      
+    }
+    synchronized(GYROSCOPE) {
+      GYROSCOPE.update();
+    }
     Logger.recordOutput(("Drivebase-Subsystem/Module-Connection"), MODULES.stream().allMatch(Module::getConnection));
     Logger.recordOutput(("Drivebase-Subsystem/Module-Measurements"),getModuleMeasurements());
     Logger.recordOutput(("Drivebase-Subsystem/Odometry-Estimation"), getPose());
-    if (DriverStation.isDisabled()) {
-      MODULES.forEach(Module::cease);
-    }
   }
 
   /**
@@ -245,10 +248,10 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    */
   public static synchronized void reset() {
     synchronized(MODULES) {
-      synchronized(GYROSCOPE) {
-        GYROSCOPE.reset();
-        MODULES.forEach(Module::reset);          
-      }
+      MODULES.forEach(Module::reset);   
+    }
+    synchronized(GYROSCOPE) {
+      GYROSCOPE.reset();        
     }
   }
 
@@ -257,7 +260,12 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    */
   @Override
   public synchronized void close() {
-    ODOMETRY_PROCESSOR.stop();
+    synchronized(MODULES) {
+      MODULES.forEach(Module::close);
+    }
+    synchronized(GYROSCOPE) {
+      GYROSCOPE.close();
+    }
     ODOMETRY_PROCESSOR.close();
     Instance = (null);
   }
@@ -302,7 +310,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   }
 
   @Override
-  public void configureOperator(final TypeVector<Operator<Keybindings, Preferences>, N1> Operators) {
+  public void configure(final TypeVector<Operator<Keybindings, Preferences>, N1> Operators) {
     DrivebaseSubsystem.Operator = Operators.get((0));
     getInstance().setDefaultCommand(
       new InstantCommand(() ->
@@ -393,6 +401,11 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       CHARACTERIZATION_ROUTINE.quasistatic(Direction);
     }
   }
+
+  @Override
+  public synchronized void configure() {
+    //TODO: Named Commands
+  }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
   /**
    * Describes a robot's current mode of orientation
@@ -475,7 +488,9 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    * reset into an 'X' orientation.
    */
   public static synchronized void set() {
-    MODULES.forEach(Module::reset);
+    synchronized(MODULES) {
+      MODULES.forEach(Module::reset);
+    }
   }
 
   /**

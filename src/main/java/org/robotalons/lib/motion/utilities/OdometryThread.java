@@ -13,10 +13,8 @@ import java.util.concurrent.locks.Lock;
  * 
  * @author Cody Washington
  * 
- * @see Runnable
- * @see Closeable
- * 
- * @author Cody Washington
+ * @see CTREOdometryThread
+ * @see REVOdometryThread
  * 
  */
 public sealed interface OdometryThread<SignalType> extends Runnable, Closeable permits CTREOdometryThread, REVOdometryThread {
@@ -43,6 +41,11 @@ public sealed interface OdometryThread<SignalType> extends Runnable, Closeable p
   void run();
 
   /**
+   * Starts the thread instance of this method, should only be run once.
+   */
+  void start();
+
+  /**
    * Closes this instance and all held resources immediately, but does not render the class unusable hence forth and can be re-instantiated.
    * @throws IOException When an Input Output operation has thrown an exception.
    */
@@ -64,7 +67,7 @@ public sealed interface OdometryThread<SignalType> extends Runnable, Closeable p
 
   /**
    * Provides the odometry lock of this thread
-   * @return Lock which prevents method reentrancy
+   * @return Lock which prevents method reentrance
    */
   Lock getLock();
 

@@ -46,7 +46,7 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * REV Odometry Thread Constructor.
-   * @param Lock Appropriate Reentrancy Locker for Odometry
+   * @param Lock Appropriate Reentrance Locker for Odometry
    */
   private REVOdometryThread(final Lock Lock) {
     ODOMETRY_LOCK = Lock;
@@ -133,14 +133,13 @@ public final class REVOdometryThread implements OdometryThread<DoubleSupplier> {
   
   /**
    * Creates a new instance of the existing utility class
-   * @param Lock Valid reentrancy locker for this type
+   * @param Lock Valid reentrance locker for this type
    * @return Utility class's instance
    */
   public static synchronized REVOdometryThread create(Lock Lock) {
-    if (!java.util.Objects.isNull(Instance)) {
-      return Instance;
+    if (Instance == (null)) {
+      Instance = new REVOdometryThread(Lock);
     }
-    Instance = new REVOdometryThread(Lock);
     return Instance;
   }
 

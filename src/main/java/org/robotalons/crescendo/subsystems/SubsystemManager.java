@@ -44,32 +44,36 @@ import java.util.List;
  * @see SubsystemBase
  * @see org.robotalons.crescendo.RobotContainer RobotContainer
  */
-@SuppressWarnings({"unchecked", "resource"})
+@SuppressWarnings({"unchecked"})
 public final class SubsystemManager extends SubsystemBase implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   public static final List<TalonSubsystemBase<Keybindings,Preferences,?>> SUBSYSTEMS;
-  public static final TalonSubsystemBase<Keybindings,Preferences,?> DRIVEBASE;
-  public static final TalonSubsystemBase<Keybindings,Preferences,?> CANNON;
-  public static final TalonSubsystemBase<Keybindings,Preferences,?> CLIMB;
-  public static final TalonSubsystemBase<Keybindings,Preferences,?> VISION;
+  public static final TalonSubsystemBase<Keybindings,Preferences,?> SUPERSTRUCTURE_INSTANCE;  
+  public static final TalonSubsystemBase<Keybindings,Preferences,?> DRIVEBASE_INSTANCE;
+  public static final TalonSubsystemBase<Keybindings,Preferences,?> CLIMB_INSTANCE;
+  public static final TalonSubsystemBase<Keybindings,Preferences,?> VISION_INSTANCE;
   public static final Field2d FIELD;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
-  private static SubsystemManager Instance;
-  private static volatile Command Autonomous;
+  private static volatile Command AutonomousScheduledCommand;
   private static volatile Boolean AutonomousMessagePrinted;
   private static volatile Double AutonomousStartTimestamp;
+  private static SubsystemManager Instance;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   private SubsystemManager() {} static {
     SUBSYSTEMS = new ArrayList<>();
+    DRIVEBASE_INSTANCE = DrivebaseSubsystem.getInstance();
+    SUPERSTRUCTURE_INSTANCE = SuperstructureSubsystem.getInstance();
+    CLIMB_INSTANCE = ClimbSubsystem.getInstance();
+    VISION_INSTANCE = VisionSubsystem.getInstance();
+    SUBSYSTEMS.add(DRIVEBASE_INSTANCE);
+    SUBSYSTEMS.add(SUPERSTRUCTURE_INSTANCE);
+    SUBSYSTEMS.add(CLIMB_INSTANCE);
+    SUBSYSTEMS.add(VISION_INSTANCE);
+    VISION_INSTANCE.configure(new TypeVector<>(() -> (VISION_INSTANCE.getElements().getNum())));
+    CLIMB_INSTANCE.configure(new TypeVector<>(() -> (CLIMB_INSTANCE.getElements().getNum()), Operators.Secondary.PROFILE));
+    DRIVEBASE_INSTANCE.configure(new TypeVector<>(() -> (DRIVEBASE_INSTANCE.getElements().getNum()), Operators.Primary.PROFILE));
+    SUPERSTRUCTURE_INSTANCE.configure(new TypeVector<>(() -> (SUPERSTRUCTURE_INSTANCE.getElements().getNum()), Operators.Secondary.PROFILE, Operators.Primary.PROFILE));
     FIELD = new Field2d();
-    DRIVEBASE = DrivebaseSubsystem.getInstance();
-    CANNON = SuperstructureSubsystem.getInstance();
-    CLIMB = ClimbSubsystem.getInstance();
-    VISION = VisionSubsystem.getInstance();
-    SUBSYSTEMS.add(DRIVEBASE);
-    SUBSYSTEMS.add(CANNON);
-    SUBSYSTEMS.add(CLIMB);
-    SUBSYSTEMS.add(VISION);
     AutoBuilder.configureHolonomic(
       DrivebaseSubsystem::getPose,
       DrivebaseSubsystem::set, 
@@ -91,7 +95,7 @@ public final class SubsystemManager extends SubsystemBase implements Closeable {
           (true) 
         )),
       () -> !DrivebaseSubsystem.getAlliance(),
-      DRIVEBASE);
+      DRIVEBASE_INSTANCE);
     Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
       (Trajectory) -> Logger.recordOutput(("Pathfinding/Trajectory"), Trajectory.toArray(Pose2d[]::new)));
@@ -101,17 +105,14 @@ public final class SubsystemManager extends SubsystemBase implements Closeable {
       Module.set(org.robotalons.lib.motion.actuators.Module.ReferenceType.STATE_CONTROL));
     Pathfinding.ensureInitialized();
     Pathfinding.setStartPosition(DrivebaseSubsystem.getPose().getTranslation());
-    ClimbSubsystem.getInstance().configureOperator(new TypeVector<>(() -> (ClimbSubsystem.getInstance().getElements().getNum()), Operators.Secondary.PROFILE));
-    DrivebaseSubsystem.getInstance().configureOperator(new TypeVector<>(() -> (DrivebaseSubsystem.getInstance().getElements().getNum()), Operators.Primary.PROFILE));
-    SuperstructureSubsystem.getInstance().configureOperator(new TypeVector<>(() -> (SuperstructureSubsystem.getInstance().getElements().getNum()), Operators.Secondary.PROFILE, Operators.Primary.PROFILE));
   }
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
   public synchronized void periodic() {
     synchronized(FIELD) {
       FIELD.setRobotPose(DrivebaseSubsystem.getPose());
-      if (Autonomous != (null)) {
-        if (!Autonomous.isScheduled() && !AutonomousMessagePrinted) {
+      if (AutonomousScheduledCommand != (null)) {
+        if (!AutonomousScheduledCommand.isScheduled() && !AutonomousMessagePrinted) {
           System.out.printf(
             ("*** Auto %s in %.2f secs ***%n"),
             (DriverStation.isAutonomousEnabled()? "finished": "cancelled"),
@@ -156,8 +157,8 @@ public final class SubsystemManager extends SubsystemBase implements Closeable {
    * Cancels the currently scheduled autonomous command immediately.
    */
   public static synchronized void cancel() {
-    if(Autonomous.isScheduled()) {
-      Autonomous.cancel();
+    if(AutonomousScheduledCommand != (null) && AutonomousScheduledCommand.isScheduled()) {
+      AutonomousScheduledCommand.cancel();
     }
   }
 
@@ -175,13 +176,13 @@ public final class SubsystemManager extends SubsystemBase implements Closeable {
    * @param Autonomous New Autonomous command
    */
   public static synchronized void set(final Command Autonomous) {
-    if(Autonomous != null) {
+    if(AutonomousScheduledCommand != (null) && AutonomousScheduledCommand.isScheduled()) {
+      AutonomousScheduledCommand.cancel();
+    }
+    if(Autonomous != null) {  
       AutonomousMessagePrinted = (false);
-      AutonomousStartTimestamp = Logger.getRealTimestamp() / (1e6);
-      if(SubsystemManager.Autonomous != (null) && SubsystemManager.Autonomous.isScheduled()) {
-        SubsystemManager.Autonomous.cancel();
-      }
-      SubsystemManager.Autonomous = Autonomous;
+      AutonomousStartTimestamp = Logger.getRealTimestamp() / (1e6);      
+      AutonomousScheduledCommand = Autonomous;
       Autonomous.schedule();      
     }
   }

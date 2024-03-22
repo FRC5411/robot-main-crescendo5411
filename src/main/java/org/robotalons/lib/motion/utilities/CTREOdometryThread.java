@@ -51,7 +51,7 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
   /**
    * Phoenix Odometry Thread Constructor.
-   * @param Lock Appropriate Reentrancy Locker for Odometry
+   * @param Lock Appropriate Reentrance Locker for Odometry
    */
   private CTREOdometryThread(final Lock Lock) {
     ODOMETRY_LOCK = Lock;
@@ -94,11 +94,11 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
   public synchronized void close() throws IOException {
     SIGNALS_LOCK.lock();
     ODOMETRY_LOCK.lock();
+    interrupt();
     SIGNAL_QUEUES.clear();
     SIGNAL_PROVIDERS.clear();
     ODOMETRY_LOCK.unlock();
     SIGNALS_LOCK.unlock();
-    interrupt();
     Instance = (null);
   }
 
@@ -165,14 +165,13 @@ public final class CTREOdometryThread extends Thread implements OdometryThread<S
 
   /**
    * Creates a new instance of the existing utility class
-   * @param Lock Valid reentrancy locker for this type
+   * @param Lock Valid reentrance locker for this type
    * @return Utility class's instance
    */
   public static synchronized CTREOdometryThread create(final Lock Lock) {
-    if (!java.util.Objects.isNull(Instance)) {
-      return Instance;
+    if (Instance == (null)) {
+      Instance = new CTREOdometryThread(Lock);
     }
-    Instance = new CTREOdometryThread(Lock);
     return Instance;
   }
   // --------------------------------------------------------------[Mutators]---------------------------------------------------------------//

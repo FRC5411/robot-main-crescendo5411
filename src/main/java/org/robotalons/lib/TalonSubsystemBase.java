@@ -35,7 +35,7 @@ public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preference
   /**
    * Talon Subsystem Constructor.
    * @param Name     Any name for this subsystem, which can be used for telemetry and logging
-   * @param Elements Functional interface representing the number of elements required when making calls to {@link #configureOperator(TypeVector)}
+   * @param Elements Functional interface representing the number of elements required when making calls to {@link #configure(TypeVector)}
    */
   protected TalonSubsystemBase(final String Name, final Nat<Operators> Elements) {
     super(Name);
@@ -50,14 +50,14 @@ public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preference
    * Configures a subsystem's hardware (GenericHID) to operate this subsystem's Hardware (actuators)
    * @param Operator New subsystem operator
    */
-  public synchronized void configureOperator(final TypeVector<Operator<Keybindings, Preferences>, Operators> Operator) {
+  public synchronized void configure(final TypeVector<Operator<Keybindings, Preferences>, Operators> Operator) {
 
   }
 
   /**
    * Configure a subsystem's hardware for PathPlanner autonomous to operate with registered named commands.
    */
-  public synchronized void configureAutonomous() {
+  public synchronized void configure() {
 
   }
   
@@ -83,7 +83,7 @@ public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preference
   }
 
   /**
-   * Provides a number of elements that should be expected when calling {@link #configureOperator(TypeVector)}
+   * Provides a number of elements that should be expected when calling {@link #configure(TypeVector)}
    * @return Functional interface representing a number
    */
   public Nat<Operators> getElements() {

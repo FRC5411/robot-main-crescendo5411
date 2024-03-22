@@ -184,6 +184,11 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     FIRING_CONTROLLERS.getSecond().close();
     PIVOT_CONTROLLER.close();
   }
+
+  @Override
+  public synchronized void configure() {
+    //TODO: Named Commands
+  }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
   /**
    * Describes a robot's current mode of superstructure control
@@ -264,28 +269,28 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   }
 
   @Override
-  public void configureOperator(final TypeVector<Operator<Keybindings, Preferences>,N2> Operator) {
+  public void configure(final TypeVector<Operator<Keybindings, Preferences>,N2> Operator) {
     SuperstructureSubsystem.Operators = Operator;
     //TODO: Corrected RPM Set-point(s)
     SuperstructureSubsystem.Operators.get((0)).getOptionalKeybinding(Keybindings.CANNON_PIVOT_SUBWOOFER).ifPresent((Trigger) -> 
       configure(
         Trigger, 
-        Measurements.SUBWOOFER_LINE, 
+        Measurements.SUBWOOFER_LINE_ROTATION, 
         Measurements.SUBWOOFER_RPM));
     SuperstructureSubsystem.Operators.get((0)).getOptionalKeybinding(Keybindings.CANNON_PIVOT_WINGLINE).ifPresent((Trigger) -> 
       configure(
         Trigger, 
-        Measurements.WING_LINE, 
+        Measurements.WING_LINE_ROTATION, 
         Measurements.SUBWOOFER_RPM));
     SuperstructureSubsystem.Operators.get((0)).getOptionalKeybinding(Keybindings.CANNON_PIVOT_PODIUMLINE).ifPresent((Trigger) -> 
       configure(
         Trigger, 
-        Measurements.PODIUM_LINE, 
+        Measurements.PODIUM_LINE_ROTATION, 
         Measurements.SUBWOOFER_RPM));
     SuperstructureSubsystem.Operators.get((0)).getOptionalKeybinding(Keybindings.CANNON_PIVOT_STARTING_LINE).ifPresent((Trigger) -> 
       configure(
         Trigger, 
-        Measurements.STARTING_LINE, 
+        Measurements.STARTING_LINE_ROTATION, 
         Measurements.SUBWOOFER_RPM));
     SuperstructureSubsystem.Operators.get((1)).getOptionalKeybinding(Keybindings.OUTTAKE_TOGGLE).ifPresent((Trigger) -> {
       Trigger.onTrue(new InstantCommand(
