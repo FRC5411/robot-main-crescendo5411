@@ -80,7 +80,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   private DrivebaseSubsystem() {
     super(("Drivebase-Subsystem"), Nat.N1());
   } static {
-    
     GYROSCOPE = Constants.Devices.GYROSCOPE;
     ORIENTATION_FLIPPED = () -> (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red));
     State = DrivebaseState.ROBOT_ORIENTED;
@@ -379,7 +378,9 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    * @param Direction Direction of travel to characterize in
    */
   public static synchronized void characterizeDynamic(final SysIdRoutine.Direction Direction) {
-    MODULES.forEach(Module::cease);
+    synchronized(MODULES) {
+      MODULES.forEach(Module::cease);
+    }
     try {
       Thread.sleep((1000L));
     } catch(final InterruptedException Ignored) {}
@@ -393,7 +394,9 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
    * @param Direction Direction of travel to characterize in
    */
   public static synchronized void characterizeQausistatic(final SysIdRoutine.Direction Direction) {
-    MODULES.forEach(Module::cease);
+    synchronized(MODULES) {
+      MODULES.forEach(Module::cease);
+    }
     try {
       Thread.sleep((1000L));
     } catch(final InterruptedException Ignored) {}
