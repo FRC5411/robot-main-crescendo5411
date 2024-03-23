@@ -137,11 +137,11 @@ public final class Robot extends LoggedRobot {
       CTREOdometryThread.getInstance();
       REVOdometryThread.getInstance();
     } catch (final InstanceNotFoundException Exception) {}
+    DataLogManager.start();
     Logger.registerURCL(URCL.startExternal());
     RobotController.setBrownoutVoltage((9d));
     RobotContainer.getInstance();
     Shuffleboard.startRecording();
-    DataLogManager.start();
     DriverStation.silenceJoystickConnectionWarning((true));
     PortForwarder.add((5800), ("photonvision.local"), (5800));
   }
@@ -210,23 +210,22 @@ public final class Robot extends LoggedRobot {
 
   @Override
   public void testInit() {
-      super.testInit();
+    super.testInit();
   }
 
   @Override
   public void testExit() {
-      super.testExit();
+    super.testExit();
   }
-
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
    * Retrieves the existing instance of this static utility class
    * @return Utility class's instance
    */
   public static synchronized Robot getInstance() {
-      if (java.util.Objects.isNull(Instance)) {
-          Instance = new Robot();
-      }
-      return Instance;
+    if (java.util.Objects.isNull(Instance)) {
+      Instance = new Robot();
+    }
+    return Instance;
   }
 }

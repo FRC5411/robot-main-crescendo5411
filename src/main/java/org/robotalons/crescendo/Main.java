@@ -16,12 +16,11 @@ import edu.wpi.first.wpilibj.RobotBase;
  * @see Robot
  */
 public final class Main {
-
-    /**
-     * Initializes the robot and underlying systems
-     * @param Options Additional options applied via the command line
-     */
-    public static void main(String... Options) {
-        RobotBase.startRobot(Robot::getInstance);
-    }
+  /**
+   * Initializes the robot and underlying systems
+   * @param Options Additional options applied via the command line
+   */
+  public static void main(String... Options) {
+      RobotBase.startRobot(Robot::getInstance);
+  }
 }

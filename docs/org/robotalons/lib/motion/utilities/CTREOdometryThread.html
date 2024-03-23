@@ -187,7 +187,9 @@ implements <a href="OdometryThread.html" title="interface in org.robotalons.lib.
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#start()" class="member-name-link">start</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Starts the thread instance of this method, should only be run once.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Queue.html" title="class or interface in java.util" class="external-link">Queue</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#timestamp()" class="member-name-link">timestamp</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -217,7 +219,11 @@ implements <a href="OdometryThread.html" title="interface in org.robotalons.lib.
 <section class="detail" id="start()">
 <h3>start</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">start</span>()</div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="OdometryThread.html#start()">OdometryThread</a></code></span></div>
+<div class="block">Starts the thread instance of this method, should only be run once.</div>
 <dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="OdometryThread.html#start()">start</a></code>&nbsp;in interface&nbsp;<code><a href="OdometryThread.html" title="interface in org.robotalons.lib.motion.utilities">OdometryThread</a>&lt;com.ctre.phoenix6.StatusSignal&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&gt;&gt;</code></dd>
 <dt>Overrides:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Thread.html#start()" title="class or interface in java.lang" class="external-link">start</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Thread.html" title="class or interface in java.lang" class="external-link">Thread</a></code></dd>
 </dl>
@@ -295,7 +301,7 @@ implements <a href="OdometryThread.html" title="interface in org.robotalons.lib.
 <div class="block">Creates a new instance of the existing utility class</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>Lock</code> - Valid reentrancy locker for this type</dd>
+<dd><code>Lock</code> - Valid reentrance locker for this type</dd>
 <dt>Returns:</dt>
 <dd>Utility class's instance</dd>
 </dl>
@@ -351,7 +357,7 @@ implements <a href="OdometryThread.html" title="interface in org.robotalons.lib.
 <dt>Specified by:</dt>
 <dd><code><a href="OdometryThread.html#getLock()">getLock</a></code>&nbsp;in interface&nbsp;<code><a href="OdometryThread.html" title="interface in org.robotalons.lib.motion.utilities">OdometryThread</a>&lt;com.ctre.phoenix6.StatusSignal&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a>&gt;&gt;</code></dd>
 <dt>Returns:</dt>
-<dd>Lock which prevents method reentrancy</dd>
+<dd>Lock which prevents method reentrance</dd>
 </dl>
 </section>
 </li>

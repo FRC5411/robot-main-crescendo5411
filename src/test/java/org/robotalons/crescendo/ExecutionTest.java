@@ -7,6 +7,11 @@ import org.littletonrobotics.junction.inputs.LoggedDriverStation;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 // -------------------------------------------------------------[Execution Test]-----------------------------------------------------------//
+/**
+ * Test that no exceptions are thrown when robot code is executed for a given amount of time 
+ * 
+ * @author Cody Washington
+ */
 public final class ExecutionTest {
   // --------------------------------------------------------------[Constants]-------------------------------------------------------------//
   public static final Long TEST_RUNTIME_DURATION = (5_000L);

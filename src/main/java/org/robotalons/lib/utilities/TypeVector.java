@@ -1,15 +1,13 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
 package org.robotalons.lib.utilities;
 import edu.wpi.first.hal.util.BoundaryException;
-// ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.Num;
 
-import java.util.Objects;
-
-import javax.validation.constraints.NotNull;
-
 import com.jcabi.aspects.Immutable.Array;
+
+import java.util.Objects;
+import javax.validation.constraints.NotNull;
 
 // --------------------------------------------------------------[Type Vector]--------------------------------------------------------------//
 /**

@@ -93,7 +93,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <dd>
 <ul class="see-list">
 <li><code>SubsystemBase</code></li>
-<li><a href="utilities/Vector.html" title="class in org.robotalons.lib.utilities"><code>Vector</code></a></li>
+<li><a href="utilities/TypeVector.html" title="class in org.robotalons.lib.utilities"><code>TypeVector</code></a></li>
 </ul>
 </dd>
 </dl>
@@ -135,21 +135,21 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="block">Closes this instance and all held resources (actuators) immediately.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#configureAutonomous()" class="member-name-link">configureAutonomous</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#configure()" class="member-name-link">configure</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Configure a subsystem's hardware for PathPlanner autonomous to operate with registered named commands.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#configureOperator(org.robotalons.lib.utilities.Vector)" class="member-name-link">configureOperator</a><wbr>(<a href="utilities/Vector.html" title="class in org.robotalons.lib.utilities">Vector</a>&lt;<a href="utilities/Operator.html" title="class in org.robotalons.lib.utilities">Operator</a>&lt;<a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Keybindings</a>,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Preferences</a>&gt;,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Operators</a>&gt;&nbsp;Operator)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#configure(org.robotalons.lib.utilities.TypeVector)" class="member-name-link">configure</a><wbr>(<a href="utilities/TypeVector.html" title="class in org.robotalons.lib.utilities">TypeVector</a>&lt;<a href="utilities/Operator.html" title="class in org.robotalons.lib.utilities">Operator</a>&lt;<a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Keybindings</a>,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Preferences</a>&gt;,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Operators</a>&gt;&nbsp;Operator)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Configures a subsystem's hardware (GenericHID) to operate this subsystem's Hardware (actuators)</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.Nat&lt;<a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Operators</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getElements()" class="member-name-link">getElements</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Provides a number of elements that should be expected when calling <a href="#configureOperator(org.robotalons.lib.utilities.Vector)"><code>configureOperator(Vector)</code></a></div>
+<div class="block">Provides a number of elements that should be expected when calling <a href="#configure(org.robotalons.lib.utilities.TypeVector)"><code>configure(TypeVector)</code></a></div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="utilities/Vector.html" title="class in org.robotalons.lib.utilities">Vector</a>&lt;<a href="utilities/Operator.html" title="class in org.robotalons.lib.utilities">Operator</a>&lt;<a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Keybindings</a>,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Preferences</a>&gt;,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Operators</a>&gt;</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="utilities/TypeVector.html" title="class in org.robotalons.lib.utilities">TypeVector</a>&lt;<a href="utilities/Operator.html" title="class in org.robotalons.lib.utilities">Operator</a>&lt;<a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Keybindings</a>,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Preferences</a>&gt;,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Operators</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOperators()" class="member-name-link">getOperators</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Provides the current operator of this subsystem.</div>
@@ -194,7 +194,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>Name</code> - Any name for this subsystem, which can be used for telemetry and logging</dd>
-<dd><code>Elements</code> - Functional interface representing the number of elements required when making calls to <a href="#configureOperator(org.robotalons.lib.utilities.Vector)"><code>configureOperator(Vector)</code></a></dd>
+<dd><code>Elements</code> - Functional interface representing the number of elements required when making calls to <a href="#configure(org.robotalons.lib.utilities.TypeVector)"><code>configure(TypeVector)</code></a></dd>
 </dl>
 </section>
 </li>
@@ -207,9 +207,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="configureOperator(org.robotalons.lib.utilities.Vector)">
-<h3>configureOperator</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">configureOperator</span><wbr><span class="parameters">(<a href="utilities/Vector.html" title="class in org.robotalons.lib.utilities">Vector</a>&lt;<a href="utilities/Operator.html" title="class in org.robotalons.lib.utilities">Operator</a>&lt;<a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Keybindings</a>,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Preferences</a>&gt;,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Operators</a>&gt;&nbsp;Operator)</span></div>
+<section class="detail" id="configure(org.robotalons.lib.utilities.TypeVector)">
+<h3>configure</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">configure</span><wbr><span class="parameters">(<a href="utilities/TypeVector.html" title="class in org.robotalons.lib.utilities">TypeVector</a>&lt;<a href="utilities/Operator.html" title="class in org.robotalons.lib.utilities">Operator</a>&lt;<a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Keybindings</a>,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Preferences</a>&gt;,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Operators</a>&gt;&nbsp;Operator)</span></div>
 <div class="block">Configures a subsystem's hardware (GenericHID) to operate this subsystem's Hardware (actuators)</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -218,9 +218,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 </section>
 </li>
 <li>
-<section class="detail" id="configureAutonomous()">
-<h3>configureAutonomous</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">configureAutonomous</span>()</div>
+<section class="detail" id="configure()">
+<h3>configure</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">configure</span>()</div>
 <div class="block">Configure a subsystem's hardware for PathPlanner autonomous to operate with registered named commands.</div>
 </section>
 </li>
@@ -262,7 +262,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <section class="detail" id="getElements()">
 <h3>getElements</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.Nat&lt;<a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Operators</a>&gt;</span>&nbsp;<span class="element-name">getElements</span>()</div>
-<div class="block">Provides a number of elements that should be expected when calling <a href="#configureOperator(org.robotalons.lib.utilities.Vector)"><code>configureOperator(Vector)</code></a></div>
+<div class="block">Provides a number of elements that should be expected when calling <a href="#configure(org.robotalons.lib.utilities.TypeVector)"><code>configure(TypeVector)</code></a></div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>Functional interface representing a number</dd>
@@ -272,7 +272,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <li>
 <section class="detail" id="getOperators()">
 <h3>getOperators</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="utilities/Vector.html" title="class in org.robotalons.lib.utilities">Vector</a>&lt;<a href="utilities/Operator.html" title="class in org.robotalons.lib.utilities">Operator</a>&lt;<a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Keybindings</a>,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Preferences</a>&gt;,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Operators</a>&gt;</span>&nbsp;<span class="element-name">getOperators</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="utilities/TypeVector.html" title="class in org.robotalons.lib.utilities">TypeVector</a>&lt;<a href="utilities/Operator.html" title="class in org.robotalons.lib.utilities">Operator</a>&lt;<a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Keybindings</a>,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Preferences</a>&gt;,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Operators</a>&gt;</span>&nbsp;<span class="element-name">getOperators</span>()</div>
 <div class="block">Provides the current operator of this subsystem.</div>
 <dl class="notes">
 <dt>Returns:</dt>

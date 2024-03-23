@@ -106,7 +106,9 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="org/robotalons/lib/vision/CameraStatusContainer.html" class="type-name-link" title="class in org.robotalons.lib.vision">CameraStatusContainer</a> - Class in <a href="org/robotalons/lib/vision/package-summary.html">org.robotalons.lib.vision</a></dt>
 <dd>
-<div class="block">Loggable input reference to a specific singular unit which assists in the odometry and kinematics of a given robot.</div>
+<div class="block">
+ Loggable input reference to a specific singular unit which assists in the
+ odometry and kinematics of a given robot.</div>
 </dd>
 <dt><a href="org/robotalons/lib/vision/CameraStatusContainer.html#%3Cinit%3E()" class="member-name-link">CameraStatusContainer()</a> - Constructor for class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/CameraStatusContainer.html" title="class in org.robotalons.lib.vision">CameraStatusContainer</a></dt>
 <dd>&nbsp;</dd>
@@ -167,11 +169,11 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="org/robotalons/lib/motion/actuators/Module.ReferenceType.html#CLOSED" class="member-name-link">CLOSED</a> - Enum constant in enum class org.robotalons.lib.motion.actuators.<a href="org/robotalons/lib/motion/actuators/Module.ReferenceType.html" title="enum class in org.robotalons.lib.motion.actuators">Module.ReferenceType</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/robotalons/lib/TalonSubsystemBase.html#configureAutonomous()" class="member-name-link">configureAutonomous()</a> - Method in class org.robotalons.lib.<a href="org/robotalons/lib/TalonSubsystemBase.html" title="class in org.robotalons.lib">TalonSubsystemBase</a></dt>
+<dt><a href="org/robotalons/lib/TalonSubsystemBase.html#configure()" class="member-name-link">configure()</a> - Method in class org.robotalons.lib.<a href="org/robotalons/lib/TalonSubsystemBase.html" title="class in org.robotalons.lib">TalonSubsystemBase</a></dt>
 <dd>
 <div class="block">Configure a subsystem's hardware for PathPlanner autonomous to operate with registered named commands.</div>
 </dd>
-<dt><a href="org/robotalons/lib/TalonSubsystemBase.html#configureOperator(org.robotalons.lib.utilities.Vector)" class="member-name-link">configureOperator(Vector&lt;Operator&lt;Keybindings, Preferences&gt;, Operators&gt;)</a> - Method in class org.robotalons.lib.<a href="org/robotalons/lib/TalonSubsystemBase.html" title="class in org.robotalons.lib">TalonSubsystemBase</a></dt>
+<dt><a href="org/robotalons/lib/TalonSubsystemBase.html#configure(org.robotalons.lib.utilities.TypeVector)" class="member-name-link">configure(TypeVector&lt;Operator&lt;Keybindings, Preferences&gt;, Operators&gt;)</a> - Method in class org.robotalons.lib.<a href="org/robotalons/lib/TalonSubsystemBase.html" title="class in org.robotalons.lib">TalonSubsystemBase</a></dt>
 <dd>
 <div class="block">Configures a subsystem's hardware (GenericHID) to operate this subsystem's Hardware (actuators)</div>
 </dd>
@@ -198,8 +200,6 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:D">D</h2>
 <dl class="index">
-<dt><a href="org/robotalons/lib/utilities/Vector.html#DATA" class="member-name-link">DATA</a> - Variable in class org.robotalons.lib.utilities.<a href="org/robotalons/lib/utilities/Vector.html" title="class in org.robotalons.lib.utilities">Vector</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="org/robotalons/lib/vision/CameraStatusContainer.html#Deltas" class="member-name-link">Deltas</a> - Variable in class org.robotalons.lib.vision.<a href="org/robotalons/lib/vision/CameraStatusContainer.html" title="class in org.robotalons.lib.vision">CameraStatusContainer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/robotalons/lib/motion/actuators/Module.ReferenceType.html#DISABLED" class="member-name-link">DISABLED</a> - Enum constant in enum class org.robotalons.lib.motion.actuators.<a href="org/robotalons/lib/motion/actuators/Module.ReferenceType.html" title="enum class in org.robotalons.lib.motion.actuators">Module.ReferenceType</a></dt>
@@ -217,6 +217,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/robotalons/lib/utilities/LoggedDashboardChooser.html#get()" class="member-name-link">get()</a> - Method in class org.robotalons.lib.utilities.<a href="org/robotalons/lib/utilities/LoggedDashboardChooser.html" title="class in org.robotalons.lib.utilities">LoggedDashboardChooser</a></dt>
 <dd>
 <div class="block">Returns the selected option.</div>
+</dd>
+<dt><a href="org/robotalons/lib/utilities/TypeVector.html#get(java.lang.Integer)" class="member-name-link">get(Integer)</a> - Method in class org.robotalons.lib.utilities.<a href="org/robotalons/lib/utilities/TypeVector.html" title="class in org.robotalons.lib.utilities">TypeVector</a></dt>
+<dd>
+<div class="block">Provides the value of a specific point within the array</div>
 </dd>
 <dt><a href="org/robotalons/lib/motion/actuators/Module.html#getAbsoluteRotation()" class="member-name-link">getAbsoluteRotation()</a> - Method in class org.robotalons.lib.motion.actuators.<a href="org/robotalons/lib/motion/actuators/Module.html" title="class in org.robotalons.lib.motion.actuators">Module</a></dt>
 <dd>
@@ -248,7 +252,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="org/robotalons/lib/TalonSubsystemBase.html#getElements()" class="member-name-link">getElements()</a> - Method in class org.robotalons.lib.<a href="org/robotalons/lib/TalonSubsystemBase.html" title="class in org.robotalons.lib">TalonSubsystemBase</a></dt>
 <dd>
-<div class="block">Provides a number of elements that should be expected when calling <a href="org/robotalons/lib/TalonSubsystemBase.html#configureOperator(org.robotalons.lib.utilities.Vector)"><code>TalonSubsystemBase.configureOperator(Vector)</code></a></div>
+<div class="block">Provides a number of elements that should be expected when calling <a href="org/robotalons/lib/TalonSubsystemBase.html#configure(org.robotalons.lib.utilities.TypeVector)"><code>TalonSubsystemBase.configure(TypeVector)</code></a></div>
 </dd>
 <dt><a href="org/robotalons/lib/motion/utilities/CTREOdometryThread.html#getFrequency()" class="member-name-link">getFrequency()</a> - Method in class org.robotalons.lib.motion.utilities.<a href="org/robotalons/lib/motion/utilities/CTREOdometryThread.html" title="class in org.robotalons.lib.motion.utilities">CTREOdometryThread</a></dt>
 <dd>&nbsp;</dd>
@@ -415,6 +419,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/robotalons/lib/motion/actuators/Module.html#getTranslationalVelocity()" class="member-name-link">getTranslationalVelocity()</a> - Method in class org.robotalons.lib.motion.actuators.<a href="org/robotalons/lib/motion/actuators/Module.html" title="class in org.robotalons.lib.motion.actuators">Module</a></dt>
 <dd>
 <div class="block">Provides the current linear position</div>
+</dd>
+<dt><a href="org/robotalons/lib/utilities/TypeVector.html#getVector()" class="member-name-link">getVector()</a> - Method in class org.robotalons.lib.utilities.<a href="org/robotalons/lib/utilities/TypeVector.html" title="class in org.robotalons.lib.utilities">TypeVector</a></dt>
+<dd>
+<div class="block">Provides the underlying, specified type, array that was defined during construction, will always meet the expected bounds of Elements.</div>
 </dd>
 <dt><a href="org/robotalons/lib/motion/sensors/Gyroscope.html#getYawRotation()" class="member-name-link">getYawRotation()</a> - Method in class org.robotalons.lib.motion.sensors.<a href="org/robotalons/lib/motion/sensors/Gyroscope.html" title="class in org.robotalons.lib.motion.sensors">Gyroscope</a></dt>
 <dd>
@@ -828,6 +836,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="org/robotalons/lib/motion/utilities/CTREOdometryThread.html#start()" class="member-name-link">start()</a> - Method in class org.robotalons.lib.motion.utilities.<a href="org/robotalons/lib/motion/utilities/CTREOdometryThread.html" title="class in org.robotalons.lib.motion.utilities">CTREOdometryThread</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/robotalons/lib/motion/utilities/OdometryThread.html#start()" class="member-name-link">start()</a> - Method in interface org.robotalons.lib.motion.utilities.<a href="org/robotalons/lib/motion/utilities/OdometryThread.html" title="interface in org.robotalons.lib.motion.utilities">OdometryThread</a></dt>
+<dd>
+<div class="block">Starts the thread instance of this method, should only be run once.</div>
+</dd>
 <dt><a href="org/robotalons/lib/motion/utilities/REVOdometryThread.html#start()" class="member-name-link">start()</a> - Method in class org.robotalons.lib.motion.utilities.<a href="org/robotalons/lib/motion/utilities/REVOdometryThread.html" title="class in org.robotalons.lib.motion.utilities">REVOdometryThread</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/robotalons/lib/motion/actuators/Module.ReferenceType.html#STATE_CONTROL" class="member-name-link">STATE_CONTROL</a> - Enum constant in enum class org.robotalons.lib.motion.actuators.<a href="org/robotalons/lib/motion/actuators/Module.ReferenceType.html" title="enum class in org.robotalons.lib.motion.actuators">Module.ReferenceType</a></dt>
@@ -913,6 +925,14 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/robotalons/lib/motion/actuators/ModuleStatusContainer.html#TranslationalVelocityRadiansSecond" class="member-name-link">TranslationalVelocityRadiansSecond</a> - Variable in class org.robotalons.lib.motion.actuators.<a href="org/robotalons/lib/motion/actuators/ModuleStatusContainer.html" title="class in org.robotalons.lib.motion.actuators">ModuleStatusContainer</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/robotalons/lib/utilities/TypeVector.html" class="type-name-link" title="class in org.robotalons.lib.utilities">TypeVector</a>&lt;<a href="org/robotalons/lib/utilities/TypeVector.html" title="type parameter in TypeVector">Type</a>,<wbr><a href="org/robotalons/lib/utilities/TypeVector.html" title="type parameter in TypeVector">Elements</a> extends edu.wpi.first.math.Num&gt; - Class in <a href="org/robotalons/lib/utilities/package-summary.html">org.robotalons.lib.utilities</a></dt>
+<dd>
+<div class="block">Vector</div>
+</dd>
+<dt><a href="org/robotalons/lib/utilities/TypeVector.html#%3Cinit%3E(edu.wpi.first.math.Nat,Type...)" class="member-name-link">TypeVector(Nat&lt;Elements&gt;, Type...)</a> - Constructor for class org.robotalons.lib.utilities.<a href="org/robotalons/lib/utilities/TypeVector.html" title="class in org.robotalons.lib.utilities">TypeVector</a></dt>
+<dd>
+<div class="block">Type Vector Constructor.</div>
+</dd>
 </dl>
 <h2 class="title" id="I:U">U</h2>
 <dl class="index">
@@ -959,14 +979,6 @@ the order they are declared.</div>
 <dd>
 <div class="block">Returns an array containing the constants of this enum class, in
 the order they are declared.</div>
-</dd>
-<dt><a href="org/robotalons/lib/utilities/Vector.html" class="type-name-link" title="class in org.robotalons.lib.utilities">Vector</a>&lt;<a href="org/robotalons/lib/utilities/Vector.html" title="type parameter in Vector">Type</a>,<wbr><a href="org/robotalons/lib/utilities/Vector.html" title="type parameter in Vector">Elements</a> extends edu.wpi.first.math.Num&gt; - Class in <a href="org/robotalons/lib/utilities/package-summary.html">org.robotalons.lib.utilities</a></dt>
-<dd>
-<div class="block">Vector</div>
-</dd>
-<dt><a href="org/robotalons/lib/utilities/Vector.html#%3Cinit%3E(edu.wpi.first.math.Nat,Type...)" class="member-name-link">Vector(Nat&lt;Num&gt;, Type...)</a> - Constructor for class org.robotalons.lib.utilities.<a href="org/robotalons/lib/utilities/Vector.html" title="class in org.robotalons.lib.utilities">Vector</a></dt>
-<dd>
-<div class="block">Vector constructor.</div>
 </dd>
 <dt><a href="org/robotalons/lib/motion/trajectory/solving/TrajectoryObject.html#VERTICAL" class="member-name-link">VERTICAL</a> - Variable in class org.robotalons.lib.motion.trajectory.solving.<a href="org/robotalons/lib/motion/trajectory/solving/TrajectoryObject.html" title="class in org.robotalons.lib.motion.trajectory.solving">TrajectoryObject</a></dt>
 <dd>&nbsp;</dd>

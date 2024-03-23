@@ -10,6 +10,11 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 // -------------------------------------------------------------[Utilities Test]-----------------------------------------------------------//
+/**
+ * Test for simple exceptions to be thrown when an error arises at runtime with CTRE and REV error codes.
+ * 
+ * @author Cody Washington
+ */
 public final class UtilitiesTest {
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   /**
