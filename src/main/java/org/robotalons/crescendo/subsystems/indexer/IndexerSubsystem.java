@@ -106,7 +106,6 @@ public class IndexerSubsystem extends SubsystemBase implements Closeable {
 
     // --------------------------------------------------------------[Accessors]-------------------------------------------------------------- //
     /**
-     * Called before firing a Note to check if such a Note exists.
      * @return CannonBeamSeesNote, Boolean value that is true when Intake-side sensor reads a 0
      */
     public static synchronized Boolean GetNoteAtIntake() {
