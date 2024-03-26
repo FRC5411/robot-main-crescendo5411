@@ -184,11 +184,6 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
       },getInstance()));
     });
   }
-
-  @Override
-  public synchronized void configure() {
-    //TODO: Named Commands
-  }
   // --------------------------------------------------------------[Internal]--------------------------------------------------------------- //
   /**
    * Represents directions on the climb subsystem on the physical robot, i.e. which side the hardware lies on.
@@ -238,7 +233,7 @@ public final class ClimbSubsystem extends TalonSubsystemBase<Keybindings, Prefer
   @Override
   @SuppressWarnings("unchecked")
   public TypeVector<Operator<Keybindings, Preferences>, N1> getOperators() {
-    return new TypeVector<>(() -> (1), Operator);
+    return TypeVector.fill(Operator);
   }
 
   /**

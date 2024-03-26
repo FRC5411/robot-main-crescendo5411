@@ -30,9 +30,16 @@ public class Constants {
 
     public static final Double PIVOT_GEAR_RATIO = (1d);
 
-    public static final Double PIVOT_P_GAIN = (3.75d);
+    public static final Double PIVOT_P_GAIN = (0.03d);
     public static final Double PIVOT_I_GAIN = (0d);
-    public static final Double PIVOT_D_GAIN = (0.35d);
+    public static final Double PIVOT_D_GAIN = (0d);
+
+    public static final Double PIVOT_KS_GAIN = (0d);
+    public static final Double PIVOT_KG_GAIN = (0.03d);
+    public static final Double PIVOT_KV_GAIN = (0d);
+    
+    public static final Double PIVOT_MAX_VELOCITY = (600d);
+    public static final Double PIVOT_MAX_ACCELERATION = (600d);
 
     public static final Double FIRING_P_GAIN = (10d);
     public static final Double FIRING_I_GAIN = (0d);
@@ -40,7 +47,6 @@ public class Constants {
 
     public static final Double FIRING_STANDARD_VELOCITY = (2000d);
 
-    public static final Double CANNON_LENGTH = (1d);
     public static final Boolean PIVOT_INVERTED = (false);
 
     public static final Double SUBWOOFER_LINE_ROTATION = Units.degreesToRadians((46.7d));
@@ -115,10 +121,17 @@ public class Constants {
   public static final class Ports {
     public static final Integer FIRING_CONTROLLER_RIGHT_ID = (34);
     public static final Integer FIRING_CONTROLLER_LEFT_ID = (35);
+    
     public static final Integer INTAKE_CONTROLLER_ID = (21);
     public static final Integer INDEXER_CONTROLLER_ID = (22);
+
     public static final Integer PIVOT_CONTROLLER_ID = (32);
-    public static final Integer PIVOT_ABSOLUTE_ENCODER_ID = (0);
+    public static final Integer PIVOT_ABSOLUTE_ENCODER_ID = (9);
+
+    public static final Integer INTAKE_IR_SENSOR_ID = (0);
+    public static final Integer INDEXER_IR_SENSOR_ID = (1);
+
+    public static final String CAN_BUS_NAME = ("drivetrain");
   }
 
   public static final class Objects {

@@ -7,6 +7,7 @@ import edu.wpi.first.math.Num;
 import com.jcabi.aspects.Immutable.Array;
 
 import java.util.Objects;
+
 import javax.validation.constraints.NotNull;
 
 // --------------------------------------------------------------[Type Vector]--------------------------------------------------------------//
@@ -49,10 +50,33 @@ public class TypeVector<@NotNull Type, @NotNull Elements extends Num> {
   /**
    * Provides the value of a specific point within the array
    * @param Index Point within the array to get a value from
-   * @see #getVector()
+   * @see #getArray()
    */
   public synchronized Type get(final Integer Index) {
     return VECTOR[Index];
+  }
+
+  /**
+   * Creates a type vector with the specified elements
+   * @param <Type> Type of the generic array
+   * @param Vector Array data to place within the bounds of the Vector's array, length should match the number of elements specified.
+   * @return TypeVector of the given elements
+   * @throws BoundaryException    Bounds of the array are exceeded or not met by the length of the Vector parameter
+   * @throws NullPointerException Either the Elements parameter or the Vector parameter evaluate to null 
+   */
+  @SuppressWarnings("unchecked")
+  public static <Type, Elements extends Num> TypeVector<Type,Elements> fill(final Type... Vector) {
+    return new TypeVector<Type,Elements>(() -> Vector.length, Vector);
+  }
+
+  /**
+   * Creates an empty type vector, where there are no elements within the underlying generic array
+   * @param <Type> Type of the generic array
+   * @return An array consisting of zero elements, with a specified type.
+   */
+  @SuppressWarnings("unchecked")
+  public static <Type, Elements extends Num> TypeVector<Type, Elements> empty() {
+    return new TypeVector<Type,Elements>(() -> 0);
   }
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
   /**
@@ -60,7 +84,7 @@ public class TypeVector<@NotNull Type, @NotNull Elements extends Num> {
    * @return Array of specified type
    * @see #get(Integer)
    */
-  public Type[] getVector() {
+  public Type[] getArray() {
     return VECTOR;
   }
 }

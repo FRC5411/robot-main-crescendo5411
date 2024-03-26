@@ -73,7 +73,6 @@ public final class SubsystemManager extends SubsystemBase implements Closeable {
     CLIMB_INSTANCE.configure(new TypeVector<>(() -> (CLIMB_INSTANCE.getElements().getNum()), Operators.Secondary.PROFILE));
     DRIVEBASE_INSTANCE.configure(new TypeVector<>(() -> (DRIVEBASE_INSTANCE.getElements().getNum()), Operators.Primary.PROFILE));
     SUPERSTRUCTURE_INSTANCE.configure(new TypeVector<>(() -> (SUPERSTRUCTURE_INSTANCE.getElements().getNum()), Operators.Secondary.PROFILE, Operators.Primary.PROFILE));
-    SUBSYSTEMS.forEach(TalonSubsystemBase::configure);
     FIELD = new Field2d();
     AutoBuilder.configureHolonomic(
       DrivebaseSubsystem::getPose,

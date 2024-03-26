@@ -53,25 +53,15 @@ public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preference
   public synchronized void configure(final TypeVector<Operator<Keybindings, Preferences>, Operators> Operator) {
 
   }
-
-  /**
-   * Configure a subsystem's hardware for PathPlanner autonomous to operate with registered named commands.
-   */
-  public synchronized void configure() {
-
-  }
   
   /**
    * Closes this instance and all held resources (actuators) immediately.
    */
-  public synchronized void close() {
-
-  } 
+  @Override
+  public abstract void close();
 
   @Override
-  public synchronized void periodic() {
-
-  }
+  public abstract void periodic();
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
 
   /**
@@ -95,7 +85,7 @@ public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preference
    * @return Current subsystem operator
    */
   public TypeVector<Operator<Keybindings, Preferences>, Operators> getOperators() {
-    return (null);
+    return TypeVector.empty();
   }
 
 }

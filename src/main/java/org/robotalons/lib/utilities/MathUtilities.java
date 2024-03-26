@@ -19,12 +19,8 @@ public class MathUtilities {
    * @param Numbers Collection (array) of data to find the standard deviation of
    * @return Standard deviation as a double value
    */
-  public static double standardDeviation(double[] Numbers){
-    double Mean = 0d, SummativeSquareDifference = 0d;
-    for(double Number : Numbers){
-      Mean += Number;
-    }
-    Mean /= Numbers.length;
+  public static double standardDeviation(final double... Numbers){
+    double Mean = mean(Numbers), SummativeSquareDifference = 0d;
     for(double Number : Numbers){
       SummativeSquareDifference += Math.pow((Number - Mean), (2));
     }
@@ -32,11 +28,25 @@ public class MathUtilities {
   }
 
   /**
-   * Applies squared inputs to a given input, while retaining the sign
+   * Provides squared inputs to a given input, while retaining the sign
    * @param Input Any Real Number
    * @return Input Squared, with the same sign of the original
    */
-  public static double signedSquare(final double Input) {
+  public static double squareSigned(final double Input) {
     return Math.copySign(Input * Input, Input);
+  }
+
+  /**
+   * Provides the mean or 'simple average' for a set of numbers
+   * @param Numbers Collection (array) of data to find the standard deviation of
+   * @return Mean as a double value
+   */
+  public static double mean(final double... Numbers) {
+    double Mean = 0d;
+    for(double Number : Numbers){
+      Mean += Number;
+    }
+    Mean /= Numbers.length;
+    return Mean;
   }
 }

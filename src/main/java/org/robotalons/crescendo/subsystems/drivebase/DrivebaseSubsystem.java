@@ -315,14 +315,14 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
       new InstantCommand(() ->
       set((Operator.<Boolean>getRequiredPreference(Preferences.SQUARED_INPUT))?
           new Translation2d(
-            -MathUtilities.signedSquare(MathUtil.applyDeadband(Operator.<Double>getRequiredPreference(Preferences.TRANSLATION_X_INPUT), Operator.<Double>getRequiredPreference(Preferences.TRANSLATIONAL_X_DEADZONE))),
-            -MathUtilities.signedSquare(MathUtil.applyDeadband(Operator.<Double>getRequiredPreference(Preferences.TRANSLATION_Y_INPUT), Operator.<Double>getRequiredPreference(Preferences.TRANSLATIONAL_Y_DEADZONE)))):
+            -MathUtilities.squareSigned(MathUtil.applyDeadband(Operator.<Double>getRequiredPreference(Preferences.TRANSLATION_X_INPUT), Operator.<Double>getRequiredPreference(Preferences.TRANSLATIONAL_X_DEADZONE))),
+            -MathUtilities.squareSigned(MathUtil.applyDeadband(Operator.<Double>getRequiredPreference(Preferences.TRANSLATION_Y_INPUT), Operator.<Double>getRequiredPreference(Preferences.TRANSLATIONAL_Y_DEADZONE)))):
           new Translation2d(
             -MathUtil.applyDeadband(Operator.<Double>getRequiredPreference(Preferences.TRANSLATION_X_INPUT), Operator.<Double>getRequiredPreference(Preferences.TRANSLATIONAL_X_DEADZONE)),
             -MathUtil.applyDeadband(Operator.<Double>getRequiredPreference(Preferences.TRANSLATION_Y_INPUT), Operator.<Double>getRequiredPreference(Preferences.TRANSLATIONAL_Y_DEADZONE))),
         (Operator.<Boolean>getRequiredPreference(Preferences.SQUARED_INPUT))?
           Rotation2d.fromRotations(
-            -MathUtilities.signedSquare(MathUtil.applyDeadband(Operator.<Double>getRequiredPreference(Preferences.ORIENTATION_S_INPUT), Operator.<Double>getRequiredPreference(Preferences.ORIENTATION_S_DEADZONE)))):
+            -MathUtilities.squareSigned(MathUtil.applyDeadband(Operator.<Double>getRequiredPreference(Preferences.ORIENTATION_S_INPUT), Operator.<Double>getRequiredPreference(Preferences.ORIENTATION_S_DEADZONE)))):
           Rotation2d.fromRotations(
             -MathUtil.applyDeadband(Operator.<Double>getRequiredPreference(Preferences.ORIENTATION_S_INPUT),Operator.<Double>getRequiredPreference(Preferences.ORIENTATION_S_DEADZONE)))),
       getInstance()
@@ -403,11 +403,6 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
     synchronized(CHARACTERIZATION_ROUTINE) {
       CHARACTERIZATION_ROUTINE.quasistatic(Direction);
     }
-  }
-
-  @Override
-  public synchronized void configure() {
-    //TODO: Named Commands
   }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
   /**
@@ -511,7 +506,7 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
   @Override
   @SuppressWarnings("unchecked")
   public TypeVector<Operator<Keybindings, Preferences>, N1> getOperators() {
-    return new TypeVector<>(() -> (1), Operator);
+    return TypeVector.fill(Operator);
   }
   /**
    * Provides the current position of the drivebase in space

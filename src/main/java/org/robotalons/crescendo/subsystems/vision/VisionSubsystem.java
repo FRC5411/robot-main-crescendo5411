@@ -100,11 +100,6 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings, Prefe
   public static void snapshotOutput(final CameraIdentifier Identifier) {
     CAMERAS.get(Identifier.getValue()).snapshotOutput();
   }
-  
-  @Override
-  public synchronized void configure() {
-    //TODO: Named Commands
-  }
   // --------------------------------------------------------------[Internal]---------------------------------------------------------------//
   /**
    * Describes a queried camera type with an integer value in a more
@@ -196,20 +191,22 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings, Prefe
     return CAMERAS.get(Identifier.getValue()).getRobotPositionDeltas();
   }
 
-  // /**
-  // * Provides the robot relative position to a given object based on the
-  // estimated
-  // * position of this camera and a transformation to a known object.
-  // *
-  // * @param Target Transformation to a given target anywhere on the field.
-  // * @return Position of the object relative to the field.
-  // */
-  // public static Optional<Pose2d> getObjectFieldPose(final Transform3d Target) {
-  // return
-  // CAMERAS.get(CameraIdentifier.INTAKE_CAMERA.getValue()).getObjectFieldPose(
-  // new Transform2d(Target.getTranslation().toTranslation2d(),
-  // Target.getRotation().toRotation2d()));
-  // }
+  /**
+  * Provides the robot relative position to a given object based on the
+  estimated
+  * position of this camera and a transformation to a known object.
+  *
+  * @param Target Transformation to a given target anywhere on the field.
+  * @return Position of the object relative to the field.
+  */
+  public static Optional<Pose2d> getObjectFieldPose(final Transform3d Target) {
+    // return CAMERAS
+    //   .get(CameraIdentifier.INTAKE_CAMERA.getValue())
+    //     .getObjectFieldPose(
+    //       new Transform2d(Target.getTranslation().toTranslation2d(),
+    //                       Target.getRotation().toRotation2d()));
+    return Optional.empty();
+  }
 
   /**
    * Provides the values of standard deviations of the most recent object
@@ -222,18 +219,16 @@ public final class VisionSubsystem extends TalonSubsystemBase<Keybindings, Prefe
     return CAMERAS.get(Identifier.getValue()).getStandardDeviations();
   }
 
-  // /**
-  // * Provides the robot relative position to a given object based on the
-  // estimated
-  // * position of this camera and a transformation assuming that.
-  // * the desired object is the optimal target of this camera.
-  // *
-  // * @return Position of the object relative to the field.
-  // */
-  // public static Optional<Pose2d> getObjectFieldPose() {
-  // return
-  // CAMERAS.get(CameraIdentifier.INTAKE_CAMERA.getValue()).getObjectFieldPose();
-  // }
+  /**
+   * Provides the robot relative position to a given object based on the estimated position of this
+   * camera and a transformation assuming that the desired object is the optimal target of this camera.
+   *
+   * @return Position of the object relative to the field.
+   */
+  public static Optional<Pose2d> getObjectFieldPose() {
+   //return CAMERAS.get(CameraIdentifier.INTAKE_CAMERA.getValue()).getObjectFieldPose();
+   return Optional.empty();
+  }
 
   /**
    * Provides a list of robot-relative transformations to the best target within
