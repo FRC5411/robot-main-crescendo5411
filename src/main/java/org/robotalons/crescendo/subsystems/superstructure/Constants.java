@@ -135,6 +135,6 @@ public class Constants {
   }
 
   public static final class Objects {
-    public static final Lock ODOMETRY_LOCKER = new ReentrantLock();
+    public static final Lock ODOMETRY_LOCK = new ReentrantLock();
   }
 }
