@@ -108,13 +108,18 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static double</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#signedSquare(double)" class="member-name-link">signedSquare</a><wbr>(double&nbsp;Input)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#mean(double...)" class="member-name-link">mean</a><wbr>(double...&nbsp;Numbers)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Applies squared inputs to a given input, while retaining the sign</div>
+<div class="block">Provides the mean or 'simple average' for a set of numbers</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static double</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#standardDeviation(double%5B%5D)" class="member-name-link">standardDeviation</a><wbr>(double[]&nbsp;Numbers)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#squareSigned(double)" class="member-name-link">squareSigned</a><wbr>(double&nbsp;Input)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Provides squared inputs to a given input, while retaining the sign</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static double</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#standardDeviation(double...)" class="member-name-link">standardDeviation</a><wbr>(double...&nbsp;Numbers)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Provides the standard deviation for a given set of numbers</div>
 </div>
 </div>
@@ -149,9 +154,9 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="standardDeviation(double[])">
+<section class="detail" id="standardDeviation(double...)">
 <h3>standardDeviation</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">standardDeviation</span><wbr><span class="parameters">(double[]&nbsp;Numbers)</span></div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">standardDeviation</span><wbr><span class="parameters">(double...&nbsp;Numbers)</span></div>
 <div class="block">Provides the standard deviation for a given set of numbers</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -162,15 +167,28 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="signedSquare(double)">
-<h3>signedSquare</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">signedSquare</span><wbr><span class="parameters">(double&nbsp;Input)</span></div>
-<div class="block">Applies squared inputs to a given input, while retaining the sign</div>
+<section class="detail" id="squareSigned(double)">
+<h3>squareSigned</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">squareSigned</span><wbr><span class="parameters">(double&nbsp;Input)</span></div>
+<div class="block">Provides squared inputs to a given input, while retaining the sign</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>Input</code> - Any Real Number</dd>
 <dt>Returns:</dt>
 <dd>Input Squared, with the same sign of the original</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="mean(double...)">
+<h3>mean</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">mean</span><wbr><span class="parameters">(double...&nbsp;Numbers)</span></div>
+<div class="block">Provides the mean or 'simple average' for a set of numbers</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>Numbers</code> - Collection (array) of data to find the standard deviation of</dd>
+<dt>Returns:</dt>
+<dd>Mean as a double value</dd>
 </dl>
 </section>
 </li>

@@ -104,19 +104,31 @@ loadScripts(document, 'script');</script>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab1" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab1', 3)" class="table-tab">Static Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel">
 <div class="summary-table three-column-summary" aria-labelledby="method-summary-table-tab0">
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;Type,<wbr>
+Elements extends edu.wpi.first.math.Num&gt;<br><a href="TypeVector.html" title="class in org.robotalons.lib.utilities">TypeVector</a>&lt;Type,<wbr>Elements&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#empty()" class="member-name-link">empty</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates an empty type vector, where there are no elements within the underlying generic array</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;Type,<wbr>
+Elements extends edu.wpi.first.math.Num&gt;<br><a href="TypeVector.html" title="class in org.robotalons.lib.utilities">TypeVector</a>&lt;Type,<wbr>Elements&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#fill(Type...)" class="member-name-link">fill</a><wbr>(Type...&nbsp;Vector)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a type vector with the specified elements</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="TypeVector.html" title="type parameter in TypeVector">Type</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#get(java.lang.Integer)" class="member-name-link">get</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;Index)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Provides the value of a specific point within the array</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="TypeVector.html" title="type parameter in TypeVector">Type</a>[]</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getVector()" class="member-name-link">getVector</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getArray()" class="member-name-link">getArray</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Provides the underlying, specified type, array that was defined during construction, will always meet the expected bounds of Elements.</div>
 </div>
@@ -174,16 +186,51 @@ loadScripts(document, 'script');</script>
 <dt>See Also:</dt>
 <dd>
 <ul class="see-list">
-<li><a href="#getVector()"><code>getVector()</code></a></li>
+<li><a href="#getArray()"><code>getArray()</code></a></li>
 </ul>
 </dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="getVector()">
-<h3>getVector</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="TypeVector.html" title="type parameter in TypeVector">Type</a>[]</span>&nbsp;<span class="element-name">getVector</span>()</div>
+<section class="detail" id="fill(Type...)">
+<h3 id="fill(java.lang.Object[])">fill</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;Type,<wbr>
+Elements extends edu.wpi.first.math.Num&gt;</span>
+<span class="return-type"><a href="TypeVector.html" title="class in org.robotalons.lib.utilities">TypeVector</a>&lt;Type,<wbr>Elements&gt;</span>&nbsp;<span class="element-name">fill</span><wbr><span class="parameters">(Type...&nbsp;Vector)</span></div>
+<div class="block">Creates a type vector with the specified elements</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><code>Type</code> - Type of the generic array</dd>
+<dt>Parameters:</dt>
+<dd><code>Vector</code> - Array data to place within the bounds of the Vector's array, length should match the number of elements specified.</dd>
+<dt>Returns:</dt>
+<dd>TypeVector of the given elements</dd>
+<dt>Throws:</dt>
+<dd><code>edu.wpi.first.hal.util.BoundaryException</code> - Bounds of the array are exceeded or not met by the length of the Vector parameter</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/NullPointerException.html" title="class or interface in java.lang" class="external-link">NullPointerException</a></code> - Either the Elements parameter or the Vector parameter evaluate to null</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="empty()">
+<h3>empty</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;Type,<wbr>
+Elements extends edu.wpi.first.math.Num&gt;</span>
+<span class="return-type"><a href="TypeVector.html" title="class in org.robotalons.lib.utilities">TypeVector</a>&lt;Type,<wbr>Elements&gt;</span>&nbsp;<span class="element-name">empty</span>()</div>
+<div class="block">Creates an empty type vector, where there are no elements within the underlying generic array</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><code>Type</code> - Type of the generic array</dd>
+<dt>Returns:</dt>
+<dd>An array consisting of zero elements, with a specified type.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getArray()">
+<h3>getArray</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="TypeVector.html" title="type parameter in TypeVector">Type</a>[]</span>&nbsp;<span class="element-name">getArray</span>()</div>
 <div class="block">Provides the underlying, specified type, array that was defined during construction, will always meet the expected bounds of Elements.</div>
 <dl class="notes">
 <dt>Returns:</dt>

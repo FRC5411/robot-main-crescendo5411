@@ -81,7 +81,7 @@ loadScripts(document, 'script');</script>
 <dd><code>edu.wpi.first.util.sendable.Sendable</code>, <code>edu.wpi.first.wpilibj2.command.Subsystem</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Closeable.html" title="class or interface in java.io" class="external-link">Closeable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
 </dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public abstract class </span><span class="element-name type-name-label">TalonSubsystemBase&lt;Keybindings extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Enum.html" title="class or interface in java.lang" class="external-link">Enum</a>&lt;?&gt;,<wbr>Preferences extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Enum.html" title="class or interface in java.lang" class="external-link">Enum</a>&lt;?&gt;,<wbr>Operators extends edu.wpi.first.math.Num&gt;</span>
+<div class="type-signature"><span class="modifiers">public abstract class </span><span class="element-name type-name-label">TalonSubsystemBase&lt;@NotNull Keybindings extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Enum.html" title="class or interface in java.lang" class="external-link">Enum</a>&lt;?&gt;,<wbr>@NotNull Preferences extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Enum.html" title="class or interface in java.lang" class="external-link">Enum</a>&lt;?&gt;,<wbr>@NotNull Operators extends edu.wpi.first.math.Num&gt;</span>
 <span class="extends-implements">extends edu.wpi.first.wpilibj2.command.SubsystemBase
 implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Closeable.html" title="class or interface in java.io" class="external-link">Closeable</a></span></div>
 <div class="block"><h1>TalonSubsystemBase</h1>
@@ -111,7 +111,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>protected </code></div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String,edu.wpi.first.math.Nat)" class="member-name-link">TalonSubsystemBase</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;Name,
- edu.wpi.first.math.Nat&lt;<a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Operators</a>&gt;&nbsp;Elements)</code></div>
+ edu.wpi.first.math.Nat&lt;@NotNull <a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Operators</a>&gt;&nbsp;Elements)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Talon Subsystem Constructor.</div>
 </div>
@@ -123,45 +123,37 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab1" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab1', 3)" class="table-tab">Static Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab1" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab1', 3)" class="table-tab">Static Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel">
 <div class="summary-table three-column-summary" aria-labelledby="method-summary-table-tab0">
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Closes this instance and all held resources (actuators) immediately.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#configure()" class="member-name-link">configure</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#configure(org.robotalons.lib.utilities.TypeVector)" class="member-name-link">configure</a><wbr>(<a href="utilities/TypeVector.html" title="class in org.robotalons.lib.utilities">TypeVector</a>&lt;<a href="utilities/Operator.html" title="class in org.robotalons.lib.utilities">Operator</a>&lt;@NotNull <a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Keybindings</a>,<wbr>@NotNull <a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Preferences</a>&gt;,<wbr>@NotNull <a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Operators</a>&gt;&nbsp;Operator)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Configure a subsystem's hardware for PathPlanner autonomous to operate with registered named commands.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#configure(org.robotalons.lib.utilities.TypeVector)" class="member-name-link">configure</a><wbr>(<a href="utilities/TypeVector.html" title="class in org.robotalons.lib.utilities">TypeVector</a>&lt;<a href="utilities/Operator.html" title="class in org.robotalons.lib.utilities">Operator</a>&lt;<a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Keybindings</a>,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Preferences</a>&gt;,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Operators</a>&gt;&nbsp;Operator)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Configures a subsystem's hardware (GenericHID) to operate this subsystem's Hardware (actuators)</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.Nat&lt;<a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Operators</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getElements()" class="member-name-link">getElements</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.Nat&lt;<a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Operators</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getElements()" class="member-name-link">getElements</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Provides a number of elements that should be expected when calling <a href="#configure(org.robotalons.lib.utilities.TypeVector)"><code>configure(TypeVector)</code></a></div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="utilities/TypeVector.html" title="class in org.robotalons.lib.utilities">TypeVector</a>&lt;<a href="utilities/Operator.html" title="class in org.robotalons.lib.utilities">Operator</a>&lt;<a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Keybindings</a>,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Preferences</a>&gt;,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Operators</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOperators()" class="member-name-link">getOperators</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="utilities/TypeVector.html" title="class in org.robotalons.lib.utilities">TypeVector</a>&lt;<a href="utilities/Operator.html" title="class in org.robotalons.lib.utilities">Operator</a>&lt;<a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Keybindings</a>,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Preferences</a>&gt;,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Operators</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOperators()" class="member-name-link">getOperators</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Provides the current operator of this subsystem.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TalonSubsystemBase.html" title="class in org.robotalons.lib">TalonSubsystemBase</a>&lt;?,<wbr>?,<wbr>?&gt;&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getSubsystems()" class="member-name-link">getSubsystems</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TalonSubsystemBase.html" title="class in org.robotalons.lib">TalonSubsystemBase</a>&lt;?,<wbr>?,<wbr>?&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getSubsystems()" class="member-name-link">getSubsystems</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Provides a list (ordered) of all initialized subsystems</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#periodic()" class="member-name-link">periodic</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -173,7 +165,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-edu.wpi.first.wpilibj2.command.Subsystem">Methods inherited from interface&nbsp;edu.wpi.first.wpilibj2.command.Subsystem</h3>
-<code>defer, getCurrentCommand, getDefaultCommand, register, removeDefaultCommand, run, runEnd, runOnce, setDefaultCommand, simulationPeriodic, startEnd</code></div>
+<code>defer, getCurrentCommand, getDefaultCommand, periodic, register, removeDefaultCommand, run, runEnd, runOnce, setDefaultCommand, simulationPeriodic, startEnd</code></div>
 </section>
 </li>
 </ul>
@@ -189,7 +181,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <section class="detail" id="&lt;init&gt;(java.lang.String,edu.wpi.first.math.Nat)">
 <h3>TalonSubsystemBase</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="element-name">TalonSubsystemBase</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;Name,
- edu.wpi.first.math.Nat&lt;<a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Operators</a>&gt;&nbsp;Elements)</span></div>
+ edu.wpi.first.math.Nat&lt;@NotNull <a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Operators</a>&gt;&nbsp;Elements)</span></div>
 <div class="block">Talon Subsystem Constructor.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -209,7 +201,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <li>
 <section class="detail" id="configure(org.robotalons.lib.utilities.TypeVector)">
 <h3>configure</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">configure</span><wbr><span class="parameters">(<a href="utilities/TypeVector.html" title="class in org.robotalons.lib.utilities">TypeVector</a>&lt;<a href="utilities/Operator.html" title="class in org.robotalons.lib.utilities">Operator</a>&lt;<a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Keybindings</a>,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Preferences</a>&gt;,<wbr><a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Operators</a>&gt;&nbsp;Operator)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">configure</span><wbr><span class="parameters">(<a href="utilities/TypeVector.html" title="class in org.robotalons.lib.utilities">TypeVector</a>&lt;<a href="utilities/Operator.html" title="class in org.robotalons.lib.utilities">Operator</a>&lt;@NotNull <a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Keybindings</a>,<wbr>@NotNull <a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Preferences</a>&gt;,<wbr>@NotNull <a href="TalonSubsystemBase.html" title="type parameter in TalonSubsystemBase">Operators</a>&gt;&nbsp;Operator)</span></div>
 <div class="block">Configures a subsystem's hardware (GenericHID) to operate this subsystem's Hardware (actuators)</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -218,32 +210,18 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 </section>
 </li>
 <li>
-<section class="detail" id="configure()">
-<h3>configure</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">configure</span>()</div>
-<div class="block">Configure a subsystem's hardware for PathPlanner autonomous to operate with registered named commands.</div>
-</section>
-</li>
-<li>
 <section class="detail" id="close()">
 <h3>close</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">close</span>()</div>
+<div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">close</span>()
+                    throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Closes this instance and all held resources (actuators) immediately.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
 <dt>Specified by:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Closeable.html#close()" title="class or interface in java.io" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Closeable.html" title="class or interface in java.io" class="external-link">Closeable</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="periodic()">
-<h3>periodic</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">periodic</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code>periodic</code>&nbsp;in interface&nbsp;<code>edu.wpi.first.wpilibj2.command.Subsystem</code></dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
 </dl>
 </section>
 </li>

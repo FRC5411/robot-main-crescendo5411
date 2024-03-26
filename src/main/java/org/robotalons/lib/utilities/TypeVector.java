@@ -7,7 +7,6 @@ import edu.wpi.first.math.Num;
 import com.jcabi.aspects.Immutable.Array;
 
 import java.util.Objects;
-
 import javax.validation.constraints.NotNull;
 
 // --------------------------------------------------------------[Type Vector]--------------------------------------------------------------//

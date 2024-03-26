@@ -5,8 +5,6 @@ import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.Num;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import org.robotalons.lib.utilities.Alert;
-import org.robotalons.lib.utilities.Alert.AlertType;
 import org.robotalons.lib.utilities.Operator;
 import org.robotalons.lib.utilities.TypeVector;
 
@@ -14,6 +12,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import javax.validation.constraints.NotNull;
 // ----------------------------------------------------------[Talon Subsystem Base]---------------------------------------------------------//
 /**
  *
@@ -28,7 +28,7 @@ import java.util.List;
  * 
  * @author Cody Washington (@Jelatinone) 
  */
-public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preferences extends Enum<?>, Operators extends Num> extends SubsystemBase implements Closeable {
+public abstract class TalonSubsystemBase<@NotNull Keybindings extends Enum<?>, @NotNull Preferences extends Enum<?>, @NotNull Operators extends Num> extends SubsystemBase implements Closeable {
   // --------------------------------------------------------------[Constants]--------------------------------------------------------------//
   private static final List<TalonSubsystemBase<?,?,?>> SUBSYSTEMS;
   private final Nat<Operators> ELEMENTS;
@@ -39,10 +39,9 @@ public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preference
    * @param Elements Functional interface representing the number of elements required when making calls to {@link #configure(TypeVector)}
    */
   protected TalonSubsystemBase(final String Name, final Nat<Operators> Elements) {
-    super(Name);
-    ELEMENTS = Elements;
+    super(Objects.requireNonNull(Name));
+    ELEMENTS = Objects.requireNonNull(Elements);
     SUBSYSTEMS.add(this);
-    new Alert(Name + " Initialized", AlertType.INFO);
   } static {
     SUBSYSTEMS = new ArrayList<>();
   }
@@ -83,5 +82,4 @@ public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preference
   public TypeVector<Operator<Keybindings, Preferences>, Operators> getOperators() {
     return (null);
   }
-
 }
