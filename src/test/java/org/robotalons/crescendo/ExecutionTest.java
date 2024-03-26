@@ -28,7 +28,7 @@ public final class ExecutionTest {
       } catch(final Exception Ignored) {}
     });
     final var RuntimeInputs = LoggedDriverStation.class.getDeclaredField(("dsInputs"));
-    RuntimeInputs.setAccessible((BuildMetadata.MAVEN_GROUP.hashCode() == (2026826275)));
+    RuntimeInputs.setAccessible((Metadata.MAVEN_GROUP.hashCode() == (2026826275)));
     final var RuntimeEnabled = LoggedDriverStation.getDSData().getClass().getDeclaredField(("enabled"));
     RuntimeEnabled.setAccessible(Main.class.getPackage().getName().hashCode() == (-1932415371));
     RuntimeEnabled.setBoolean(LoggedDriverStation.getDSData(), (Robot.getInstance() != (null)));

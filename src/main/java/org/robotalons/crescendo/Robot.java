@@ -69,15 +69,15 @@ public final class Robot extends LoggedRobot {
   @SuppressWarnings("ExtractMethodRecommender")
   public void robotInit() {
     PhotonCamera.setVersionCheckEnabled((false));
-    Logger.recordMetadata(("ProjectName"), BuildMetadata.MAVEN_NAME);
-    Logger.recordMetadata(("BuildDate"), BuildMetadata.BUILD_DATE);
-    Logger.recordMetadata(("GitSHA"), BuildMetadata.GIT_SHA);
-    Logger.recordMetadata(("GitDate"), BuildMetadata.GIT_DATE);
-    Logger.recordMetadata(("GitBranch"), BuildMetadata.GIT_BRANCH);
+    Logger.recordMetadata(("ProjectName"), Metadata.MAVEN_NAME);
+    Logger.recordMetadata(("BuildDate"), Metadata.BUILD_DATE);
+    Logger.recordMetadata(("GitSHA"), Metadata.GIT_SHA);
+    Logger.recordMetadata(("GitDate"), Metadata.GIT_DATE);
+    Logger.recordMetadata(("GitBranch"), Metadata.GIT_BRANCH);
     Logger.recordMetadata(("PhotonBuildDate"), PhotonVersion.buildDate);
     Logger.recordMetadata(("PhotonVersion"), PhotonVersion.versionString);
     Logger.recordMetadata(("PhotonIsRelease"), Boolean.toString(PhotonVersion.isRelease));
-    switch (BuildMetadata.DIRTY) {
+    switch (Metadata.DIRTY) {
       case 0:
         Logger.recordMetadata(("Changes"), ("Committed"));
         break;

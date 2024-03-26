@@ -38,7 +38,7 @@ public final class Constants {
    */
   public static void main(String... Options) {
     if (Subsystems.TYPE == RobotType.SIMULATION) {
-      System.err.println("CANNOT DEPLOY, INVALID TYPE: " + Subsystems.TYPE);
+      System.err.println("Cannot Deploy, Invalid Robot Type: " + Subsystems.TYPE);
       System.exit((1));
     }
   }
@@ -114,11 +114,6 @@ public final class Constants {
     public static final Double BLUE_ALLIANCE_HORIZONTAL_LOCATION = (0.59d);
     public static final Double RED_ALLIANCE_HORIZONTAL_LOCATION = (15.89d);
     public static final List<Double> ALLIANCE_VERTICAL_LOCATIONS = List.of((2d), (4d), (7.2d));
-
-    static {
-      CTRE_ODOMETRY_THREAD.setEnabled(CTRE_ODOMETRY_ENABLED);
-      REV_ODOMETRY_THREAD.setEnabled(REV_ODOMETRY_ENABLED);
-    }
   }
 
   public static final class Profiles { 
@@ -139,11 +134,11 @@ public final class Constants {
         public static final Operator<Keybindings,Preferences> PROFILE = new Operator<Keybindings,Preferences>(NAME)
           .add(Preferences.TRANSLATION_X_INPUT, () -> -INPUT_METHOD.getRawAxis((1)))
           .add(Preferences.TRANSLATION_Y_INPUT, () -> -INPUT_METHOD.getRawAxis((0)))
-          .add(Preferences.ORIENTATION_T_INPUT, () -> INPUT_METHOD.getRawAxis((4)))
+          .add(Preferences.ORIENTATION_S_INPUT, () -> INPUT_METHOD.getRawAxis((4)))
           .add(Preferences.SQUARED_INPUT, () -> (true))
           .add(Preferences.TRANSLATIONAL_X_DEADZONE, () -> (2e-1))
           .add(Preferences.TRANSLATIONAL_Y_DEADZONE, () -> (2e-1))
-          .add(Preferences.ORIENTATION_DEADZONE, () -> (2e-1))
+          .add(Preferences.ORIENTATION_S_DEADZONE, () -> (2e-1))
           .add(Keybindings.ORIENTATION_TOGGLE, INPUT_METHOD.a())
           .add(Keybindings.RESET_GYROSCOPE, INPUT_METHOD.y())
           .add(Keybindings.ALIGNMENT_SPEAKER, INPUT_METHOD.x())
@@ -169,11 +164,11 @@ public final class Constants {
     public enum Preferences {
       TRANSLATION_X_INPUT,
       TRANSLATION_Y_INPUT,
-      ORIENTATION_T_INPUT,
+      ORIENTATION_S_INPUT,
       SQUARED_INPUT,
       TRANSLATIONAL_X_DEADZONE,
       TRANSLATIONAL_Y_DEADZONE,
-      ORIENTATION_DEADZONE
+      ORIENTATION_S_DEADZONE
     }
 
     public enum Keybindings {
@@ -191,7 +186,7 @@ public final class Constants {
       CANNON_PIVOT_MAXIMUM,
       ALIGNMENT_SPEAKER,
       ALIGNMENT_AMP,
-      ALIGNMENT_OBJECT,
+      //ALIGNMENT_OBJECT,
       ALIGNMENT_NEAREST
     }
   }

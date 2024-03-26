@@ -88,7 +88,7 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     TRANSLATIONAL_ENCODER = TRANSLATIONAL_CONTROLLER.getEncoder();
 
     TRANSLATIONAL_POSITION = new DoubleAccumulator(
-      (Accumulated, Velocity) -> Accumulated - Velocity * discretize() * MODULE_CONSTANTS.WHEEL_PERIMETER_METERS * MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO  / 60d, (0d));
+      (Accumulated, Velocity) -> Accumulated - Velocity * discretize() * MODULE_CONSTANTS.WHEEL_PERIMETER_METERS / (MODULE_CONSTANTS.ROTATIONAL_GEAR_RATIO * 60d), (0d));
 
     ROTATIONAL_CONTROLLER = MODULE_CONSTANTS.ROTATIONAL_CONTROLLER;
     ROTATIONAL_CONTROLLER.clearFaults();
@@ -268,8 +268,8 @@ public class SparkModule<Controller extends CANSparkMax> extends Module {
     MODULE_CONSTANTS.STATUS_PROVIDER.getLock().lock();
     synchronized(STATUS) {
 
-      STATUS.TranslationalPositionRadians =
-        TRANSLATIONAL_ENCODER.getPosition() * MODULE_CONSTANTS.WHEEL_PERIMETER_METERS / MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO;
+      STATUS.TranslationalPositionRadians = 
+        TRANSLATIONAL_POSITION.get();
       STATUS.TranslationalVelocityRadiansSecond =
         TRANSLATIONAL_ENCODER.getVelocity() * MODULE_CONSTANTS.WHEEL_PERIMETER_METERS / (MODULE_CONSTANTS.TRANSLATIONAL_GEAR_RATIO * 60d);
       STATUS.TranslationalAppliedVoltage = 

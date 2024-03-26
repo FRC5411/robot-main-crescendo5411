@@ -322,9 +322,9 @@ public class DrivebaseSubsystem extends TalonSubsystemBase<Keybindings,Preferenc
             -MathUtil.applyDeadband(Operator.<Double>getRequiredPreference(Preferences.TRANSLATION_Y_INPUT), Operator.<Double>getRequiredPreference(Preferences.TRANSLATIONAL_Y_DEADZONE))),
         (Operator.<Boolean>getRequiredPreference(Preferences.SQUARED_INPUT))?
           Rotation2d.fromRotations(
-            -MathUtilities.signedSquare(MathUtil.applyDeadband(Operator.<Double>getRequiredPreference(Preferences.ORIENTATION_T_INPUT), Operator.<Double>getRequiredPreference(Preferences.ORIENTATION_DEADZONE)))):
+            -MathUtilities.signedSquare(MathUtil.applyDeadband(Operator.<Double>getRequiredPreference(Preferences.ORIENTATION_S_INPUT), Operator.<Double>getRequiredPreference(Preferences.ORIENTATION_S_DEADZONE)))):
           Rotation2d.fromRotations(
-            -MathUtil.applyDeadband(Operator.<Double>getRequiredPreference(Preferences.ORIENTATION_T_INPUT),Operator.<Double>getRequiredPreference(Preferences.ORIENTATION_DEADZONE)))),
+            -MathUtil.applyDeadband(Operator.<Double>getRequiredPreference(Preferences.ORIENTATION_S_INPUT),Operator.<Double>getRequiredPreference(Preferences.ORIENTATION_S_DEADZONE)))),
       getInstance()
     ));
     Operator.getOptionalKeybinding(Keybindings.ORIENTATION_TOGGLE).ifPresent((Trigger) -> 

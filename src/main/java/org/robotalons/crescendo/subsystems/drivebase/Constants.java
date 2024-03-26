@@ -75,6 +75,7 @@ public final class Constants {
 
     public static final Double ODOMETRY_FREQUENCY = (250d);
 
+    //TODO: Use Object References Rather Than Additional Classes Here to Save Space & Verbosity
     public static final class Modules {
       public static final class FL {
         public static final Integer LINEAR_CONTROLLER_ID = (11);

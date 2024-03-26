@@ -163,7 +163,7 @@ out/
 .hintrc
 
 # Build Metadata
-**/BuildMetadata.java
+**/Metadata.java
 
 #NetworkTables & Simulation  Data
 **/networktables.json

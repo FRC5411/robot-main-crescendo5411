@@ -48,6 +48,7 @@ import org.robotalons.lib.utilities.TypeVector;
  * @see SubsystemBase
  * @see org.robotalons.crescendo.RobotContainer RobotContainer
  */
+//TODO: Refactoring Superstructure
 public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Preferences, N2> {
   // --------------------------------------------------------------[Constants]-------------------------------------------------------------- //
   private static final Pair<TalonFX,TalonFX> FIRING_CONTROLLERS;
@@ -66,11 +67,10 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
   private static SuperstructureSubsystem Instance;
   // ------------------------------------------------------------[Constructors]----------------------------------------------------------- //
   /**
-   * 
-   * Cannon Subsystem Constructor
+   * Superstructure Subsystem Constructor
    */
   private SuperstructureSubsystem() {
-    super(("Superstructure-Subsystem-Subsystem"), Nat.N2());
+    super(("Superstructure-Subsystem"), Nat.N2());
   } static {
     Reference = new SwerveModuleState((0d), Rotation2d.fromRotations(Measurements.PIVOT_MINIMUM_ROTATION));
     State = SuperstructureState.MANUAL;

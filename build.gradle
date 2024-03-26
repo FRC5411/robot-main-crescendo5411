@@ -193,7 +193,7 @@ project.compileJava.dependsOn(createVersionFile)
 gversion {
   srcDir       = "src/main/java/"
   classPackage = "org.robotalons.crescendo"
-  className    = "BuildMetadata"
+  className    = "Metadata"
   dateFormat   = "yyyy-MM-dd HH:mm:ss z"
   timeZone     = "America/Chicago"
   indent       = "  "
