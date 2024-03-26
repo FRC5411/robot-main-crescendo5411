@@ -11,6 +11,7 @@ import org.robotalons.lib.utilities.Operator;
 import org.robotalons.lib.utilities.TypeVector;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 // ----------------------------------------------------------[Talon Subsystem Base]---------------------------------------------------------//
@@ -50,18 +51,13 @@ public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preference
    * Configures a subsystem's hardware (GenericHID) to operate this subsystem's Hardware (actuators)
    * @param Operator New subsystem operator
    */
-  public synchronized void configure(final TypeVector<Operator<Keybindings, Preferences>, Operators> Operator) {
-
-  }
+  public synchronized void configure(final TypeVector<Operator<Keybindings, Preferences>, Operators> Operator) {}
   
   /**
    * Closes this instance and all held resources (actuators) immediately.
    */
   @Override
-  public abstract void close();
-
-  @Override
-  public abstract void periodic();
+  public abstract void close() throws IOException;
   // --------------------------------------------------------------[Accessors]--------------------------------------------------------------//
 
   /**
@@ -85,7 +81,7 @@ public abstract class TalonSubsystemBase<Keybindings extends Enum<?>, Preference
    * @return Current subsystem operator
    */
   public TypeVector<Operator<Keybindings, Preferences>, Operators> getOperators() {
-    return TypeVector.empty();
+    return (null);
   }
 
 }

@@ -31,6 +31,7 @@ import org.robotalons.lib.motion.pathfinding.LocalADStarAK;
 import org.robotalons.lib.utilities.TypeVector;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 // -----------------------------------------------------------[Subsystem Manager]---------------------------------------------------------------//
@@ -166,7 +167,11 @@ public final class SubsystemManager extends SubsystemBase implements Closeable {
    * Closes this instance and all held resources (subsystems) immediately.
    */
   public synchronized void close() {
-    SUBSYSTEMS.forEach(TalonSubsystemBase::close);
+    SUBSYSTEMS.forEach((Subsystem) -> {
+      try {
+        Subsystem.close();
+      } catch (IOException Ignored) {}
+    });
     FIELD.close();
     Instance = (null);
   }
