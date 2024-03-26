@@ -365,6 +365,4 @@ public class SuperstructureSubsystem extends TalonSubsystemBase<Keybindings,Pref
     }
     return Rotation;
   }
-
-
 }

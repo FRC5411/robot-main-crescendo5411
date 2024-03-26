@@ -77,7 +77,6 @@ public final class VisionCamera extends Camera {
   public synchronized void periodic() {
     if (CAMERA.isConnected()) {
       update();
-      getRobotPosition().ifPresent(POSE_ESTIMATOR::setLastPose);
     }
   }
 
