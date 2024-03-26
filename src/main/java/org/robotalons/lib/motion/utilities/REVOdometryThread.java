@@ -4,8 +4,8 @@ package org.robotalons.lib.motion.utilities;
 import edu.wpi.first.wpilibj.Notifier;
 
 import org.littletonrobotics.junction.Logger;
-import org.robotalons.lib.utilities.Alert;
-import org.robotalons.lib.utilities.Alert.AlertType;
+import org.robotalons.lib.external.Alert;
+import org.robotalons.lib.external.Alert.AlertType;
 
 import java.io.IOException;
 import java.util.ArrayDeque;

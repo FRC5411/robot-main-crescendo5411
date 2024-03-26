@@ -26,10 +26,10 @@ import org.robotalons.crescendo.Constants.Logging;
 import org.robotalons.crescendo.Constants.Odometry;
 import org.robotalons.crescendo.Constants.Subsystems;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
+import org.robotalons.lib.external.Alert;
+import org.robotalons.lib.external.Alert.AlertType;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.REVOdometryThread;
-import org.robotalons.lib.utilities.Alert;
-import org.robotalons.lib.utilities.Alert.AlertType;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -26,8 +26,8 @@ import org.robotalons.crescendo.subsystems.climb.ClimbSubsystem;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
 import org.robotalons.crescendo.subsystems.superstructure.SuperstructureSubsystem;
 import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
-import org.robotalons.lib.TalonSubsystemBase;
-import org.robotalons.lib.motion.pathfinding.LocalADStarAK;
+import org.robotalons.lib.external.LocalADStarAK;
+import org.robotalons.lib.utilities.TalonSubsystemBase;
 import org.robotalons.lib.utilities.TypeVector;
 
 import java.io.Closeable;

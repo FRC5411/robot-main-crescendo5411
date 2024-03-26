@@ -21,8 +21,8 @@ import org.robotalons.crescendo.Constants.Profiles.Preferences;
 import org.robotalons.crescendo.subsystems.climb.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.climb.Constants.Objects;
 import org.robotalons.crescendo.subsystems.climb.Constants.Ports;
-import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.utilities.Operator;
+import org.robotalons.lib.utilities.TalonSubsystemBase;
 import org.robotalons.lib.utilities.TypeVector;
 // ------------------------------------------------------------[Climb Subsystem]------------------------------------------------------------ //
 /**

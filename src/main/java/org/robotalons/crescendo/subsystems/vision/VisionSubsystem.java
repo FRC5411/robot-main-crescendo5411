@@ -16,7 +16,7 @@ import org.robotalons.crescendo.Constants.Profiles.Keybindings;
 import org.robotalons.crescendo.Constants.Profiles.Preferences;
 import org.robotalons.crescendo.subsystems.vision.Constants.Devices;
 import org.robotalons.crescendo.subsystems.vision.Constants.Measurements;
-import org.robotalons.lib.TalonSubsystemBase;
+import org.robotalons.lib.utilities.TalonSubsystemBase;
 import org.robotalons.lib.vision.Camera;
 
 import java.io.IOException;

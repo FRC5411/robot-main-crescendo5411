@@ -30,12 +30,12 @@ import org.robotalons.crescendo.subsystems.drivebase.Constants.Measurements;
 import org.robotalons.crescendo.subsystems.drivebase.Constants.Objects;
 import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
 import org.robotalons.crescendo.subsystems.vision.VisionSubsystem.CameraIdentifier;
-import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.actuators.Module;
 import org.robotalons.lib.motion.sensors.Gyroscope;
 import org.robotalons.lib.motion.utilities.OdometryThread;
 import org.robotalons.lib.utilities.MathUtilities;
 import org.robotalons.lib.utilities.Operator;
+import org.robotalons.lib.utilities.TalonSubsystemBase;
 import org.robotalons.lib.utilities.TypeVector;
 
 import java.util.ArrayList;

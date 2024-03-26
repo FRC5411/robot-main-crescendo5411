@@ -57,11 +57,11 @@ public class TypeVector<@NotNull Type, @NotNull Elements extends Num> {
 
   /**
    * Creates a type vector with the specified elements
-   * @param <Type> Type of the generic array
-   * @param Vector Array data to place within the bounds of the Vector's array, length should match the number of elements specified.
-   * @return TypeVector of the given elements
+   * @param <Type>                Type of the generic array
+   * @param Vector                Array data to place within the bounds of the Vector's array, length should match the number of elements specified.
    * @throws BoundaryException    Bounds of the array are exceeded or not met by the length of the Vector parameter
    * @throws NullPointerException Either the Elements parameter or the Vector parameter evaluate to null 
+   * @return TypeVector of the given elements
    */
   @SuppressWarnings("unchecked")
   public static <Type, Elements extends Num> TypeVector<Type,Elements> fill(final Type... Vector) {

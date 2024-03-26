@@ -8,10 +8,10 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import org.robotalons.crescendo.Robot.RobotType;
-import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.motion.utilities.CTREOdometryThread;
 import org.robotalons.lib.motion.utilities.REVOdometryThread;
 import org.robotalons.lib.utilities.Operator;
+import org.robotalons.lib.utilities.TalonSubsystemBase;
 import org.robotalons.lib.utilities.TypeVector;
 
 import java.util.ArrayList;

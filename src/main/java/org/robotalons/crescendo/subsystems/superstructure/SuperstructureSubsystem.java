@@ -37,9 +37,9 @@ import org.robotalons.crescendo.subsystems.superstructure.Constants.Measurements
 import org.robotalons.crescendo.subsystems.superstructure.Constants.Objects;
 import org.robotalons.crescendo.subsystems.superstructure.Constants.Ports;
 import org.robotalons.crescendo.subsystems.vision.VisionSubsystem;
-import org.robotalons.lib.TalonSubsystemBase;
 import org.robotalons.lib.utilities.MathUtilities;
 import org.robotalons.lib.utilities.Operator;
+import org.robotalons.lib.utilities.TalonSubsystemBase;
 import org.robotalons.lib.utilities.TypeVector;
 // --------------------------------------------------------[Superstructure Subsystem]--------------------------------------------------------//
 /**

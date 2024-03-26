@@ -26,7 +26,7 @@ public final class Operator<Keybindings extends Enum<?>, Preferences extends Enu
   private static final List<Operator<?,?>> OPERATORS = new ArrayList<>();
   private final Map<Preferences,Supplier<?>> PREFERENCES = new HashMap<>();  
   private final Map<Keybindings,Trigger> KEYBINDINGS = new HashMap<>();
-  private final String PILOT_NAME;
+  private final String OPERATOR_NAME;
   // ---------------------------------------------------------------[Fields]----------------------------------------------------------------//
   private volatile SendableBuilder Builder;
   // ------------------------------------------------------------[Constructors]-------------------------------------------------------------//
@@ -35,14 +35,14 @@ public final class Operator<Keybindings extends Enum<?>, Preferences extends Enu
    * @param Name Pilot's name to reference against other pilot profiles
    */
   public Operator(final String Name) {
-    PILOT_NAME = Name;
+    OPERATOR_NAME = Name;
     OPERATORS.add(this);
   }  
   // ---------------------------------------------------------------[Methods]---------------------------------------------------------------//
   @Override
   public void initSendable(final SendableBuilder Builder) {
     this.Builder = Builder;
-    Builder.addStringProperty(PILOT_NAME, this::getName, (String) -> {});
+    Builder.addStringProperty(OPERATOR_NAME, this::getName, (String) -> {});
     PREFERENCES.forEach((Attribute, Value) -> Builder.addStringProperty(Attribute.toString(), Value::toString, (String) -> {}));
     KEYBINDINGS.forEach((Attribute, Value) -> Builder.addStringProperty(Attribute.toString(), Value::toString, (String) -> {}));
     Builder.update();
@@ -137,6 +137,6 @@ public final class Operator<Keybindings extends Enum<?>, Preferences extends Enu
    * @return Name of pilot
    */
   public String getName() {
-    return PILOT_NAME;
+    return OPERATOR_NAME;
   }
 }

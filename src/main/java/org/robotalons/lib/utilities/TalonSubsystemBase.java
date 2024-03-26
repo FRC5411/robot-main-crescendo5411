@@ -1,12 +1,9 @@
 // ----------------------------------------------------------------[Package]----------------------------------------------------------------//
-package org.robotalons.lib;
+package org.robotalons.lib.utilities;
 // ---------------------------------------------------------------[Libraries]---------------------------------------------------------------//
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.Num;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import org.robotalons.lib.utilities.Operator;
-import org.robotalons.lib.utilities.TypeVector;
 
 import java.io.Closeable;
 import java.io.IOException;

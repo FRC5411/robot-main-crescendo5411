@@ -1,4 +1,4 @@
-package org.robotalons.lib.motion.pathfinding;
+package org.robotalons.lib.external;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Translation2d;

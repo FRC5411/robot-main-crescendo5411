@@ -14,9 +14,9 @@ import org.robotalons.crescendo.Constants.Field;
 import org.robotalons.crescendo.Constants.Odometry;
 import org.robotalons.crescendo.subsystems.SubsystemManager;
 import org.robotalons.crescendo.subsystems.drivebase.DrivebaseSubsystem;
-import org.robotalons.lib.utilities.Alert;
-import org.robotalons.lib.utilities.Alert.AlertType;
-import org.robotalons.lib.utilities.LoggedDashboardChooser;
+import org.robotalons.lib.external.Alert;
+import org.robotalons.lib.external.LoggedDashboardChooser;
+import org.robotalons.lib.external.Alert.AlertType;
 // -------------------------------------------------------------[Robot Container]-----------------------------------------------------------//
 /**
  *
